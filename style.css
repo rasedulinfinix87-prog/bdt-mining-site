@@ -1,242 +1,330 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Hind Siliguri', sans-serif;
 }
 
 body {
-    background-color: #0b1120;
-    color: #e2e8f0;
+    background: #090d16;
+    color: #f1f5f9;
     min-height: 100vh;
 }
 
-/* নেভিগেশন */
-.navbar {
+/* টপ বার */
+.top-navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background-color: #0f172a;
-    border-bottom: 1px solid #1e293b;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.logo {
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #fff;
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
-.logo span {
-    color: #f97316;
+.logo-text span {
+    color: #f59e0b;
 }
 
-.nav-links a {
-    color: #94a3b8;
-    text-decoration: none;
-    margin: 0 12px;
-    font-size: 0.9rem;
-}
-
-.nav-links a.active {
-    color: #f97316;
-    border-bottom: 2px solid #f97316;
-    padding-bottom: 4px;
-}
-
-.user-profile {
-    font-size: 0.85rem;
-    color: #cbd5e1;
-}
-
-.dot {
-    height: 8px;
-    width: 8px;
-    background-color: #22c55e;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-/* কন্টেইনার */
-.main-container {
-    max-width: 1100px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-/* কার্ড স্টাইল */
-.dash-card, .auth-card {
-    background-color: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 8px;
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-}
-
-.auth-wrapper {
-    max-width: 400px;
-    margin: 3rem auto;
-}
-
-.auth-card h2 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 0.7rem;
-    margin-bottom: 0.8rem;
-    background: #0b1120;
-    border: 1px solid #374151;
-    border-radius: 6px;
-    color: #fff;
-}
-
-.button-group {
+.auth-btn-area {
     display: flex;
     gap: 10px;
 }
 
-/* গ্রিড লেআউট */
-.page-title h1 {
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
-    letter-spacing: 1px;
+.btn-login-nav, .btn-signup-nav {
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-.grid-layout {
+.btn-login-nav {
+    background: transparent;
+    color: #f1f5f9;
+    border: 1px solid #334155;
+}
+
+.btn-signup-nav {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #000;
+}
+
+.user-logged-info {
+    font-weight: 600;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.nav-balance {
+    background: #1e293b;
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: #10b981;
+    border: 1px solid #10b98133;
+}
+
+/* হিরো */
+.hero-section {
+    text-align: center;
+    padding: 3rem 1rem 1.5rem;
+}
+
+.hero-section h1 {
+    font-size: 2.2rem;
+    background: linear-gradient(to right, #ffffff, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-section p {
+    color: #94a3b8;
+    margin-top: 8px;
+}
+
+.main-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    color: #e2e8f0;
+}
+
+/* প্ল্যান গ্রিড */
+.plans-grid {
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
 }
 
-@media (max-width: 768px) {
-    .grid-layout {
-        grid-template-columns: 1fr;
+.plan-card {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    position: relative;
+    text-align: center;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    border-color: #f59e0b;
+}
+
+.plan-card.featured {
+    border: 2px solid #f59e0b;
+    background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+}
+
+.plan-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #1e293b;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.plan-badge.popular {
+    left: 15px;
+    right: auto;
+    background: #f59e0b;
+    color: #000;
+    font-weight: 700;
+}
+
+.plan-card h3 {
+    margin-top: 10px;
+    font-size: 1.3rem;
+}
+
+.plan-price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #f59e0b;
+    margin: 15px 0 5px;
+}
+
+.plan-price span {
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.plan-profit {
+    color: #10b981;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.plan-features {
+    list-style: none;
+    margin: 20px 0;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+}
+
+.plan-features li {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-plan-invest {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-plan-invest:hover {
+    opacity: 0.9;
+}
+
+/* ডাইস ও মাইনিং অ্যানিমেশন সেকশন */
+.active-mining-section {
+    margin-top: 3rem;
+}
+
+.mining-box-card {
+    background: #111827;
+    border: 1px solid #f59e0b44;
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+@media (max-width: 600px) {
+    .mining-box-card {
+        flex-direction: column;
+        text-align: center;
     }
 }
 
-.card-header {
+.dice-box {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #f59e0b, #b45309);
+    border-radius: 18px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 1rem;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
 }
 
-.card-title {
-    font-size: 0.8rem;
-    color: #9ca3af;
-    text-transform: uppercase;
-}
-
-.badge-active {
-    background: #064e3b;
-    color: #34d399;
-    font-size: 0.7rem;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-.badge-success {
-    color: #34d399;
-    font-size: 0.8rem;
-}
-
-.stat-group {
-    margin-bottom: 0.8rem;
-}
-
-.stat-group label {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-.stat-group h2 {
-    color: #fff;
-}
-
-.balance-text {
-    color: #38bdf8;
-    margin: 0.8rem 0;
-}
-
-/* বাটনস */
-.btn {
-    padding: 0.6rem 1rem;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
+.currency-dice {
+    font-size: 3rem;
+    color: #000;
     font-weight: bold;
+    animation: rotateDice 2s infinite linear;
 }
 
-.btn-orange {
-    background-color: #ea580c;
-    color: #fff;
+@keyframes rotateDice {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
 }
 
-.btn-orange:hover {
-    background-color: #c2410c;
-}
-
-.btn-outline {
-    background: transparent;
-    border: 1px solid #374151;
-    color: #fff;
-}
-
-.btn-block {
+.mining-details {
+    flex: 1;
     width: 100%;
 }
 
-.btn-flex {
-    display: flex;
-    gap: 8px;
+.progress-bar-wrap {
+    width: 100%;
+    height: 10px;
+    background: #1f2937;
+    border-radius: 5px;
+    margin-top: 12px;
+    overflow: hidden;
 }
 
-.btn-orange-sm, .btn-outline-sm {
-    flex: 1;
-    padding: 0.4rem;
-    border-radius: 4px;
+.progress-bar-fill {
+    width: 30%;
+    height: 100%;
+    background: #10b981;
+}
+
+/* পপআপ মোডাল */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: #1e293b;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 380px;
+    position: relative;
+    border: 1px solid #334155;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
     border: none;
+    color: #94a3b8;
+    font-size: 1.2rem;
     cursor: pointer;
 }
 
-.btn-orange-sm { background: #ea580c; color: #fff; }
-.btn-outline-sm { background: #1f2937; color: #fff; }
-
-/* ফেক চার্ট বক্স */
-.fake-chart {
-    height: 180px;
-    background: linear-gradient(180deg, rgba(234, 88, 12, 0.2) 0%, rgba(11, 17, 32, 0) 100%);
-    border-bottom: 2px solid #ea580c;
-    border-radius: 4px;
+.modal-inputs input {
+    width: 100%;
+    padding: 0.8rem;
+    margin: 10px 0;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #fff;
 }
 
-.bottom-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.progress-bar {
-    height: 6px;
-    background: #1f2937;
-    border-radius: 3px;
+.btn-modal-submit {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    background: #f59e0b;
+    font-weight: bold;
+    cursor: pointer;
     margin-top: 10px;
-}
-
-.progress-fill {
-    width: 85%;
-    height: 100%;
-    background: #ea580c;
-    border-radius: 3px;
-}
-
-.tx-row {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    font-size: 0.85rem;
 }
