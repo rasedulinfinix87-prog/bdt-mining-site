@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDT Cloud Miner</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- হেডার নেভিগেশন -->
+    <header class="navbar">
+        <div class="logo">BDT Cloud Miner</div>
+        <div class="user-status" id="userStatus">লগইন অবস্থায় নেই</div>
+    </header>
+
+    <!-- মূল কন্টেইনার -->
+    <main class="container">
+        
+        <!-- সাইনআপ ও লগইন বক্স -->
+        <section class="card" id="authSection">
+            <h2>অ্যাকাউন্ট সাইন-ইন / সাইন-আপ</h2>
+            <div class="input-group">
+                <input type="email" id="email" placeholder="আপনার ইমেইল লিখুন">
+                <input type="password" id="password" placeholder="পাসওয়ার্ড লিখুন">
+            </div>
+            <div class="button-group">
+                <button onclick="handleSignUp()" class="btn btn-secondary">সাইন-আপ</button>
+                <button onclick="handleLogin()" class="btn btn-primary">লগইন</button>
+            </div>
+        </section>
+
+        <!-- মাইনিং ড্যাশবোর্ড (লগইন করার পর দেখাবে) -->
+        <section class="card" id="dashboardSection" style="display: none;">
+            <div class="balance-card">
+                <h3>আপনার বর্তমান ব্যালেন্স</h3>
+                <h1 id="bdtBalance">৳ 0.00 BDT</h1>
+            </div>
+
+            <div class="mining-card">
+                <h3>মাইনিং স্ট্যাটাস</h3>
+                <p id="miningStatus">মাইনিং বন্ধ আছে</p>
+                <button id="mineBtn" onclick="claimMining()" class="btn btn-mine">মাইনিং শুরু করুন / পয়েন্ট ক্লেইম করুন</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
