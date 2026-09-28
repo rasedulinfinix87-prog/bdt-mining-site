@@ -20,7 +20,7 @@ function handleAuthSubmit() {
     }
     
     isLoggedIn = true;
-    userBalance = 50000; // টেস্ট ইনভেস্টমেন্টের জন্য প্রাথমিক ডেমো ব্যালেন্স
+    userBalance = 50000; // প্রাথমিক টেস্ট ডেমো ব্যালেন্স
     
     document.getElementById('authNav').style.display = 'none';
     document.getElementById('userNav').style.display = 'flex';
@@ -51,7 +51,7 @@ function handleInvestClick(amount, days, planKey) {
         document.getElementById('activeMiningSection').style.display = 'block';
         document.getElementById('activePlanName').innerText = `${days} দিনের মাইনিং এক্টিভ আছে`;
         document.getElementById('daysCounter').innerText = days;
-        document.getElementById('miningProgress').style.width = '10%';
+        document.getElementById('miningProgress').style.width = '20%';
         
         alert('অভিনন্দন! আপনার মাইনিং ইনভেস্টমেন্ট সফলভাবে শুরু হয়েছে।');
     }
