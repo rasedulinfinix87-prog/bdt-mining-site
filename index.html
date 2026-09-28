@@ -3,113 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDT Cloud Miner</title>
+    <title>BDT Mining Pro</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <!-- হেডার -->
-    <header class="navbar">
-        <div class="logo"><span>BDT</span> Cloud Miner</div>
-        <nav class="nav-links">
-            <a href="#" class="active">Dashboard</a>
-            <a href="#">Plans</a>
-            <a href="#">Affiliate</a>
-            <a href="#">Support</a>
-        </nav>
-        <div class="user-profile" id="userStatus">
-            <span class="dot"></span> Online
+    <!-- ১. টপ বার: সাইট নাম ও লগইন অপশন -->
+    <header class="top-navbar">
+        <div class="logo-area">
+            <span class="logo-icon">⚡</span>
+            <span class="logo-text">BDT<span>MINER</span></span>
+        </div>
+        <div class="auth-btn-area" id="authNav">
+            <button class="btn-login-nav" onclick="openAuthModal('login')">লগইন</button>
+            <button class="btn-signup-nav" onclick="openAuthModal('signup')">সাইন-আপ</button>
+        </div>
+        <div class="user-logged-info" id="userNav" style="display: none;">
+            <span id="navEmail">user@mail.com</span>
+            <span class="nav-balance" id="navBalance">৳ 0.00</span>
         </div>
     </header>
 
+    <!-- হিরো সেকশন -->
+    <section class="hero-section">
+        <h1>স্মার্ট BDT মাইনিং প্ল্যাটফর্ম</h1>
+        <p>নিরাপদ ও নির্ভরযোগ্য উপায়ে আপনার ইনভেস্টমেন্ট প্রফিট বৃদ্ধি করুন</p>
+    </section>
+
     <main class="main-container">
-        <!-- লগইন বক্স -->
-        <section class="auth-wrapper" id="authSection">
-            <div class="auth-card">
-                <h2>অ্যাকাউন্ট সাইন-ইন / সাইন-আপ</h2>
-                <div class="input-group">
-                    <input type="email" id="email" placeholder="আপনার ইমেইল লিখুন">
-                    <input type="password" id="password" placeholder="পাসওয়ার্ড লিখুন">
+
+        <!-- ২. মাইনিং প্ল্যান সেকশন (১৫, ৩০, ৪৫ দিন) -->
+        <section class="plans-section">
+            <h2 class="section-title">আমাদের প্রফিটেবল প্ল্যানসমূহ</h2>
+
+            <div class="plans-grid">
+                <!-- ১৫ দিনের প্ল্যান -->
+                <div class="plan-card">
+                    <div class="plan-badge">১৫ দিন</div>
+                    <h3>স্টার্টার প্ল্যান</h3>
+                    <div class="plan-price">৳ ৫,০০০ <span>ইনভেস্ট</span></div>
+                    <div class="plan-profit">+ ৳ ৩,৩৩৩ প্রফিট</div>
+                    <ul class="plan-features">
+                        <li>মেয়াদ: ১৫ দিন</li>
+                        <li>মোট রিটার্ন: ৳ ৮,৩৩৩</li>
+                        <li>অটো ক্লেইম সিস্টেম</li>
+                    </ul>
+                    <button class="btn-plan-invest" onclick="handleInvestClick(5000, 15, '15d')">ইনভেস্ট করুন</button>
                 </div>
-                <div class="button-group">
-                    <button onclick="handleSignUp()" class="btn btn-outline">সাইন-আপ</button>
-                    <button onclick="handleLogin()" class="btn btn-orange">লগইন</button>
+
+                <!-- ৩০ দিনের প্ল্যান -->
+                <div class="plan-card featured">
+                    <div class="plan-badge popular">জনপ্রিয়</div>
+                    <div class="plan-badge">৩০ দিন</div>
+                    <h3>এডভান্সড প্ল্যান</h3>
+                    <div class="plan-price">৳ ১০,০০০ <span>ইনভেস্ট</span></div>
+                    <div class="plan-profit">+ ৳ ৭,৭৭৭ প্রফিট</div>
+                    <ul class="plan-features">
+                        <li>মেয়াদ: ৩০ দিন</li>
+                        <li>মোট রিটার্ন: ৳ ১৭,৭৭৭</li>
+                        <li>অটো ক্লেইম সিস্টেম</li>
+                    </ul>
+                    <button class="btn-plan-invest" onclick="handleInvestClick(10000, 30, '30d')">ইনভেস্ট করুন</button>
+                </div>
+
+                <!-- ৪৫ দিনের প্ল্যান -->
+                <div class="plan-card">
+                    <div class="plan-badge">৪৫ দিন</div>
+                    <h3>প্রো প্ল্যান</h3>
+                    <div class="plan-price">৳ ৩০,০০০ <span>ইনভেস্ট</span></div>
+                    <div class="plan-profit">+ ৳ ১৯,৯৯৯ প্রফিট</div>
+                    <ul class="plan-features">
+                        <li>মেয়াদ: ৪৫ দিন</li>
+                        <li>মোট রিটার্ন: ৳ ৪৯,৯৯৯</li>
+                        <li>অটো ক্লেইম সিস্টেম</li>
+                    </ul>
+                    <button class="btn-plan-invest" onclick="handleInvestClick(30000, 45, '45d')">ইনভেস্ট করুন</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- একটিভ মাইনিং গেম/রোটেটিং (৳) অ্যানিমেশন ড্যাশবোর্ড -->
+        <section class="active-mining-section" id="activeMiningSection" style="display: none;">
+            <h2 class="section-title">আপনার রানিং মাইনিং সেশন</h2>
+            <div class="mining-box-card">
+                <div class="dice-box">
+                    <div class="currency-dice" id="currencyDice">৳</div>
+                </div>
+                <div class="mining-details">
+                    <h3 id="activePlanName">মাইনিং রানিং...</h3>
+                    <p>টাইম কাউন্টডাউন: <span id="daysCounter">--</span> দিন বাকি</p>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-bar-fill" id="miningProgress"></div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- মূল ড্যাশবোর্ড (লগইন বা টেস্টের সময় দৃশ্যমান) -->
-        <section class="dashboard-grid" id="dashboardSection" style="display: none;">
-            <div class="page-title">
-                <h1>YOUR MINING DASHBOARD</h1>
-            </div>
-
-            <div class="grid-layout">
-                <!-- বাম কলাম -->
-                <div class="left-col">
-                    <!-- কাস্টম মাইনিং স্ট্যাটাস -->
-                    <div class="dash-card">
-                        <div class="card-header">
-                            <span class="card-title">Current Mining Status</span>
-                            <span class="badge-active">ACTIVE</span>
-                        </div>
-                        <div class="stat-group">
-                            <label>Estimated Daily Earnings</label>
-                            <h2>৳ 185.50</h2>
-                        </div>
-                        <div class="stat-group">
-                            <label>Total Hashrate</label>
-                            <h3>12.5 TH/s</h3>
-                        </div>
-                        <button class="btn btn-orange btn-block" onclick="claimMining()">MINE BDT NOW</button>
-                    </div>
-
-                    <!-- অ্যাকাউন্ট ব্যালেন্স -->
-                    <div class="dash-card">
-                        <span class="card-title">ACCOUNT BALANCE</span>
-                        <h1 class="balance-text" id="bdtBalance">৳ 4,680.00 BDT</h1>
-                        <div class="btn-flex">
-                            <button class="btn btn-orange-sm">Deposit</button>
-                            <button class="btn btn-outline-sm">Withdraw</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ডান কলাম -->
-                <div class="right-col">
-                    <!-- ওভারভিউ চার্ট -->
-                    <div class="dash-card">
-                        <div class="card-header">
-                            <span class="card-title">Overview</span>
-                            <span class="sub-text">Mining Activity (Last 7 Days)</span>
-                        </div>
-                        <div class="chart-box">
-                            <div class="fake-chart"></div>
-                        </div>
-                    </div>
-
-                    <div class="bottom-grid">
-                        <!-- এক্টিভ প্ল্যান -->
-                        <div class="dash-card">
-                            <span class="card-title">ACTIVE PLAN</span>
-                            <h4>Gold Plan (12.5 TH/s)</h4>
-                            <div class="progress-bar"><div class="progress-fill"></div></div>
-                        </div>
-
-                        <!-- সাম্প্রতিক ট্রানজেকশন -->
-                        <div class="dash-card">
-                            <span class="card-title">Recent Transactions</span>
-                            <div class="tx-row">
-                                <span>Payout: ৳ 180.10</span>
-                                <span class="badge-success">Completed</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
+
+    <!-- সাইন-আপ ও লগইন পপআপ মোডাল -->
+    <div class="modal-overlay" id="authModal" style="display: none;">
+        <div class="modal-card">
+            <button class="close-modal" onclick="closeAuthModal()">✕</button>
+            <h3 id="modalTitle">সাইন-ইন করুন</h3>
+            <div class="modal-inputs">
+                <input type="email" id="email" placeholder="আপনার ইমেইল">
+                <input type="password" id="password" placeholder="পাসওয়ার্ড">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-submit" id="modalSubmitBtn" onclick="handleAuthSubmit()">দাখিল করুন</button>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
