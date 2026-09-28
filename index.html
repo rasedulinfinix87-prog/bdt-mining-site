@@ -1,245 +1,305 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDT Mining Pro</title>
+    <title>BDTMINER - Smart Mining Platform</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Hind Siliguri', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background: #090d16;
-            color: #f1f5f9;
+            background-color: #0b0f19;
+            color: #ffffff;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 10px;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        /* টপ বার */
-        .top-navbar {
+        /* Floating Background Crypto Symbols */
+        .bg-crypto {
+            position: fixed;
+            color: rgba(255, 255, 255, 0.03);
+            font-weight: 700;
+            font-size: 90px;
+            user-select: none;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-btc { top: 5%; left: 5%; }
+        .bg-eth { top: 35%; right: 5%; }
+        .bg-usdt { top: 65%; left: 8%; }
+        .bg-usd { bottom: 5%; right: 10%; }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            background: #0f172a;
+            border-radius: 20px;
+            border: 1px solid #1e293b;
+            padding: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Navigation */
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.5rem;
-            background: #0f172a;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            margin-bottom: 25px;
         }
 
-        .logo-area {
+        .logo {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 1.3rem;
             font-weight: 700;
-        }
-
-        .logo-text span {
+            font-size: 18px;
             color: #f59e0b;
         }
 
-        .auth-btn-area {
+        .nav-buttons {
             display: flex;
             gap: 10px;
         }
 
-        .btn-login-nav, .btn-signup-nav {
-            padding: 0.4rem 1rem;
+        .btn-login {
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid #334155;
+            padding: 8px 16px;
             border-radius: 20px;
-            border: none;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 13px;
             cursor: pointer;
         }
 
-        .btn-login-nav {
-            background: transparent;
-            color: #f1f5f9;
-            border: 1px solid #334155;
-        }
-
-        .btn-signup-nav {
+        .btn-signup {
             background: #f59e0b;
             color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
         }
 
         .user-logged-info {
             font-weight: 600;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
+            font-size: 13px;
         }
 
         .nav-balance {
             background: #1e293b;
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 12px;
             color: #10b981;
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        /* হিরো সেকশন */
-        .hero-section {
+        /* Hero Section */
+        .hero {
             text-align: center;
-            padding: 2.5rem 1rem 1rem;
+            margin-bottom: 20px;
         }
 
-        .hero-section h1 {
-            font-size: 1.8rem;
+        .hero h1 {
+            font-size: 22px;
             color: #f59e0b;
+            margin-bottom: 8px;
         }
 
-        .hero-section p {
+        .hero p {
+            font-size: 12px;
             color: #94a3b8;
-            margin-top: 6px;
-            font-size: 0.95rem;
+            line-height: 1.4;
         }
 
-        .main-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 1rem;
+        /* 5% Feasibility Banner */
+        .feasibility-tag {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px dashed #10b981;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #34d399;
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.3rem;
+            font-size: 16px;
+            margin-bottom: 15px;
             color: #e2e8f0;
+            font-weight: 600;
         }
 
-        /* প্ল্যান গ্রিড */
-        .plans-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
+        /* Plans List */
+        .plans-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
+        /* Plan Card */
         .plan-card {
-            background: #111827;
-            border: 1px solid #1f2937;
+            background: #1e293b;
             border-radius: 16px;
-            padding: 1.5rem;
+            padding: 20px;
             position: relative;
-            text-align: center;
+            border: 1px solid #334155;
         }
 
         .plan-card.featured {
             border: 2px solid #f59e0b;
-            background: #1a2234;
         }
 
-        .plan-badge {
+        .badge-days {
             position: absolute;
             top: 15px;
             right: 15px;
-            background: #1e293b;
-            padding: 2px 10px;
-            border-radius: 10px;
-            font-size: 0.8rem;
+            background: #334155;
             color: #94a3b8;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
         }
 
-        .plan-badge.popular {
+        .badge-popular {
+            position: absolute;
+            top: 15px;
             left: 15px;
-            right: auto;
             background: #f59e0b;
             color: #000;
             font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
         }
 
-        .plan-card h3 {
-            margin-top: 15px;
-            font-size: 1.2rem;
-        }
-
-        .plan-price {
-            font-size: 1.6rem;
+        .plan-title {
+            font-size: 18px;
             font-weight: 700;
-            color: #f59e0b;
-            margin: 10px 0 5px;
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 12px;
         }
 
-        .plan-price span {
-            font-size: 0.85rem;
-            color: #94a3b8;
+        .plan-amount {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
         }
 
         .plan-profit {
+            text-align: center;
             color: #10b981;
             font-weight: 600;
+            font-size: 14px;
             margin-bottom: 15px;
         }
 
-        .plan-features {
-            list-style: none;
-            margin: 15px 0;
+        .plan-details {
+            border-top: 1px solid #334155;
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
             color: #cbd5e1;
-            font-size: 0.9rem;
+            text-align: center;
         }
 
-        .plan-features li {
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        /* Scattered Feasibility Badges */
+        .crypto-badges {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 15px;
         }
 
-        .btn-plan-invest {
-            width: 100%;
-            padding: 0.7rem;
+        .crypto-pill {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #334155;
             border-radius: 8px;
-            border: none;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .crypto-pill span {
+            display: block;
+            color: #f59e0b;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .btn-invest {
+            width: 100%;
             background: #f59e0b;
             color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 15px;
+            margin-top: 15px;
             cursor: pointer;
         }
 
-        /* ডাইস ও মাইনিং অ্যানিমেশন */
+        /* Active Mining Dashboard */
         .active-mining-section {
-            margin-top: 2.5rem;
+            margin-top: 25px;
+            background: #1e293b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 15px;
         }
 
         .mining-box-card {
-            background: #111827;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 16px;
-            padding: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 600px) {
-            .mining-box-card {
-                flex-direction: column;
-                text-align: center;
-            }
+            gap: 15px;
         }
 
         .dice-box {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             background: #f59e0b;
-            border-radius: 16px;
+            border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
         }
 
         .currency-dice {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #000;
             font-weight: bold;
             animation: rotateDice 2s infinite linear;
@@ -252,15 +312,15 @@
 
         .mining-details {
             flex: 1;
-            width: 100%;
+            font-size: 13px;
         }
 
         .progress-bar-wrap {
             width: 100%;
             height: 8px;
-            background: #1f2937;
+            background: #0f172a;
             border-radius: 4px;
-            margin-top: 10px;
+            margin-top: 8px;
             overflow: hidden;
         }
 
@@ -270,7 +330,7 @@
             background: #10b981;
         }
 
-        /* পপআপ মোডাল */
+        /* Modal Popup */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -329,90 +389,150 @@
 </head>
 <body>
 
-    <!-- ১. টপ বার -->
-    <header class="top-navbar">
-        <div class="logo-area">
-            <span class="logo-icon">⚡</span>
-            <span class="logo-text">BDT<span>MINER</span></span>
-        </div>
-        <div class="auth-btn-area" id="authNav">
-            <button class="btn-login-nav" onclick="openAuthModal('login')">লগইন</button>
-            <button class="btn-signup-nav" onclick="openAuthModal('signup')">সাইন-আপ</button>
-        </div>
-        <div class="user-logged-info" id="userNav" style="display: none;">
-            <span id="navEmail">user@mail.com</span>
-            <span class="nav-balance" id="navBalance">৳ 0.00</span>
-        </div>
-    </header>
+    <!-- Floating Background Crypto Symbols -->
+    <div class="bg-crypto bg-btc">₿</div>
+    <div class="bg-crypto bg-eth">Ξ</div>
+    <div class="bg-crypto bg-usdt">₮</div>
+    <div class="bg-crypto bg-usd">$</div>
 
-    <!-- হিরো সেকশন -->
-    <section class="hero-section">
-        <h1>স্মার্ট BDT মাইনিং প্ল্যাটফর্ম</h1>
-        <p>নিরাপদ ও নির্ভরযোগ্য উপায়ে আপনার ইনভেস্টমেন্ট প্রফিট বৃদ্ধি করুন</p>
-    </section>
-
-    <main class="main-container">
-
-        <!-- ২. মাইনিং প্ল্যান সেকশন -->
-        <section class="plans-section">
-            <h2 class="section-title">আমাদের প্রফিটেবল প্ল্যানসমূহ</h2>
-
-            <div class="plans-grid">
-                <!-- ১৫ দিনের প্ল্যান -->
-                <div class="plan-card">
-                    <div class="plan-badge">১৫ দিন</div>
-                    <h3>স্টার্টার প্ল্যান</h3>
-                    <div class="plan-price">৳ ৫,০০০ <span>ইনভেস্ট</span></div>
-                    <div class="plan-profit">+ ৳ ৩,৩৩৩ প্রফিট</div>
-                    <ul class="plan-features">
-                        <li>মেয়াদ: ১৫ দিন</li>
-                        <li>মোট রিটার্ন: ৳ ৮,৩৩৩</li>
-                        <li>অটো ক্লেইম সিস্টেম</li>
-                    </ul>
-                    <button class="btn-plan-invest" onclick="handleInvestClick(5000, 15, '15d')">ইনভেস্ট করুন</button>
-                </div>
-
-                <!-- ৩০ দিনের প্ল্যান -->
-                <div class="plan-card featured">
-                    <div class="plan-badge popular">জনপ্রিয়</div>
-                    <div class="plan-badge">৩০ দিন</div>
-                    <h3>এডভান্সড প্ল্যান</h3>
-                    <div class="plan-price">৳ ১০,০০০ <span>ইনভেস্ট</span></div>
-                    <div class="plan-profit">+ ৳ ৭,৭৭৭ প্রফিট</div>
-                    <ul class="plan-features">
-                        <li>মেয়াদ: ৩০ দিন</li>
-                        <li>মোট রিটার্ন: ৳ ১৭,৭৭৭</li>
-                        <li>অটো ক্লেইম সিস্টেম</li>
-                    </ul>
-                    <button class="btn-plan-invest" onclick="handleInvestClick(10000, 30, '30d')">ইনভেস্ট করুন</button>
-                </div>
-
-                <!-- ৪৫ দিনের প্ল্যান -->
-                <div class="plan-card">
-                    <div class="plan-badge">৪৫ দিন</div>
-                    <h3>প্রো প্ল্যান</h3>
-                    <div class="plan-price">৳ ৩০,০০০ <span>ইনভেস্ট</span></div>
-                    <div class="plan-profit">+ ৳ ১৯,৯৯৯ প্রফিট</div>
-                    <ul class="plan-features">
-                        <li>মেয়াদ: ৪৫ দিন</li>
-                        <li>মোট রিটার্ন: ৳ ৪৯,৯৯৯</li>
-                        <li>অটো ক্লেইম সিস্টেম</li>
-                    </ul>
-                    <button class="btn-plan-invest" onclick="handleInvestClick(30000, 45, '45d')">ইনভেস্ট করুন</button>
-                </div>
+    <div class="app-container">
+        <!-- Header Navigation -->
+        <header>
+            <div class="logo">
+                ⚡ BDTMINER
             </div>
-        </section>
+            <div class="nav-buttons" id="authNav">
+                <button class="btn-login" onclick="openAuthModal('login')">Login</button>
+                <button class="btn-signup" onclick="openAuthModal('signup')">Sign Up</button>
+            </div>
+            <div class="user-logged-info" id="userNav" style="display: none;">
+                <span id="navEmail">user@mail.com</span>
+                <span class="nav-balance" id="navBalance">৳ 0.00</span>
+            </div>
+        </header>
 
-        <!-- ৩. এক্টিভ মাইনিং (৳) অ্যানিমেশন ড্যাশবোর্ড -->
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Smart Mining Platform</h1>
+            <p>Grow your investment profit safely and reliably with integrated crypto & USD liquidity</p>
+        </div>
+
+        <!-- 5% Feasibility Summary Banner -->
+        <div class="feasibility-tag">
+            ⚡ <strong>5% Feasibility Fee Active</strong> (USDT / USD Auto-Conversion)
+        </div>
+
+        <div class="section-title">Our Profitable Plans</div>
+
+        <!-- Plans List -->
+        <div class="plans-list">
+            
+            <!-- 15 Days Plan -->
+            <div class="plan-card">
+                <div class="badge-days">15 Days</div>
+                <div class="plan-title">Starter Plan</div>
+                <div class="plan-amount">৳ 5,000 Invest</div>
+                <div class="plan-profit">+ ৳ 3,333 Profit</div>
+
+                <div class="plan-details">
+                    <div>Duration: <strong>15 Days</strong></div>
+                    <div>Total Return: <strong>৳ 8,333</strong></div>
+                    <div>Auto Claim System</div>
+                </div>
+
+                <div class="crypto-badges">
+                    <div class="crypto-pill">
+                        BTC / USD
+                        <span>5% Fee Cap</span>
+                    </div>
+                    <div class="crypto-pill">
+                        USDT Yield
+                        <span>+5% Buffer</span>
+                    </div>
+                    <div class="crypto-pill">
+                        System Return
+                        <span>95% Net Profit</span>
+                    </div>
+                </div>
+
+                <button class="btn-invest" onclick="handleInvestClick(5000, 15)">Invest Now</button>
+            </div>
+
+            <!-- 30 Days Plan -->
+            <div class="plan-card featured">
+                <div class="badge-popular">Popular</div>
+                <div class="badge-days">30 Days</div>
+                <div class="plan-title">Advanced Plan</div>
+                <div class="plan-amount">৳ 10,000 Invest</div>
+                <div class="plan-profit">+ ৳ 7,777 Profit</div>
+
+                <div class="plan-details">
+                    <div>Duration: <strong>30 Days</strong></div>
+                    <div>Total Return: <strong>৳ 17,777</strong></div>
+                    <div>Auto Claim System</div>
+                </div>
+
+                <div class="crypto-badges">
+                    <div class="crypto-pill">
+                        ETH / USD
+                        <span>5% Fee Cap</span>
+                    </div>
+                    <div class="crypto-pill">
+                        USDT Yield
+                        <span>+5% Buffer</span>
+                    </div>
+                    <div class="crypto-pill">
+                        System Return
+                        <span>95% Net Profit</span>
+                    </div>
+                </div>
+
+                <button class="btn-invest" onclick="handleInvestClick(10000, 30)">Invest Now</button>
+            </div>
+
+            <!-- 45 Days Plan -->
+            <div class="plan-card">
+                <div class="badge-days">45 Days</div>
+                <div class="plan-title">Pro Plan</div>
+                <div class="plan-amount">৳ 30,000 Invest</div>
+                <div class="plan-profit">+ ৳ 19,999 Profit</div>
+
+                <div class="plan-details">
+                    <div>Duration: <strong>45 Days</strong></div>
+                    <div>Total Return: <strong>৳ 49,999</strong></div>
+                    <div>Auto Claim System</div>
+                </div>
+
+                <div class="crypto-badges">
+                    <div class="crypto-pill">
+                        CRYPTO / USD
+                        <span>5% Fee Cap</span>
+                    </div>
+                    <div class="crypto-pill">
+                        USDT Yield
+                        <span>+5% Buffer</span>
+                    </div>
+                    <div class="crypto-pill">
+                        System Return
+                        <span>95% Net Profit</span>
+                    </div>
+                </div>
+
+                <button class="btn-invest" onclick="handleInvestClick(30000, 45)">Invest Now</button>
+            </div>
+
+        </div>
+
+        <!-- Active Mining Dashboard Section -->
         <section class="active-mining-section" id="activeMiningSection" style="display: none;">
-            <h2 class="section-title">আপনার রানিং মাইনিং সেশন</h2>
+            <div class="section-title" style="margin-bottom: 10px;">Active Mining Session</div>
             <div class="mining-box-card">
                 <div class="dice-box">
                     <div class="currency-dice" id="currencyDice">৳</div>
                 </div>
                 <div class="mining-details">
-                    <h3 id="activePlanName">মাইনিং রানিং...</h3>
-                    <p>টাইম কাউন্টডাউন: <span id="daysCounter">--</span> দিন বাকি</p>
+                    <h4 id="activePlanName">Mining Active...</h4>
+                    <p style="color: #94a3b8; margin-top: 4px;">Countdown: <span id="daysCounter" style="color: #f59e0b; font-weight: bold;">--</span> days left</p>
                     <div class="progress-bar-wrap">
                         <div class="progress-bar-fill" id="miningProgress"></div>
                     </div>
@@ -420,19 +540,19 @@
             </div>
         </section>
 
-    </main>
+    </div>
 
-    <!-- সাইন-আপ ও লগইন পপআপ মোডাল -->
+    <!-- Auth Modal Popup -->
     <div class="modal-overlay" id="authModal" style="display: none;">
         <div class="modal-card">
             <button class="close-modal" onclick="closeAuthModal()">✕</button>
-            <h3 id="modalTitle">সাইন-ইন করুন</h3>
+            <h3 id="modalTitle" style="margin-bottom: 10px; font-size: 16px;">Login</h3>
             <div class="modal-inputs">
-                <input type="email" id="email" placeholder="আপনার ইমেইল">
-                <input type="password" id="password" placeholder="পাসওয়ার্ড">
+                <input type="email" id="email" placeholder="Your Email">
+                <input type="password" id="password" placeholder="Password">
             </div>
             <div class="modal-actions">
-                <button class="btn-modal-submit" id="modalSubmitBtn" onclick="handleAuthSubmit()">দাখিল করুন</button>
+                <button class="btn-modal-submit" id="modalSubmitBtn" onclick="handleAuthSubmit()">Submit</button>
             </div>
         </div>
     </div>
@@ -444,7 +564,7 @@
 
         function openAuthModal(mode) {
             currentAuthMode = mode;
-            document.getElementById('modalTitle').innerText = mode === 'login' ? 'লগইন করুন' : 'সাইন-আপ করুন';
+            document.getElementById('modalTitle').innerText = mode === 'login' ? 'Login' : 'Sign Up';
             document.getElementById('authModal').style.display = 'flex';
         }
 
@@ -455,12 +575,12 @@
         function handleAuthSubmit() {
             const email = document.getElementById('email').value;
             if(!email) {
-                alert('অনুগ্রহ করে ইমেইল দিন');
+                alert('Please enter your email address');
                 return;
             }
             
             isLoggedIn = true;
-            userBalance = 50000;
+            userBalance = 50000; // Demo Balance
             
             document.getElementById('authNav').style.display = 'none';
             document.getElementById('userNav').style.display = 'flex';
@@ -468,31 +588,31 @@
             document.getElementById('navBalance').innerText = '৳ ' + userBalance.toLocaleString();
             
             closeAuthModal();
-            alert(currentAuthMode === 'login' ? 'সফলভাবে লগইন হয়েছে!' : 'সাইন-আপ সম্পন্ন হয়েছে!');
+            alert(currentAuthMode === 'login' ? 'Successfully logged in!' : 'Sign up completed!');
         }
 
-        function handleInvestClick(amount, days, planKey) {
+        function handleInvestClick(amount, days) {
             if(!isLoggedIn) {
-                alert('ইনভেস্ট করতে আপনাকে প্রথমে লগইন বা সাইন-আপ করতে হবে!');
+                alert('Please login or sign up first to invest!');
                 openAuthModal('signup');
                 return;
             }
 
             if(userBalance < amount) {
-                alert('আপনার পর্যাপ্ত ব্যালেন্স নেই!');
+                alert('Insufficient balance!');
                 return;
             }
 
-            if(confirm(`আপনি কি ৳ ${amount.toLocaleString()} দিয়ে ${days} দিনের প্ল্যানটি শুরু করতে চান?`)) {
+            if(confirm(`Do you want to start the ${days}-day plan with ৳ ${amount.toLocaleString()}?`)) {
                 userBalance -= amount;
                 document.getElementById('navBalance').innerText = '৳ ' + userBalance.toLocaleString();
                 
                 document.getElementById('activeMiningSection').style.display = 'block';
-                document.getElementById('activePlanName').innerText = `${days} দিনের মাইনিং এক্টিভ আছে`;
+                document.getElementById('activePlanName').innerText = `${days} Days Mining Session`;
                 document.getElementById('daysCounter').innerText = days;
-                document.getElementById('miningProgress').style.width = '20%';
+                document.getElementById('miningProgress').style.width = '35%';
                 
-                alert('অভিনন্দন! আপনার মাইনিং ইনভেস্টমেন্ট সফলভাবে শুরু হয়েছে।');
+                alert('Congratulations! Your mining investment has successfully started.');
             }
         }
     </script>
