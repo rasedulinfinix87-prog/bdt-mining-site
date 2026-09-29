@@ -96,12 +96,17 @@
         .mining-card:hover { transform: translateY(-2px); border-color: #f59e0b; }
         .mining-card-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #f59e0b; margin-bottom: 8px; }
         .mining-status { background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
+        .mining-status.completed { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
         
         .progress-bar-bg { width: 100%; background: #1e293b; height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
         .progress-bar-fill { background: linear-gradient(90deg, #f59e0b, #10b981); height: 100%; width: 0%; transition: width 0.5s ease; }
         
         .mining-stats { display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; }
         .mining-profit { font-weight: 700; color: #10b981; font-family: 'Orbitron', sans-serif; }
+
+        /* Claim Button inside card */
+        .btn-claim { background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; width: 100%; margin-top: 8px; text-align: center; }
+        .btn-claim:hover { opacity: 0.9; }
 
         .no-plans { text-align: center; font-size: 12px; color: #64748b; padding: 15px; background: rgba(30, 41, 59, 0.2); border-radius: 10px; }
 
@@ -313,7 +318,7 @@
             </div>
 
             <div class="modal-title" id="modalPlanTitle">Starter Plan ($10)</div>
-            <div class="modal-sub">● LIVE CLOUD MINING IN PROGRESS</div>
+            <div class="modal-sub" id="modalStatusSub">● LIVE CLOUD MINING IN PROGRESS</div>
 
             <div class="modal-stat-box">
                 <span style="color: #94a3b8;">Hashrate Power:</span>
@@ -558,16 +563,17 @@
                 const elapsedSec = Math.max(0, (now - startTime) / 1000);
 
                 let progressPercent = ((elapsedSec / totalDurationSec) * 100).toFixed(2);
-                if (progressPercent > 100) progressPercent = 100;
+                if (progressPercent >= 100) progressPercent = 100;
 
-                const profitPerSec = plan.daily_profit / 86400;
-                const earnedProfit = (profitPerSec * elapsedSec).toFixed(5);
+                const isCompleted = now >= endTime || progressPercent >= 100;
+
+                const earnedProfit = isCompleted ? plan.total_return : ((plan.daily_profit / 86400) * elapsedSec).toFixed(5);
 
                 const cardHtml = `
-                    <div class="mining-card" onclick="openMiningModal(${index})">
+                    <div class="mining-card" id="card-${index}" onclick="openMiningModal(${index})">
                         <div class="mining-card-header">
                             <span>${plan.plan_name} ($${plan.invested_amount})</span>
-                            <span class="mining-status">Mining</span>
+                            <span class="mining-status ${isCompleted ? 'completed' : ''}" id="status-badge-${index}">${isCompleted ? 'Completed' : 'Mining'}</span>
                         </div>
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" id="progress-${index}" style="width: ${progressPercent}%;"></div>
@@ -576,6 +582,7 @@
                             <span>Mined: <strong class="mining-profit" id="profit-${index}">+$${earnedProfit}</strong></span>
                             <span>Progress: <strong id="percent-${index}">${progressPercent}%</strong></span>
                         </div>
+                        ${isCompleted ? `<button class="btn-claim" onclick="event.stopPropagation(); claimPlan('${plan.id}',${plan.total_return}, ${index})">Claim Profit ($${plan.total_return})</button>` : ''}
                     </div>
                 `;
                 container.innerHTML += cardHtml;
@@ -587,7 +594,12 @@
             const plan = userActivePlans[index];
             if (!plan) return;
 
+            const now = new Date().getTime();
+            const endTime = new Date(plan.end_date).getTime();
+            const isCompleted = now >= endTime;
+
             document.getElementById('modalPlanTitle').innerText = `${plan.plan_name} ($${plan.invested_amount})`;
+            document.getElementById('modalStatusSub').innerText = isCompleted ? '● MINING COMPLETED - READY TO CLAIM' : '● LIVE CLOUD MINING IN PROGRESS';
             
             const randomHash = (12.5 + (plan.invested_amount * 0.8)).toFixed(1);
             document.getElementById('modalHashrate').innerText = `${randomHash} MH/s`;
@@ -611,26 +623,69 @@
                     const elapsedSec = Math.max(0, (now - startTime) / 1000);
 
                     let progressPercent = ((elapsedSec / totalDurationSec) * 100).toFixed(2);
-                    if (progressPercent > 100) progressPercent = 100;
+                    if (progressPercent >= 100) progressPercent = 100;
 
-                    const profitPerSec = plan.daily_profit / 86400;
-                    const earnedProfit = (profitPerSec * elapsedSec).toFixed(5);
+                    const isCompleted = now >= endTime || progressPercent >= 100;
+                    const earnedProfit = isCompleted ? plan.total_return : ((plan.daily_profit / 86400) * elapsedSec).toFixed(5);
 
                     const progressEl = document.getElementById(`progress-${index}`);
                     const profitEl = document.getElementById(`profit-${index}`);
                     const percentEl = document.getElementById(`percent-${index}`);
+                    const cardEl = document.getElementById(`card-${index}`);
+                    const statusBadgeEl = document.getElementById(`status-badge-${index}`);
 
                     if (progressEl) progressEl.style.width = `${progressPercent}%`;
                     if (profitEl) profitEl.innerText = `+$${earnedProfit}`;
                     if (percentEl) percentEl.innerText = `${progressPercent}%`;
 
+                    if (isCompleted && cardEl && !cardEl.querySelector('.btn-claim')) {
+                        if (statusBadgeEl) {
+                            statusBadgeEl.innerText = 'Completed';
+                            statusBadgeEl.classList.add('completed');
+                        }
+                        cardEl.insertAdjacentHTML('beforeend', `<button class="btn-claim" onclick="event.stopPropagation(); claimPlan('${plan.id}', ${plan.total_return}, ${index})">Claim Profit ($${plan.total_return})</button>`);
+                    }
+
                     if (activeModalIndex === index) {
                         document.getElementById('modalMined').innerText = `+$${earnedProfit}`;
                         document.getElementById('modalProgress').innerText = `${progressPercent}%`;
+                        document.getElementById('modalStatusSub').innerText = isCompleted ? '● MINING COMPLETED - READY TO CLAIM' : '● LIVE CLOUD MINING IN PROGRESS';
                     }
                 });
             }
         }, 1000);
+
+        async function claimPlan(planId, totalReturn, index) {
+            if (!currentUser) return;
+
+            try {
+                // ১. ইউজারের ব্যালেন্স আপডেট করা
+                const newBalance = currentBalance + totalReturn;
+                const { error: balanceError } = await supabaseClient
+                    .from('profiles')
+                    .update({ balance: newBalance })
+                    .eq('id', currentUser.id);
+
+                if (balanceError) throw balanceError;
+
+                // ২. প্ল্যানের স্ট্যাটাস 'completed' বা 'claimed' এ পরিবর্তন করা যাতে আর বারবার ক্লেইম না করা যায়
+                const { error: planError } = await supabaseClient
+                    .from('user_plan')
+                    .update({ status: 'claimed' })
+                    .eq('id', planId);
+
+                if (planError) throw planError;
+
+                alert(`সফলভাবে $${totalReturn} প্রফিট ক্লেইম করা হয়েছে!`);
+                closeMiningModal();
+
+                await loadUserBalance();
+                await loadActivePlans();
+
+            } catch (error) {
+                alert("क्लेম করতে সমস্যা হয়েছে: " + error.message);
+            }
+        }
 
         async function handleLogout() {
             await supabaseClient.auth.signOut();
