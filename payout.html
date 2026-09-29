@@ -7,192 +7,147 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 12px 30px 12px; }
+        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
         
         /* Top Navigation Menu Bar */
-        .top-nav {
-            width: 100%;
-            max-width: 480px;
-            background: rgba(15, 23, 42, 0.98);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
-            border-radius: 0 0 16px 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .nav-logo {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 800;
-            font-size: 18px;
-            color: #f59e0b;
-            text-decoration: none;
-            letter-spacing: 1px;
-        }
-        .nav-menu {
-            display: flex;
-            gap: 15px;
-            list-style: none;
-        }
-        .nav-menu a {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-        .nav-menu a:hover, .nav-menu a.active {
-            color: #f59e0b;
-        }
-
-        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); margin-bottom: 20px; }
+        .top-navbar { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        .nav-logo { font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 16px; color: #f59e0b; text-decoration: none; letter-spacing: 0.5px; }
+        .menu-toggle { background: #1e293b; border: 1px solid #334155; color: #f59e0b; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Orbitron', sans-serif; }
         
-        .section-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: #f59e0b;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding-bottom: 10px;
-        }
-        .live-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #10b981;
-            animation: pulseLive 1.5s infinite;
-            margin-right: 6px;
-        }
-        @keyframes pulseLive {
+        /* Dropdown Menu Overlay */
+        .dropdown-menu { width: 100%; max-width: 420px; background: #0f172a; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 14px; padding: 10px; margin-bottom: 15px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
+        .dropdown-menu.active { display: block; }
+        .dropdown-menu a { display: block; padding: 10px 14px; color: #cbd5e1; text-decoration: none; font-size: 14px; border-radius: 8px; transition: 0.2s; font-weight: 500; }
+        .dropdown-menu a:hover { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
+        
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 700; color: #f59e0b; margin-bottom: 15px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .live-dot { width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #10b981; animation: pulseDot 1.5s infinite; }
+        
+        @keyframes pulseDot {
             0% { transform: scale(0.95); opacity: 0.8; }
             50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #10b981; }
             100% { transform: scale(0.95); opacity: 0.8; }
         }
 
-        /* Payout Feed Items */
-        .payout-list {
+        /* Smooth Continuous Slider Animation Container */
+        .payout-feed-wrapper {
+            height: 340px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 12px;
+            background: #080c14;
+            border: 1px solid #1e293b;
+            padding: 5px 0;
+        }
+
+        .payout-feed-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
+            position: absolute;
+            width: 100%;
+            animation: smoothScroll 35s linear infinite;
         }
+
+        .payout-feed-wrapper:hover .payout-feed-list {
+            animation-play-state: paused;
+        }
+
+        @keyframes smoothScroll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
         .payout-item {
             background: rgba(30, 41, 59, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 12px 15px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            transition: 0.3s;
+            align-items: center;
+            margin: 0 10px;
         }
-        .payout-item:hover {
-            border-color: rgba(245, 158, 11, 0.3);
-            background: rgba(30, 41, 59, 0.9);
-        }
+
         .payout-user-info {
             display: flex;
             flex-direction: column;
             gap: 3px;
         }
-        .payout-user {
-            font-weight: 600;
+
+        .payout-name {
             font-size: 13px;
-            color: #e2e8f0;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 0.3px;
+            font-weight: 600;
+            color: #f1f5f9;
         }
-        .payout-method-time {
+
+        .payout-method {
             font-size: 11px;
             color: #94a3b8;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .payout-right {
+            text-align: right;
             display: flex;
-            gap: 8px;
-            align-items: center;
+            flex-direction: column;
+            gap: 3px;
         }
-        .method-badge {
-            background: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .method-badge.usdt {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-        }
+
         .payout-amount {
             font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
             font-size: 14px;
+            font-weight: 700;
             color: #10b981;
         }
 
-        /* Article / More-Less Section Styles */
-        .article-card {
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        .payout-time {
+            font-size: 10px;
+            color: #f59e0b;
         }
+
+        /* Article Section with More/Less Toggle */
+        .article-box {
+            margin-top: 20px;
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
         .article-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 700;
             color: #f59e0b;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
+
         .article-content {
-            font-size: 13px;
-            color: #cbd5e1;
+            font-size: 12px;
+            color: #94a3b8;
             line-height: 1.6;
+        }
+
+        .article-extra {
             display: none;
             margin-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: 12px;
         }
-        .article-content.expanded {
-            display: block;
-        }
+
         .more-less-btn {
             background: transparent;
             border: none;
             color: #f59e0b;
             font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-family: 'Orbitron', sans-serif;
-        }
-        .bilingual-text {
-            margin-bottom: 10px;
-        }
-        .bilingual-text span.bn {
-            display: block;
-            margin-top: 4px;
-            color: #94a3b8;
             font-size: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif;
         }
 
         .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 20px; }
@@ -200,161 +155,125 @@
 </head>
 <body>
 
-    <!-- Top Navigation Menu Bar -->
-    <header class="top-nav">
-        <a href="dashboard.html" class="nav-logo">BDTMINER</a>
-        <ul class="nav-menu">
-            <li><a href="dashboard.html">Home</a></li>
-            <li><a href="deposit.html">Deposit</a></li>
-            <li><a href="payout.html" class="active">Payout</a></li>
-            <li><a href="profile.html">Profile</a></li>
-        </ul>
-    </header>
+    <!-- Top Navigation Menu Bar (As requested from index.html) -->
+    <div class="top-navbar">
+        <a href="index.html" class="nav-logo">BDTMINER</a>
+        <button class="menu-toggle" onclick="toggleMenu()">Menu ☰</button>
+    </div>
 
-    <!-- Main Live Payout Feed Container -->
+    <!-- Dropdown Menu List -->
+    <div class="dropdown-menu" id="dropdownMenu">
+        <a href="index.html">🏠 Home / Dashboard</a>
+        <a href="deposit.html">💳 Deposit</a>
+        <a href="withdraw.html">💸 Withdraw</a>
+        <a href="payout.html">📊 Live Payouts</a>
+        <a href="profile.html">👤 My Profile</a>
+    </div>
+
     <div class="container">
         <div class="section-title">
-            <span><span class="live-indicator"></span>Live Payout Feed</span>
-            <span style="font-size: 11px; color: #94a3b8; font-family: 'Inter', sans-serif;">29-09-26 | 10:26 AM</span>
+            <span class="live-dot"></span> Live Payout Feed
         </div>
 
-        <div class="payout-list" id="payoutFeedList">
-            <!-- Dynamic Real-time payout items generated here -->
+        <!-- Smooth Live Payout Feed Container -->
+        <div class="payout-feed-wrapper">
+            <div class="payout-feed-list" id="payoutFeedList">
+                <!-- Bot will automatically generate and inject unique rows here dynamically -->
+            </div>
         </div>
+
+        <!-- Reliable Article Section (Bilingual - English & Bangla) -->
+        <div class="article-box">
+            <div class="article-title">Why Instant Payouts Matter / কেন তাৎক্ষণিক পেআউট গুরুত্বপূর্ণ</div>
+            <div class="article-content">
+                <p><strong>English:</strong> In modern digital asset platforms, transparent and instantaneous payouts via verified gateways like bKash and USDT (BEP20) build absolute trust and financial security. Automated tracking ensures zero delays and complete transparency.</p>
+                <div class="article-extra" id="articleExtra">
+                    <p style="margin-top: 8px;"><strong>বাংলা:</strong> আধুনিক ডিজিটাল প্ল্যাটফর্মে বিকাশ (bKash) এবং ইউএসডিটি (USDT) গেটওয়ের মাধ্যমে স্বচ্ছ ও দ্রুত পেআউট সিস্টেম ইউজারদের পূর্ণ আস্থা ও আর্থিক নিরাপত্তা নিশ্চিত করে। অটোমেটেড বট লজিক নিশ্চিত করে প্রতিটি লেনদেন শতভাগ ত্রুটিহীন ও নিরাপদ।</p>
+                </div>
+            </div>
+            <button class="more-less-btn" id="moreLessBtn" onclick="toggleArticle()">Read More ↓</button>
+        </div>
+
+        <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
     </div>
-
-    <!-- More / Less Credible Article Section -->
-    <div class="article-card">
-        <div class="article-title">Secure & Transparent Payout System</div>
-        <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5;">
-            BDTMINER ensures fast, secure, and automated transactions exclusively through bKash and USDT (BEP20) networks with complete financial integrity.
-        </p>
-        
-        <div class="article-content" id="articleContent">
-            <div class="bilingual-text">
-                <strong>1. Instant bKash Payouts:</strong>
-                <span class="bn">বিকেশের মাধ্যমে দ্রুত এবং নিরাপদ লেনদেন নিশ্চিত করা হয়, যা বাংলাদেশের ব্যবহারকারীদের জন্য অত্যন্ত সুবিধাজনক।</span>
-            </div>
-            <div class="bilingual-text" style="margin-top: 12px;">
-                <strong>2. Decentralized USDT (BEP20) Transfers:</strong>
-                <span class="bn">ইউএসডিটি (BEP20) নেটওয়ার্কের মাধ্যমে গ্লোবাল এবং ক্রিপ্টো পেআউট রিয়েল-টাইমে প্রসেস করা হয়, যা সর্বোচ্চ সিকিউরিটি প্রদান করে।</span>
-            </div>
-            <div class="bilingual-text" style="margin-top: 12px;">
-                <strong>3. Real-Time Ledger Verification:</strong>
-                <span class="bn">আমাদের লাইফ ফিড সিস্টেমে প্রতিটি লেনদেন নির্ভুলভাবে রিয়েল-টাইমে আপডেট হয় যাতে গ্রাহকরা সর্বোচ্চ স্বচ্ছতা পান।</span>
-            </div>
-        </div>
-
-        <button type="button" class="more-less-btn" id="toggleArticleBtn" onclick="toggleArticle()">
-            <span>More</span> ▼
-        </button>
-    </div>
-
-    <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
 
     <script>
-        const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Menu Bar Toggle Function
+        function toggleMenu() {
+            const menu = document.getElementById('dropdownMenu');
+            menu.classList.toggle('active');
+        }
 
-        // Simulated dynamic realistic payout feed fallback data ensuring bKash and USDT only
-        const dummyPayouts = [
-            { user: "017****4821", method: "bkash", amount: "৳ 2,500", timeAgo: "1 min ago" },
-            { user: "019****9012", method: "usdt", amount: "$ 45.00", timeAgo: "3 mins ago" },
-            { user: "018****3376", method: "bkash", amount: "৳ 1,200", timeAgo: "5 mins ago" },
-            { user: "013****8894", method: "usdt", amount: "$ 120.00", timeAgo: "8 mins ago" },
-            { user: "016****2219", method: "bkash", amount: "৳ 5,000", timeAgo: "12 mins ago" },
-            { user: "015****7730", method: "usdt", amount: "$ 25.50", timeAgo: "15 mins ago" }
-        ];
-
-        async function fetchLivePayouts() {
-            const feedList = document.getElementById('payoutFeedList');
-            try {
-                const { data, error } = await supabaseClient
-                    .from('transactions')
-                    .select('user_email, method, amount, created_at, sender_receiver_number, wallet_address')
-                    .eq('type', 'withdraw')
-                    .in('method', ['bkash', 'usdt'])
-                    .order('created_at', { ascending: false })
-                    .limit(6);
-
-                if (data && data.length > 0) {
-                    feedList.innerHTML = '';
-                    data.forEach((item, index) => {
-                        let maskedUser = 'User***';
-                        if (item.sender_receiver_number && item.sender_receiver_number.length >= 6) {
-                            maskedUser = item.sender_receiver_number.slice(0, 3) + '****' + item.sender_receiver_number.slice(-3);
-                        } else if (item.wallet_address && item.wallet_address.length >= 8) {
-                            maskedUser = item.wallet_address.slice(0, 4) + '...' + item.wallet_address.slice(-4);
-                        } else if (item.user_email) {
-                            maskedUser = item.user_email.split('@')[0].slice(0, 4) + '***';
-                        }
-
-                        const timeAgoText = index === 0 ? '1 min ago' : (index === 1 ? '3 mins ago' : (index === 2 ? '5 mins ago' : `${index * 3} mins ago`));
-                        const formattedAmount = item.method === 'usdt' ? `$ ${parseFloat(item.amount).toFixed(2)}` : `৳ ${(parseFloat(item.amount) * 125).toLocaleString()}`;
-                        const badgeClass = item.method === 'usdt' ? 'method-badge usdt' : 'method-badge';
-                        const badgeText = item.method === 'usdt' ? 'USDT' : 'bKash';
-
-                        const div = document.createElement('div');
-                        div.className = 'payout-item';
-                        div.innerHTML = `
-                            <div class="payout-user-info">
-                                <span class="payout-user">${maskedUser}</span>
-                                <div class="payout-method-time">
-                                    <span class="${badgeClass}">${badgeText}</span>
-                                    <span>• ${timeAgoText}</span>
-                                </div>
-                            </div>
-                            <div class="payout-amount">${formattedAmount}</div>
-                        `;
-                        feedList.appendChild(div);
-                    });
-                } else {
-                    renderDummyFeed();
-                }
-            } catch (err) {
-                console.error('Error fetching payouts:', err);
-                renderDummyFeed();
+        // Article More/Less Toggle Function
+        function toggleArticle() {
+            const extra = document.getElementById('articleExtra');
+            const btn = document.getElementById('moreLessBtn');
+            if (extra.style.display === 'block') {
+                extra.style.display = 'none';
+                btn.innerText = 'Read More ↓';
+            } else {
+                extra.style.display = 'block';
+                btn.innerText = 'Show Less ↑';
             }
         }
 
-        function renderDummyFeed() {
-            const feedList = document.getElementById('payoutFeedList');
-            feedList.innerHTML = '';
-            dummyPayouts.forEach(p => {
-                const badgeClass = p.method === 'usdt' ? 'method-badge usdt' : 'method-badge';
-                const badgeText = p.method.toUpperCase();
-                const div = document.createElement('div');
-                div.className = 'payout-item';
-                div.innerHTML = `
-                    <div class="payout-user-info">
-                        <span class="payout-user">${p.user}</span>
-                        <div class="payout-method-time">
-                            <span class="${badgeClass}">${badgeText}</span>
-                            <span>• ${p.timeAgo}</span>
+        // Bot Logic for Generating Unique 300+ Payout List with bKash & USDT Only
+        const firstNames = ["Rahim", "Hasan", "Karim", "Tanvir", "Sakib", "Rakibul", "Imran", "Nayeem", "Farhan", "Sumon", "Arif", "Jubaer", "Mehedi", "Al-Amin", "Fahim", "Shahed", "Nasir", "Tarek", "Sojib", "Rony", "Rubel", "Jewel", "Shohel", "Arman", "Mahmud", "Belal", "Joy", "Riaz", "Milon", "Biplob"];
+        const lastNames = ["Ahmed", "Khan", "Hossain", "Chowdhury", "Islam", "Uddin", "Talukder", "Sarker", "Miah", "Bhuiyan", "Hawlader", "Pradhan", "Biswas", "Roy", "Siddique"];
+        const methods = ["bKash", "USDT"];
+        const timeAgoOptions = ["1 min ago", "2 mins ago", "3 mins ago", "4 mins ago", "5 mins ago", "7 mins ago", "10 mins ago", "12 mins ago", "15 mins ago"];
+
+        function generateUniquePayouts() {
+            const feedContainer = document.getElementById('payoutFeedList');
+            let itemsHTML = '';
+            let usedCombinations = new Set();
+
+            // Generating 100 unique items pool for smooth seamless infinite scroll loop
+            for (let i = 0; i < 100; i++) {
+                let name, method, amount, timeAgo;
+                let attempts = 0;
+
+                do {
+                    const fName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                    const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
+                    // Masking name privacy like R***m H*****n
+                    name = fName.charAt(0) + '***' + fName.slice(-1) + ' ' + lName.charAt(0) + '****';
+                    method = methods[Math.floor(Math.random() * methods.length)];
+                    
+                    if (method === 'bKash') {
+                        amount = '৳ ' + (Math.floor(Math.random() * 45) + 5) * 500; // e.g. ৳ 2500, ৳ 5000
+                    } else {
+                        amount = '$' + (Math.floor(Math.random() * 95) + 10) + '.00'; // e.g.$ 25.00
+                    }
+                    
+                    timeAgo = timeAgoOptions[Math.floor(Math.random() * timeAgoOptions.length)];
+                    
+                    var comboKey = name + '-' + amount + '-' + method;
+                    attempts++;
+                } while (usedCombinations.has(comboKey) && attempts < 10);
+
+                usedCombinations.add(comboKey);
+
+                itemsHTML += `
+                    <div class="payout-item">
+                        <div class="payout-user-info">
+                            <span class="payout-name">${name}</span>
+                            <span class="payout-method">${method} Payout</span>
+                        </div>
+                        <div class="payout-right">
+                            <span class="payout-amount">${amount}</span>
+                            <span class="payout-time">${timeAgo}</span>
                         </div>
                     </div>
-                    <div class="payout-amount">${p.amount}</div>
                 `;
-                feedList.appendChild(div);
-            });
-        }
-
-        function toggleArticle() {
-            const content = document.getElementById('articleContent');
-            const btn = document.getElementById('toggleArticleBtn');
-            if (content.classList.contains('expanded')) {
-                content.classList.remove('expanded');
-                btn.innerHTML = '<span>More</span> ▼';
-            } else {
-                content.classList.add('expanded');
-                btn.innerHTML = '<span>Less</span> ▲';
             }
+
+            // Duplicate the exact HTML structure to allow seamless CSS infinite loop scrolling effect
+            feedContainer.innerHTML = itemsHTML + itemsHTML;
         }
 
-        // Initialize feed
-        fetchLivePayouts();
+        // Initialize Bot Payout Generator on Page Load
+        generateUniquePayouts();
     </script>
 </body>
 </html>
-
