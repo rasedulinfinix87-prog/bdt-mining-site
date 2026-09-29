@@ -11,17 +11,6 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
-        
-        /* Top Navigation Menu Bar */
-        .top-navbar { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-        .nav-logo { font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 16px; color: #f59e0b; text-decoration: none; letter-spacing: 0.5px; }
-        .menu-toggle { background: #1e293b; border: 1px solid #334155; color: #f59e0b; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Orbitron', sans-serif; }
-        
-        /* Dropdown Menu Overlay */
-        .dropdown-menu { width: 100%; max-width: 420px; background: #0f172a; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 14px; padding: 10px; margin-bottom: 15px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
-        .dropdown-menu.active { display: block; }
-        .dropdown-menu a { display: block; padding: 10px 14px; color: #cbd5e1; text-decoration: none; font-size: 14px; border-radius: 8px; transition: 0.2s; font-weight: 500; }
-        .dropdown-menu a:hover { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
 
         .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
         
@@ -156,21 +145,34 @@
 </head>
 <body>
 
-    <!-- Top Navigation Menu Bar -->
-    <div class="top-navbar">
-        <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/index.html" class="nav-logo">BDTMINER</a>
-        <button class="menu-toggle" onclick="toggleMenu()">Menu ☰</button>
-    </div>
+    <!-- Header Container where header.html will be loaded -->
+    <div id="header-container" style="width: 100%; max-width: 420px; margin-bottom: 15px;"></div>
 
-    <!-- Dropdown Menu List with Custom Links & Auth Logic -->
-    <div class="dropdown-menu" id="dropdownMenu">
-        <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/index.html">🏠 Home</a>
-        <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/index.html#plans">⚡ Mining Plan</a>
-        <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/payout.html">📊 Live Payouts</a>
-        <a href="/dashboard.html">💻 Dashboard</a>
-        <a href="/chat.html">💬 Contact Support</a>
-        <a href="/signup.html" id="authMenuLink">🔐 Signup</a>
-    </div>
+    <script>
+        // Load header.html dynamically
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+                // Execute any scripts contained inside header if needed
+                const scripts = document.getElementById('header-container').querySelectorAll('script');
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    newScript.text = script.innerText;
+                    document.body.appendChild(newScript);
+                });
+            });
+
+        // Sidebar toggle function required by header.html
+        function toggleSidebar() {
+            const overlay = document.getElementById('sidebarOverlay');
+            const menu = document.getElementById('sidebarMenu');
+            if (overlay && menu) {
+                overlay.classList.toggle('active');
+                menu.classList.toggle('active');
+            }
+        }
+    </script>
 
     <div class="container">
         <div class="section-title">
@@ -200,36 +202,6 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // Check Login Status and Update Menu Auth Link Dynamically
-        async function checkAuthStatus() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const authLink = document.getElementById('authMenuLink');
-            if (user) {
-                authLink.innerText = '🚪 Logout';
-                authLink.href = '#';
-                authLink.onclick = async (e) => {
-                    e.preventDefault();
-                    await supabaseClient.auth.signOut();
-                    window.location.reload();
-                };
-            } else {
-                authLink.innerText = '🔐 Signup';
-                authLink.href = '/signup.html';
-                authLink.onclick = null;
-            }
-        }
-        checkAuthStatus();
-
-        // Menu Bar Toggle Function
-        function toggleMenu() {
-            const menu = document.getElementById('dropdownMenu');
-            menu.classList.toggle('active');
-        }
-
         // Article More/Less Toggle Function
         function toggleArticle() {
             const extra = document.getElementById('articleExtra');
