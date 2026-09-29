@@ -22,7 +22,7 @@
         html, body {
             width: 100%;
             max-width: 100%;
-            overflow-x: hidden; /* স্ক্রিন ডানে-বামে সরে যাওয়া সম্পূর্ণ বন্ধ করবে */
+            overflow-x: hidden;
             background-color: #080c14;
             color: #ffffff;
             min-height: 100vh;
@@ -546,7 +546,8 @@
                     <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
                 </div>
 
-                <button class="btn-invest" onclick="window.location.href='signup.html'">Invest Now</button>
+                <!-- handleInvest ফাংশনে প্ল্যান নাম এবং অ্যামাউন্ট পাঠানো হচ্ছে -->
+                <button class="btn-invest" onclick="handleInvest('Starter Plan', 5000)">Invest Now</button>
             </div>
 
             <div class="plan-card featured">
@@ -568,7 +569,8 @@
                     <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
                 </div>
 
-                <button class="btn-invest" onclick="window.location.href='signup.html'">Invest Now</button>
+                <!-- handleInvest ফাংশনে প্ল্যান নাম এবং অ্যামাউন্ট পাঠানো হচ্ছে -->
+                <button class="btn-invest" onclick="handleInvest('Advanced Plan', 10000)">Invest Now</button>
             </div>
 
         </div>
@@ -657,6 +659,21 @@
                     <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
                     <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
                 `;
+            }
+        }
+
+        // ইনভেস্টমেন্ট হ্যান্ডেল করার লজিক
+        async function handleInvest(planName, amount) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (!user) {
+                // ইউজার লগইন না থাকলে সরাসরি সাইনআপ পেজে রিডাইরেক্ট করবে
+                alert("ইনভেস্ট করতে হলে প্রথমে লগইন করুন!");
+                window.location.href = 'signup.html';
+            } else {
+                // ইউজার লগইন থাকলে পরবর্তী ধাপ (যেমন: ডিপোজিট চেক বা অ্যাকশন) করবে
+                alert(`${planName} (৳ ${amount}) সিলেক্ট করেছেন। আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স আছে কিনা তা নিশ্চিত করুন।`);
+                // আপনার যদি আলাদা dashboard.html বা deposit.html থাকে তবে এখানে রিডাইরেক্ট লিঙ্ক দিয়ে দিতে পারেন
             }
         }
 
