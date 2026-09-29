@@ -20,11 +20,15 @@
         .balance-title { font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
         .balance-amount { font-size: 26px; font-weight: 700; color: #10b981; font-family: 'Orbitron', sans-serif; }
         
-        .action-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
         .btn-action { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; text-decoration: none; display: inline-block; }
         .btn-deposit { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
         .btn-withdraw { background: #1e293b; color: #fff; border: 1px solid #334155; }
         
+        /* Chat Button */
+        .btn-chat { width: 100%; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 10px; padding: 10px; font-weight: 600; font-size: 13px; cursor: pointer; text-align: center; text-decoration: none; display: block; margin-bottom: 20px; transition: all 0.2s; }
+        .btn-chat:hover { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
+
         /* Activate Selected Plan Box */
         .selected-plan-box { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; display: none; }
         .plan-info { color: #f59e0b; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
@@ -46,6 +50,14 @@
         .mining-profit { font-weight: 700; color: #10b981; font-family: 'Orbitron', sans-serif; }
 
         .no-plans { text-align: center; font-size: 12px; color: #64748b; padding: 15px; background: rgba(30, 41, 59, 0.2); border-radius: 10px; }
+
+        /* Article Box */
+        .article-card { background: rgba(30, 41, 59, 0.4); border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-top: 20px; margin-bottom: 10px; font-size: 12px; color: #cbd5e1; line-height: 1.6; }
+        .article-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .article-title { font-weight: 700; color: #f59e0b; font-size: 13px; }
+        .lang-btn { background: #1e293b; color: #38bdf8; border: 1px solid #334155; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .article-more { display: none; margin-top: 8px; }
+        .read-more-btn { color: #f59e0b; font-weight: 600; cursor: pointer; display: inline-block; margin-top: 6px; text-decoration: underline; background: none; border: none; font-size: 12px; }
 
         .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
 
@@ -90,7 +102,6 @@
             cursor: pointer;
         }
 
-        /* Crypto Spinning & Glowing Animation */
         .crypto-anim-container {
             position: relative;
             width: 100px;
@@ -160,7 +171,7 @@
             <button class="btn-logout" onclick="handleLogout()">Logout</button>
         </div>
 
-        <!-- Confirm Plan Box (Show only if redirected from home page with params) -->
+        <!-- Confirm Plan Box -->
         <div id="planActivationBox" class="selected-plan-box">
             <div id="planInfoText" class="plan-info">Selected Plan: -</div>
             <button id="activateBtn" class="btn-activate" onclick="activatePlan()">Confirm & Activate Plan</button>
@@ -178,6 +189,9 @@
             <button class="btn-action btn-withdraw" onclick="window.location.href='deposit-withdraw.html?type=withdraw'">Withdraw</button>
         </div>
 
+        <!-- Chat Link Button -->
+        <a href="chat.html" class="btn-chat">💬 Live Customer Support Chat</a>
+
         <!-- Active Mining Plans Section -->
         <div class="section-title">
             <span>⚡ Active Mining Rigs</span>
@@ -186,6 +200,21 @@
 
         <div id="activePlansContainer" class="active-plans-container">
             <div class="no-plans">No active mining plan right now.</div>
+        </div>
+
+        <!-- Trust & Security Article Box -->
+        <div class="article-card">
+            <div class="article-header">
+                <span class="article-title" id="artTitle">🛡️ Why BDTMINER is Trusted</span>
+                <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">BN</button>
+            </div>
+            <div id="artSummary">
+                BDTMINER utilizes high-efficiency cloud computing data centers to maximize cryptocurrency mining yields seamlessly for everyday users.
+            </div>
+            <div class="article-more" id="artMore">
+                Our infrastructure is built with enterprise-grade SSL security, multi-signature cold wallets, and 24/7 automated node monitoring. This ensures instant daily payouts and full capital security for every mining rig deployment.
+            </div>
+            <button class="read-more-btn" onclick="toggleReadMore()" id="readMoreBtn">Read More...</button>
         </div>
 
         <a href="index.html" class="back-home">← Back to Home</a>
@@ -232,6 +261,47 @@
         let userActivePlans = [];
         let activeModalIndex = null;
 
+        let currentLang = 'EN';
+        let isExpanded = false;
+
+        const articleContent = {
+            EN: {
+                title: "🛡️ Why BDTMINER is Trusted",
+                summary: "BDTMINER utilizes high-efficiency cloud computing data centers to maximize cryptocurrency mining yields seamlessly for everyday users.",
+                more: "Our infrastructure is built with enterprise-grade SSL security, multi-signature cold wallets, and 24/7 automated node monitoring. This ensures instant daily payouts and full capital security for every mining rig deployment.",
+                readMore: "Read More...",
+                readLess: "Read Less..."
+            },
+            BN: {
+                title: "🛡️ কেন BDTMINER বিশ্বস্ত?",
+                summary: "BDTMINER হাই-এফিশিয়েন্সি ক্লাউড কম্পিউটিং ডেটা সেন্টার ব্যবহার করে সাধারণ ব্যবহারকারীদের জন্য ক্রিপ্টোকারেন্সি মাইনিং প্রফিট নিশ্চিত করে।",
+                more: "আমাদের অবকাঠামো ইন্টারপ্রাইজ-গ্রেড সিকিউরিটি, মাল্টি-সিগনেচার কোল্ড ওয়ালেট এবং ২৪/৭ স্বয়ংক্রিয় নোড পর্যবেক্ষণের সাথে সুরক্ষিত। এটি আপনার মাইনিং আমানতের সর্বোচ্চ নিরাপত্তা এবং দ্রুত পেমেন্ট নিশ্চিত করে।",
+                readMore: "আরও পড়ুন...",
+                readLess: "সংক্ষিপ্ত করুন..."
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'EN') ? 'BN' : 'EN';
+            document.getElementById('langBtn').innerText = (currentLang === 'EN') ? 'BN' : 'EN';
+            updateArticleUI();
+        }
+
+        function toggleReadMore() {
+            isExpanded = !isExpanded;
+            const moreBox = document.getElementById('artMore');
+            moreBox.style.display = isExpanded ? 'block' : 'none';
+            updateArticleUI();
+        }
+
+        function updateArticleUI() {
+            const data = articleContent[currentLang];
+            document.getElementById('artTitle').innerText = data.title;
+            document.getElementById('artSummary').innerText = data.summary;
+            document.getElementById('artMore').innerText = data.more;
+            document.getElementById('readMoreBtn').innerText = isExpanded ? data.readLess : data.readMore;
+        }
+
         const planConfigs = {
             '5 Airdrop': { daily_profit: 1.0, duration: 15, total_return: 15 },
             '30 AirDrop': { daily_profit: 2.26, duration: 30, total_return: 68 },
@@ -249,7 +319,6 @@
             currentUser = user;
             document.getElementById('userEmail').innerText = user.email;
 
-            // URL থেকে প্ল্যান প্যারামিটার চেক করা
             const urlParams = new URLSearchParams(window.location.search);
             const planName = urlParams.get('plan');
             const amount = parseFloat(urlParams.get('amount'));
@@ -291,7 +360,6 @@
             }
         }
 
-        // ব্যালেন্স পর্যাপ্ত থাকলে প্ল্যান একটিভ করার লজিক
         async function activatePlan() {
             if (!selectedPlanData || !currentUser) return;
 
@@ -414,7 +482,6 @@
             });
         }
 
-        // ==================== MODAL LOGIC ====================
         function openMiningModal(index) {
             activeModalIndex = index;
             const plan = userActivePlans[index];
@@ -422,7 +489,6 @@
 
             document.getElementById('modalPlanTitle').innerText = `${plan.plan_name} ($${plan.invested_amount})`;
             
-            // Random dynamic Hashrate display
             const randomHash = (12.5 + (plan.invested_amount * 0.8)).toFixed(1);
             document.getElementById('modalHashrate').innerText = `${randomHash} MH/s`;
 
@@ -458,7 +524,6 @@
                     if (profitEl) profitEl.innerText = `+$${earnedProfit}`;
                     if (percentEl) percentEl.innerText = `${progressPercent}%`;
 
-                    // Update live modal stats if open
                     if (activeModalIndex === index) {
                         document.getElementById('modalMined').innerText = `+$${earnedProfit}`;
                         document.getElementById('modalProgress').innerText = `${progressPercent}%`;
