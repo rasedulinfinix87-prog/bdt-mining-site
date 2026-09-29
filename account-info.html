@@ -11,11 +11,65 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
+        
+        /* Top Bar & Menu Styles */
+        .top-bar { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; position: relative; }
+        .brand-logo { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 800; color: #f59e0b; text-decoration: none; }
+        .menu-btn { background: #0f172a; border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Orbitron', sans-serif; }
+        
+        .menu-dropdown {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: 12px;
+            width: 200px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            overflow: hidden;
+        }
+        .menu-dropdown.active { display: flex; }
+        .menu-dropdown a {
+            padding: 10px 15px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s;
+        }
+        .menu-dropdown a:hover { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
         .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); position: relative; }
         
         .page-title { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: #f59e0b; text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .status-box { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 15px; font-size: 13px; color: #f59e0b; font-weight: 600; }
+        /* Neon Glowing Status Box */
+        .status-box { 
+            background: rgba(245, 158, 11, 0.1); 
+            border: 1px solid rgba(245, 158, 11, 0.5); 
+            border-radius: 12px; 
+            padding: 12px; 
+            text-align: center; 
+            margin-bottom: 15px; 
+            font-size: 13px; 
+            color: #f59e0b; 
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+            animation: neonPulse 1.5s infinite alternate;
+        }
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.3); }
+            100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.7); border-color: rgba(245, 158, 11, 0.9); }
+        }
+
+        .status-box a { color: #f59e0b; text-decoration: none; display: flex; align-items: center; gap: 6px; }
 
         .form-group { margin-bottom: 15px; position: relative; }
         label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
@@ -25,7 +79,7 @@
 
         .eye-icon { position: absolute; right: 12px; top: 35px; cursor: pointer; color: #94a3b8; font-size: 16px; user-select: none; }
 
-        .section-title { font-family: 'Orbitron', sans-serif; font-size: 13px; color: #f59e0b; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 5px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 13px; color: #f59e0b; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 5px; text-transform: uppercase; }
 
         .btn-action { 
             width: 100%; 
@@ -77,17 +131,8 @@
             animation: spin 0.8s linear infinite;
             margin-bottom: 10px;
         }
-        .loader-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            color: #f59e0b;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .loader-text { font-family: 'Orbitron', sans-serif; font-size: 12px; color: #f59e0b; letter-spacing: 1px; text-transform: uppercase; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Custom Popup & Modal Styles */
         .custom-popup-overlay {
@@ -128,6 +173,23 @@
 </head>
 <body>
 
+    <!-- Top Bar & Menu -->
+    <div class="top-bar">
+        <a href="dashboard.html" class="brand-logo">BDTMINER</a>
+        <div style="position: relative;">
+            <button class="menu-btn" onclick="toggleMenu()">Menu ☰</button>
+            <div class="menu-dropdown" id="menuDropdown">
+                <a href="/index.html">Home</a>
+                <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/index.html#plans">Mining Plan</a>
+                <a href="/payout.html">Live Payouts</a>
+                <a href="/dashboard.html">Dashboard</a>
+                <a href="/verification-details.html">NID Verification</a>
+                <a href="/account-info.html">Account Info</a>
+                <a href="/chat.html">Contact Support</a>
+            </div>
+        </div>
+    </div>
+
     <div class="container" id="mainContainer">
         <!-- Loading Overlay -->
         <div class="page-loader" id="pageLoader">
@@ -137,9 +199,9 @@
 
         <div class="page-title">Account Info</div>
 
-        <!-- Verification Status Display -->
+        <!-- Verification Status Box -->
         <div class="status-box" id="verificationStatusBox">
-            Account Status: Loading...
+            Verification Status: Loading...
         </div>
 
         <div class="section-title">NID Verified Information</div>
@@ -216,6 +278,18 @@
         let currentUser = null;
         let rawSecretPin = '';
 
+        function toggleMenu() {
+            const menu = document.getElementById('menuDropdown');
+            menu.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.top-bar')) {
+                document.getElementById('menuDropdown').classList.remove('active');
+            }
+        });
+
         async function fetchAccountData() {
             try {
                 const { data: { user } } = await supabaseClient.auth.getUser();
@@ -226,12 +300,13 @@
                 currentUser = user;
                 document.getElementById('regEmail').value = user.email;
 
-                // Fetch profile info including verification_status and secret_pin
                 const { data: profile, error } = await supabaseClient
                     .from('profiles')
                     .select('full_name, birth_date, secret_pin, verification_status')
                     .eq('id', user.id)
                     .single();
+
+                const statusBox = document.getElementById('verificationStatusBox');
 
                 if (profile) {
                     if (profile.full_name) document.getElementById('fullName').value = profile.full_name;
@@ -248,17 +323,25 @@
                         document.getElementById('secretPin').value = 'Not Set';
                     }
 
-                    const vStatus = profile.verification_status ? profile.verification_status.toUpperCase() : 'UNVERIFIED';
-                    document.getElementById('verificationStatusBox').innerText = `Account Verification Status: ${vStatus}`;
+                    const vStatus = profile.verification_status ? profile.verification_status.toLowerCase().trim() : '';
+
+                    if (vStatus === 'approved') {
+                        statusBox.innerHTML = `Verification Status: APPROVED 🛡️`;
+                    } else if (vStatus === 'pending') {
+                        statusBox.innerHTML = `<a href="/verification-details.html">Verification Status: PENDING ⏳ (Click to view)</a>`;
+                    } else if (vStatus === 'unverified') {
+                        statusBox.innerHTML = `<a href="/verification-details.html">Verification Status: UNVERIFIED ⚠️️ (Verify Now)</a>`;
+                    } else {
+                        statusBox.innerHTML = `<a href="/verification-details.html">Verification Status: REQUIRED 🔔 (Verify Account)</a>`;
+                    }
                 } else {
-                    document.getElementById('fullName').value = 'Not Verified Yet';
-                    document.getElementById('birthDate').value = 'Not Verified Yet';
-                    document.getElementById('verificationStatusBox').innerText = `Account Verification Status: UNVERIFIED`;
+                    document.getElementById('fullName').value = 'Not Provided';
+                    document.getElementById('birthDate').value = 'Not Provided';
+                    statusBox.innerHTML = `<a href="/verification-details.html">Verification Status: REQUIRED 🔔 (Verify Account)</a>`;
                 }
             } catch (err) {
                 console.error("Error fetching account data:", err);
             } finally {
-                // Hide loader smoothly once data fetch is complete
                 const loader = document.getElementById('pageLoader');
                 loader.style.opacity = '0';
                 setTimeout(() => {
@@ -267,7 +350,6 @@
             }
         }
 
-        // Toggle Secret Pin Visibility
         let isPinVisible = false;
         function toggleSecretPin() {
             const pinInput = document.getElementById('secretPin');
@@ -284,7 +366,6 @@
             }
         }
 
-        // Password Modal Controls
         function openPasswordModal() {
             document.getElementById('oldPassword').value = '';
             document.getElementById('modalNewPassword').value = '';
@@ -336,7 +417,6 @@
                 password: newPass
             });
 
-            changeBtn.disabled.false = false;
             changeBtn.disabled = false;
             changeBtn.innerText = 'Update Password';
 
