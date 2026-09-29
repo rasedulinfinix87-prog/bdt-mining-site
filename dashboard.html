@@ -412,6 +412,17 @@
     </a>
 
     <script>
+        // Toggle Sidebar Function for Mobile Menu
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+
         // Load header.html dynamically
         fetch('header.html')
             .then(response => response.text())
@@ -457,14 +468,14 @@
 
         const articleContent = {
             EN: {
-                title: "🛡️️ Why BDTMINER is Trusted",
+                title: "🛡 Why BDTMINER is Trusted",
                 summary: "BDTMINER utilizes high-efficiency cloud computing data centers to maximize cryptocurrency mining yields seamlessly for everyday users.",
                 more: "Our infrastructure is built with enterprise-grade SSL security, multi-signature cold wallets, and 24/7 automated node monitoring. This ensures instant daily payouts and full capital security for every mining rig deployment.",
                 readMore: "Read More...",
                 readLess: "Read Less..."
             },
             BN: {
-                title: "🛡️ কেন BDTMINER বিশ্বস্ত?",
+                title: "🛡️️ কেন BDTMINER বিশ্বস্ত?",
                 summary: "BDTMINER হাই-এফিশিয়েন্সি ক্লাউড কম্পিউটিং ডেটা সেন্টার ব্যবহার করে সাধারণ ব্যবহারকারীদের জন্য ক্রিপ্টোকারেন্সি মাইনিং প্রফিট নিশ্চিত করে।",
                 more: "আমাদের অবকাঠামো ইন্টারপ্রাইজ-গ্রেড সিকিউরিটি, মাল্টি-সিগনেচার কোল্ড ওয়ালেট এবং ২৪/৭ স্বয়ংক্রিয় নোড পর্যবেক্ষণের সাথে সুরক্ষিত। এটি আপনার মাইনিং আমানতের সর্বোচ্চ নিরাপত্তা এবং দ্রুত পেমেন্ট নিশ্চিত করে।",
                 readMore: "আরও পড়ুন...",
