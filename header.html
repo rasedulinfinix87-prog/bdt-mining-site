@@ -113,6 +113,7 @@
         flex-direction: column;
         padding: 20px;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+        overflow-y: auto;
     }
     .sidebar-menu.active {
         left: 0;
@@ -127,6 +128,11 @@
         padding-bottom: 15px;
     }
 
+    .sidebar-header .brand-logo {
+        font-size: 15px;
+        color: #f59e0b; /* ছবির মতো অরেঞ্জ/ইয়েলো টোন */
+    }
+
     .sidebar-close-btn {
         background: transparent;
         border: none;
@@ -138,25 +144,48 @@
     .sidebar-links {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
+        flex-grow: 1;
     }
 
+    /* ছবির মতো প্রতিটি মেনু আইটেমের জন্য আলাদা বক্স ডিজাইন */
     .nav-item {
-        color: #cbd5e1;
+        color: #fff;
         text-decoration: none;
-        padding: 12px 15px;
-        border-radius: 10px;
+        padding: 14px 18px;
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
         font-weight: 500;
         font-size: 14px;
         transition: 0.2s;
         display: flex;
         align-items: center;
-        gap: 10px;
+        justify-content: space-between;
     }
 
     .nav-item:hover, .nav-item.active {
-        background: rgba(30, 144, 238, 0.15);
-        color: #1E90EE;
+        background: #2563eb;
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    /* লগআউট বাটন স্টাইল */
+    .logout-item {
+        background: #ef4444 !important;
+        color: #fff !important;
+        text-align: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-top: auto;
+        border-radius: 12px;
+        padding: 14px 18px;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .logout-item:hover {
+        background: #dc2626 !important;
     }
 </style>
 
@@ -179,7 +208,7 @@
     </div>
     
     <div class="nav-right">
-        <div class="top-balance-box" id="topBalance">$0.00</div>
+        <div class="top-balance-box" id="topBalance">$666.36</div>
     </div>
 </div>
 
@@ -187,14 +216,19 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 <div class="sidebar-menu" id="sidebarMenu">
     <div class="sidebar-header">
-        <a href="dashboard.html" class="brand-logo">⚡ <span>BDTMINER</span></a>
+        <a href="dashboard.html" class="brand-logo">⚡ <span>BDTMINER Menu</span></a>
         <button class="sidebar-close-btn" onclick="toggleSidebar()">✕</button>
     </div>
     <div class="sidebar-links">
-        <a href="dashboard.html" class="nav-item">🏠 Dashboard</a>
-        <a href="deposit-withdraw.html?type=deposit" class="nav-item">💳 Deposit</a>
-        <a href="deposit-withdraw.html?type=withdraw" class="nav-item">🏦 Withdraw</a>
-        <a href="history.html" class="nav-item">📜 History</a>
-        <a href="profile.html" class="nav-item">👤 Profile</a>
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="mining-plans.html" class="nav-item">Mining Plans</a>
+        <a href="live-payouts.html" class="nav-item">Live Payouts</a>
+        <a href="dashboard.html" class="nav-item">Dashboard</a>
+        <a href="nid-verification.html" class="nav-item">NID Verification <span style="font-size: 14px;">🛡️</span></a>
+        <a href="profile.html" class="nav-item">Account Info</a>
+        <a href="support.html" class="nav-item">Contact Support</a>
+        
+        <!-- লগআউট বাটন -->
+        <a href="logout.php" class="logout-item">LOGOUT</a>
     </div>
 </div>
