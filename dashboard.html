@@ -79,12 +79,46 @@
         .menu-item.logout { color: #ef4444; }
         .menu-item.logout:hover { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
 
-        /* Chat Button */
-        .btn-chat { width: 100%; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 10px; padding: 12px; font-weight: 600; font-size: 13px; cursor: pointer; text-align: center; text-decoration: none; display: block; margin-bottom: 20px; transition: all 0.2s; }
-        .btn-chat:hover { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
+        /* Activate Selected Plan Box with Neon Rotating Animation Border */
+        .selected-plan-box { 
+            position: relative;
+            background: rgba(245, 158, 11, 0.08); 
+            border-radius: 12px; 
+            padding: 16px; 
+            text-align: center; 
+            margin-bottom: 20px; 
+            display: none; 
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        /* Neon Rotating Border Effect */
+        .selected-plan-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, #f59e0b, transparent 30%);
+            animation: rotateNeon 4s linear infinite;
+            z-index: -2;
+        }
 
-        /* Activate Selected Plan Box */
-        .selected-plan-box { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; display: none; }
+        .selected-plan-box::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 10px;
+            z-index: -1;
+        }
+
+        @keyframes rotateNeon {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .plan-info { color: #f59e0b; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
         .btn-activate { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; width: 100%; }
 
@@ -270,14 +304,11 @@
             </div>
         </div>
 
-        <!-- Confirm Plan Box -->
+        <!-- Confirm Plan Box with Neon Border Animation -->
         <div id="planActivationBox" class="selected-plan-box">
             <div id="planInfoText" class="plan-info">Selected Plan: -</div>
             <button id="activateBtn" class="btn-activate" onclick="activatePlan()">Confirm & Activate Plan</button>
         </div>
-
-        <!-- Chat Link Button -->
-        <a href="chat.html" class="btn-chat">💬 Live Customer Support Chat</a>
 
         <!-- Active Mining Plans Section -->
         <div class="section-title">
@@ -659,7 +690,6 @@
             if (!currentUser) return;
 
             try {
-                // ১. ইউজারের ব্যালেন্স আপডেট করা
                 const newBalance = currentBalance + totalReturn;
                 const { error: balanceError } = await supabaseClient
                     .from('profiles')
@@ -668,7 +698,6 @@
 
                 if (balanceError) throw balanceError;
 
-                // ২. প্ল্যানের স্ট্যাটাস 'completed' বা 'claimed' এ পরিবর্তন করা যাতে আর বারবার ক্লেইম না করা যায়
                 const { error: planError } = await supabaseClient
                     .from('user_plan')
                     .update({ status: 'claimed' })
