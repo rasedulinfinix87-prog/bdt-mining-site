@@ -162,7 +162,7 @@
         let currentUser = null;
         let isRedirectOnClose = false;
 
-        // NID Number Masking Function (মাঝখানের নাম্বারগুলো *** করার জন্য)
+        // NID Number Masking Function
         function maskNidNumber(nid) {
             if (!nid || nid.length < 6) return nid;
             const start = nid.slice(0, 3);
@@ -206,7 +206,6 @@
                     setFormDisabled(true, 'Account ভেরফিফাই এবং verified base শো করছে');
                     document.getElementById('statusNotice').classList.add('verified-badge-box');
                     
-                    // ইউজার পেইজে ঢুকলেই পপআপ দেখাবে
                     showCustomPopup(
                         'success',
                         'Account Verified',
@@ -217,58 +216,23 @@
                     return;
                 }
 
-                // ২. যদি Pending হয় (অথবা ৫ মিনিট পার হলে অটো Approved করা)
-                if (status === 'pending' && profile.verification_submitted_at) {
-                    const submittedTime = new Date(profile.verification_submitted_at).getTime();
-                    const now = new Date().getTime();
-                    const diffMinutes = (now - submittedTime) / (1000 * 60);
-
-                    if (diffMinutes >= 5) {
-                        // Auto Approve
-                        await supabaseClient
-                            .from('profiles')
-                            .update({ verification_status: 'approved' })
-                            .eq('id', user.id);
-
-                        setFormDisabled(true, 'Account ভেরফিফাই এবং verified base শো করছে');
-                        document.getElementById('statusNotice').classList.add('verified-badge-box');
-                        
-                        showCustomPopup(
-                            'success',
-                            'Account Verified',
-                            'Congratulations! Your NID verification has been successfully approved.',
-                            'Your account is now fully verified.',
-                            false
-                        );
-                        return;
-                    } else {
-                        // Still pending
-                        setFormDisabled(true, 'Verification is under review. Your NID details are locked.');
-                        
-                        showCustomPopup(
-                            'pending',
-                            'Verification Pending',
-                            'Your NID verification request is currently under review.',
-                            'Please wait a few moments for confirmation.',
-                            false
-                        );
-                        return;
-                    }
+                // ২. যদি Pending হয়
+                if (status === 'pending') {
+                    setFormDisabled(true, 'Verification is under review. Your NID details are locked.');
+                    
+                    showCustomPopup(
+                        'pending',
+                        'Verification Pending',
+                        'Your NID verification request is currently under review.',
+                        'Please wait a few moments for confirmation.',
+                        false
+                    );
+                    return;
                 }
 
                 // ৩. যদি Unverified হয়
-                if (status === 'unverified') {
-                    // ফর্ম খোলা থাকবে এবং ইউজার নির্দেশিকা দেখবে
+                if (status === 'unverified' || status === '') {
                     setFormDisabled(false, 'Please enter your exact NID details as shown on your National Identity Card (Bangla or English accepted).');
-                    
-                    // চাইলে আনভেরিফাইড ইউজারদের জন্য প্রথমবার পপআপ দেখাতে পারেন (অথবা কমেন্ট আউট করে রাখতে পারেন)
-                    showCustomPopup(
-                        'info',
-                        'NID Unverified',
-                        'Your account is currently unverified. Please submit your NID details.',
-                        'Fill up the form below with correct information.',
-                        false
-                    );
                 }
             }
         }
@@ -282,7 +246,10 @@
             document.getElementById('fullAddress').disabled = disabled;
             
             const submitBtn = document.getElementById('submitBtn');
-            if (submitBtn) submitBtn.disabled = disabled;
+            if (submitBtn) {
+                submitBtn.disabled = disabled;
+                submitBtn.style.display = disabled ? 'none' : 'block';
+            }
 
             if (noticeText) {
                 document.getElementById('statusNotice').innerText = noticeText;
