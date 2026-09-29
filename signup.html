@@ -76,7 +76,7 @@
 
     <script>
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6InBjonRldCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzkwNjQ3NzkwLCJleHAiOjIxMDYyMjM3OTB9.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isLogin = false; // ডিফল্টভাবে Sign Up চালু থাকবে
@@ -104,7 +104,7 @@
             }
         }
 
-        // পাসওয়ার্ড ভ্যালিডেশন ফাংশন (দুর্বল পাসওয়ার্ড চেক এবং সিম্বল চেক)
+        // পাসওয়ার্ড ভ্যালিডেশন ফাংশন (দুর্বল পাসওয়ার্ড এবং সিম্বল চেক)
         function validatePassword(pass) {
             const forbiddenPasswords = [
                 "12345678", "87654321", "00000000", "11111111", 
@@ -173,7 +173,7 @@
 
                     const userId = data.user ? data.user.id : null;
 
-                    // profiles টেবিলে ডাটা ইনসার্ট করা (আপনার কলাম অনুযায়ী)
+                    // profiles টেবিলে ডাটা ইনসার্ট করা
                     if (userId) {
                         const { error: dbError } = await supabaseClient
                             .from('profiles')
@@ -190,7 +190,7 @@
                             ]);
                         
                         if (dbError) {
-                            throw new Error(" ডাটাবেজ টেবিল আপডেট ত্রুটি: " + dbError.message);
+                            throw new Error("ডাটাবেজ টেবিল আপডেট ত্রুটি: " + dbError.message);
                         }
                     }
                     
