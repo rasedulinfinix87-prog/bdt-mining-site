@@ -528,15 +528,16 @@
         <!-- Plans List -->
         <div class="plans-list">
             
+            <!-- Plan 1: 15 Days -->
             <div class="plan-card">
                 <div class="badge-days">15 Days</div>
-                <div class="plan-title">Starter Plan</div>
-                <div class="plan-amount">৳ 5,000 Invest</div>
-                <div class="plan-profit">+ ৳ 3,333 Profit</div>
+                <div class="plan-title">5 Airdrop</div>
+                <div class="plan-amount">10$ Invest</div>
+                <div class="plan-profit">15 Airdrop 15$ রিটার্ন</div>
 
                 <div class="plan-details">
                     <div>Duration: <strong>15 Days</strong></div>
-                    <div>Total Return: <strong>৳ 8,333</strong></div>
+                    <div>Total Return: <strong>15$</strong></div>
                     <div>Auto Claim System</div>
                 </div>
 
@@ -546,19 +547,20 @@
                     <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
                 </div>
 
-                <button class="btn-invest" onclick="handleInvest('Starter Plan', 5000)">Invest Now</button>
+                <button class="btn-invest" onclick="handleInvest('5 Airdrop', 10)">Invest Now</button>
             </div>
 
+            <!-- Plan 2: 30 Days -->
             <div class="plan-card featured">
                 <div class="badge-popular">Popular</div>
                 <div class="badge-days">30 Days</div>
-                <div class="plan-title">Advanced Plan</div>
-                <div class="plan-amount">৳ 10,000 Invest</div>
-                <div class="plan-profit">+ ৳ 7,777 Profit</div>
+                <div class="plan-title">30 AirDrop</div>
+                <div class="plan-amount">25$ Invest</div>
+                <div class="plan-profit">৩০ Airdrop Extra 3 Airdrop Bonus</div>
 
                 <div class="plan-details">
                     <div>Duration: <strong>30 Days</strong></div>
-                    <div>Total Return: <strong>৳ 17,777</strong></div>
+                    <div>Total Return: <strong>65$Extra 3$ Bonus</strong></div>
                     <div>Auto Claim System</div>
                 </div>
 
@@ -568,7 +570,29 @@
                     <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
                 </div>
 
-                <button class="btn-invest" onclick="handleInvest('Advanced Plan', 10000)">Invest Now</button>
+                <button class="btn-invest" onclick="handleInvest('30 AirDrop', 25)">Invest Now</button>
+            </div>
+
+            <!-- Plan 3: 45 Days (New Plan Based on Calculated Ratio) -->
+            <div class="plan-card">
+                <div class="badge-days">45 Days</div>
+                <div class="plan-title">60 AirDrop</div>
+                <div class="plan-amount">50$ Invest</div>
+                <div class="plan-profit">৬০ Airdrop Extra 5 Airdrop Bonus</div>
+
+                <div class="plan-details">
+                    <div>Duration: <strong>45 Days</strong></div>
+                    <div>Total Return: <strong>135$Extra 5$ Bonus</strong></div>
+                    <div>Auto Claim System</div>
+                </div>
+
+                <div class="crypto-badges">
+                    <div class="crypto-pill">SOL / USD <span>5% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+5% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
+                </div>
+
+                <button class="btn-invest" onclick="handleInvest('60 AirDrop', 50)">Invest Now</button>
             </div>
 
         </div>
@@ -615,7 +639,7 @@
                             <div class="payout-user">${item.username}</div>
                             <div class="payout-time">${item.time}</div>
                         </div>
-                        <div class="payout-amount">+ ৳ ${item.amount}</div>
+                        <div class="payout-amount">+ $${item.amount}</div>
                     </div>
                 `;
                 container.innerHTML += html;
@@ -631,10 +655,10 @@
             } catch (error) {
                 // ফাইল না পাওয়া গেলে বা লোড না হলে অটোমেটিক ডাইনামিক ডেটা লোড হবে
                 const fallbackPayouts = [
-                    { username: "user_***89", amount: "8,333", time: "Just now" },
-                    { username: "tanvir_***01", amount: "17,777", time: "5 mins ago" },
-                    { username: "crypto_***44", amount: "49,999", time: "18 mins ago" },
-                    { username: "rakib_***12", amount: "8,333", time: "1 hour ago" }
+                    { username: "user_***89", amount: "15", time: "Just now" },
+                    { username: "tanvir_***01", amount: "68", time: "5 mins ago" },
+                    { username: "crypto_***44", amount: "140", time: "18 mins ago" },
+                    { username: "rakib_***12", amount: "15", time: "1 hour ago" }
                 ];
                 renderPayoutList(fallbackPayouts);
             }
