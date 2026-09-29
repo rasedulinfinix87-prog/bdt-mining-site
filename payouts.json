@@ -1,59 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Live Payouts</title>
-    <style>
-        .payout-card {
-            background: #1e293b;
-            color: #fff;
-            padding: 10px 15px;
-            margin: 8px 0;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .time { color: #10b981; font-size: 12px; }
-    </style>
-</head>
-<body>
-
-    <h3>Live Withdraw Payouts</h3>
-    <div id="payoutContainer"></div>
-
-    <script>
-        // সম্ভাব্য ইউজারের নাম ও অ্যামাউন্টের লিস্ট
-        const usernames = ["user_***89", "tanvir_***01", "crypto_***44", "rakib_***12", "sumon_***77", "ariful_***99", "hasan_***23"];
-        const amounts = ["5,000", "8,333", "12,500", "17,777", "25,000", "49,999"];
-        const times = ["Just now", "2 mins ago", "5 mins ago", "12 mins ago", "25 mins ago", "1 hour ago"];
-
-        // র‍্যান্ডম পেআউট ডেটা তৈরি করার ফাংশন
-        function generatePayouts() {
-            const container = document.getElementById('payoutContainer');
-            container.innerHTML = ''; // আগের ডেটা ক্লিয়ার করা
-
-            // ৪ টি র‍্যান্ডম ডেটা তৈরি করবে
-            for (let i = 0; i < 4; i++) {
-                const randomUser = usernames[Math.floor(Math.random() * usernames.length)];
-                const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
-                const randomTime = times[i]; // সিকোয়েন্স অনুযায়ী সময় বসবে
-
-                const card = `
-                    <div class="payout-card">
-                        <div>
-                            <strong>${randomUser}</strong><br>
-                            <small>Withdrawal: ৳ ${randomAmount}</small>
-                        </div>
-                        <div class="time">${randomTime}</div>
-                    </div>
-                `;
-                container.innerHTML += card;
-            }
-        }
-
-        // পেজ লোড হলে এবং প্রতি ১ মিনিট পর পর পেআউট আপডেট হবে
-        generatePayouts();
-        setInterval(generatePayouts, 60000); 
-    </script>
-</body>
-</html>
+[
+  {
+    "username": "user_***89",
+    "amount": "8,333",
+    "time": "5 mins ago"
+  },
+  {
+    "username": "tanvir_***01",
+    "amount": "17,777",
+    "time": "12 mins ago"
+  },
+  {
+    "username": "crypto_***44",
+    "amount": "49,999",
+    "time": "25 mins ago"
+  },
+  {
+    "username": "rakib_***12",
+    "amount": "8,333",
+    "time": "1 hour ago"
+  }
+]
