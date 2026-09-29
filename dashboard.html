@@ -319,16 +319,16 @@
         .success-icon-circle {
             width: 65px;
             height: 65px;
-            background: rgba(16, 185, 129, 0.15);
-            border: 2px solid #10b981;
+            background: rgba(245, 158, 11, 0.15);
+            border: 2px solid #f59e0b;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 0 auto 15px auto;
             font-size: 30px;
-            color: #10b981;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
         }
 
         .success-modal-title {
@@ -343,11 +343,12 @@
             color: #cbd5e1;
             line-height: 1.5;
             margin-bottom: 20px;
+            white-space: pre-line;
         }
 
         .success-modal-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #ffffff;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000000;
             border: none;
             padding: 10px 24px;
             border-radius: 10px;
@@ -355,7 +356,7 @@
             font-size: 13px;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
             transition: 0.2s;
         }
         .success-modal-btn:hover { opacity: 0.9; transform: translateY(-1px); }
@@ -478,9 +479,9 @@
     <div class="success-modal-overlay" id="successModalOverlay">
         <div class="success-modal-card">
             <div class="success-icon-circle">✓</div>
-            <div class="success-modal-title" id="successModalTitle">সফল হয়েছে!</div>
-            <div class="success-modal-msg" id="successModalMsg">আপনার রিকোয়েস্ট সফলভাবে সম্পন্ন হয়েছে।</div>
-            <button class="success-modal-btn" onclick="closeSuccessModal()">ঠিক আছে (OK)</button>
+            <div class="success-modal-title" id="successModalTitle">Success!</div>
+            <div class="success-modal-msg" id="successModalMsg">Your request has been processed successfully.</div>
+            <button class="success-modal-btn" onclick="closeSuccessModal()">OK</button>
         </div>
     </div>
 
@@ -634,7 +635,7 @@
             const planCost = selectedPlanData.invested_amount;
 
             if (currentBalance < planCost) {
-                showSuccessModal("অপর্যাপ্ত ব্যালেন্স!", `আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!\n\nপ্ল্যানের দাম: $${planCost}\nআপনার বর্তমান ব্যালেন্স: $${currentBalance.toFixed(2)}\n\nদয়া করে প্রথমে ডিপোজিট করুন।`, () => {
+                showSuccessModal("Insufficient Balance!", `You do not have enough balance in your account!\n\nPlan Price: $${planCost}\nYour Current Balance: $${currentBalance.toFixed(2)}\n\nPlease deposit first.`, () => {
                     window.location.href = 'deposit-withdraw.html?type=deposit';
                 });
                 return;
@@ -676,8 +677,7 @@
 
                 if (planError) throw planError;
 
-                // প্রিমিয়াম পপআপ অ্যানিমেশন উইন্ডো কল
-                showSuccessModal("অভিনন্দন!", "আপনার প্ল্যানটি সফলভাবে চালু হয়েছে।", async () => {
+                showSuccessModal("Success!", "Your plan has been activated successfully.", async () => {
                     window.history.replaceState({}, document.title, window.location.pathname);
                     document.getElementById('planActivationBox').style.display = 'none';
 
@@ -686,7 +686,7 @@
                 });
 
             } catch (error) {
-                showSuccessModal("ত্রুটি!", "প্ল্যান চালু করতে সমস্যা হয়েছে: " + error.message);
+                showSuccessModal("Error!", "Failed to activate plan: " + error.message);
                 btn.innerText = "Confirm & Activate Plan";
                 btn.disabled = false;
             }
@@ -839,15 +839,14 @@
 
                 if (planError) throw planError;
 
-                // প্রিমিয়াম পপআপ অ্যানিমেশন উইন্ডো কল
-                showSuccessModal("অভিনন্দন!", `সফলভাবে $${totalReturn} প্রফিট ক্লেইম করা হয়েছে!`, async () => {
+                showSuccessModal("Success!", `Successfully claimed profit of $${totalReturn}!`, async () => {
                     closeMiningModal();
                     await loadUserBalance();
                     await loadActivePlans();
                 });
 
             } catch (error) {
-                showSuccessModal("ত্রুটি!", "क्लेম করতে সমস্যা হয়েছে: " + error.message);
+                showSuccessModal("Error!", "Failed to claim: " + error.message);
             }
         }
 
