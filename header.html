@@ -271,3 +271,46 @@
         <a href="logout.php" class="logout-item">LOGOUT</a>
     </div>
 </div>
+
+<!-- রিয়েল-টাইম ব্যালেন্স আপডেট স্ক্রিপ্ট -->
+<script>
+    async function loadRealtimeBalance() {
+        if (typeof supabase === 'undefined') return;
+        
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            // প্রাথমিক ব্যালেন্স ফেচ করা
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('balance')
+                .eq('id', user.id)
+                .single();
+
+            if (data && data.balance !== null) {
+                document.getElementById('topBalance').innerText = '$' + Number(data.balance).toFixed(2);
+            }
+
+            // রিয়েল-টাইম লাইভ লিসেনার (প্লাস বা মাইনাস হওয়ার সাথে সাথে আপডেট হবে)
+            supabase
+                .channel('public:profiles')
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'profiles',
+                    filter: `id=eq.${user.id}`
+                }, payload => {
+                    if (payload.new && payload.new.balance !== undefined) {
+                        document.getElementById('topBalance').innerText = '$' + Number(payload.new.balance).toFixed(2);
+                    }
+                })
+                .subscribe();
+
+        } catch (err) {
+            console.error('Balance update error:', err);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadRealtimeBalance);
+</script>
