@@ -125,6 +125,7 @@
         .nav-buttons {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
 
         .btn-login {
@@ -148,6 +149,31 @@
             font-size: 12px;
             cursor: pointer;
             box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .user-email-badge {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Side Menu Drawer */
@@ -480,7 +506,7 @@
                 <button class="menu-btn" onclick="toggleMenu()">☰</button>
                 <div class="logo">⚡ BDTMINER</div>
             </div>
-            <div class="nav-buttons">
+            <div class="nav-buttons" id="navButtons">
                 <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
                 <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
             </div>
@@ -603,11 +629,19 @@
             }
         }
 
-        // লগইন করা ইউজারের ডাটা এবং প্রোফাইল Supabase থেকে লোড করার ফাংশন
+        // ইউজারের লগইন স্ট্যাটাস চেক এবং UI আপডেট করার ফাংশন
         async function loadUserProfile() {
             const { data: { user } } = await supabaseClient.auth.getUser();
 
+            const navButtons = document.getElementById('navButtons');
+
             if (user) {
+                // ইউজার লগইন থাকলে Email Badge এবং Logout বাটন দেখাবে
+                navButtons.innerHTML = `
+                    <div class="user-email-badge" title="${user.email}">${user.email.split('@')[0]}</div>
+                    <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                `;
+
                 const { data: profile, error } = await supabaseClient
                     .from('profiles')
                     .select('email, balance, total_withdraw, status')
@@ -617,7 +651,19 @@
                 if (profile) {
                     console.log("Logged in User Details:", profile);
                 }
+            } else {
+                // ইউজার লগইন না থাকলে Login ও Sign Up বাটন দেখাবে
+                navButtons.innerHTML = `
+                    <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
+                    <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
+                `;
             }
+        }
+
+        // লগআউট করার ফাংশন
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
         }
 
         // পেজ লোড হলে কল হবে
