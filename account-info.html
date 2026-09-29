@@ -11,7 +11,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
-        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
+        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); position: relative; }
         
         .page-title { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: #f59e0b; text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
         
@@ -50,6 +50,44 @@
         }
 
         .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
+
+        /* Full Page Loader Overlay */
+        .page-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 20px;
+            transition: opacity 0.3s ease;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(245, 158, 11, 0.2);
+            border-top: 3px solid #f59e0b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 10px;
+        }
+        .loader-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            color: #f59e0b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
         /* Custom Popup & Modal Styles */
         .custom-popup-overlay {
@@ -90,7 +128,13 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" id="mainContainer">
+        <!-- Loading Overlay -->
+        <div class="page-loader" id="pageLoader">
+            <div class="spinner"></div>
+            <div class="loader-text">Loading Account...</div>
+        </div>
+
         <div class="page-title">Account Info</div>
 
         <!-- Verification Status Display -->
@@ -102,17 +146,17 @@
         
         <div class="form-group">
             <label>Full Name (From NID)</label>
-            <input type="text" id="fullName" disabled placeholder="Not Verified Yet">
+            <input type="text" id="fullName" disabled placeholder="">
         </div>
 
         <div class="form-group">
             <label>Birth Date (From NID)</label>
-            <input type="text" id="birthDate" disabled placeholder="Not Verified Yet">
+            <input type="text" id="birthDate" disabled placeholder="">
         </div>
 
         <div class="form-group">
             <label>Registered Email ID (Locked)</label>
-            <input type="text" id="regEmail" disabled placeholder="Loading email...">
+            <input type="text" id="regEmail" disabled placeholder="">
         </div>
 
         <div class="section-title">
@@ -121,7 +165,7 @@
 
         <div class="form-group">
             <label>Secret Pin (Locked)</label>
-            <input type="text" id="secretPin" disabled value="••••">
+            <input type="text" id="secretPin" disabled value="">
             <span class="eye-icon" onclick="toggleSecretPin()" id="eyeToggleIcon">👁️</span>
         </div>
 
@@ -173,38 +217,53 @@
         let rawSecretPin = '';
 
         async function fetchAccountData() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                window.location.href = 'signup.html';
-                return;
-            }
-            currentUser = user;
-            document.getElementById('regEmail').value = user.email;
-
-            // Fetch profile info including verification_status and secret_pin
-            const { data: profile, error } = await supabaseClient
-                .from('profiles')
-                .select('full_name, birth_date, secret_pin, verification_status')
-                .eq('id', user.id)
-                .single();
-
-            if (profile) {
-                console.log("Fetched Profile Data:", profile); // Debugging log
-                if (profile.full_name) document.getElementById('fullName').value = profile.full_name;
-                if (profile.birth_date) document.getElementById('birthDate').value = profile.birth_date;
-                
-                if (profile.secret_pin) {
-                    rawSecretPin = String(profile.secret_pin);
-                    document.getElementById('secretPin').value = '•'.repeat(rawSecretPin.length);
-                } else {
-                    rawSecretPin = 'Not Set';
-                    document.getElementById('secretPin').value = 'Not Set';
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'signup.html';
+                    return;
                 }
+                currentUser = user;
+                document.getElementById('regEmail').value = user.email;
 
-                const vStatus = profile.verification_status ? profile.verification_status.toUpperCase() : 'UNVERIFIED';
-                document.getElementById('verificationStatusBox').innerText = `Account Verification Status: ${vStatus}`;
-            } else {
-                document.getElementById('verificationStatusBox').innerText = `Account Verification Status: UNVERIFIED`;
+                // Fetch profile info including verification_status and secret_pin
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('full_name, birth_date, secret_pin, verification_status')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    if (profile.full_name) document.getElementById('fullName').value = profile.full_name;
+                    else document.getElementById('fullName').value = 'Not Provided';
+
+                    if (profile.birth_date) document.getElementById('birthDate').value = profile.birth_date;
+                    else document.getElementById('birthDate').value = 'Not Provided';
+                    
+                    if (profile.secret_pin) {
+                        rawSecretPin = String(profile.secret_pin);
+                        document.getElementById('secretPin').value = '•'.repeat(rawSecretPin.length);
+                    } else {
+                        rawSecretPin = 'Not Set';
+                        document.getElementById('secretPin').value = 'Not Set';
+                    }
+
+                    const vStatus = profile.verification_status ? profile.verification_status.toUpperCase() : 'UNVERIFIED';
+                    document.getElementById('verificationStatusBox').innerText = `Account Verification Status: ${vStatus}`;
+                } else {
+                    document.getElementById('fullName').value = 'Not Verified Yet';
+                    document.getElementById('birthDate').value = 'Not Verified Yet';
+                    document.getElementById('verificationStatusBox').innerText = `Account Verification Status: UNVERIFIED`;
+                }
+            } catch (err) {
+                console.error("Error fetching account data:", err);
+            } finally {
+                // Hide loader smoothly once data fetch is complete
+                const loader = document.getElementById('pageLoader');
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 300);
             }
         }
 
@@ -218,7 +277,7 @@
             isPinVisible = !isPinVisible;
             if (isPinVisible) {
                 pinInput.value = rawSecretPin;
-                eyeIcon.innerText = '🙈'; // Change icon to hide symbol when visible
+                eyeIcon.innerText = '🙈';
             } else {
                 pinInput.value = '•'.repeat(rawSecretPin.length);
                 eyeIcon.innerText = '👁️';
@@ -277,6 +336,7 @@
                 password: newPass
             });
 
+            changeBtn.disabled.false = false;
             changeBtn.disabled = false;
             changeBtn.innerText = 'Update Password';
 
