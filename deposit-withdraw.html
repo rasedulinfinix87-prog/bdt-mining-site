@@ -78,9 +78,11 @@
             color: #f59e0b; 
         }
 
-        .admin-num-box strong {
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 1px;
+        /* Normal font for admin number and address */
+        .admin-num-box span, .admin-num-box strong {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            letter-spacing: normal;
         }
 
         .copy-btn {
@@ -110,11 +112,12 @@
         <!-- Admin Payment Info Display Box -->
         <div class="admin-num-box" id="adminNumBox">
             <div id="bkashAdminInfo">
-                Send Money (Personal): <strong id="adminBkashText">Loading...</strong> (bKash)
+                Send Money (Personal): <span id="adminBkashText">Loading...</span> (bKash)
+                <button type="button" class="copy-btn" onclick="copyBkashNumber()">Copy</button>
             </div>
             <div id="usdtAdminInfo" style="display: none; word-break: break-all;">
                 Network: <strong>BSC (BEP20)</strong><br>
-                Address: <strong id="walletAddrText">Loading...</strong>
+                Address: <span id="walletAddrText">Loading...</span>
                 <button type="button" class="copy-btn" onclick="copyWalletAddress()">Copy</button>
             </div>
         </div>
@@ -291,6 +294,13 @@
             }
         }
 
+        function copyBkashNumber() {
+            const num = document.getElementById('adminBkashText').innerText;
+            navigator.clipboard.writeText(num).then(() => {
+                alert('bKash Number Copied to Clipboard!');
+            });
+        }
+
         function copyWalletAddress() {
             const addr = document.getElementById('walletAddrText').innerText;
             navigator.clipboard.writeText(addr).then(() => {
@@ -324,13 +334,29 @@
             }
 
             const inputFieldVal = document.getElementById('phone').value;
-            const trxId = document.getElementById('trxId').value || null;
+            const trxId = document.getElementById('trxId').value ? document.getElementById('trxId').value.trim() : null;
 
             if (usdAmount <= 0) {
                 alert('দয়া করে সঠিক টাকার পরিমাণ প্রদান করুন।');
                 submitBtn.disabled = false;
                 submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
                 return;
+            }
+
+            // ডিপোজিটের ক্ষেত্রে TrxID ইতিমধ্যে ব্যবহার করা হয়েছে কি না তা চেক করা
+            if (currentType === 'deposit' && trxId) {
+                const { data: existingTrx, error: trxCheckError } = await supabaseClient
+                    .from('transactions')
+                    .select('id')
+                    .eq('trx_id', trxId)
+                    .maybeSingle();
+
+                if (existingTrx) {
+                    alert('এই TrxID দিয়ে ইতিপূর্বে একটি রিকোয়েস্ট সাবমিট করা হয়েছে। একই TrxID বারবার ব্যবহার করা যাবে না।');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Submit Deposit Request';
+                    return;
+                }
             }
 
             // উইথড্র এর ক্ষেত্রে ব্যালেন্স চেক ও বিয়োগ (Deduct) করার লজিক
