@@ -6,7 +6,8 @@
     <title>BDTMINER - Smart Mining Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Crypto & Futuristic Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Supabase JS Library SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,7 +17,13 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Applying Orbitron Font for Titles & Tech Text Styles */
+        h1, h2, h3, .logo, .plan-title, .plan-amount, .section-title, .drawer-header, .ticker-item {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 0.8px;
         }
 
         html, body {
@@ -46,6 +53,7 @@
             z-index: 0;
             pointer-events: none;
             animation: float 6s ease-in-out infinite alternate;
+            font-family: 'Orbitron', sans-serif;
         }
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
@@ -116,10 +124,11 @@
         }
 
         .logo {
-            font-weight: 700;
+            font-weight: 800;
             font-size: 18px;
             color: #f59e0b;
-            text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+            text-transform: uppercase;
         }
 
         .nav-buttons {
@@ -134,9 +143,11 @@
             border: 1px solid #334155;
             padding: 8px 14px;
             border-radius: 20px;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 12px;
             cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .btn-signup {
@@ -149,6 +160,8 @@
             font-size: 12px;
             cursor: pointer;
             box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+            text-transform: uppercase;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .btn-logout {
@@ -160,6 +173,8 @@
             font-weight: 600;
             font-size: 11px;
             cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .user-email-badge {
@@ -198,7 +213,7 @@
             justify-content: space-between;
             align-items: center;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             color: #f59e0b;
             margin-bottom: 30px;
             border-bottom: 1px solid #1e293b;
@@ -217,6 +232,7 @@
             border-radius: 8px;
             background: rgba(255,255,255,0.02);
             transition: 0.2s;
+            font-weight: 500;
         }
         .drawer-links a:hover {
             background: #1e293b;
@@ -237,10 +253,11 @@
         }
 
         .hero h1 {
-            font-size: 22px;
+            font-size: 20px;
             color: #f59e0b;
             margin-bottom: 6px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
         }
 
         .hero p {
@@ -266,8 +283,9 @@
             font-size: 15px;
             margin-bottom: 15px;
             color: #e2e8f0;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         /* Plan Cards */
@@ -300,6 +318,7 @@
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 11px;
+            font-weight: 600;
         }
 
         .badge-popular {
@@ -312,6 +331,7 @@
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 11px;
+            text-transform: uppercase;
         }
 
         .plan-title {
@@ -320,12 +340,13 @@
             text-align: center;
             margin-top: 10px;
             margin-bottom: 12px;
+            text-transform: uppercase;
         }
 
         .plan-amount {
             text-align: center;
             font-size: 22px;
-            font-weight: 700;
+            font-weight: 800;
             color: #ffffff;
             margin-bottom: 4px;
         }
@@ -385,6 +406,9 @@
             font-size: 15px;
             margin-top: 15px;
             cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.5px;
         }
 
         /* Recent Live Payouts Section */
@@ -428,6 +452,7 @@
         .payout-amount {
             color: #10b981;
             font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
         }
 
         /* Floating Telegram Live Chat Button */
@@ -533,7 +558,7 @@
                 <div class="badge-days">15 Days</div>
                 <div class="plan-title">5 Airdrop</div>
                 <div class="plan-amount">10$ Invest</div>
-                <div class="plan-profit">15 Airdrop 15$ রিটার্ন</div>
+                <div class="plan-profit">15 Airdrop 15$ Return</div>
 
                 <div class="plan-details">
                     <div>Duration: <strong>15 Days</strong></div>
@@ -556,11 +581,11 @@
                 <div class="badge-days">30 Days</div>
                 <div class="plan-title">30 AirDrop</div>
                 <div class="plan-amount">25$ Invest</div>
-                <div class="plan-profit">৩০ Airdrop Extra 3 Airdrop Bonus</div>
+                <div class="plan-profit">30 Airdrop + Extra 3 Airdrop Bonus</div>
 
                 <div class="plan-details">
                     <div>Duration: <strong>30 Days</strong></div>
-                    <div>Total Return: <strong>65$Extra 3$ Bonus</strong></div>
+                    <div>Total Return: <strong>65$+ Extra 3$ Bonus</strong></div>
                     <div>Auto Claim System</div>
                 </div>
 
@@ -573,16 +598,16 @@
                 <button class="btn-invest" onclick="handleInvest('30 AirDrop', 25)">Invest Now</button>
             </div>
 
-            <!-- Plan 3: 45 Days (New Plan Based on Calculated Ratio) -->
+            <!-- Plan 3: 45 Days -->
             <div class="plan-card">
                 <div class="badge-days">45 Days</div>
                 <div class="plan-title">60 AirDrop</div>
                 <div class="plan-amount">50$ Invest</div>
-                <div class="plan-profit">৬০ Airdrop Extra 5 Airdrop Bonus</div>
+                <div class="plan-profit">60 Airdrop + Extra 5 Airdrop Bonus</div>
 
                 <div class="plan-details">
                     <div>Duration: <strong>45 Days</strong></div>
-                    <div>Total Return: <strong>135$Extra 5$ Bonus</strong></div>
+                    <div>Total Return: <strong>135$+ Extra 5$ Bonus</strong></div>
                     <div>Auto Claim System</div>
                 </div>
 
@@ -626,7 +651,7 @@
             document.getElementById('navDrawer').classList.toggle('active');
         }
 
-        // অটোমেটিক পেআউট রেন্ডার করার হেলপার ফাংশন
+        // Auto Payout Render Helper Function
         function renderPayoutList(payouts) {
             const container = document.getElementById('payoutContainer');
             if(!container) return;
@@ -653,7 +678,6 @@
                 const payouts = await response.json();
                 renderPayoutList(payouts);
             } catch (error) {
-                // ফাইল না পাওয়া গেলে বা লোড না হলে অটোমেটিক ডাইনামিক ডেটা লোড হবে
                 const fallbackPayouts = [
                     { username: "user_***89", amount: "15", time: "Just now" },
                     { username: "tanvir_***01", amount: "68", time: "5 mins ago" },
@@ -682,14 +706,13 @@
             }
         }
 
-        // ইনভেস্টমেন্ট হ্যান্ডেল করার আপডেট করা লজিক
+        // Updated Investment Handling Logic
         async function handleInvest(planName, amount) {
             const { data: { user } } = await supabaseClient.auth.getUser();
 
             if (!user) {
                 window.location.href = 'signup.html';
             } else {
-                // সরাসরি ড্যাশবোর্ডে নিয়ে যাবে এবং সিলেক্ট করা প্ল্যান ডাটা পাঠাবে
                 window.location.href = `dashboard.html?plan=${encodeURIComponent(planName)}&amount=${amount}`;
             }
         }
@@ -702,7 +725,7 @@
         loadPayouts();
         loadUserProfile();
 
-        // প্রতি ১ মিনিট (৬০ সেকেন্ড) পরপর পেআউট ডেটা রিফ্রেশ করবে
+        // Refresh payout data every 60 seconds
         setInterval(loadPayouts, 60000);
     </script>
 </body>
