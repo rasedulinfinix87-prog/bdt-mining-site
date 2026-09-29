@@ -1,25 +1,87 @@
-<!-- Top Navigation Bar & Balance -->
-<div class="top-navbar-wrapper">
-    <div class="nav-links">
-        <a href="index.html" class="nav-item">Home</a>
-        <a href="mining-plan.html" class="nav-item">Mining Plan</a>
-        <a href="payout.html" class="nav-item">Live Payouts</a>
-        <a href="dashboard.html" class="nav-item">Dashboard</a>
-        <a href="verification-details.html" class="nav-item">NID Verification</a>
-        <a href="account-info.html" class="nav-item">Account Info</a>
-        <a href="chat.html" class="nav-item">Contact Support</a>
+<!-- Top Ticker Bar (Crypto Prices) -->
+<div class="crypto-ticker-bar">
+    <div class="ticker-track">
+        <span class="ticker-item">BTC: <strong class="price-green">64,250 +1.8%</strong></span>
+        <span class="ticker-item">ETH: <strong class="price-green">3,480 +2.4%</strong></span>
+        <span class="ticker-item">USDT: <strong class="price-neutral">1.00 0.0%</strong></span>
     </div>
+</div>
+
+<!-- Main Header Bar -->
+<div class="top-navbar-wrapper">
+    <div class="header-left">
+        <!-- Menu Hamburger Button -->
+        <button class="menu-toggle-btn" onclick="toggleSidebar()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffff00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        <!-- Logo with Lightning Icon -->
+        <a href="index.html" class="brand-logo">
+            <span class="lightning-icon">⚡</span> BDTMINER
+        </a>
+    </div>
+    <!-- Balance Box -->
     <div class="top-balance" id="topBalance">$0.00</div>
 </div>
 
+<!-- Sidebar Drawer Menu -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="sidebar-menu" id="sidebarMenu">
+    <div class="sidebar-header">
+        <span class="lightning-icon">⚡</span> <strong>BDTMINER</strong>
+        <button class="close-sidebar" onclick="toggleSidebar()">&times;</button>
+    </div>
+    <div class="sidebar-links">
+        <a href="index.html" class="nav-item">🏠 Home</a>
+        <a href="mining-plan.html" class="nav-item">⛏️ Mining Plan</a>
+        <a href="payout.html" class="nav-item">💸 Live Payouts</a>
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="verification-details.html" class="nav-item">🛡️ NID Verification</a>
+        <a href="account-info.html" class="nav-item">👤 Account Info</a>
+        <a href="chat.html" class="nav-item">💬 Contact Support</a>
+    </div>
+</div>
+
 <style>
+    /* Crypto Ticker Bar Style */
+    .crypto-ticker-bar {
+        width: 100%;
+        max-width: 420px;
+        background: #05070c;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 6px 12px;
+        font-size: 11px;
+        font-family: 'Orbitron', sans-serif;
+        color: #94a3b8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-sizing: border-box;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        overflow: hidden;
+    }
+    .ticker-track {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        white-space: nowrap;
+    }
+    .price-green { color: #10b981; font-weight: 600; }
+    .price-neutral { color: #94a3b8; font-weight: 600; }
+
+    /* Main Navbar Wrapper */
     .top-navbar-wrapper {
         width: 100%;
         max-width: 420px;
         background: rgba(15, 23, 42, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        padding: 12px 15px;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+        padding: 10px 15px;
         margin-bottom: 15px;
         display: flex;
         justify-content: space-between;
@@ -28,40 +90,148 @@
         backdrop-filter: blur(10px);
         box-sizing: border-box;
     }
-    .nav-links {
+
+    .header-left {
         display: flex;
+        align-items: center;
         gap: 12px;
-        overflow-x: auto;
-        white-space: nowrap;
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
     }
-    .nav-links::-webkit-scrollbar { 
-        display: none; 
-    }
-    .nav-item {
-        color: #94a3b8;
-        text-decoration: none;
-        font-size: 12px;
-        font-weight: 600;
+
+    /* Menu Toggle Button Style */
+    .menu-toggle-btn {
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 0, 0.4);
+        border-radius: 10px;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
         transition: 0.3s;
+        box-shadow: 0 0 8px rgba(255, 255, 0, 0.2);
+    }
+    .menu-toggle-btn:hover {
+        background: rgba(255, 255, 0, 0.1);
+        border-color: #ffff00;
+    }
+
+    /* Brand Logo Style */
+    .brand-logo {
         font-family: 'Orbitron', sans-serif;
-        letter-spacing: 0.3px;
+        font-size: 15px;
+        font-weight: 800;
+        color: #ffff00;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-shadow: 0 0 10px rgba(255, 255, 0, 0.4);
+        letter-spacing: 0.5px;
     }
-    .nav-item:hover, .nav-item.active {
-        color: #1E90EE;
-        text-shadow: 0 0 10px rgba(30, 144, 238, 0.5);
+    .lightning-icon {
+        font-size: 16px;
     }
+
+    /* Top Balance Style */
     .top-balance {
         font-family: 'Orbitron', sans-serif;
         font-size: 13px;
         font-weight: 700;
         color: #1E90EE;
         background: rgba(30, 144, 238, 0.1);
-        padding: 6px 12px;
-        border-radius: 8px;
+        padding: 6px 14px;
+        border-radius: 10px;
         border: 1px solid rgba(30, 144, 238, 0.3);
         white-space: nowrap;
         box-shadow: inset 0 0 8px rgba(30, 144, 238, 0.2);
     }
+
+    /* Sidebar Drawer Styling */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        z-index: 9998;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s ease-in-out;
+    }
+    .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    .sidebar-menu {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 260px;
+        height: 100%;
+        background: #0f172a;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 9999;
+        transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar-menu.active {
+        left: 0;
+    }
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Orbitron', sans-serif;
+        color: #ffff00;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+    .close-sidebar {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .sidebar-links {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .sidebar-links .nav-item {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 10px 12px;
+        border-radius: 8px;
+        transition: 0.2s;
+        font-family: 'Inter', sans-serif;
+        background: rgba(255, 255, 255, 0.02);
+    }
+    .sidebar-links .nav-item:hover, .sidebar-links .nav-item.active {
+        color: #ffff00;
+        background: rgba(255, 255, 0, 0.1);
+        padding-left: 16px;
+    }
 </style>
+
+<script>
+    // Sidebar Toggle Function
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebarMenu');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+    }
+</script>
