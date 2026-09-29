@@ -46,12 +46,14 @@
 </div>
 
 <style>
-    /* Crypto Ticker Bar Style - Full Width */
+    /* Crypto Ticker Bar Style - Matches Container Width */
     .crypto-ticker-bar {
         width: 100%;
+        max-width: 420px;
         background: #05070c;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 6px 15px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: none;
+        padding: 6px 12px;
         font-size: 11px;
         font-family: 'Orbitron', sans-serif;
         color: #94a3b8;
@@ -59,8 +61,8 @@
         justify-content: space-between;
         align-items: center;
         box-sizing: border-box;
-        border-top-left-radius: 16px;
-        border-top-right-radius: 16px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
         overflow: hidden;
     }
     .ticker-track {
@@ -72,13 +74,13 @@
     .price-green { color: #10b981; font-weight: 600; }
     .price-neutral { color: #94a3b8; font-weight: 600; }
 
-    /* Main Navbar Wrapper - Full Width */
+    /* Main Navbar Wrapper - Matches Container Width */
     .top-navbar-wrapper {
         width: 100%;
+        max-width: 420px;
         background: rgba(15, 23, 42, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-bottom-left-radius: 16px;
-        border-bottom-right-radius: 16px;
+        border-radius: 0 0 20px 20px;
         padding: 10px 15px;
         margin-bottom: 15px;
         display: flex;
@@ -170,7 +172,7 @@
         width: 260px;
         height: 100%;
         background: #0f172a;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: 1px solid rgba(255, 255, 0, 0.2);
         z-index: 9999;
         transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         padding: 20px;
