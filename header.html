@@ -46,13 +46,12 @@
 </div>
 
 <style>
-    /* Crypto Ticker Bar Style */
+    /* Crypto Ticker Bar Style - Full Width */
     .crypto-ticker-bar {
         width: 100%;
-        max-width: 420px;
         background: #05070c;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 6px 12px;
+        padding: 6px 15px;
         font-size: 11px;
         font-family: 'Orbitron', sans-serif;
         color: #94a3b8;
@@ -73,10 +72,9 @@
     .price-green { color: #10b981; font-weight: 600; }
     .price-neutral { color: #94a3b8; font-weight: 600; }
 
-    /* Main Navbar Wrapper */
+    /* Main Navbar Wrapper - Full Width */
     .top-navbar-wrapper {
         width: 100%;
-        max-width: 420px;
         background: rgba(15, 23, 42, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-bottom-left-radius: 16px;
@@ -223,15 +221,3 @@
         padding-left: 16px;
     }
 </style>
-
-<script>
-    // Sidebar Toggle Function
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebarMenu');
-        const overlay = document.getElementById('sidebarOverlay');
-        if (sidebar && overlay) {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-    }
-</script>
