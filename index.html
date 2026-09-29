@@ -411,13 +411,20 @@
             letter-spacing: 0.5px;
         }
 
-        /* Recent Live Payouts Section */
+        /* Recent Live Payouts Section (Modified to link payout.html) */
         .payouts-section {
             margin-top: 30px;
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 15px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            text-decoration: none;
+            display: block;
+        }
+        .payouts-section:hover {
+            border-color: #f59e0b;
         }
 
         .payout-list {
@@ -518,7 +525,7 @@
         <div class="drawer-links">
             <a href="index.html" onclick="toggleMenu()">Home</a>
             <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
-            <a href="#payouts" onclick="toggleMenu()">Live Payouts</a>
+            <a href="payout.html">Live Payouts</a>
             <a href="dashboard.html">Dashboard</a>
             <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
         </div>
@@ -622,13 +629,16 @@
 
         </div>
 
-        <!-- Live Payouts Section (Dynamic JSON Loader) -->
-        <div class="payouts-section" id="payouts">
-            <div class="section-title" style="margin-bottom: 10px;">⚡ Recent Live Payouts</div>
+        <!-- Recent Live Payouts Section Connected to payout.html -->
+        <a href="payout.html" class="payouts-section" id="payouts">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div class="section-title" style="margin-bottom: 0;">⚡ Recent Live Payouts</div>
+                <span style="font-size: 11px; color: #f59e0b;">View All →</span>
+            </div>
             <div class="payout-list" id="payoutContainer">
                 <div style="text-align: center; color: #64748b; font-size: 12px; padding: 10px;">Loading payouts...</div>
             </div>
-        </div>
+        </a>
 
     </div>
 
