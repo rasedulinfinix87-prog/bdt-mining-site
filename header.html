@@ -257,46 +257,17 @@
     <div class="sidebar-links">
         <a href="index.html" class="nav-item">🏠 Home</a>
         <a href="mining-plans.html" class="nav-item">💎 Mining Plans</a>
-        <a href="live-payouts.html" class="nav-item">💸 Live Payouts</a>
+        <a href="payout.html" class="nav-item">💸 Live Payouts</a>
         <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
-        <a href="nid-verification.html" class="nav-item">🛡️ NID Verification</a>
-        <a href="profile.html" class="nav-item">👤 Account Info</a>
+        <a href="verification-details.html" class="nav-item">🛡️ NID Verification</a>
+        <a href="account-info.html" class="nav-item">👤 Account Info</a>
         
         <!-- Contact Support-এর ঠিক উপরে Deposit & Withdraw বাটন -->
-        <a href="deposit-withdraw.html?type=deposit" class="nav-item deposit-withdraw-nav">💳 Deposit & Withdraw</a>
+        <a href="deposit-withdraw.html" class="nav-item deposit-withdraw-nav">💳 Deposit & Withdraw</a>
         
-        <a href="support.html" class="nav-item">🎧 Contact Support</a>
+        <a href="chat.html" class="nav-item">🎧 Contact Support</a>
         
         <!-- লগআউট বাটন -->
         <a href="logout.php" class="logout-item">LOGOUT</a>
     </div>
 </div>
-
-<!-- ব্যালেন্স লাইভ ফেচ করার জন্য JavaScript (Supabase বা Custom API ভিত্তিক) -->
-<script>
-    async function fetchUserBalance() {
-        try {
-            // আপনার প্রজেক্ট অনুযায়ী লোকালস্টোরেজ বা সেশন থেকে ইউজার আইডি বা ইমেইল নিন
-            // উদাহরণস্বরূপ যদি Supabase ব্যবহার করেন:
-            /*
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('balance')
-                    .eq('id', user.id) // অথবা .eq('email', user.email)
-                    .single();
-                
-                if (data && data.balance !== null) {
-                    document.getElementById('topBalance').innerText = '$' + parseFloat(data.balance).toFixed(2);
-                }
-            }
-            */
-        } catch (err) {
-            console.error('Balance fetch error:', err);
-        }
-    }
-
-    // পেজ লোড হলে ব্যালেন্স ফেচ করবে
-    document.addEventListener("DOMContentLoaded", fetchUserBalance);
-</script>
