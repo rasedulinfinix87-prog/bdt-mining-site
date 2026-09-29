@@ -624,15 +624,14 @@
 
             const navButtons = document.getElementById('navButtons');
             const drawerLinks = document.getElementById('drawerLinks');
-            const nidSymbolEl = document.getElementById('nidStatusSymbol');
 
-            let nidSymbol = '⚠️'; // Default: ভেরিফিকেশন প্রয়োজন
+            let nidSymbol = '⚠️'; // Default: ভেরিফিকেশন প্রয়োজন (যদি কিছু না থাকে)
 
             if (user) {
-                // প্রোফাইল বা NID টেবিল থেকে স্ট্যাটस ফেচ করা (আপনার ডাটাবেজ কলামের নাম 'nid_status' বা শুধু 'status' হতে পারে, প্রয়োজনমতো পরিবর্তন করে নিতে পারেন)
+                // profiles টেবिल থেকে সঠিক কলাম verification_status এবং balance ফেচ করা হচ্ছে
                 const { data: profile } = await supabaseClient
                     .from('profiles')
-                    .select('balance, nid_status')
+                    .select('balance, verification_status')
                     .eq('id', user.id)
                     .single();
 
@@ -643,13 +642,14 @@
                         <div class="top-balance-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="Current Balance">$${userBalance}</div>
                     `;
 
-                    // স্ট্যাটাস অনুযায়ী সিম্বল সেট করা
-                    const status = profile.nid_status ? profile.nid_status.toLowerCase() : '';
-                    if (status === 'approved') {
+                    // verification_status অনুযায়ী সঠিক সিম্বল নির্ধারণ করা
+                    const vStatus = profile.verification_status ? profile.verification_status.toLowerCase().trim() : '';
+                    
+                    if (vStatus === 'approved') {
                         nidSymbol = '✅';
-                    } else if (status === 'pending') {
+                    } else if (vStatus === 'pending') {
                         nidSymbol = '⏳';
-                    } else if (status === 'unverified') {
+                    } else if (vStatus === 'unverified') {
                         nidSymbol = '❌';
                     } else {
                         nidSymbol = '⚠️';
@@ -677,7 +677,7 @@
                     <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
                     <a href="payout.html">Live Payouts</a>
                     <a href="dashboard.html">Dashboard</a>
-                    <a href="verification-details.html">NID Verification <span id="nidStatusSymbol">⚠️</span></a>
+                    <a href="verification-details.html">NID Verification <span id="nidStatusSymbol">${nidSymbol}</span></a>
                     <a href="account-info.html">Account Info</a>
                     <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
                 `;
