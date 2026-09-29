@@ -43,6 +43,38 @@
             position: relative;
         }
 
+        /* Global Data Loading Spinner Animation Overlay */
+        #globalLoader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 12, 20, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        #globalLoader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(245, 158, 11, 0.1);
+            border-top: 4px solid #1E90FF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Floating Background Crypto Symbols with Animation */
         .bg-crypto {
             position: fixed;
@@ -83,7 +115,7 @@
             gap: 4px;
             align-items: center;
         }
-        .up { color: #f59e0b; font-weight: 600; }
+        .up { color: #1E90FF; font-weight: 600; }
         .down { color: #ef4444; font-weight: 600; }
 
         .app-container {
@@ -197,7 +229,7 @@
         /* Top Bar Balance Badge */
         .top-balance-badge {
             background: rgba(245, 158, 11, 0.15);
-            color: #1e3a8a;
+            color: #1E90FF;
             border: 1px solid rgba(245, 158, 11, 0.3);
             padding: 6px 12px;
             border-radius: 15px;
@@ -293,10 +325,10 @@
             text-align: center;
             margin-bottom: 20px;
             font-size: 12px;
-            color: #f59e0b;
+            color: #1E90FF;
         }
         .feasibility-tag strong {
-            color: #1e3a8a;
+            color: #1E90FF;
         }
 
         .section-title {
@@ -335,7 +367,7 @@
             top: 15px;
             right: 15px;
             background: #334155;
-            color: #1e3a8a;
+            color: #1E90FF;
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 11px;
@@ -368,13 +400,13 @@
             text-align: center;
             font-size: 22px;
             font-weight: 800;
-            color: #1e3a8a;
+            color: #1E90FF;
             margin-bottom: 4px;
         }
 
         .plan-profit {
             text-align: center;
-            color: #1e3a8a;
+            color: #1E90FF;
             font-weight: 600;
             font-size: 14px;
             margin-bottom: 15px;
@@ -392,7 +424,7 @@
         }
         
         .plan-details strong {
-            color: #1e3a8a;
+            color: #1E90FF;
         }
 
         .crypto-badges {
@@ -415,7 +447,7 @@
 
         .crypto-pill span {
             display: block;
-            color: #1e3a8a;
+            color: #1E90FF;
             font-weight: 600;
             font-size: 11px;
         }
@@ -473,50 +505,13 @@
             70% { box-shadow: 0 0 0 10px rgba(42, 171, 238, 0); }
             100% { box-shadow: 0 0 0 0 rgba(42, 171, 238, 0); }
         }
-
-        /* Data Loading Overlay Animation Styles */
-        #appLoader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #080c14;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            transition: opacity 0.4s ease;
-        }
-        .spinner {
-            width: 45px;
-            height: 45px;
-            border: 4px solid rgba(245, 158, 11, 0.2);
-            border-top: 4px solid #f59e0b;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 12px;
-        }
-        .loading-text {
-            font-family: 'Orbitron', sans-serif;
-            color: #f59e0b;
-            font-size: 13px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Data Loading Animation Screen -->
-    <div id="appLoader">
+    <!-- Global Loading Animation Overlay -->
+    <div id="globalLoader">
         <div class="spinner"></div>
-        <div class="loading-text">Loading Data...</div>
     </div>
 
     <!-- Floating Background Crypto Symbols -->
@@ -527,9 +522,9 @@
 
     <!-- Crypto Market Live Ticker Bar -->
     <div class="crypto-ticker-bar">
-        <div class="ticker-item">BTC: $<span id="btcPrice" style="color: #1e3a8a;">64,250</span> <span id="btcChange" class="up">+<span style="color: #1e3a8a;">1.8</span>%</span></div>
-        <div class="ticker-item">ETH: $<span id="ethPrice" style="color: #1e3a8a;">3,480</span> <span id="ethChange" class="up">+<span style="color: #1e3a8a;">2.4</span>%</span></div>
-        <div class="ticker-item">USDT: $<span id="usdtPrice" style="color: #1e3a8a;">1.00</span> <span id="usdtChange" class="up"><span style="color: #1e3a8a;">0.0</span>%</span></div>
+        <div class="ticker-item">BTC: $<span id="btcPrice" style="color: #1E90FF;">64,250</span> <span id="btcChange" class="up">+1.8%</span></div>
+        <div class="ticker-item">ETH: $<span id="ethPrice" style="color: #1E90FF;">3,480</span> <span id="ethChange" class="up">+2.4%</span></div>
+        <div class="ticker-item">USDT: $<span id="usdtPrice" style="color: #1E90FF;">1.00</span> <span id="usdtChange" class="up">0.0%</span></div>
     </div>
 
     <!-- Side Menu Drawer -->
@@ -570,7 +565,7 @@
 
         <!-- 5% Feasibility Banner -->
         <div class="feasibility-tag">
-            ⚡ <strong><span style="color: #1e3a8a;">5</span>% Feasibility Fee Active</strong> (USDT / USD Auto-Conversion)
+            ⚡ <strong><span style="color: #1E90FF;">5</span>% Feasibility Fee Active</strong> (USDT / USD Auto-Conversion)
         </div>
 
         <div class="section-title" id="plans">Our Profitable Plans</div>
@@ -580,21 +575,21 @@
             
             <!-- Plan 1: 15 Days -->
             <div class="plan-card">
-                <div class="badge-days"><span style="color: #1e3a8a;">15</span> Days</div>
-                <div class="plan-title"><span style="color: #1e3a8a;">5</span> Airdrop</div>
-                <div class="plan-amount"><span style="color: #1e3a8a;">10</span>$ Invest</div>
-                <div class="plan-profit"><span style="color: #1e3a8a;">15</span> Airdrop <span style="color: #1e3a8a;">15</span>$ Return</div>
+                <div class="badge-days"><span style="color: #1E90FF;">15</span> Days</div>
+                <div class="plan-title"><span style="color: #1E90FF;">5</span> Airdrop</div>
+                <div class="plan-amount"><span style="color: #1E90FF;">10</span>$ Invest</div>
+                <div class="plan-profit"><span style="color: #1E90FF;">15</span> Airdrop <span style="color: #1E90FF;">15</span>$ Return</div>
 
                 <div class="plan-details">
-                    <div>Duration: <strong><span style="color: #1e3a8a;">15</span> Days</strong></div>
-                    <div>Total Return: <strong><span style="color: #1e3a8a;">15</span>$</strong></div>
+                    <div>Duration: <strong><span style="color: #1E90FF;">15</span> Days</strong></div>
+                    <div>Total Return: <strong><span style="color: #1E90FF;">15</span>$</strong></div>
                     <div>Auto Claim System</div>
                 </div>
 
                 <div class="crypto-badges">
-                    <div class="crypto-pill">BTC / USD <span><span style="color: #1e3a8a;">5</span>% Fee Cap</span></div>
-                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1e3a8a;">5</span>% Buffer</span></div>
-                    <div class="crypto-pill">System Return <span><span style="color: #1e3a8a;">95</span>% Net Profit</span></div>
+                    <div class="crypto-pill">BTC / USD <span><span style="color: #1E90FF;">5</span>% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1E90FF;">5</span>% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span><span style="color: #1E90FF;">95</span>% Net Profit</span></div>
                 </div>
 
                 <button class="btn-invest" onclick="handleInvest('5 Airdrop', 10)">Invest Now</button>
@@ -603,21 +598,21 @@
             <!-- Plan 2: 30 Days -->
             <div class="plan-card featured">
                 <div class="badge-popular">Popular</div>
-                <div class="badge-days"><span style="color: #1e3a8a;">30</span> Days</div>
-                <div class="plan-title"><span style="color: #1e3a8a;">30</span> AirDrop</div>
-                <div class="plan-amount"><span style="color: #1e3a8a;">25</span>$ Invest</div>
-                <div class="plan-profit"><span style="color: #1e3a8a;">30</span> Airdrop + Extra <span style="color: #1e3a8a;">3</span> Airdrop Bonus</div>
+                <div class="badge-days"><span style="color: #1E90FF;">30</span> Days</div>
+                <div class="plan-title"><span style="color: #1E90FF;">30</span> AirDrop</div>
+                <div class="plan-amount"><span style="color: #1E90FF;">25</span>$ Invest</div>
+                <div class="plan-profit"><span style="color: #1E90FF;">30</span> Airdrop + Extra <span style="color: #1E90FF;">3</span> Airdrop Bonus</div>
 
                 <div class="plan-details">
-                    <div>Duration: <strong><span style="color: #1e3a8a;">30</span> Days</strong></div>
-                    <div>Total Return: <strong><span style="color: #1e3a8a;">65</span>$+ Extra <span style="color: #1e3a8a;">3</span>$ Bonus</strong></div>
+                    <div>Duration: <strong><span style="color: #1E90FF;">30</span> Days</strong></div>
+                    <div>Total Return: <strong><span style="color: #1E90FF;">65</span>$+ Extra <span style="color: #1E90FF;">3</span>$ Bonus</strong></div>
                     <div>Auto Claim System</div>
                 </div>
 
                 <div class="crypto-badges">
-                    <div class="crypto-pill">ETH / USD <span><span style="color: #1e3a8a;">5</span>% Fee Cap</span></div>
-                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1e3a8a;">5</span>% Buffer</span></div>
-                    <div class="crypto-pill">System Return <span><span style="color: #1e3a8a;">95</span>% Net Profit</span></div>
+                    <div class="crypto-pill">ETH / USD <span><span style="color: #1E90FF;">5</span>% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1E90FF;">5</span>% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span><span style="color: #1E90FF;">95</span>% Net Profit</span></div>
                 </div>
 
                 <button class="btn-invest" onclick="handleInvest('30 AirDrop', 25)">Invest Now</button>
@@ -625,21 +620,21 @@
 
             <!-- Plan 3: 45 Days -->
             <div class="plan-card">
-                <div class="badge-days"><span style="color: #1e3a8a;">45</span> Days</div>
-                <div class="plan-title"><span style="color: #1e3a8a;">60</span> AirDrop</div>
-                <div class="plan-amount"><span style="color: #1e3a8a;">50</span>$ Invest</div>
-                <div class="plan-profit"><span style="color: #1e3a8a;">60</span> Airdrop + Extra <span style="color: #1e3a8a;">5</span> Airdrop Bonus</div>
+                <div class="badge-days"><span style="color: #1E90FF;">45</span> Days</div>
+                <div class="plan-title"><span style="color: #1E90FF;">60</span> AirDrop</div>
+                <div class="plan-amount"><span style="color: #1E90FF;">50</span>$ Invest</div>
+                <div class="plan-profit"><span style="color: #1E90FF;">60</span> Airdrop + Extra <span style="color: #1E90FF;">5</span> Airdrop Bonus</div>
 
                 <div class="plan-details">
-                    <div>Duration: <strong><span style="color: #1e3a8a;">45</span> Days</strong></div>
-                    <div>Total Return: <strong><span style="color: #1e3a8a;">135</span>$+ Extra <span style="color: #1e3a8a;">5</span>$ Bonus</strong></div>
+                    <div>Duration: <strong><span style="color: #1E90FF;">45</span> Days</strong></div>
+                    <div>Total Return: <strong><span style="color: #1E90FF;">135</span>$+ Extra <span style="color: #1E90FF;">5</span>$ Bonus</strong></div>
                     <div>Auto Claim System</div>
                 </div>
 
                 <div class="crypto-badges">
-                    <div class="crypto-pill">SOL / USD <span><span style="color: #1e3a8a;">5</span>% Fee Cap</span></div>
-                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1e3a8a;">5</span>% Buffer</span></div>
-                    <div class="crypto-pill">System Return <span><span style="color: #1e3a8a;">95</span>% Net Profit</span></div>
+                    <div class="crypto-pill">SOL / USD <span><span style="color: #1E90FF;">5</span>% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1E90FF;">5</span>% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span><span style="color: #1E90FF;">95</span>% Net Profit</span></div>
                 </div>
 
                 <button class="btn-invest" onclick="handleInvest('60 AirDrop', 50)">Invest Now</button>
@@ -688,7 +683,7 @@
                         const userBalance = profile.balance !== undefined ? parseFloat(profile.balance).toFixed(2) : '0.00';
 
                         navButtons.innerHTML = `
-                            <div class="top-balance-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="Current Balance">$<span style="color: #1e3a8a;">${userBalance}</span></div>
+                            <div class="top-balance-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="Current Balance">$${userBalance}</div>
                         `;
 
                         // verification_status অনুযায়ী সঠিক সিম্বল নির্ধারণ করা (approved-এর জন্য শিল্ড 🛡️ আইকন)
@@ -701,7 +696,7 @@
                         } else if (vStatus === 'unverified') {
                             nidSymbol = '❌';
                         } else {
-                            nidSymbol = '🛡️';
+                            nidSymbol = '🛡️️';
                         }
                     }
 
@@ -731,16 +726,14 @@
                         <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
                     `;
                 }
-            } catch (err) {
-                console.error("Profile load error:", err);
+            } catch (error) {
+                console.error("Error loading user profile:", error);
             } finally {
-                // ডেটা লোড সম্পন্ন হওয়া মাত্রই অ্যানিমেশন স্ক্রিনটি ফেইড-আউট হয়ে মিলিয়ে যাবে
-                const loader = document.getElementById('appLoader');
+                // ডেটা লোড সম্পন্ন হওয়া মাত্রই অ্যানিমেশন স্ক্রিনটি ফেড আউট হয়ে হারিয়ে যাবে
+                const loader = document.getElementById('globalLoader');
                 if (loader) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => {
-                        loader.style.display = 'none';
-                    }, 400);
+                    loader.classList.add('fade-out');
+                    setTimeout(() => loader.remove(), 400);
                 }
             }
         }
@@ -775,16 +768,11 @@
         }
 
         function setTickerData(priceId, changeId, priceStr, percentVal) {
-            document.getElementById(priceId).innerHTML = `<span style="color: #1e3a8a;">${priceStr}</span>`;
+            document.getElementById(priceId).innerText = priceStr;
             const changeEl = document.getElementById(changeId);
             const formattedPercent = (percentVal >= 0 ? "+" : "") + percentVal.toFixed(2) + "%";
-            changeEl.innerHTML = `<span style="color: #1e3a8a;">${formattedPercent.replace(/[^0-9.\-+]/g, '')}</span>${formattedPercent.includes('+') ? '+' : (formattedPercent.includes('-') ? '-' : '')}`; // Keeping structure safe
+            changeEl.innerText = formattedPercent;
             
-            // Re-applying proper formatting with dark blue for numbers
-            const cleanNum = percentVal.toFixed(2);
-            const sign = percentVal >= 0 ? "+" : "";
-            changeEl.innerHTML = `${sign}<span style="color: #1e3a8a;">${cleanNum}</span>%`;
-
             if (percentVal >= 0) {
                 changeEl.className = "up";
             } else {
