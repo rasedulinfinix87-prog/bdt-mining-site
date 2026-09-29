@@ -493,7 +493,7 @@
             document.getElementById('withdrawModal').style.display = 'none';
         }
 
-        /* Withdraw Logic */
+        /* Withdraw Logic - Updated for 'transactions' table */
         async function handleWithdraw() {
             const method = document.getElementById('withdrawMethod').value;
             const accountNumber = document.getElementById('withdrawAccount').value.trim();
@@ -529,14 +529,17 @@
 
                 if (balError) throw balError;
 
-                // ২. withdrawals টেবিলে 'pending' স্ট্যাটাস সহ ডাটা ইনসার্ট করা
+                // ২. transactions টেবিলে 'withdrawal' টাইপ সহ ডাটা ইনসার্ট করা
                 const { error: withdrawError } = await supabaseClient
-                    .from('withdrawals')
+                    .from('transactions')
                     .insert([{
                         user_id: currentUser.id,
-                        amount: amount,
+                        user_email: currentUser.email,
+                        type: 'withdrawal',
                         method: method,
-                        account_number: accountNumber,
+                        amount: amount,
+                        sender_receiver_number: accountNumber,
+                        trx_id: 'WD-' + Date.now(), // অটো জেনারেটেড আইডি
                         status: 'pending',
                         created_at: new Date().toISOString()
                     }]);
