@@ -494,7 +494,7 @@
             <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
             <a href="payout.html">Live Payouts</a>
             <a href="dashboard.html">Dashboard</a>
-            <a href="verification-details.html">NID Verification <span id="nidStatusSymbol">⚠️</span></a>
+            <a href="verification-details.html">NID Verification <span id="nidStatusSymbol">🛡️</span></a>
             <a href="account-info.html">Account Info</a>
             <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
         </div>
@@ -625,10 +625,9 @@
             const navButtons = document.getElementById('navButtons');
             const drawerLinks = document.getElementById('drawerLinks');
 
-            let nidSymbol = '⚠️'; // Default: ভেরিফিকেশন প্রয়োজন (যদি কিছু না থাকে)
+            let nidSymbol = '🛡️️'; // Default বা আনভেরিফাইড হলে শিল্ড আইকন দেখাবে
 
             if (user) {
-                // profiles টেবिल থেকে সঠিক কলাম verification_status এবং balance ফেচ করা হচ্ছে
                 const { data: profile } = await supabaseClient
                     .from('profiles')
                     .select('balance, verification_status')
@@ -642,17 +641,17 @@
                         <div class="top-balance-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="Current Balance">$${userBalance}</div>
                     `;
 
-                    // verification_status অনুযায়ী সঠিক সিম্বল নির্ধারণ করা
+                    // verification_status অনুযায়ী সঠিক সিম্বল নির্ধারণ করা (approved-এর জন্য শিল্ড 🛡️ আইকন)
                     const vStatus = profile.verification_status ? profile.verification_status.toLowerCase().trim() : '';
                     
                     if (vStatus === 'approved') {
-                        nidSymbol = '✅';
+                        nidSymbol = '🛡️';
                     } else if (vStatus === 'pending') {
                         nidSymbol = '⏳';
                     } else if (vStatus === 'unverified') {
                         nidSymbol = '❌';
                     } else {
-                        nidSymbol = '⚠️';
+                        nidSymbol = '🛡️';
                     }
                 }
 
