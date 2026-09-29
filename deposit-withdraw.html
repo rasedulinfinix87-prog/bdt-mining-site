@@ -100,10 +100,7 @@
     </div>
 
     <script>
-        // ==========================================
-        // ১ ডলারের মান এখান থেকে পরিবর্তন করুন:
-        const USD_RATE = 125; // ১২৫ টাকার জায়গায় ১২৬ করতে চাইলে এখানে বদলে দিন।
-        // ==========================================
+        const USD_RATE = 125; 
 
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
@@ -111,7 +108,6 @@
 
         let currentType = 'deposit';
 
-        // ইনিশিয়াল পেজ লোড হবার পর এক্সচেঞ্জ রেট মেসেজ আপডেট করা
         document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
 
         function switchTab(type) {
@@ -141,10 +137,9 @@
                 submitBtn.innerText = 'Submit Withdraw Request';
             }
 
-            calculateConversion(); // ট্যাব পরিবর্তন করার পর ক্যালকুলেশন আপডেট করা
+            calculateConversion(); 
         }
 
-        // Live BDT to USD Calculation Function
         function calculateConversion() {
             const bdtInput = parseFloat(document.getElementById('amount').value) || 0;
             const usdValue = (bdtInput / USD_RATE).toFixed(2);
@@ -164,6 +159,10 @@
         async function handleTransaction(e) {
             e.preventDefault();
 
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Processing...';
+
             const { data: { user } } = await supabaseClient.auth.getUser();
 
             if (!user) {
@@ -174,16 +173,55 @@
 
             const method = document.getElementById('method').value;
             const bdtAmount = parseFloat(document.getElementById('amount').value);
-            const usdAmount = parseFloat((bdtAmount / USD_RATE).toFixed(2)); // BDT টাকাকে USD ডলারে কনভার্ট করা
+            const usdAmount = parseFloat((bdtAmount / USD_RATE).toFixed(2));
             const phone = document.getElementById('phone').value;
             const trxId = document.getElementById('trxId').value || null;
 
             if (usdAmount <= 0) {
                 alert('দয়া করে সঠিক টাকার পরিমাণ প্রদান করুন।');
+                submitBtn.disabled = false;
+                submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
                 return;
             }
 
-            // Database insert with USD Amount
+            // উইথড্র এর ক্ষেত্রে ব্যালেন্স চেক ও বিয়োগ (Deduct) করার লজিক
+            if (currentType === 'withdraw') {
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('balance')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profileError || !profile) {
+                    alert('ইউজার প্রোফাইল খুঁজে পাওয়া যায়নি!');
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                const currentBalance = parseFloat(profile.balance || 0);
+
+                if (currentBalance < usdAmount) {
+                    alert(`আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!\n\nআপনার ব্যালেন্স: $${currentBalance.toFixed(2)} USD\nআপনি তুলতে চাচ্ছেন: $${usdAmount} USD`);
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Submit Withdraw Request';
+                    return;
+                }
+
+                // মূল ব্যালেন্স থেকে বিয়োগ (Subtract) করা
+                const newBalance = currentBalance - usdAmount;
+                const { error: updateError } = await supabaseClient
+                    .from('profiles')
+                    .update({ balance: newBalance })
+                    .eq('id', user.id);
+
+                if (updateError) {
+                    alert('ব্যালেন্স আপডেট করতে সমস্যা হয়েছে: ' + updateError.message);
+                    submitBtn.disabled = false;
+                    return;
+                }
+            }
+
+            // Transactions টেবিলে রিকোয়েস্ট ইনসার্ট করা
             const { data, error } = await supabaseClient
                 .from('transactions')
                 .insert([
@@ -192,7 +230,7 @@
                         user_email: user.email,
                         type: currentType,
                         method: method,
-                        amount: usdAmount, // ডাটাবেজে ডলার অ্যামাউন্ট জমা হচ্ছে ($10.00)
+                        amount: usdAmount,
                         sender_receiver_number: phone,
                         trx_id: trxId,
                         status: 'pending'
@@ -201,13 +239,13 @@
 
             if (error) {
                 alert('রিকোয়েস্ট জমা করতে সমস্যা হয়েছে: ' + error.message);
+                submitBtn.disabled = false;
             } else {
-                alert(`আপনার ${currentType.toUpperCase()} রিকোয়েস্ট ($${usdAmount} USD / ৳${bdtAmount} BDT) সফলভাবে জমা হয়েছে। অ্যাডমিন পর্যালোচনার পর ব্যালেন্স আপডেট করা হবে।`);
+                alert(`আপনার ${currentType.toUpperCase()} রিকোয়েস্ট ($${usdAmount} USD / ৳${bdtAmount} BDT) সফলভাবে জমা হয়েছে।`);
                 window.location.href = 'dashboard.html';
             }
         }
 
-        // URL চেক করা যদি dashboard থেকে ?type=withdraw বা ?type=deposit দিয়ে আসে
         const urlParams = new URLSearchParams(window.location.search);
         const initialType = urlParams.get('type');
         if (initialType === 'withdraw' || initialType === 'deposit') {
