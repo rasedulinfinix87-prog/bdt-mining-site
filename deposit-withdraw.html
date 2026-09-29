@@ -59,12 +59,12 @@
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
             letter-spacing: 0.5px;
-            color: #1E90EE; /* অংকের কালার #1E90EE */
+            color: #1E90EE;
         }
 
         .rate-info {
             font-size: 11px;
-            color: #1E90EE; /* অংকের কালার #1E90EE */
+            color: #1E90EE;
             margin-top: 4px;
             text-align: right;
             font-family: 'Orbitron', sans-serif;
@@ -103,7 +103,7 @@
             font-family: 'Inter', sans-serif;
             font-weight: 600;
             letter-spacing: normal;
-            color: #1E90EE; /* অংকের কালার #1E90EE */
+            color: #1E90EE;
         }
 
         .copy-btn {
@@ -207,6 +207,15 @@
             opacity: 0.9;
             transform: scale(1.02);
         }
+
+        /* হেডার কনটেইনার সাইজ ফিক্স */
+        #header-placeholder {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -295,6 +304,16 @@
 
         document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
 
+        // Sidebar Toggle Global Function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+
         // Load Header Dynamically and Update Balance
         async function loadHeader() {
             try {
@@ -305,7 +324,7 @@
                     
                     // Highlight current page in navbar
                     const currentPage = window.location.pathname.split("/").pop();
-                    const navLinks = document.querySelectorAll('.nav-item, .nav-links a');
+                    const navLinks = document.querySelectorAll('.nav-item, .sidebar-links .nav-item');
                     navLinks.forEach(link => {
                         if (link.getAttribute('href') === currentPage) {
                             link.classList.add('active');
@@ -483,7 +502,7 @@
             if (type === 'success') {
                 iconElem.innerText = '🎉';
             } else if (type === 'error') {
-                iconElem.innerText = '⚠️️';
+                iconElem.innerText = '⚠';
             } else {
                 iconElem.innerText = '🔔';
             }
