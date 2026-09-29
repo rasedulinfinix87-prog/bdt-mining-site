@@ -6,16 +6,16 @@
     <title>User Dashboard - BDTMINER</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif; }
         
         body { 
-            background: #060913; 
+            background: #030712; 
             background-image: 
-                radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+                radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(59, 130, 246, 0.12) 0px, transparent 50%);
             color: #f3f4f6; 
             min-height: 100vh; 
             display: flex; 
@@ -26,14 +26,14 @@
 
         .dashboard-card { 
             width: 100%; 
-            max-width: 440px; 
-            background: rgba(15, 23, 42, 0.75); 
+            max-width: 450px; 
+            background: rgba(15, 23, 42, 0.8); 
             border: 1px solid rgba(255, 255, 255, 0.12); 
             backdrop-filter: blur(25px); 
             -webkit-backdrop-filter: blur(25px);
             border-radius: 28px; 
             padding: 24px; 
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.05); 
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 35px rgba(16, 185, 129, 0.08); 
         }
 
         /* User Header */
@@ -46,27 +46,33 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
         }
         .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar-box {
-            width: 42px; height: 42px;
+        
+        /* Home Icon Design */
+        .home-icon-btn {
+            width: 44px; height: 44px;
             border-radius: 14px;
-            background: linear-gradient(135deg, #10b981, #047857);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.3));
+            border: 1px solid rgba(16, 185, 129, 0.4);
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; color: #fff; font-size: 18px;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #10b981; text-decoration: none;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+            transition: all 0.3s ease;
         }
+        .home-icon-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
         .user-meta { display: flex; flex-direction: column; }
-        .user-email { 
-            font-weight: 700; 
+        .user-status-title { 
+            font-weight: 800; 
             color: #f9fafb; 
-            font-size: 14px; 
-            max-width: 190px; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            white-space: nowrap; 
+            font-size: 15px; 
+            letter-spacing: 0.5px;
         }
         .trust-badge {
-            font-size: 10px;
+            font-size: 11px;
             color: #34d399;
             font-weight: 700;
             display: flex;
@@ -92,8 +98,8 @@
         .security-banner {
             background: rgba(16, 185, 129, 0.06);
             border: 1px solid rgba(16, 185, 129, 0.15);
-            border-radius: 12px;
-            padding: 8px 12px;
+            border-radius: 14px;
+            padding: 9px 14px;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -101,11 +107,11 @@
             font-size: 11px;
             color: #9ca3af;
         }
-        .security-banner span { color: #34d399; font-weight: 600; }
+        .security-banner span { color: #34d399; font-weight: 700; }
 
         /* Main Balance Box */
         .balance-box { 
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); 
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95)); 
             border: 1px solid rgba(255, 255, 255, 0.12); 
             border-radius: 22px; 
             padding: 22px; 
@@ -119,12 +125,12 @@
             content: '';
             position: absolute;
             top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 60%);
             pointer-events: none;
         }
         .balance-title { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; margin-bottom: 8px; }
         .balance-amount { 
-            font-size: 34px; 
+            font-size: 36px; 
             font-weight: 800; 
             color: #10b981; 
             text-shadow: 0 0 25px rgba(16, 185, 129, 0.4); 
@@ -174,62 +180,98 @@
         }
         .btn-activate:hover { filter: brightness(1.15); transform: translateY(-1px); }
 
-        /* Mining Rig Section */
+        /* Multiple Mining Rigs Container */
+        #miningRigsContainer { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+
         .mining-card {
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.8));
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85));
             border: 1px solid rgba(59, 130, 246, 0.4);
             border-radius: 22px;
             padding: 20px;
-            margin-bottom: 20px;
             position: relative;
-            box-shadow: 0 10px 35px rgba(59, 130, 246, 0.15);
-            display: none;
+            box-shadow: 0 10px 35px rgba(59, 130, 246, 0.12);
         }
-        .mining-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .mining-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
         .mining-title { font-weight: 800; font-size: 15px; color: #60a5fa; display: flex; align-items: center; gap: 8px; }
         .status-badge { 
             background: rgba(16, 185, 129, 0.15); 
             color: #34d399; 
             font-size: 10px; 
-            padding: 5px 12px; 
+            padding: 4px 10px; 
             border-radius: 20px; 
             border: 1px solid rgba(16, 185, 129, 0.4); 
             font-weight: 800; 
             letter-spacing: 0.5px;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
 
-        /* Animated Mining Rig Icon */
         .mining-animation-box {
             display: flex;
             align-items: center;
             gap: 16px;
-            margin: 16px 0;
-            padding: 16px;
+            margin: 14px 0;
+            padding: 14px;
             background: rgba(6, 9, 19, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 16px;
         }
         .gear-spin {
-            width: 42px; height: 42px;
+            width: 40px; height: 40px;
             border: 3px solid rgba(59, 130, 246, 0.2);
             border-top: 3px solid #f59e0b;
             border-right: 3px solid #10b981;
             border-radius: 50%;
             animation: spin 1.5s linear infinite;
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+            flex-shrink: 0;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .mining-stats-text { font-size: 12px; color: #9ca3af; line-height: 1.6; }
-        .mining-stats-text strong { color: #fff; font-size: 15px; font-weight: 700; }
+        .mining-stats-text strong { color: #fff; font-size: 14px; font-weight: 700; }
 
-        /* Progress Bar */
-        .progress-container { margin-top: 16px; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #9ca3af; font-weight: 600; margin-bottom: 8px; }
-        .progress-bar-bg { width: 100%; height: 10px; background: rgba(30, 41, 59, 0.9); border-radius: 10px; overflow: hidden; padding: 2px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .progress-container { margin-top: 14px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: #9ca3af; font-weight: 600; margin-bottom: 6px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: rgba(30, 41, 59, 0.9); border-radius: 10px; overflow: hidden; }
         .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 10px; transition: width 0.5s ease; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
 
-        .back-home { display: block; text-align: center; color: #6b7280; text-decoration: none; font-size: 13px; margin-top: 18px; font-weight: 600; transition: color 0.3s; }
+        /* Trust Article Section */
+        .trust-article-card {
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        .article-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .article-content {
+            font-size: 12.5px;
+            color: #d1d5db;
+            line-height: 1.6;
+        }
+        .article-more-text {
+            display: none;
+            margin-top: 8px;
+        }
+        .btn-toggle-article {
+            background: none;
+            border: none;
+            color: #60a5fa;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 0 0 0;
+            display: inline-block;
+        }
+
+        .back-home { display: block; text-align: center; color: #6b7280; text-decoration: none; font-size: 13px; margin-top: 12px; font-weight: 600; transition: color 0.3s; }
         .back-home:hover { color: #9ca3af; }
     </style>
 </head>
@@ -239,12 +281,18 @@
         <!-- Header -->
         <div class="user-header">
             <div class="user-info">
-                <div class="avatar-box" id="avatarLetter">U</div>
+                <!-- Home Icon Instead of Gmail -->
+                <a href="index.html" class="home-icon-btn" title="Go to Home">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </a>
                 <div class="user-meta">
-                    <span class="user-email" id="userEmail">Loading...</span>
+                    <span class="user-status-title">BDTMINER Dashboard</span>
                     <div class="trust-badge">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        VERIFIED ACCOUNT
+                        VERIFIED NODE
                     </div>
                 </div>
             </div>
@@ -253,11 +301,11 @@
 
         <!-- Security Badge Banner -->
         <div class="security-banner">
-            <div>🔒 256-Bit SSL Encrypted</div>
-            <div>Status: <span>Active Node</span></div>
+            <div>🔒 SSL Protected Cloud Mining</div>
+            <div>Status: <span>Active</span></div>
         </div>
 
-        <!-- Plan Activation Request (When Plan URL Param Exists) -->
+        <!-- Plan Activation Request -->
         <div id="planBanner" class="selected-plan-card">
             <div class="plan-header-title">⚡ Ready to Activate</div>
             <div class="plan-details" id="planDetailsText">Starter Plan (৳ 5000)</div>
@@ -280,35 +328,25 @@
             </button>
         </div>
 
-        <!-- Active Mining Rig Display -->
-        <div class="mining-card" id="activeMiningCard">
-            <div class="mining-header">
-                <div class="mining-title">
-                    <span>⛏️</span> <span id="activePlanTitle">Mining Rig</span>
-                </div>
-                <span class="status-badge">MINING ACTIVE</span>
-            </div>
+        <!-- Multiple Active Mining Rigs Container -->
+        <div id="miningRigsContainer"></div>
 
-            <div class="mining-animation-box">
-                <div class="gear-spin"></div>
-                <div class="mining-stats-text">
-                    Total Return: <strong id="totalReturnText">৳ 0.00</strong><br>
-                    Time Left: <strong id="timeLeftText">--</strong>
-                </div>
+        <!-- Bengali Trust Article (More / Less) -->
+        <div class="trust-article-card">
+            <div class="article-title">
+                🛡️ কেন BDTMINER-এ বিনিয়োগ ১০০% নিরাপদ ও লাভজনক?
             </div>
-
-            <div class="progress-container">
-                <div class="progress-label">
-                    <span>Mining Progress</span>
-                    <span id="progressPercent">0%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="progressFill"></div>
-                </div>
+            <div class="article-content">
+                BDTMINER হলো আধুনিক ক্লাউড মাইনিং প্রযুক্তির একটি নির্ভরযোগ্য প্ল্যাটফর্ম। আমরা উন্নত প্রযুক্তির রিগ ব্যবহার করে সরাসরি সার্ভার থেকে মাইনিং পরিচালনা করি, যার মাধ্যমে আপনার অর্জিত লভ্যাংশ প্রতিদিন স্বয়ংক্রিয়ভাবে জমা হয়।
+                <span id="moreArticleText" class="article-more-text">
+                    <br><br>
+                    আমাদের প্ল্যাটফর্মে রয়েছে ২৫৬-বিট ইনক্রিপ্টেড সিকিউরিটি, যা আপনার আমানতকে সম্পূর্ণ নিরাপদ রাখে। আপনি আপনার ইচ্ছা অনুযায়ী এক বা একাধিক মাইনিং প্ল্যান একসাথে সক্রিয় রাখতে পারবেন। প্ল্যানের মেয়াদ শেষে আসল অর্থ ও অর্জিত মুনাফা সরাসরি আপনার প্রধান ব্যালেন্সে জমা হয়, যা যেকোনো সময় বিকাশ বা নগদের মাধ্যমে উত্তোলন করা সম্ভব।
+                </span>
             </div>
+            <button class="btn-toggle-article" id="toggleArticleBtn" onclick="toggleArticle()">Read More ▼</button>
         </div>
 
-        <a href="index.html" class="back-home">← Back to Home</a>
+        <a href="index.html" class="back-home">← Back to Home Page</a>
     </div>
 
     <script>
@@ -320,7 +358,6 @@
         let currentBalance = 0;
         let selectedPlanData = null;
 
-        // Plan Configurations (Name, Amount, Duration in Days, Total Profit Multiplier/Return)
         const PLAN_CONFIGS = {
             'Starter Plan': { amount: 5000, duration: 15, returnAmount: 7500 },
             'Standard Plan': { amount: 10000, duration: 15, returnAmount: 16000 },
@@ -336,8 +373,6 @@
             }
 
             currentUser = user;
-            document.getElementById('userEmail').innerText = user.email;
-            document.getElementById('avatarLetter').innerText = user.email.charAt(0).toUpperCase();
 
             // Load Balance
             await loadBalance();
@@ -356,8 +391,8 @@
                 document.getElementById('planDetailsText').innerText = `${planName} - ৳ ${selectedPlanData.amount.toLocaleString()} (${selectedPlanData.duration} Days)`;
             }
 
-            // Check Active Mining Plans
-            checkActivePlan();
+            // Check Active Mining Plans (Supports Multiple Plans)
+            checkActivePlans();
         }
 
         async function loadBalance() {
@@ -422,12 +457,11 @@
                 alert('প্ল্যান চালু করতে সমস্যা হয়েছে: ' + planError.message);
             } else {
                 alert('অভিনন্দন! আপনার মাইনিং প্ল্যানটি সফলভাবে অ্যাক্টিভ করা হয়েছে।');
-                // Remove URL Params and Reload Page
                 window.location.href = 'dashboard.html';
             }
         }
 
-        async function checkActivePlan() {
+        async function checkActivePlans() {
             const { data: activePlans } = await supabaseClient
                 .from('user_plans')
                 .select('*')
@@ -435,14 +469,43 @@
                 .eq('status', 'active')
                 .order('id', { ascending: false });
 
-            if (activePlans && activePlans.length > 0) {
-                const plan = activePlans[0];
-                document.getElementById('planBanner').style.display = 'none'; // Hide banner if already active
-                document.getElementById('activeMiningCard').style.display = 'block';
-                document.getElementById('activePlanTitle').innerText = plan.plan_name;
-                document.getElementById('totalReturnText').innerText = `৳ ${parseFloat(plan.total_return).toLocaleString()}`;
+            const container = document.getElementById('miningRigsContainer');
+            container.innerHTML = '';
 
-                startMiningTimer(plan);
+            if (activePlans && activePlans.length > 0) {
+                document.getElementById('planBanner').style.display = 'none';
+
+                activePlans.forEach((plan, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'mining-card';
+                    card.id = `miningCard_${plan.id}`;
+                    card.innerHTML = `
+                        <div class="mining-header">
+                            <div class="mining-title">
+                                <span>⛏️</span> <span>${plan.plan_name}</span>
+                            </div>
+                            <span class="status-badge">MINING ACTIVE</span>
+                        </div>
+                        <div class="mining-animation-box">
+                            <div class="gear-spin"></div>
+                            <div class="mining-stats-text">
+                                Total Return: <strong>৳ ${parseFloat(plan.total_return).toLocaleString()}</strong><br>
+                                Time Left: <strong id="timeLeft_${plan.id}">--</strong>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span id="progressPercent_${plan.id}">0%</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="progressFill_${plan.id}"></div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                    startMiningTimer(plan);
+                });
             }
         }
 
@@ -456,31 +519,34 @@
                 const timePassed = now - startDate;
                 const timeLeft = endDate - now;
 
+                const timeLeftElem = document.getElementById(`timeLeft_${plan.id}`);
+                const progressFillElem = document.getElementById(`progressFill_${plan.id}`);
+                const progressPercentElem = document.getElementById(`progressPercent_${plan.id}`);
+
+                if (!timeLeftElem) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     await completeMiningPlan(plan);
                 } else {
-                    // Calculate Progress Percentage
                     let percent = Math.min(100, Math.max(0, (timePassed / totalDuration) * 100));
-                    document.getElementById('progressFill').style.width = percent.toFixed(1) + '%';
-                    document.getElementById('progressPercent').innerText = percent.toFixed(1) + '%';
+                    progressFillElem.style.width = percent.toFixed(1) + '%';
+                    progressPercentElem.innerText = percent.toFixed(1) + '%';
 
-                    // Format Time Remaining
                     const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                     const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     const secsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                    document.getElementById('timeLeftText').innerText = `${daysLeft}d ${hoursLeft}h ${minsLeft}m ${secsLeft}s`;
+                    timeLeftElem.innerText = `${daysLeft}d ${hoursLeft}h ${minsLeft}m ${secsLeft}s`;
                 }
             }, 1000);
         }
 
         async function completeMiningPlan(plan) {
-            document.getElementById('timeLeftText').innerText = 'Completed!';
-            document.getElementById('progressFill').style.width = '100%';
-            document.getElementById('progressPercent').innerText = '100%';
-
             // 1. Update Plan Status to Completed
             await supabaseClient
                 .from('user_plans')
@@ -496,6 +562,19 @@
 
             alert(`🎉 আপনার ${plan.plan_name} প্ল্যানটির মেয়াদ পূর্ণ হয়েছে! মুনাফাসহ ৳ ${plan.total_return} টাকা আপনার মেইন ব্যালেন্সে জমা করা হয়েছে।`);
             location.reload();
+        }
+
+        function toggleArticle() {
+            const moreText = document.getElementById('moreArticleText');
+            const btnText = document.getElementById('toggleArticleBtn');
+
+            if (moreText.style.display === 'inline' || moreText.style.display === 'block') {
+                moreText.style.display = 'none';
+                btnText.innerText = 'Read More ▼';
+            } else {
+                moreText.style.display = 'block';
+                btnText.innerText = 'Read Less ▲';
+            }
         }
 
         async function handleLogout() {
