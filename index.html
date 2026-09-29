@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Supabase JS Library SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -562,7 +565,14 @@
         <span>Live Chat</span>
     </a>
 
+    <!-- Supabase Integration Script -->
     <script>
+        // Supabase ইনিশিয়ালাইজেশন
+        const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         function toggleMenu() {
             document.getElementById('navDrawer').classList.toggle('active');
         }
@@ -593,7 +603,26 @@
             }
         }
 
+        // লগইন করা ইউজারের ডাটা এবং প্রোফাইল Supabase থেকে লোড করার ফাংশন
+        async function loadUserProfile() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (user) {
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('email, balance, total_withdraw, status')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    console.log("Logged in User Details:", profile);
+                }
+            }
+        }
+
+        // পেজ লোড হলে কল হবে
         loadPayouts();
+        loadUserProfile();
     </script>
 </body>
 </html>
