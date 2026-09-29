@@ -19,6 +19,7 @@
         label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
         input, textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
         input:focus, textarea:focus { border-color: #f59e0b; }
+        input:disabled, textarea:disabled { opacity: 0.7; background: #1e293b; cursor: not-allowed; }
         textarea { resize: none; height: 80px; }
 
         .notice-box {
@@ -30,6 +31,12 @@
             color: #f59e0b;
             margin-bottom: 20px;
             line-height: 1.5;
+        }
+
+        .verified-badge-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
         }
 
         .btn-submit { 
@@ -155,6 +162,15 @@
         let currentUser = null;
         let isRedirectOnClose = false;
 
+        // NID Number Masking Function (মাঝখানের নাম্বারগুলো *** করার জন্য)
+        function maskNidNumber(nid) {
+            if (!nid || nid.length < 6) return nid;
+            const start = nid.slice(0, 3);
+            const end = nid.slice(-3);
+            const middle = '*'.repeat(nid.length - 6);
+            return start + middle + end;
+        }
+
         async function checkUserAndStatus() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) {
@@ -171,10 +187,23 @@
                 .single();
 
             if (profile) {
+                // ইনপুট ফিল্ডগুলোতে ডাটা বসানো
+                if (profile.full_name) document.getElementById('fullName').value = profile.full_name || '';
+                if (profile.father_name) document.getElementById('fatherName').value = profile.father_name || '';
+                if (profile.mother_name) document.getElementById('motherName').value = profile.mother_name || '';
+                if (profile.birth_date) document.getElementById('birthDate').value = profile.birth_date || '';
+                
+                // NID নাম্বার লোড করার সময় যদি অলরেডি ডাটা থাকে, তবে মাস্ক করে (*** দিয়ে) দেখাবে
+                if (profile.nid_number) {
+                    document.getElementById('nidNumber').value = maskNidNumber(profile.nid_number);
+                }
+                
+                if (profile.full_address) document.getElementById('fullAddress').value = profile.full_address || '';
+
                 // Check if already approved
                 if (profile.verification_status === 'approved') {
-                    showCustomPopup('success', 'Verified Account', 'Your NID verification is already approved!', 'Verified User', true);
-                    setFormDisabled(true, 'Your account is already verified.');
+                    setFormDisabled(true, 'Account ভেরফিফাই এবং verified base শো করছে');
+                    document.getElementById('statusNotice').classList.add('verified-badge-box');
                     return;
                 }
 
@@ -191,24 +220,15 @@
                             .update({ verification_status: 'approved' })
                             .eq('id', user.id);
 
-                        showCustomPopup('success', 'Verification Approved', 'Congratulations! Your NID verification has been successfully approved.', 'Account Verified', true);
-                        setFormDisabled(true, 'Verification Approved');
+                        setFormDisabled(true, 'Account ভেরফিফাই এবং verified base শো করছে');
+                        document.getElementById('statusNotice').classList.add('verified-badge-box');
                         return;
                     } else {
-                        // Still pending, show info
-                        setFormDisabled(true, 'Verification is under review. Please wait 5-7 minutes for auto-approval.');
-                        showCustomPopup('pending', 'Under Review', 'Your verification request has been submitted successfully.', 'Please wait 5-7 minutes for confirmation.', false);
+                        // Still pending, lock fields and show notice
+                        setFormDisabled(true, 'Verification is under review. Your NID details are locked.');
                         return;
                     }
                 }
-
-                // If unverified, pre-fill if data exists
-                if (profile.full_name) document.getElementById('fullName').value = profile.full_name || '';
-                if (profile.father_name) document.getElementById('fatherName').value = profile.father_name || '';
-                if (profile.mother_name) document.getElementById('motherName').value = profile.mother_name || '';
-                if (profile.birth_date) document.getElementById('birthDate').value = profile.birth_date || '';
-                if (profile.nid_number) document.getElementById('nidNumber').value = profile.nid_number || '';
-                if (profile.full_address) document.getElementById('fullAddress').value = profile.full_address || '';
             }
         }
 
@@ -221,6 +241,7 @@
             document.getElementById('fullAddress').disabled = disabled;
             document.getElementById('submitBtn').disabled = disabled;
             if (noticeText) {
+                document.getElementById('statusNoticeinnerText' in document.getElementById('statusNotice') ? 'innerText' : 'textContent') = noticeText;
                 document.getElementById('statusNotice').innerText = noticeText;
             }
         }
@@ -237,7 +258,7 @@
             const fatherName = document.getElementById('fatherName').value.trim();
             const motherName = document.getElementById('motherName').value.trim();
             const birthDate = document.getElementById('birthDate').value.trim();
-            const nidNumber = document.getElementById('nidNumber').value.trim();
+            let nidNumber = document.getElementById('nidNumber').value.trim();
             const fullAddress = document.getElementById('fullAddress').value.trim();
             const currentTime = new Date().toISOString();
 
@@ -260,12 +281,16 @@
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Submit for Verification';
             } else {
+                // সাবমিট করার সাথে সাথেই ইউজারকে মাস্ক করা NID নাম্বার দেখিয়ে ফর্ম লক করে দেওয়া
+                document.getElementById('nidNumber').value = maskNidNumber(nidNumber);
+                setFormDisabled(true, 'Verification is under review. Your NID details are locked.');
+
                 showCustomPopup(
                     'success',
                     'Verification Submitted',
                     'Your verification request has been successfully submitted.',
                     'Please wait 5 minutes to 1 hour for confirmation.',
-                    true
+                    false
                 );
             }
         }
