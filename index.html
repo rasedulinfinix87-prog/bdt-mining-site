@@ -494,7 +494,7 @@
             <a href="index.html" onclick="toggleMenu()">Home</a>
             <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
             <a href="#payouts" onclick="toggleMenu()">Live Payouts</a>
-            <a href="signup.html">Deposit & Withdraw</a>
+            <a href="dashboard.html">Dashboard</a>
             <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
         </div>
     </div>
@@ -546,7 +546,6 @@
                     <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
                 </div>
 
-                <!-- handleInvest ফাংশনে প্ল্যান নাম এবং অ্যামাউন্ট পাঠানো হচ্ছে -->
                 <button class="btn-invest" onclick="handleInvest('Starter Plan', 5000)">Invest Now</button>
             </div>
 
@@ -569,7 +568,6 @@
                     <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
                 </div>
 
-                <!-- handleInvest ফাংশনে প্ল্যান নাম এবং অ্যামাউন্ট পাঠানো হচ্ছে -->
                 <button class="btn-invest" onclick="handleInvest('Advanced Plan', 10000)">Invest Now</button>
             </div>
 
@@ -595,7 +593,6 @@
 
     <!-- Supabase Integration Script -->
     <script>
-        // Supabase ইনিশিয়ালাইজেশন
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         
@@ -605,7 +602,6 @@
             document.getElementById('navDrawer').classList.toggle('active');
         }
 
-        // payouts.json ফাইল থেকে ডাটা লোড করার স্ক্রিপ্ট
         async function loadPayouts() {
             try {
                 const response = await fetch('payouts.json');
@@ -627,34 +623,21 @@
                     container.innerHTML += html;
                 });
             } catch (error) {
-                console.log('Error loading payouts, showing fallback data');
+                console.log('Error loading payouts');
             }
         }
 
-        // ইউজারের লগইন স্ট্যাটাস চেক এবং UI আপডেট করার ফাংশন
         async function loadUserProfile() {
             const { data: { user } } = await supabaseClient.auth.getUser();
 
             const navButtons = document.getElementById('navButtons');
 
             if (user) {
-                // ইউজার লগইন থাকলে Email Badge এবং Logout বাটন দেখাবে
                 navButtons.innerHTML = `
-                    <div class="user-email-badge" title="${user.email}">${user.email.split('@')[0]}</div>
+                    <div class="user-email-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="${user.email}">${user.email.split('@')[0]}</div>
                     <button class="btn-logout" onclick="handleLogout()">Logout</button>
                 `;
-
-                const { data: profile, error } = await supabaseClient
-                    .from('profiles')
-                    .select('email, balance, total_withdraw, status')
-                    .eq('id', user.id)
-                    .single();
-
-                if (profile) {
-                    console.log("Logged in User Details:", profile);
-                }
             } else {
-                // ইউজার লগইন না থাকলে Login ও Sign Up বাটন দেখাবে
                 navButtons.innerHTML = `
                     <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
                     <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
@@ -662,28 +645,23 @@
             }
         }
 
-        // ইনভেস্টমেন্ট হ্যান্ডেল করার লজিক
+        // ইনভেস্টমেন্ট হ্যান্ডেল করার আপডেট করা লজিক
         async function handleInvest(planName, amount) {
             const { data: { user } } = await supabaseClient.auth.getUser();
 
             if (!user) {
-                // ইউজার লগইন না থাকলে সরাসরি সাইনআপ পেজে রিডাইরেক্ট করবে
-                alert("ইনভেস্ট করতে হলে প্রথমে লগইন করুন!");
                 window.location.href = 'signup.html';
             } else {
-                // ইউজার লগইন থাকলে পরবর্তী ধাপ (যেমন: ডিপোজিট চেক বা অ্যাকশন) করবে
-                alert(`${planName} (৳ ${amount}) সিলেক্ট করেছেন। আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স আছে কিনা তা নিশ্চিত করুন।`);
-                // আপনার যদি আলাদা dashboard.html বা deposit.html থাকে তবে এখানে রিডাইরেক্ট লিঙ্ক দিয়ে দিতে পারেন
+                // সরাসরি ড্যাশবোর্ডে নিয়ে যাবে এবং সিলেক্ট করা প্ল্যান ডাটা পাঠাবে
+                window.location.href = `dashboard.html?plan=${encodeURIComponent(planName)}&amount=${amount}`;
             }
         }
 
-        // লগআউট করার ফাংশন
         async function handleLogout() {
             await supabaseClient.auth.signOut();
             window.location.reload();
         }
 
-        // পেজ লোড হলে কল হবে
         loadPayouts();
         loadUserProfile();
     </script>
