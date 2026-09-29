@@ -10,8 +10,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
-        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); margin-top: 15px; }
+        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 0 20px 0; margin: 0; }
+        
+        /* Header Container Full Width */
+        #header-container { width: 100%; margin-bottom: 15px; }
+
+        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); margin: 0 12px; }
         
         .page-title { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: #f59e0b; text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
         
@@ -140,8 +144,8 @@
 </head>
 <body>
 
-    <!-- Header Container Loaded Dynamically -->
-    <div id="header-container" style="width: 100%; max-width: 420px;"></div>
+    <!-- Header Container Full Width -->
+    <div id="header-container"></div>
 
     <div class="container">
         <div class="page-title">NID Verification</div>
@@ -205,12 +209,22 @@
     </div>
 
     <script>
-        // Load header.html dynamically keeping toggleSidebar intact
+        // Toggle Sidebar Function for Mobile Menu
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+
+        // Load header.html dynamically
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-container').innerHTML = data;
-                // Execute scripts inside header.html if any (like toggleSidebar)
                 const scripts = document.getElementById('header-container').querySelectorAll('script');
                 scripts.forEach(script => {
                     const newScript = document.createElement('script');
@@ -218,7 +232,7 @@
                     document.body.appendChild(newScript);
                 });
             })
-            .catch(error => console.error('Error loading header:', error));
+            .catch(err => console.error('Header load failed:', err));
 
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
@@ -252,7 +266,6 @@
                 .single();
 
             if (profile) {
-                // ইনপুট ফিল্ডগুলোতে ডাটা বসানো
                 if (profile.full_name) document.getElementById('fullName').value = profile.full_name || '';
                 if (profile.father_name) document.getElementById('fatherName').value = profile.father_name || '';
                 if (profile.mother_name) document.getElementById('motherName').value = profile.mother_name || '';
@@ -270,18 +283,15 @@
                 const articleTitle = document.getElementById('articleTitle');
                 const articleText = document.getElementById('articleText');
 
-                // ১. যদি Approved হয়
                 if (status === 'approved') {
                     setFormDisabled(true);
                     
-                    // ইয়েলো গ্লো স্পিনিং বেজ ও বড় সিম্বল প্রদর্শন
                     noticeBox.className = 'notice-box verified-badge-box';
                     noticeBox.innerHTML = `
                         <div class="large-verify-symbol">🛡</div>
                         <div style="font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 14px; text-transform: uppercase;">Verified Account Base</div>
                     `;
 
-                    // আর্টিকেল আপডেট
                     articleTitle.innerText = "Account Verified (অ্যাকাউন্ট ভেরিফাই সম্পন্ন)";
                     articleText.innerText = "Your account is fully secured and verified with official NID credentials. All platform features are unlocked.";
 
@@ -295,7 +305,6 @@
                     return;
                 }
 
-                // ২. যদি Pending হয়
                 if (status === 'pending') {
                     setFormDisabled(true);
                     noticeBox.innerText = 'Verification is under review. Your NID details are locked.';
@@ -313,7 +322,6 @@
                     return;
                 }
 
-                // ৩. যদি Unverified হয় বা স্ট্যাটাস না থাকে
                 if (status === 'unverified' || status === '') {
                     setFormDisabled(false);
                     noticeBox.innerText = 'Please enter your exact NID details as shown on your National Identity Card (Bangla or English accepted).';
