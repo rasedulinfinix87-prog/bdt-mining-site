@@ -18,18 +18,18 @@
         .tab-btn.active { background: #f59e0b; color: #000; font-weight: 700; }
         
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; }
         input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
         input:focus, select:focus { border-color: #f59e0b; }
         
-        /* Live Conversion Preview Box */
+        /* Live Conversion Preview Box (Changed green to yellow theme) */
         .conversion-preview {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
             border-radius: 8px;
             padding: 10px;
             font-size: 13px;
-            color: #10b981;
+            color: #f59e0b;
             margin-top: 8px;
             font-weight: 600;
             display: flex;
@@ -67,15 +67,15 @@
             text-transform: uppercase;
         }
 
-        /* Border Spring / Glowing Animation for Admin Box */
+        /* Border Spring / Glowing Animation for Admin Box (Changed green to yellow theme) */
         @keyframes borderSpring {
             0% {
                 border-color: #f59e0b;
                 box-shadow: 0 0 5px rgba(245, 158, 11, 0.4);
             }
             50% {
-                border-color: #10b981;
-                box-shadow: 0 0 15px rgba(16, 185, 129, 0.7);
+                border-color: #d97706;
+                box-shadow: 0 0 15px rgba(245, 158, 11, 0.7);
             }
             100% {
                 border-color: #f59e0b;
@@ -95,7 +95,6 @@
             animation: borderSpring 2.5s infinite ease-in-out;
         }
 
-        /* Normal font for admin number and address */
         .admin-num-box span, .admin-num-box strong {
             font-family: 'Inter', sans-serif;
             font-weight: 600;
@@ -112,9 +111,10 @@
             cursor: pointer;
             font-weight: bold;
             margin-left: 5px;
+            font-family: 'Orbitron', sans-serif;
         }
 
-        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
+        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; font-family: 'Orbitron', sans-serif; }
 
         /* Custom Popup Modal Styles with Window Animation */
         .custom-popup-overlay {
@@ -171,9 +171,9 @@
         }
         .popup-note {
             font-size: 12px;
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
             padding: 8px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -261,7 +261,7 @@
             <div class="popup-title" id="popupTitle">Success</div>
             <div class="popup-message" id="popupMessage">Your request has been submitted successfully.</div>
             <div class="popup-note" id="popupNote">Please wait 5-10 minutes for confirmation.</div>
-            <button type="button" class="popup-btn" onclick="closePopupAndRedirect()">OK</button>
+            <button type="button" class="popup-btn" onclick="closePopup()">OK</button>
         </div>
     </div>
 
@@ -273,10 +273,10 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentType = 'deposit';
+        let isRedirectOnClose = true;
 
         document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
 
-        // Supabase থেকে অ্যাডমিনের তথ্য লোড করার ফাংশন
         async function fetchAdminConfig() {
             try {
                 const { data, error } = await supabaseClient
@@ -352,7 +352,6 @@
                     trxLabel.innerText = 'Transaction Hash (TxID)';
                 }
             } else {
-                // Withdraw Tab
                 bkashAdmin.style.display = 'none';
                 usdtAdmin.style.display = 'none';
                 if (method === 'bkash') {
@@ -402,28 +401,31 @@
         function copyBkashNumber() {
             const num = document.getElementById('adminBkashText').innerText;
             navigator.clipboard.writeText(num).then(() => {
-                alert('bKash Number Copied to Clipboard!');
+                showCustomPopup('Copied', 'bKash Number Copied to Clipboard!', 'You can paste it now.', false, '📋');
             });
         }
 
         function copyWalletAddress() {
             const addr = document.getElementById('walletAddrText').innerText;
             navigator.clipboard.writeText(addr).then(() => {
-                alert('Wallet Address Copied to Clipboard!');
+                showCustomPopup('Copied', 'Wallet Address Copied to Clipboard!', 'You can paste it now.', false, '📋');
             });
         }
 
-        // Custom Popup Trigger function
-        function showCustomPopup(title, message, note) {
+        function showCustomPopup(title, message, note, redirect = true, icon = '🎉') {
+            isRedirectOnClose = redirect;
+            document.getElementById('popupIcon').innerText = icon;
             document.getElementById('popupTitle').innerText = title;
             document.getElementById('popupMessage').innerText = message;
             document.getElementById('popupNote').innerText = note;
             document.getElementById('customPopup').classList.add('active');
         }
 
-        function closePopupAndRedirect() {
+        function closePopup() {
             document.getElementById('customPopup').classList.remove('active');
-            window.location.href = 'dashboard.html';
+            if (isRedirectOnClose) {
+                window.location.href = 'dashboard.html';
+            }
         }
 
         async function handleTransaction(e) {
@@ -436,8 +438,8 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
 
             if (!user) {
-                alert('অনুরোধ পাঠাতে প্রথমে সাইনআপ/লগইন করুন!');
-                window.location.href = 'signup.html';
+                showCustomPopup('Authentication Error', 'Please sign up or log in first to submit requests!', 'Redirecting to sign up page.', true, '⚠️');
+                setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
                 return;
             }
 
@@ -456,13 +458,12 @@
             const trxId = rawTrxId ? rawTrxId.trim() : null;
 
             if (usdAmount <= 0) {
-                alert('দয়া করে সঠিক টাকার পরিমাণ প্রদান করুন।');
+                showCustomPopup('Invalid Amount', 'Please provide a valid transaction amount.', 'Check your input value.', false, '⚠️');
                 submitBtn.disabled = false;
                 submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
                 return;
             }
 
-            // ডিপোজিটের ক্ষেত্রে TrxID ইতিমধ্যে ব্যবহার করা হয়েছে কি না তা চেক করা
             if (currentType === 'deposit' && trxId) {
                 const { data: existingTrx, error: trxCheckError } = await supabaseClient
                     .from('transactions')
@@ -471,14 +472,19 @@
                     .maybeSingle();
 
                 if (existingTrx) {
-                    alert('এই TrxID দিয়ে ইতিপূর্বে একটি রিকোয়েস্ট সাবমিট করা হয়েছে। একই TrxID বারবার ব্যবহার করা যাবে না।');
+                    showCustomPopup(
+                        'Duplicate TrxID', 
+                        'This TrxID has already been used previously.', 
+                        'Using the same TrxID repeatedly is strictly prohibited.', 
+                        false, 
+                        '❌'
+                    );
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Deposit Request';
                     return;
                 }
             }
 
-            // উইথড্র এর ক্ষেত্রে ব্যালেন্স চেক ও বিয়োগ (Deduct) করার লজিক
             if (currentType === 'withdraw') {
                 const { data: profile, error: profileError } = await supabaseClient
                     .from('profiles')
@@ -487,7 +493,7 @@
                     .single();
 
                 if (profileError || !profile) {
-                    alert('ইউজার প্রোফাইল খুঁজে পাওয়া যায়নি!');
+                    showCustomPopup('Profile Error', 'User profile not found!', 'Please try again later.', false, '⚠️');
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
@@ -496,7 +502,13 @@
                 const currentBalance = parseFloat(profile.balance || 0);
 
                 if (currentBalance < usdAmount) {
-                    alert(`আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!\n\nআপনার ব্যালেন্স: $${currentBalance.toFixed(2)} USD\nআপনি তুলতে চাচ্ছেন: $${usdAmount} USD`);
+                    showCustomPopup(
+                        'Insufficient Balance', 
+                        `You do not have enough balance!\nBalance: $${currentBalance.toFixed(2)} USD\nRequested: $${usdAmount} USD`, 
+                        'Please check your account balance.', 
+                        false, 
+                        '⚠️'
+                    );
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
@@ -509,14 +521,13 @@
                     .eq('id', user.id);
 
                 if (updateError) {
-                    alert('ব্যালেন্স আপডেট করতে সমস্যা হয়েছে: ' + updateError.message);
+                    showCustomPopup('Update Error', 'Failed to update balance: ' + updateError.message, 'Please try again.', false, '⚠️');
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
                 }
             }
 
-            // Transactions টেবিলে রিকোয়েস্ট ইনসার্ট করা
             const { data, error } = await supabaseClient
                 .from('transactions')
                 .insert([
@@ -534,11 +545,10 @@
                 ]);
 
             if (error) {
-                // যদি ডাটাবেজে ইউনিক কনস্ট্রেইন্ট দেওয়া থাকে এবং কোনোভাবে ডুপ্লিকেট এন্ট্রি পাস হয়ে যায়, তবে এরর হ্যান্ডেল করবে
                 if (error.code === '23505') {
-                    alert('এই TrxID ইতিমধ্যে ডাটাবেজে সংরক্ষিত রয়েছে। একই TrxID দুবার ব্যবহার করা নিষিদ্ধ।');
+                    showCustomPopup('Duplicate TrxID', 'This TrxID is already stored in the database.', 'Using the same TrxID twice is restricted.', false, '❌');
                 } else {
-                    alert('রিকোয়েস্ট জমা করতে সমস্যা হয়েছে: ' + error.message);
+                    showCustomPopup('Submission Error', 'Failed to submit request: ' + error.message, 'Please check and try again.', false, '⚠️');
                 }
                 submitBtn.disabled = false;
                 submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
@@ -547,19 +557,22 @@
                     showCustomPopup(
                         'Deposit Request Submitted',
                         `Your deposit request of $${usdAmount} USD has been successfully submitted.`,
-                        'Please wait 5-10 minutes to confirm.'
+                        'Please wait 5-10 minutes to confirm.',
+                        true,
+                        '🎉'
                     );
                 } else {
                     showCustomPopup(
                         'Withdraw Request Submitted',
                         `Your withdrawal request of $${usdAmount} USD has been successfully submitted.`,
-                        'Please wait 12-24 hours for withdrawal processing.'
+                        'Please wait 12-24 hours for withdrawal processing.',
+                        true,
+                        '🎉'
                     );
                 }
             }
         }
 
-        // পেজ লোড হওয়ার সাথেই অ্যাডমিন কনফিগারেশন ফেচ করা হবে
         fetchAdminConfig();
 
         const urlParams = new URLSearchParams(window.location.search);
