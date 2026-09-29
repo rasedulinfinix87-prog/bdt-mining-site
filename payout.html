@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Payouts - BDTMINER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 10px; }
+        .dashboard-card { width: 100%; max-width: 440px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); position: relative; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 15px; }
+        .title { font-size: 16px; font-weight: 700; color: #f59e0b; display: flex; align-items: center; gap: 8px; }
+        
+        .payout-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        
+        .payout-item { 
+            background: rgba(30, 41, 59, 0.5); 
+            border: 1px solid #334155; 
+            border-radius: 12px; 
+            padding: 12px 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-info { display: flex; flex-direction: column; gap: 3px; }
+        .user-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+        .user-id { font-size: 11px; color: #94a3b8; font-family: 'Orbitron', sans-serif; }
+        
+        .payout-details { text-align: right; display: flex; flex-direction: column; gap: 3px; }
+        .payout-amount { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700; color: #10b981; }
+        .payout-time { font-size: 10px; color: #64748b; }
+
+        /* More & Less Button */
+        .btn-toggle-more { 
+            width: 100%; 
+            background: rgba(245, 158, 11, 0.15); 
+            color: #f59e0b; 
+            border: 1px solid rgba(245, 158, 11, 0.3); 
+            border-radius: 10px; 
+            padding: 10px; 
+            font-weight: 600; 
+            font-size: 13px; 
+            cursor: pointer; 
+            text-align: center; 
+            transition: all 0.2s; 
+            margin-bottom: 15px;
+        }
+        .btn-toggle-more:hover { background: rgba(245, 158, 11, 0.25); }
+
+        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 10px; }
+        .back-home:hover { color: #f59e0b; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-card">
+        <div class="header">
+            <div class="title">💸 Live Payout Feed</div>
+            <span style="font-size: 11px; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3);">● Realtime</span>
+        </div>
+
+        <!-- Payout Items Container -->
+        <div class="payout-list" id="payoutContainer">
+            <!-- Dynamic list will render here -->
+        </div>
+
+        <!-- More & Less Toggle Button -->
+        <button class="btn-toggle-more" id="toggleMoreBtn" onclick="toggleMoreLess()">Show More (10+)</button>
+
+        <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
+    </div>
+
+    <script>
+        // রেন্ডম নাম এবং পেমেন্ট মেথড তৈরির ডাটা পুল
+        const firstNames = ["Rahim", "Karim", "Tanvir", "Sakib", "Imran", "Nayeem", "Farhan", "Juel", "Al-Amin", "Rakib", "Sumon", "Mahmud", "Shagor", "Hasan", "Arif", "Nasir", "Mehedi", "Fahim", "Ripon", "Sabbir"];
+        const lastNames = ["Khan", "Ahmed", "Hossain", "Chowdhury", "Islam", "Uddin", "Mollah", "Talukder", "Sarker", "Ali"];
+        const methods = ["bKash", "Nagad", "Rocket", "USDT (TRC20)", "Binance Pay"];
+
+        let allPayouts = [];
+        let visibleCount = 5; // প্রথমে কয়টি দেখাবে (যেমন ৫টি)
+
+        // র‍্যান্ডম আইডি ও অ্যামাউন্ট জেনারেট করার ফাংশন
+        function generateRandomPayouts(count) {
+            let list = [];
+            for (let i = 0; i < count; i++) {
+                const randomName = firstNames[Math.floor(Math.random() * firstNames.length)] + " " + lastNames[Math.floor(Math.random() * lastNames.length)];
+                const randomId = "ID: #" + Math.floor(100000 + Math.random() * 900000);
+                const randomAmount = (Math.random() * (150 - 10) + 10).toFixed(2); // $10 থেকে $150 এর মধ্যে
+                const randomMethod = methods[Math.floor(Math.random() * methods.length)];
+                
+                // রেন্ডম সময় (যেমন কয়েক মিনিট বা সেকেন্ড আগে)
+                const randomMinutesAgo = Math.floor(Math.random() * 59) + 1;
+                const timeStr = `${randomMinutesAgo} mins ago`;
+
+                list.push({
+                    name: randomName,
+                    id: randomId,
+                    amount: `$${randomAmount}`,
+                    method: randomMethod,
+                    time: timeStr
+                });
+            }
+            return list;
+        }
+
+        // পেজ লোড হলে ১৫টি ফেক পেমেন্ট জেনারেট করে রাখা
+        allPayouts = generateRandomPayouts(15);
+
+        function renderPayouts() {
+            const container = document.getElementById('payoutContainer');
+            container.innerHTML = '';
+
+            // যতগুলো দেখানোর কথা (visibleCount) ততগুলো লুপ চালাবো
+            const currentList = allPayouts.slice(0, visibleCount);
+
+            currentList.forEach(item => {
+                const html = `
+                    <div class="payout-item">
+                        <div class="user-info">
+                            <span class="user-name">${item.name}</span>
+                            <span class="user-id">${item.id} • <span style="color: #38bdf8;">${item.method}</span></span>
+                        </div>
+                        <div class="payout-details">
+                            <span class="payout-amount">+${item.amount}</span>
+                            <span class="payout-time">${item.time}</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+
+            // More / Less বাটন টেক্সট আপডেট লজিক
+            const btn = document.getElementById('toggleMoreBtn');
+            if (visibleCount >= allPayouts.length) {
+                btn.innerText = "Show Less";
+            } else {
+                btn.innerText = `Show More (${allPayouts.length - visibleCount} more)`;
+            }
+        }
+
+        // More এবং Less টগল করার ফাংশন
+        function toggleMoreLess() {
+            if (visibleCount >= allPayouts.length) {
+                // যদি সব দেখানো শেষ হয়ে থাকে, তবে আবার কমিয়ে ৫টিতে ফিরিয়ে আনবে (Show Less)
+                visibleCount = 5;
+            } else {
+                // আরও বাড়িয়ে সবকটি দেখাবে (Show More)
+                visibleCount = allPayouts.length;
+            }
+            renderPayouts();
+        }
+
+        // প্রতি ৫ সেকেন্ড পর পর নতুন একটি ফেক পেমেন্ট উপরে যুক্ত হয়ে রিয়্যালিস্টিক ফিল আনবে
+        setInterval(() => {
+            const newOne = generateRandomPayouts(1)[0];
+            newOne.time = "Just now";
+            allPayouts.unshift(newOne); // অ্যারে এর শুরুতে নতুন ডাটা যোগ হবে
+            
+            // সর্বোচ্চ ২০টার বেশি যেন না হয়
+            if (allPayouts.length > 20) allPayouts.pop();
+
+            renderPayouts();
+        }, 5000);
+
+        // প্রথমবার রেন্ডার কল করা
+        renderPayouts();
+    </script>
+</body>
+</html>
