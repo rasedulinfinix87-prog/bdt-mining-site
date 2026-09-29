@@ -126,8 +126,40 @@
         .section-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
         .active-plans-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
         
-        .mining-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 12px; padding: 12px; position: relative; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
-        .mining-card:hover { transform: translateY(-2px); border-color: #f59e0b; }
+        /* Mining Card with Spinning Border Animation */
+        .mining-card { 
+            position: relative;
+            background: rgba(30, 41, 59, 0.5); 
+            border-radius: 12px; 
+            padding: 12px; 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .mining-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, #f59e0b, transparent 30%);
+            animation: rotateNeon 4s linear infinite;
+            z-index: -2;
+        }
+
+        .mining-card::after {
+            content: '';
+            position: absolute;
+            inset: 1.5px;
+            background: rgba(30, 41, 59, 0.95);
+            border-radius: 11px;
+            z-index: -1;
+        }
+
+        .mining-card:hover { transform: translateY(-2px); }
         .mining-card-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #f59e0b; margin-bottom: 8px; }
         .mining-status { background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
         .mining-status.completed { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
