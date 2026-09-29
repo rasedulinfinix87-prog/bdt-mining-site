@@ -6,44 +6,86 @@
     <title>User Dashboard - BDTMINER</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 10px; }
-        .dashboard-card { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
+        
+        .dashboard-card { width: 100%; max-width: 440px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
+        
         .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 12px; }
-        .user-email { font-weight: 600; color: #f59e0b; font-size: 14px; }
+        .user-email { font-weight: 600; color: #f59e0b; font-size: 13px; }
+        .btn-auth { background: #1e293b; color: #fff; border: 1px solid #334155; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
         .btn-logout { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        
         .balance-box { background: rgba(30, 41, 59, 0.7); border: 1px solid #334155; border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; }
         .balance-title { font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
-        .balance-amount { font-size: 26px; font-weight: 700; color: #10b981; }
+        .balance-amount { font-size: 26px; font-weight: 700; color: #10b981; font-family: 'Orbitron', sans-serif; }
+        
         .action-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
         .btn-action { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; }
         .btn-deposit { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
         .btn-withdraw { background: #1e293b; color: #fff; border: 1px solid #334155; }
+        
         .selected-plan { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; border-radius: 10px; padding: 12px; text-align: center; font-size: 13px; color: #f59e0b; margin-bottom: 15px; display: none; }
+        
+        /* Mining Section UI */
+        .section-header { font-size: 14px; font-weight: 700; color: #cbd5e1; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .plans-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        
+        .mining-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 12px; padding: 14px; position: relative; }
+        .mining-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .plan-name { font-weight: 700; font-size: 14px; color: #f59e0b; }
+        .plan-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
+        .status-active { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+        .status-completed { background: rgba(148, 163, 184, 0.2); color: #94a3b8; border: 1px solid #94a3b8; }
+        
+        .mining-info { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 8px; }
+        .mined-profit { color: #10b981; font-weight: 700; font-family: 'Orbitron', sans-serif; }
+        
+        .progress-bar-bg { width: 100%; height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #10b981); width: 0%; transition: width 0.5s ease; }
+        
+        .no-plans { text-align: center; color: #64748b; font-size: 13px; padding: 15px; background: rgba(30, 41, 59, 0.3); border-radius: 10px; border: 1px dashed #334155; }
+        
         .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div class="dashboard-card">
+        <!-- User Header -->
         <div class="user-header">
-            <span class="user-email" id="userEmail">Loading...</span>
-            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+            <span class="user-email" id="userEmail">Guest Mode</span>
+            <div id="authBtnArea">
+                <button class="btn-auth" onclick="window.location.href='signup.html'">Login / Signup</button>
+            </div>
         </div>
 
+        <!-- URL Intent Banner -->
         <div id="planBanner" class="selected-plan"></div>
 
+        <!-- Balance Display -->
         <div class="balance-box">
             <div class="balance-title">Main Account Balance</div>
-            <div class="balance-amount" id="userBalance">৳ 0.00</div>
+            <div class="balance-amount" id="userBalance">$ 0.00</div>
         </div>
 
+        <!-- Quick Actions -->
         <div class="action-buttons">
             <button class="btn-action btn-deposit" onclick="alert('ডিপোজিট অপশন শীঘ্রই চালু হচ্ছে!')">Deposit</button>
             <button class="btn-action btn-withdraw" onclick="alert('উইথড্র অপশন শীঘ্রই চালু হচ্ছে!')">Withdraw</button>
+        </div>
+
+        <!-- Mining Active Plans Section -->
+        <div class="section-header">
+            <span>⚡ My Mining Operations</span>
+            <span id="activeCount" style="font-size: 11px; color: #10b981;">(0 Active)</span>
+        </div>
+
+        <div class="plans-container" id="plansContainer">
+            <div class="no-plans">লোডিং মাইনিং ডাটা...</div>
         </div>
 
         <a href="index.html" class="back-home">← Back to Home</a>
@@ -54,17 +96,30 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        let activePlansData = [];
+        let liveTimerInterval = null;
+
         async function initDashboard() {
+            // ১. লগইন চেক (লগইন না থাকলেও রিডাইরেক্ট করে বের করে দেওয়া হবে না)
             const { data: { user } } = await supabaseClient.auth.getUser();
 
-            if (!user) {
-                window.location.href = 'signup.html';
-                return;
+            const userEmailElem = document.getElementById('userEmail');
+            const authBtnArea = document.getElementById('authBtnArea');
+
+            if (user) {
+                userEmailElem.innerText = user.email;
+                authBtnArea.innerHTML = `<button class="btn-logout" onclick="handleLogout()">Logout</button>`;
+                
+                // ইউজার পাওয়া গেলে প্রোফাইল ও প্ল্যান লোড হবে
+                loadUserBalance(user.id);
+                loadUserPlans(user.id);
+            } else {
+                userEmailElem.innerText = "Guest Mode (Not Logged In)";
+                authBtnArea.innerHTML = `<button class="btn-auth" onclick="window.location.href='signup.html'">Login</button>`;
+                document.getElementById('plansContainer').innerHTML = `<div class="no-plans">মাইনিং প্ল্যান দেখতে প্রথমে লগইন করুন।</div>`;
             }
 
-            document.getElementById('userEmail').innerText = user.email;
-
-            // URL থেকে সিলেক্ট করা প্ল্যান চেক করা
+            // ২. URL প্যারামিটার হ্যান্ডলিং
             const urlParams = new URLSearchParams(window.location.search);
             const plan = urlParams.get('plan');
             const amount = urlParams.get('amount');
@@ -72,24 +127,135 @@
             if (plan && amount) {
                 const banner = document.getElementById('planBanner');
                 banner.style.display = 'block';
-                banner.innerText = `Selected Plan: ${plan} (৳ ${amount})`;
+                banner.innerText = `Selected Plan: ${plan} ($ ${amount})`;
             }
+        }
 
-            // Supabase থেকে ব্যালেন্স লোড করা
-            const { data: profile } = await supabaseClient
-                .from('profiles')
-                .select('balance')
-                .eq('id', user.id)
-                .single();
+        // ব্যালেন্স লোড
+        async function loadUserBalance(userId) {
+            try {
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('balance')
+                    .eq('id', userId)
+                    .single();
 
-            if (profile) {
-                document.getElementById('userBalance').innerText = `৳ ${profile.balance.toFixed(2)}`;
+                if (profile && profile.balance !== undefined) {
+                    document.getElementById('userBalance').innerText = `$ ${Number(profile.balance).toFixed(2)}`;
+                }
+            } catch (e) {
+                console.log("Balance fetch error:", e);
             }
+        }
+
+        // user_plan টেবিল থেকে একাধিক প্ল্যান লোড করা
+        async function loadUserPlans(userId) {
+            try {
+                const { data: plans, error } = await supabaseClient
+                    .from('user_plan')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!plans || plans.length === 0) {
+                    document.getElementById('plansContainer').innerHTML = `<div class="no-plans">আপনার কোনো মাইনিং প্ল্যান চালু নেই।</div>`;
+                    document.getElementById('activeCount').innerText = `(0 Active)`;
+                    return;
+                }
+
+                activePlansData = plans;
+                
+                const activeCount = plans.filter(p => p.status === 'active').length;
+                document.getElementById('activeCount').innerText = `(${activeCount} Active)`;
+
+                // প্রথমবার UI রেন্ডার করা
+                renderPlansUI();
+
+                // প্রতি ১ সেকেন্ড পরপর মাইনিং কাউন্টডাউন এবং লাইভ ইনকাম আপডেট
+                if (liveTimerInterval) clearInterval(liveTimerInterval);
+                liveTimerInterval = setInterval(updateLiveMining, 1000);
+
+            } catch (e) {
+                console.error("Plans loading error:", e);
+                document.getElementById('plansContainer').innerHTML = `<div class="no-plans">প্ল্যান ডাটা লোড করতে সমস্যা হয়েছে।</div>`;
+            }
+        }
+
+        // UI রেন্ডার ফাংশন
+        function renderPlansUI() {
+            const container = document.getElementById('plansContainer');
+            container.innerHTML = '';
+
+            activePlansData.forEach((item, index) => {
+                const isActive = item.status === 'active';
+                const html = `
+                    <div class="mining-card">
+                        <div class="mining-card-header">
+                            <span class="plan-name">${item.plan_name} ($${item.invested_amount})</span>
+                            <span class="plan-status ${isActive ? 'status-active' : 'status-completed'}">
+                                ${item.status}
+                            </span>
+                        </div>
+                        <div class="mining-info">
+                            <span>Earned: <strong class="mined-profit" id="mined-${index}">$0.00000</strong></span>
+                            <span id="timer-${index}">--:--:--</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progress-${index}"></div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        // প্রতি সেকেন্ডে লাইভ ইনকাম ও টাইম কাউন্টডাউন হিসেব করা
+        function updateLiveMining() {
+            const now = new Date().getTime();
+
+            activePlansData.forEach((plan, index) => {
+                const startDate = new Date(plan.start_date).getTime();
+                const endDate = new Date(plan.end_date).getTime();
+                const totalDurationSec = (endDate - startDate) / 1000;
+
+                if (now < startDate) {
+                    document.getElementById(`timer-${index}`).innerText = "Starting Soon";
+                    return;
+                }
+
+                if (now >= endDate || plan.status === 'completed') {
+                    // প্ল্যান শেষ হয়ে গেছে
+                    document.getElementById(`timer-${index}`).innerText = "Completed";
+                    document.getElementById(`progress-${index}`).style.width = '100%';
+                    document.getElementById(`mined-${index}`).innerText = `$${Number(plan.total_return || 0).toFixed(4)}`;
+                } else {
+                    // মাইনিং রানিং
+                    const elapsedSec = (now - startDate) / 1000;
+                    const progressPercent = Math.min((elapsedSec / totalDurationSec) * 100, 100);
+                    
+                    // প্রফিট হিসেব: (দৈনিক প্রফিট / ৮৬৪০০ সে) * অতিক্রান্ত সেকেন্ড
+                    const dailyProfit = Number(plan.daily_profit || 0);
+                    const currentMined = (dailyProfit / 86400) * elapsedSec;
+
+                    // অবশিষ্ট সময় বের করা
+                    const remainSec = Math.max((endDate - now) / 1000, 0);
+                    const hours = Math.floor(remainSec / 3600);
+                    const minutes = Math.floor((remainSec % 3600) / 60);
+                    const seconds = Math.floor(remainSec % 60);
+
+                    document.getElementById(`timer-${index}`).innerText = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    document.getElementById(`progress-${index}`).style.width = `${progressPercent.toFixed(1)}%`;
+                    document.getElementById(`mined-${index}`).innerText = `$${currentMined.toFixed(5)}`;
+                }
+            });
         }
 
         async function handleLogout() {
             await supabaseClient.auth.signOut();
-            window.location.href = 'signup.html';
+            window.location.reload();
         }
 
         initDashboard();
