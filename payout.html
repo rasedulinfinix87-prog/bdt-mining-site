@@ -10,9 +10,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
+        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 10px 8px; }
 
-        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
+        /* হেডার এবং কন্টেইনারের সাইজ ও উইথ এক করা হয়েছে যাতে ফাঁকা না থাকে */
+        #header-container, .container { width: 100%; max-width: 100%; }
+
+        .container { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 15px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); margin-top: 5px; }
         
         .section-title { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 700; color: #f59e0b; margin-bottom: 15px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .live-dot { width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #10b981; animation: pulseDot 1.5s infinite; }
@@ -146,7 +149,7 @@
 <body>
 
     <!-- Header Container where header.html will be loaded -->
-    <div id="header-container" style="width: 100%; max-width: 420px; margin-bottom: 15px;"></div>
+    <div id="header-container"></div>
 
     <script>
         // Load header.html dynamically
@@ -154,7 +157,6 @@
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-container').innerHTML = data;
-                // Execute any scripts contained inside header if needed
                 const scripts = document.getElementById('header-container').querySelectorAll('script');
                 scripts.forEach(script => {
                     const newScript = document.createElement('script');
@@ -226,7 +228,6 @@
             let itemsHTML = '';
             let usedCombinations = new Set();
 
-            // Generating 50 unique items pool (50% reduction) for smooth seamless infinite scroll loop
             for (let i = 0; i < 50; i++) {
                 let name, method, amount, timeAgo;
                 let attempts = 0;
@@ -234,7 +235,6 @@
                 do {
                     const fName = firstNames[Math.floor(Math.random() * firstNames.length)];
                     const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
-                    // Masking name privacy like R***m H*****n
                     name = fName.charAt(0) + '***' + fName.slice(-1) + ' ' + lName.charAt(0) + '****';
                     method = methods[Math.floor(Math.random() * methods.length)];
                     
@@ -245,7 +245,6 @@
                     }
                     
                     timeAgo = timeAgoOptions[Math.floor(Math.random() * timeAgoOptions.length)];
-                    
                     var comboKey = name + '-' + amount + '-' + method;
                     attempts++;
                 } while (usedCombinations.has(comboKey) && attempts < 10);
@@ -266,11 +265,9 @@
                 `;
             }
 
-            // Duplicate exact HTML structure to allow seamless infinite loop scrolling effect
             feedContainer.innerHTML = itemsHTML + itemsHTML;
         }
 
-        // Initialize Bot Payout Generator on Page Load
         generateUniquePayouts();
     </script>
 </body>
