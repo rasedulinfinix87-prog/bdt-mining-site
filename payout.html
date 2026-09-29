@@ -10,21 +10,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 10px 4px; }
+        
+        /* बॉडी থেকে সব ফাঁকা মার্জিন ও প্যাডিং জিরো করা হলো */
+        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0; }
 
-        /* হেডার এবং কন্টেইনারের উইথ একদম সমান এবং চওড়া করা হলো যাতে দুই পাশের ফাঁকা ভাব দূর হয় */
-        #header-container, .container { width: 100%; max-width: 100%; }
+        /* হেডার এবং কন্টেইনারের উইথ ফুল এবং উভয় পাশের ফাকা গ্যাপ দূর করা হলো */
+        #header-container, .container { width: 100%; max-width: 420px; }
 
         .container { 
             background: rgba(15, 23, 42, 0.95); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            border-radius: 16px; 
-            padding: 15px 12px; 
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); 
-            margin-top: 5px; 
+            border: none;
+            border-radius: 0; 
+            padding: 12px 8px; 
+            box-shadow: none; 
+            margin-top: 0; 
         }
         
-        .section-title { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 700; color: #f59e0b; margin-bottom: 15px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 700; color: #f59e0b; margin-bottom: 12px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .live-dot { width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #10b981; animation: pulseDot 1.5s infinite; }
         
         @keyframes pulseDot {
@@ -38,16 +40,16 @@
             height: 340px;
             overflow: hidden;
             position: relative;
-            border-radius: 12px;
+            border-radius: 10px;
             background: #080c14;
             border: 1px solid #1e293b;
-            padding: 5px 0;
+            padding: 4px 0;
         }
 
         .payout-feed-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             position: absolute;
             width: 100%;
             animation: smoothScroll 70s linear infinite;
@@ -65,28 +67,28 @@
         .payout-item {
             background: rgba(30, 41, 59, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 12px 10px;
+            border-radius: 8px;
+            padding: 10px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 0 6px;
+            margin: 0 4px;
         }
 
         .payout-user-info {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
         }
 
         .payout-name {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: #f1f5f9;
         }
 
         .payout-method {
-            font-size: 11px;
+            font-size: 10px;
             color: #94a3b8;
             font-family: 'Orbitron', sans-serif;
         }
@@ -95,47 +97,47 @@
             text-align: right;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
         }
 
         .payout-amount {
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             color: #10b981;
         }
 
         .payout-time {
-            font-size: 10px;
+            font-size: 9px;
             color: #f59e0b;
         }
 
         /* Article Section with More/Less Toggle */
         .article-box {
-            margin-top: 20px;
+            margin-top: 15px;
             background: rgba(30, 41, 59, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 15px 10px;
+            border-radius: 10px;
+            padding: 12px 10px;
         }
 
         .article-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #f59e0b;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .article-content {
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .article-extra {
             display: none;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .more-less-btn {
@@ -143,14 +145,14 @@
             border: none;
             color: #f59e0b;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
             display: inline-block;
             font-family: 'Orbitron', sans-serif;
         }
 
-        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 20px; }
+        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 12px; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -201,7 +203,7 @@
             <div class="article-content">
                 <p><strong>English:</strong> In modern digital asset platforms, transparent and instantaneous payouts via verified gateways like bKash and USDT (BEP20) build absolute trust and financial security. Automated tracking ensures zero delays and complete transparency.</p>
                 <div class="article-extra" id="articleExtra">
-                    <p style="margin-top: 8px;"><strong>বাংলা:</strong> আধুনিক ডিজিটাল প্ল্যাটফর্মে বিকাশ (bKash) এবং ইউএসডিটি (USDT) গেটওয়ের মাধ্যমে স্বচ্ছ ও দ্রুত পেআউট সিস্টেম ইউজারদের পূর্ণ আস্থা ও আর্থিক নিরাপত্তা নিশ্চিত করে। অটোমেটেড বট লজিক নিশ্চিত করে প্রতিটি লেনদেন শতভাগ ত্রুটিহীন ও নিরাপদ।</p>
+                    <p style="margin-top: 6px;"><strong>বাংলা:</strong> আধুনিক ডিজিটাল প্ল্যাটফর্মে বিকাশ (bKash) এবং ইউএসডিটি (USDT) গেটওয়ের মাধ্যমে স্বচ্ছ ও দ্রুত পেআউট সিস্টেম ইউজারদের পূর্ণ আস্থা ও আর্থিক নিরাপত্তা নিশ্চিত করে। অটোমেটেড বট লজিক নিশ্চিত করে প্রতিটি লেনদেন শতভাগ ত্রুটিহীন ও নিরাপদ।</p>
                 </div>
             </div>
             <button class="more-less-btn" id="moreLessBtn" onclick="toggleArticle()">Read More ↓</button>
