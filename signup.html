@@ -29,27 +29,15 @@
         .back-home { display: block; margin-top: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
         .signup-only { display: block; }
 
-        /* Custom Animated Popup Modal Styles */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center;
-            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
-        }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-box {
-            background: #0f172a; border: 1px solid #334155; width: 90%; max-width: 320px;
-            padding: 25px 20px; border-radius: 16px; text-align: center;
-            transform: scale(0.7); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-        }
+        /* Premium Popup Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-box { background: #0f172a; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 20px; padding: 30px 25px; width: 90%; max-width: 320px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.6); transform: scale(0.7); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .modal-overlay.active .modal-box { transform: scale(1); }
-        .modal-icon { font-size: 40px; margin-bottom: 10px; }
-        .modal-message { font-size: 15px; color: #e2e8f0; margin-bottom: 20px; line-height: 1.5; }
-        .modal-btn {
-            background: #f59e0b; color: #000; border: none; padding: 10px 25px;
-            font-weight: 700; border-radius: 8px; cursor: pointer; width: 100%;
-        }
-        .modal-btn:hover { background: #d97706; }
+        .modal-icon { font-size: 45px; margin-bottom: 15px; }
+        .modal-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .modal-message { font-size: 13px; color: #94a3b8; margin-bottom: 20px; line-height: 1.5; }
+        .modal-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; border-radius: 10px; padding: 10px 25px; font-weight: 700; font-size: 14px; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
@@ -65,7 +53,7 @@
         <form id="authForm" onsubmit="handleAuth(event)">
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" id="email" required placeholder="enter your email (e.g., user@gmail.com)">
+                <input type="email" id="email" required placeholder="enter your email">
             </div>
             
             <div class="form-group">
@@ -96,11 +84,12 @@
         <a href="index.html" class="back-home">← Back to Home</a>
     </div>
 
-    <!-- Custom Popup Modal HTML -->
+    <!-- Premium Custom Popup Modal -->
     <div class="modal-overlay" id="customModal">
         <div class="modal-box">
-            <div class="modal-icon" id="modalIcon">🎉</div>
-            <div class="modal-message" id="modalText">সফল বার্তা এখানে থাকবে</div>
+            <div class="modal-icon" id="modalIcon">⚡</div>
+            <div class="modal-title" id="modalTitle">Notification</div>
+            <div class="modal-message" id="modalMessage">Message goes here...</div>
             <button class="modal-btn" onclick="closeModal()">OK</button>
         </div>
     </div>
@@ -110,22 +99,35 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let isLogin = false; 
-        let modalCallback = null;
+        let isLogin = false;
+        let redirectOnClose = false;
 
-        // কাস্টম পপ-আপ দেখানোর ফাংশন
-        function showPopup(message, isSuccess = true, callback = null) {
-            document.getElementById('modalText').innerText = message;
-            document.getElementById('modalIcon').innerText = isSuccess ? '🎉' : '⚠️';
-            document.getElementById('customModal').classList.add('active');
-            modalCallback = callback;
+        function showModal(title, message, type = 'success') {
+            const modal = document.getElementById('customModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalIcon = document.getElementById('modalIcon');
+
+            modalTitle.innerText = title;
+            modalMessage.innerText = message;
+
+            if (type === 'success') {
+                modalIcon.innerText = '✅';
+            } else if (type === 'error') {
+                modalIcon.innerText = '⚠️';
+            } else {
+                modalIcon.innerText = '⚡';
+            }
+
+            modal.classList.add('active');
         }
 
         function closeModal() {
-            document.getElementById('customModal').classList.remove('active');
-            if (typeof modalCallback === 'function') {
-                modalCallback();
-                modalCallback = null;
+            const modal = document.getElementById('customModal');
+            modal.classList.remove('active');
+            if (redirectOnClose) {
+                redirectOnClose = false;
+                window.location.href = 'index.html';
             }
         }
 
@@ -151,16 +153,15 @@
             }
         }
 
-        // ইমেইল ডোমেইন ভ্যালিডেশন ফাংশন
+        // ইমেইল ডোমেইন ভ্যালিডেশন ফাংশন (শুধুমাত্র নির্দিষ্ট ৩টি ডোমেইন এলাও করবে)
         function validateEmailDomain(email) {
-            const allowedDomains = ['gmail.com', 'yahoo.com', 'hotmail.com'];
+            const allowedDomains = ["gmail.com", "yahoo.com", "hotmail.com"];
             const parts = email.split('@');
             if (parts.length !== 2) return false;
-            const domain = parts[1].toLowerCase();
+            const domain = parts[1].toLowerCase().trim();
             return allowedDomains.includes(domain);
         }
 
-        // পাসওয়ার্ড ভ্যালিডেশন ফাংশন
         function validatePassword(pass) {
             const forbiddenPasswords = [
                 "12345678", "87654321", "00000000", "11111111", 
@@ -169,16 +170,16 @@
             ];
 
             if (pass.length < 8) {
-                return "পাসওয়ার্ড অবশ্যই কমপক্ষে ৮ অক্ষরের হতে হবে।";
+                return "Password must be at least 8 characters long.";
             }
 
             if (forbiddenPasswords.includes(pass)) {
-                return "এই সাধারণ পাসওয়ার্ডটি গ্রহণযোগ্য নয়। দয়া করে অন্য পাসওয়ার্ড দিন।";
+                return "This weak password is not allowed. Please choose another.";
             }
 
             const symbolRegex = /[@#%&]/;
             if (!symbolRegex.test(pass)) {
-                return "পাসওয়ার্ডে অবশ্যই কমপক্ষে একটি সিম্বল (@, #, %, &) থাকতে হবে।";
+                return "Password must contain at least one symbol (@, #, %, &).";
             }
 
             return null;
@@ -186,13 +187,13 @@
 
         async function handleAuth(event) {
             event.preventDefault();
-            const email = document.getElementById('email').value.trim().toLowerCase();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const submitBtn = document.getElementById('submitBtn');
 
-            // ইমেইল ডোমেইন চেক (gmail.com, yahoo.com, hotmail.com ছাড়া এলাউ করবে না)
+            // ইমেইল ডোমেইন চেক
             if (!validateEmailDomain(email)) {
-                showPopup("দয়া করে সঠিক ডোমেইনের ইমেইল ব্যবহার করুন (যেমন: gmail.com, yahoo.com অথবা hotmail.com)। ভুল বানান গ্রহণযোগ্য নয়।", false);
+                showModal("Invalid Email", "Only gmail.com, yahoo.com, and hotmail.com are allowed!", "error");
                 return;
             }
 
@@ -203,26 +204,26 @@
                 if (isLogin) {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
-                    showPopup("লগইন সফল হয়েছে!", true, () => {
-                        window.location.href = 'index.html';
-                    });
+                    
+                    redirectOnClose = true;
+                    showModal("Login Successful", "Welcome back to BDTMINER!", "success");
                 } else {
                     const confirmPassword = document.getElementById('confirmPassword').value;
                     const secretPin = document.getElementById('secretPin').value.trim();
 
                     if (password !== confirmPassword) {
-                        showPopup("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!", false);
+                        showModal("Password Error", "Passwords do not match!", "error");
                         return;
                     }
 
                     const passError = validatePassword(password);
                     if (passError) {
-                        showPopup(passError, false);
+                        showModal("Weak Password", passError, "error");
                         return;
                     }
 
                     if (secretPin.length < 4 || isNaN(secretPin)) {
-                        showPopup("সিক্রেট পিন অবশ্যই কমপক্ষে ৪ সংখ্যার হতে হবে!", false);
+                        showModal("Invalid PIN", "Secret Pin must be at least 4 digits!", "error");
                         return;
                     }
 
@@ -248,16 +249,15 @@
                             ], { onConflict: ['id'] });
                         
                         if (dbError) {
-                            throw new Error("ডাটাবেজ টেবিল আপডেট ত্রুটি: " + dbError.message);
+                            throw new Error("Database update error: " + dbError.message);
                         }
                     }
                     
-                    showPopup("সাইনআপ সফল হয়েছে! এখন লগইন করুন।", true, () => {
-                        switchTab('login');
-                    });
+                    showModal("Sign Up Successful", "Account created successfully! Please login.", "success");
+                    switchTab('login');
                 }
             } catch (err) {
-                showPopup("ত্রুটি: " + err.message, false);
+                showModal("Error Occurred", err.message, "error");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = isLogin ? 'Login' : 'Sign Up';
