@@ -34,8 +34,8 @@
         }
 
         .verified-badge-box {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.1) !important;
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
             color: #10b981 !important;
         }
 
@@ -193,23 +193,31 @@
                 if (profile.mother_name) document.getElementById('motherName').value = profile.mother_name || '';
                 if (profile.birth_date) document.getElementById('birthDate').value = profile.birth_date || '';
                 
-                // NID নাম্বার লোড করার সময় মাস্ক করে (*** দিয়ে) দেখাবে
                 if (profile.nid_number) {
                     document.getElementById('nidNumber').value = maskNidNumber(profile.nid_number);
                 }
                 
                 if (profile.full_address) document.getElementById('fullAddress').value = profile.full_address || '';
 
-                const status = profile.verification_status ? profile.verification_status.toLowerCase().trim() : '';
+                const status = profile.verification_status ? profile.verification_status.toLowerCase().trim() : 'unverified';
 
-                // Check if already approved (Case-insensitive check for 'approved')
+                // ১. যদি Approved হয়
                 if (status === 'approved') {
                     setFormDisabled(true, 'Account ভেরফিফাই এবং verified base শো করছে');
                     document.getElementById('statusNotice').classList.add('verified-badge-box');
+                    
+                    // ইউজার পেইজে ঢুকলেই পপআপ দেখাবে
+                    showCustomPopup(
+                        'success',
+                        'Account Verified',
+                        'Congratulations! Your NID verification has been successfully approved.',
+                        'Your account is now fully verified.',
+                        false
+                    );
                     return;
                 }
 
-                // Check if pending and 5-7 minutes passed -> Auto approve
+                // ২. যদি Pending হয় (অথবা ৫ মিনিট পার হলে অটো Approved করা)
                 if (status === 'pending' && profile.verification_submitted_at) {
                     const submittedTime = new Date(profile.verification_submitted_at).getTime();
                     const now = new Date().getTime();
@@ -224,12 +232,43 @@
 
                         setFormDisabled(true, 'Account ভেরফিফাই এবং verified base শো করছে');
                         document.getElementById('statusNotice').classList.add('verified-badge-box');
+                        
+                        showCustomPopup(
+                            'success',
+                            'Account Verified',
+                            'Congratulations! Your NID verification has been successfully approved.',
+                            'Your account is now fully verified.',
+                            false
+                        );
                         return;
                     } else {
-                        // Still pending, lock fields and show notice
+                        // Still pending
                         setFormDisabled(true, 'Verification is under review. Your NID details are locked.');
+                        
+                        showCustomPopup(
+                            'pending',
+                            'Verification Pending',
+                            'Your NID verification request is currently under review.',
+                            'Please wait a few moments for confirmation.',
+                            false
+                        );
                         return;
                     }
+                }
+
+                // ৩. যদি Unverified হয়
+                if (status === 'unverified') {
+                    // ফর্ম খোলা থাকবে এবং ইউজার নির্দেশিকা দেখবে
+                    setFormDisabled(false, 'Please enter your exact NID details as shown on your National Identity Card (Bangla or English accepted).');
+                    
+                    // চাইলে আনভেরিফাইড ইউজারদের জন্য প্রথমবার পপআপ দেখাতে পারেন (অথবা কমেন্ট আউট করে রাখতে পারেন)
+                    showCustomPopup(
+                        'info',
+                        'NID Unverified',
+                        'Your account is currently unverified. Please submit your NID details.',
+                        'Fill up the form below with correct information.',
+                        false
+                    );
                 }
             }
         }
@@ -285,7 +324,6 @@
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Submit for Verification';
             } else {
-                // সাবমিট করার সাথে সাথেই ইউজারকে মাস্ক করা NID নাম্বার দেখিয়ে ফর্ম লক করে দেওয়া
                 document.getElementById('nidNumber').value = maskNidNumber(nidNumber);
                 setFormDisabled(true, 'Verification is under review. Your NID details are locked.');
 
@@ -303,7 +341,8 @@
             const iconElem = document.getElementById('popupIcon');
             if (type === 'success') iconElem.innerText = '🎉';
             else if (type === 'error') iconElem.innerText = '⚠️';
-            else iconElem.innerText = '⏳';
+            else if (type === 'pending') iconElem.innerText = '⏳';
+            else iconElem.innerText = 'ℹ️';
 
             document.getElementById('popupTitle').innerText = title;
             document.getElementById('popupMessage').innerText = message;
