@@ -69,6 +69,7 @@
         color: #ffff00;
     }
 
+    /* ব্যালেন্স বক্স ও ডিপোজিট সিম্বল স্টাইল */
     .top-balance-box {
         background: #1e293b;
         border: 1px solid rgba(30, 144, 238, 0.3);
@@ -78,6 +79,30 @@
         font-size: 13px;
         font-weight: 700;
         color: #1E90EE;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .top-balance-box:hover {
+        border-color: #1E90EE;
+        background: rgba(30, 144, 238, 0.1);
+    }
+
+    .deposit-symbol {
+        background: #1E90EE;
+        color: #0f172a;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
     }
 
     /* সাইডবার মেনু ও ওভারলে স্টাইল */
@@ -130,7 +155,7 @@
 
     .sidebar-header .brand-logo {
         font-size: 15px;
-        color: #f59e0b; /* ছবির মতো অরেঞ্জ/ইয়েলো টোন */
+        color: #f59e0b;
     }
 
     .sidebar-close-btn {
@@ -148,7 +173,6 @@
         flex-grow: 1;
     }
 
-    /* ছবির মতো প্রতিটি মেনু আইটেমের জন্য আলাদা বক্স ডিজাইন */
     .nav-item {
         color: #fff;
         text-decoration: none;
@@ -168,6 +192,13 @@
         background: #2563eb;
         border-color: rgba(255, 255, 255, 0.1);
         color: #fff;
+    }
+
+    /* ডিপোজিট ও উইথড্র স্পেশাল মেনু বাটন স্টাইল */
+    .deposit-withdraw-nav {
+        background: linear-gradient(135deg, #1e3a8a, #2563eb) !important;
+        border: 1px solid rgba(30, 144, 238, 0.4) !important;
+        font-weight: 600;
     }
 
     /* লগআউট বাটন স্টাইল */
@@ -208,7 +239,11 @@
     </div>
     
     <div class="nav-right">
-        <div class="top-balance-box" id="topBalance">$666.36</div>
+        <!-- ব্যালেন্স বক্স এবং ডিপোজিট সিম্বল (+) -->
+        <a href="deposit-withdraw.html?type=deposit" class="top-balance-box" title="Deposit Money">
+            <span id="topBalance">$0.00</span>
+            <span class="deposit-symbol">+</span>
+        </a>
     </div>
 </div>
 
@@ -220,15 +255,48 @@
         <button class="sidebar-close-btn" onclick="toggleSidebar()">✕</button>
     </div>
     <div class="sidebar-links">
-        <a href="index.html" class="nav-item">Home</a>
-        <a href="mining-plans.html" class="nav-item">Mining Plans</a>
-        <a href="live-payouts.html" class="nav-item">Live Payouts</a>
-        <a href="dashboard.html" class="nav-item">Dashboard</a>
-        <a href="nid-verification.html" class="nav-item">NID Verification <span style="font-size: 14px;">🛡️</span></a>
-        <a href="profile.html" class="nav-item">Account Info</a>
-        <a href="support.html" class="nav-item">Contact Support</a>
+        <a href="index.html" class="nav-item">🏠 Home</a>
+        <a href="mining-plans.html" class="nav-item">💎 Mining Plans</a>
+        <a href="live-payouts.html" class="nav-item">💸 Live Payouts</a>
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="nid-verification.html" class="nav-item">🛡️ NID Verification</a>
+        <a href="profile.html" class="nav-item">👤 Account Info</a>
+        
+        <!-- Contact Support-এর ঠিক উপরে Deposit & Withdraw বাটন -->
+        <a href="deposit-withdraw.html?type=deposit" class="nav-item deposit-withdraw-nav">💳 Deposit & Withdraw</a>
+        
+        <a href="support.html" class="nav-item">🎧 Contact Support</a>
         
         <!-- লগআউট বাটন -->
         <a href="logout.php" class="logout-item">LOGOUT</a>
     </div>
 </div>
+
+<!-- ব্যালেন্স লাইভ ফেচ করার জন্য JavaScript (Supabase বা Custom API ভিত্তিক) -->
+<script>
+    async function fetchUserBalance() {
+        try {
+            // আপনার প্রজেক্ট অনুযায়ী লোকালস্টোরেজ বা সেশন থেকে ইউজার আইডি বা ইমেইল নিন
+            // উদাহরণস্বরূপ যদি Supabase ব্যবহার করেন:
+            /*
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('balance')
+                    .eq('id', user.id) // অথবা .eq('email', user.email)
+                    .single();
+                
+                if (data && data.balance !== null) {
+                    document.getElementById('topBalance').innerText = '$' + parseFloat(data.balance).toFixed(2);
+                }
+            }
+            */
+        } catch (err) {
+            console.error('Balance fetch error:', err);
+        }
+    }
+
+    // পেজ লোড হলে ব্যালেন্স ফেচ করবে
+    document.addEventListener("DOMContentLoaded", fetchUserBalance);
+</script>
