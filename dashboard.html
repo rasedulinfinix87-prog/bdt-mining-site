@@ -19,7 +19,7 @@
         .balance-title { font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
         .balance-amount { font-size: 26px; font-weight: 700; color: #10b981; }
         .action-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-action { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; }
+        .btn-action { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; text-decoration: none; }
         .btn-deposit { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
         .btn-withdraw { background: #1e293b; color: #fff; border: 1px solid #334155; }
         .selected-plan { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; border-radius: 10px; padding: 12px; text-align: center; font-size: 13px; color: #f59e0b; margin-bottom: 15px; display: none; }
@@ -42,8 +42,8 @@
         </div>
 
         <div class="action-buttons">
-            <button class="btn-action btn-deposit" onclick="alert('ডিপোজিট অপশন শীঘ্রই চালু হচ্ছে!')">Deposit</button>
-            <button class="btn-action btn-withdraw" onclick="alert('উইথড্র অপশন শীঘ্রই চালু হচ্ছে!')">Withdraw</button>
+            <button class="btn-action btn-deposit" onclick="window.location.href='deposit-withdraw.html'">Deposit</button>
+            <button class="btn-action btn-withdraw" onclick="window.location.href='deposit-withdraw.html'">Withdraw</button>
         </div>
 
         <a href="index.html" class="back-home">← Back to Home</a>
@@ -82,7 +82,7 @@
                 .eq('id', user.id)
                 .single();
 
-            if (profile) {
+            if (profile && profile.balance !== null) {
                 document.getElementById('userBalance').innerText = `৳ ${profile.balance.toFixed(2)}`;
             }
         }
