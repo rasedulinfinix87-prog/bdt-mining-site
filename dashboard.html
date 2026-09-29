@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDTMINER - User Dashboard</title>
+    <title>BDTMINER - Smart Mining Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Crypto & Futuristic Tech Fonts -->
@@ -21,7 +21,7 @@
         }
 
         /* Applying Orbitron Font for Titles & Tech Text Styles */
-        h1, h2, h3, .logo, .plan-title, .plan-amount, .section-title, .drawer-header, .ticker-item, .card-value, .stat-title {
+        h1, h2, h3, .logo, .plan-title, .plan-amount, .section-title, .drawer-header, .ticker-item {
             font-family: 'Orbitron', sans-serif;
             letter-spacing: 0.8px;
         }
@@ -137,6 +137,33 @@
             align-items: center;
         }
 
+        .btn-login {
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid #334155;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-signup {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+            text-transform: uppercase;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
         .btn-logout {
             background: #ef4444;
             color: #ffffff;
@@ -162,6 +189,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         /* Side Menu Drawer */
@@ -219,6 +247,38 @@
             cursor: pointer;
         }
 
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 20px;
+            color: #f59e0b;
+            margin-bottom: 6px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        /* Feasibility Banner */
+        .feasibility-tag {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px dashed rgba(16, 185, 129, 0.5);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #34d399;
+        }
+
         .section-title {
             text-align: center;
             font-size: 15px;
@@ -229,137 +289,177 @@
             text-transform: uppercase;
         }
 
-        /* Dashboard Overview Grid Cards */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .dash-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 14px;
+        /* Plan Cards */
+        .plans-list {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 20px;
         }
 
-        .stat-title {
-            font-size: 11px;
+        .plan-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .plan-card.featured {
+            border: 1px solid #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .badge-days {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #334155;
             color: #94a3b8;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .badge-popular {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #f59e0b;
+            color: #000;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .plan-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 12px;
             text-transform: uppercase;
         }
 
-        .card-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .card-value.highlight {
-            color: #f59e0b;
-        }
-
-        .card-value.green {
-            color: #10b981;
-        }
-
-        /* Selected Plan Alert Banner */
-        .selected-plan-banner {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid #f59e0b;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 20px;
+        .plan-amount {
             text-align: center;
-            display: none;
-        }
-
-        .selected-plan-banner h4 {
-            font-family: 'Orbitron', sans-serif;
-            color: #f59e0b;
-            font-size: 14px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
             margin-bottom: 4px;
         }
 
-        .selected-plan-banner p {
-            font-size: 12px;
-            color: #cbd5e1;
-        }
-
-        /* Action Buttons */
-        .action-btns {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn-action {
-            flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            text-transform: uppercase;
+        .plan-profit {
+            text-align: center;
+            color: #10b981;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 15px;
             font-family: 'Space Grotesk', sans-serif;
         }
 
-        .btn-deposit {
+        .plan-details {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
+            text-align: center;
+        }
+
+        .crypto-badges {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .crypto-pill {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .crypto-pill span {
+            display: block;
+            color: #f59e0b;
+            font-weight: 600;
+            font-size: 11px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-invest {
+            width: 100%;
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            margin-top: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.5px;
         }
 
-        .btn-withdraw {
-            background: #1e293b;
-            color: #ffffff;
-            border: 1px solid #334155;
-        }
-
-        /* Active Investments Section */
-        .investment-section {
+        /* Recent Live Payouts Section */
+        .payouts-section {
+            margin-top: 30px;
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 15px;
         }
 
-        .investment-list {
+        .payout-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
-        .investment-item {
+        .payout-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: rgba(30, 41, 59, 0.5);
-            padding: 12px;
+            padding: 10px 12px;
             border-radius: 10px;
-            border-left: 3px solid #f59e0b;
             font-size: 12px;
+            border-left: 3px solid #10b981;
         }
 
-        .inv-title {
-            font-weight: 700;
+        .payout-user {
+            font-weight: 600;
             color: #e2e8f0;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        .inv-sub {
+        .payout-time {
             font-size: 10px;
             color: #64748b;
         }
 
-        .inv-status {
+        .payout-amount {
             color: #10b981;
-            font-weight: 600;
-            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
         }
 
         /* Floating Telegram Live Chat Button */
@@ -381,6 +481,7 @@
             z-index: 9999;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: pulse 2s infinite;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .telegram-chat-btn:hover {
@@ -423,10 +524,10 @@
             <button class="close-drawer" onclick="toggleMenu()">✕</button>
         </div>
         <div class="drawer-links">
-            <a href="index.html">Home</a>
-            <a href="index.html#plans">Mining Plans</a>
-            <a href="index.html#payouts">Live Payouts</a>
-            <a href="dashboard.html" onclick="toggleMenu()">Dashboard</a>
+            <a href="index.html" onclick="toggleMenu()">Home</a>
+            <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
+            <a href="#payouts" onclick="toggleMenu()">Live Payouts</a>
+            <a href="dashboard.html">Dashboard</a>
             <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
         </div>
     </div>
@@ -436,59 +537,104 @@
         <header>
             <div class="logo-area">
                 <button class="menu-btn" onclick="toggleMenu()">☰</button>
-                <div class="logo">⚡ DASHBOARD</div>
+                <div class="logo">⚡ BDTMINER</div>
             </div>
             <div class="nav-buttons" id="navButtons">
-                <div class="user-email-badge" id="userBadge">Loading...</div>
-                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
+                <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
             </div>
         </header>
 
-        <!-- Selected Investment Banner -->
-        <div class="selected-plan-banner" id="selectedPlanBanner">
-            <h4 id="planBannerTitle">Plan Selected</h4>
-            <p id="planBannerDesc">Proceed with deposit to activate this plan.</p>
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Smart Mining Platform</h1>
+            <p>Grow your investment profit safely and reliably with integrated crypto & USD liquidity</p>
         </div>
 
-        <div class="section-title">Account Overview</div>
-
-        <!-- Dashboard Stats Grid -->
-        <div class="dashboard-grid">
-            <div class="dash-card">
-                <div class="stat-title">Total Balance</div>
-                <div class="card-value highlight" id="totalBalance">$0.00</div>
-            </div>
-            <div class="dash-card">
-                <div class="stat-title">Active Deposit</div>
-                <div class="card-value" id="activeDeposit">$0.00</div>
-            </div>
-            <div class="dash-card">
-                <div class="stat-title">Total Earnings</div>
-                <div class="card-value green" id="totalEarnings">$0.00</div>
-            </div>
-            <div class="dash-card">
-                <div class="stat-title">Pending Profit</div>
-                <div class="card-value" id="pendingProfit">$0.00</div>
-            </div>
+        <!-- 5% Feasibility Banner -->
+        <div class="feasibility-tag">
+            ⚡ <strong>5% Feasibility Fee Active</strong> (USDT / USD Auto-Conversion)
         </div>
 
-        <!-- Action Buttons -->
-        <div class="action-btns">
-            <button class="btn-action btn-deposit" onclick="alert('Deposit Gateways Initializing...')">Deposit</button>
-            <button class="btn-action btn-withdraw" onclick="alert('Withdrawal System Active')">Withdraw</button>
-        </div>
+        <div class="section-title" id="plans">Our Profitable Plans</div>
 
-        <!-- Active Mining Investments -->
-        <div class="investment-section">
-            <div class="section-title" style="margin-bottom: 10px;">⚡ Active Mining Operations</div>
-            <div class="investment-list" id="investmentContainer">
-                <div class="investment-item">
-                    <div>
-                        <div class="inv-title">No Active Mining</div>
-                        <div class="inv-sub">Choose a plan to start mining</div>
-                    </div>
-                    <div class="inv-status">Inactive</div>
+        <!-- Plans List -->
+        <div class="plans-list">
+            
+            <!-- Plan 1: 15 Days -->
+            <div class="plan-card">
+                <div class="badge-days">15 Days</div>
+                <div class="plan-title">5 Airdrop</div>
+                <div class="plan-amount">10$ Invest</div>
+                <div class="plan-profit">15 Airdrop 15$ Return</div>
+
+                <div class="plan-details">
+                    <div>Duration: <strong>15 Days</strong></div>
+                    <div>Total Return: <strong>15$</strong></div>
+                    <div>Auto Claim System</div>
                 </div>
+
+                <div class="crypto-badges">
+                    <div class="crypto-pill">BTC / USD <span>5% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+5% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
+                </div>
+
+                <button class="btn-invest" onclick="handleInvest('5 Airdrop', 10)">Invest Now</button>
+            </div>
+
+            <!-- Plan 2: 30 Days -->
+            <div class="plan-card featured">
+                <div class="badge-popular">Popular</div>
+                <div class="badge-days">30 Days</div>
+                <div class="plan-title">30 AirDrop</div>
+                <div class="plan-amount">25$ Invest</div>
+                <div class="plan-profit">30 Airdrop + Extra 3 Airdrop Bonus</div>
+
+                <div class="plan-details">
+                    <div>Duration: <strong>30 Days</strong></div>
+                    <div>Total Return: <strong>65$+ Extra 3$ Bonus</strong></div>
+                    <div>Auto Claim System</div>
+                </div>
+
+                <div class="crypto-badges">
+                    <div class="crypto-pill">ETH / USD <span>5% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+5% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
+                </div>
+
+                <button class="btn-invest" onclick="handleInvest('30 AirDrop', 25)">Invest Now</button>
+            </div>
+
+            <!-- Plan 3: 45 Days -->
+            <div class="plan-card">
+                <div class="badge-days">45 Days</div>
+                <div class="plan-title">60 AirDrop</div>
+                <div class="plan-amount">50$ Invest</div>
+                <div class="plan-profit">60 Airdrop + Extra 5 Airdrop Bonus</div>
+
+                <div class="plan-details">
+                    <div>Duration: <strong>45 Days</strong></div>
+                    <div>Total Return: <strong>135$+ Extra 5$ Bonus</strong></div>
+                    <div>Auto Claim System</div>
+                </div>
+
+                <div class="crypto-badges">
+                    <div class="crypto-pill">SOL / USD <span>5% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+5% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
+                </div>
+
+                <button class="btn-invest" onclick="handleInvest('60 AirDrop', 50)">Invest Now</button>
+            </div>
+
+        </div>
+
+        <!-- Live Payouts Section (Dynamic JSON Loader) -->
+        <div class="payouts-section" id="payouts">
+            <div class="section-title" style="margin-bottom: 10px;">⚡ Recent Live Payouts</div>
+            <div class="payout-list" id="payoutContainer">
+                <div style="text-align: center; color: #64748b; font-size: 12px; padding: 10px;">Loading payouts...</div>
             </div>
         </div>
 
@@ -502,7 +648,7 @@
         <span>Live Chat</span>
     </a>
 
-    <!-- Supabase Integration & Dashboard Logic -->
+    <!-- Supabase Integration Script -->
     <script>
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
@@ -513,41 +659,82 @@
             document.getElementById('navDrawer').classList.toggle('active');
         }
 
-        async function checkUserSession() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
+        // Auto Payout Render Helper Function
+        function renderPayoutList(payouts) {
+            const container = document.getElementById('payoutContainer');
+            if(!container) return;
+            container.innerHTML = '';
 
-            if (!user) {
-                // If not logged in, redirect to signup/login page
-                window.location.href = 'signup.html';
-            } else {
-                document.getElementById('userBadge').innerText = user.email.split('@')[0];
-                document.getElementById('userBadge').title = user.email;
+            payouts.forEach(item => {
+                const html = `
+                    <div class="payout-item">
+                        <div>
+                            <div class="payout-user">${item.username}</div>
+                            <div class="payout-time">${item.time}</div>
+                        </div>
+                        <div class="payout-amount">+ $${item.amount}</div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        async function loadPayouts() {
+            try {
+                const response = await fetch('payouts.json');
+                if (!response.ok) throw new Error('Network error');
+                const payouts = await response.json();
+                renderPayoutList(payouts);
+            } catch (error) {
+                const fallbackPayouts = [
+                    { username: "user_***89", amount: "15", time: "Just now" },
+                    { username: "tanvir_***01", amount: "68", time: "5 mins ago" },
+                    { username: "crypto_***44", amount: "140", time: "18 mins ago" },
+                    { username: "rakib_***12", amount: "15", time: "1 hour ago" }
+                ];
+                renderPayoutList(fallbackPayouts);
             }
         }
 
-        function checkSelectedPlan() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const plan = urlParams.get('plan');
-            const amount = urlParams.get('amount');
+        async function loadUserProfile() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
 
-            if (plan && amount) {
-                const banner = document.getElementById('selectedPlanBanner');
-                const title = document.getElementById('planBannerTitle');
-                const desc = document.getElementById('planBannerDesc');
+            const navButtons = document.getElementById('navButtons');
 
-                title.innerText = `Selected: ${plan}`;
-                desc.innerText = `Investment Amount: $${amount}. Click Deposit to confirm.`;
-                banner.style.display = 'block';
+            if (user) {
+                navButtons.innerHTML = `
+                    <div class="user-email-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="${user.email}">${user.email.split('@')[0]}</div>
+                    <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                `;
+            } else {
+                navButtons.innerHTML = `
+                    <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
+                    <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
+                `;
+            }
+        }
+
+        // Updated Investment Handling Logic
+        async function handleInvest(planName, amount) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (!user) {
+                window.location.href = 'signup.html';
+            } else {
+                window.location.href = `dashboard.html?plan=${encodeURIComponent(planName)}&amount=${amount}`;
             }
         }
 
         async function handleLogout() {
             await supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
+            window.location.reload();
         }
 
-        checkUserSession();
-        checkSelectedPlan();
+        loadPayouts();
+        loadUserProfile();
+
+        // Refresh payout data every 60 seconds
+        setInterval(loadPayouts, 60000);
     </script>
 </body>
 </html>
