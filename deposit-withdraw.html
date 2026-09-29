@@ -11,51 +11,6 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
-        
-        /* Top Navigation Bar & Balance */
-        .top-navbar {
-            width: 100%;
-            max-width: 420px;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        .nav-links {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            white-space: nowrap;
-            scrollbar-width: none;
-        }
-        .nav-links::-webkit-scrollbar { display: none; }
-        .nav-links a {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 600;
-            transition: 0.3s;
-            font-family: 'Orbitron', sans-serif;
-        }
-        .nav-links a:hover, .nav-links a.active {
-            color: #1E90EE;
-        }
-        .top-balance {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            color: #1E90EE;
-            background: rgba(30, 144, 238, 0.1);
-            padding: 6px 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(30, 144, 238, 0.3);
-            white-space: nowrap;
-        }
 
         .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
         
@@ -256,19 +211,8 @@
 </head>
 <body>
 
-    <!-- Top Navigation Bar -->
-    <div class="top-navbar">
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="mining-plan.html">Mining Plan</a>
-            <a href="payout.html">Live Payouts</a>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="verification-details.html">NID Verification</a>
-            <a href="account-info.html">Account-Info</a>
-            <a href="chat.html">Contact Support</a>
-        </div>
-        <div class="top-balance" id="topBalance">$0.00</div>
-    </div>
+    <!-- Header Dynamic Injection Placeholder -->
+    <div id="header-placeholder"></div>
 
     <div class="container">
         <!-- Tab Switcher -->
@@ -351,6 +295,31 @@
 
         document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
 
+        // Load Header Dynamically and Update Balance
+        async function loadHeader() {
+            try {
+                const response = await fetch('header.html');
+                if (response.ok) {
+                    const html = await response.text();
+                    document.getElementById('header-placeholder').innerHTML = html;
+                    
+                    // Highlight current page in navbar
+                    const currentPage = window.location.pathname.split("/").pop();
+                    const navLinks = document.querySelectorAll('.nav-item, .nav-links a');
+                    navLinks.forEach(link => {
+                        if (link.getAttribute('href') === currentPage) {
+                            link.classList.add('active');
+                        }
+                    });
+
+                    // Fetch and update balance after header loads
+                    fetchUserData();
+                }
+            } catch (err) {
+                console.error('Header load error:', err);
+            }
+        }
+
         async function fetchUserData() {
             try {
                 const { data: { user } } = await supabaseClient.auth.getUser();
@@ -363,7 +332,10 @@
 
                     if (profile) {
                         const bal = parseFloat(profile.balance || 0).toFixed(2);
-                        document.getElementById('topBalance').innerText = `$${bal}`;
+                        const balanceElement = document.getElementById('topBalance');
+                        if (balanceElement) {
+                            balanceElement.innerText = `$${bal}`;
+                        }
                     }
                 }
             } catch (err) {
@@ -511,7 +483,7 @@
             if (type === 'success') {
                 iconElem.innerText = '🎉';
             } else if (type === 'error') {
-                iconElem.innerText = '⚠️';
+                iconElem.innerText = '⚠️️';
             } else {
                 iconElem.innerText = '🔔';
             }
@@ -663,8 +635,9 @@
             }
         }
 
+        // Initialize functions
+        loadHeader();
         fetchAdminConfig();
-        fetchUserData();
 
         const urlParams = new URLSearchParams(window.location.search);
         const initialType = urlParams.get('type');
