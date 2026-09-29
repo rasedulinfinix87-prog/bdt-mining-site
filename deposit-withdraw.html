@@ -110,11 +110,11 @@
         <!-- Admin Payment Info Display Box -->
         <div class="admin-num-box" id="adminNumBox">
             <div id="bkashAdminInfo">
-                Send Money (Personal): <strong>01700000000</strong> (bKash)
+                Send Money (Personal): <strong id="adminBkashText">Loading...</strong> (bKash)
             </div>
             <div id="usdtAdminInfo" style="display: none; word-break: break-all;">
                 Network: <strong>BSC (BEP20)</strong><br>
-                Address: <strong id="walletAddrText">0x9277f748305fbefa740dc230c88ad7875bfcaad</strong>
+                Address: <strong id="walletAddrText">Loading...</strong>
                 <button type="button" class="copy-btn" onclick="copyWalletAddress()">Copy</button>
             </div>
         </div>
@@ -167,6 +167,23 @@
         let currentType = 'deposit';
 
         document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
+
+        // Supabase থেকে অ্যাডমিনের তথ্য লোড করার ফাংশন
+        async function fetchAdminConfig() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('admin_config')
+                    .select('bkash_number, usdt_address')
+                    .single();
+
+                if (data && !error) {
+                    document.getElementById('adminBkashText').innerText = data.bkash_number || '01700000000';
+                    document.getElementById('walletAddrText').innerText = data.usdt_address || '0x...';
+                }
+            } catch (err) {
+                console.error('Config fetch error:', err);
+            }
+        }
 
         function switchTab(type) {
             currentType = type;
@@ -354,7 +371,7 @@
                 }
             }
 
-            // Transactions টেবিলে রিকোয়েস্ট ইনসার্ট করা (bKash হলে number আর USDT হলে wallet_address এ সেভ হবে)
+            // Transactions টেবিলে রিকোয়েস্ট ইনসার্ট করা
             const { data, error } = await supabaseClient
                 .from('transactions')
                 .insert([
@@ -380,6 +397,9 @@
                 window.location.href = 'dashboard.html';
             }
         }
+
+        // পেজ লোড হওয়ার সাথেই অ্যাডমিন কনফিগারেশন ফেচ করা হবে
+        fetchAdminConfig();
 
         const urlParams = new URLSearchParams(window.location.search);
         const initialType = urlParams.get('type');
