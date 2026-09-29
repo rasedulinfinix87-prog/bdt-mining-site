@@ -411,57 +411,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Recent Live Payouts Section (Modified to link payout.html) */
-        .payouts-section {
-            margin-top: 30px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 15px;
-            cursor: pointer;
-            transition: border-color 0.2s;
-            text-decoration: none;
-            display: block;
-        }
-        .payouts-section:hover {
-            border-color: #f59e0b;
-        }
-
-        .payout-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-
-        .payout-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(30, 41, 59, 0.5);
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            border-left: 3px solid #10b981;
-        }
-
-        .payout-user {
-            font-weight: 600;
-            color: #e2e8f0;
-        }
-
-        .payout-time {
-            font-size: 10px;
-            color: #64748b;
-        }
-
-        .payout-amount {
-            color: #10b981;
-            font-weight: 700;
-            font-family: 'Orbitron', sans-serif;
-        }
-
         /* Floating Telegram Live Chat Button */
         .telegram-chat-btn {
             position: fixed;
@@ -629,17 +578,6 @@
 
         </div>
 
-        <!-- Recent Live Payouts Section Connected to payout.html -->
-        <a href="payout.html" class="payouts-section" id="payouts">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <div class="section-title" style="margin-bottom: 0;">⚡ Recent Live Payouts</div>
-                <span style="font-size: 11px; color: #f59e0b;">View All →</span>
-            </div>
-            <div class="payout-list" id="payoutContainer">
-                <div style="text-align: center; color: #64748b; font-size: 12px; padding: 10px;">Loading payouts...</div>
-            </div>
-        </a>
-
     </div>
 
     <!-- Telegram Live Chat Floating Button -->
@@ -659,43 +597,6 @@
 
         function toggleMenu() {
             document.getElementById('navDrawer').classList.toggle('active');
-        }
-
-        // Auto Payout Render Helper Function
-        function renderPayoutList(payouts) {
-            const container = document.getElementById('payoutContainer');
-            if(!container) return;
-            container.innerHTML = '';
-
-            payouts.forEach(item => {
-                const html = `
-                    <div class="payout-item">
-                        <div>
-                            <div class="payout-user">${item.username}</div>
-                            <div class="payout-time">${item.time}</div>
-                        </div>
-                        <div class="payout-amount">+ $${item.amount}</div>
-                    </div>
-                `;
-                container.innerHTML += html;
-            });
-        }
-
-        async function loadPayouts() {
-            try {
-                const response = await fetch('payouts.json');
-                if (!response.ok) throw new Error('Network error');
-                const payouts = await response.json();
-                renderPayoutList(payouts);
-            } catch (error) {
-                const fallbackPayouts = [
-                    { username: "user_***89", amount: "15", time: "Just now" },
-                    { username: "tanvir_***01", amount: "68", time: "5 mins ago" },
-                    { username: "crypto_***44", amount: "140", time: "18 mins ago" },
-                    { username: "rakib_***12", amount: "15", time: "1 hour ago" }
-                ];
-                renderPayoutList(fallbackPayouts);
-            }
         }
 
         async function loadUserProfile() {
@@ -726,11 +627,7 @@
             window.location.reload();
         }
 
-        loadPayouts();
         loadUserProfile();
-
-        // Refresh payout data every 60 seconds
-        setInterval(loadPayouts, 60000);
     </script>
 </body>
 </html>
