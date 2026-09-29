@@ -19,6 +19,28 @@
         label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
         input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
         input:focus, select:focus { border-color: #f59e0b; }
+        
+        /* Live Conversion Preview Box */
+        .conversion-preview {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 13px;
+            color: #10b981;
+            margin-top: 8px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .rate-info {
+            font-size: 11px;
+            color: #f59e0b;
+            margin-top: 4px;
+            text-align: right;
+        }
+
         .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 10px; color: #000; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 10px; }
         .admin-num-box { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; border-radius: 10px; padding: 10px; text-align: center; margin-bottom: 15px; font-size: 13px; color: #f59e0b; }
         .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
@@ -33,7 +55,7 @@
             <button class="tab-btn" id="withdrawTabBtn" onclick="switchTab('withdraw')">Withdraw</button>
         </div>
 
-        <!-- Admin Mobile Number Display for Cash In/Cash Out -->
+        <!-- Admin Mobile Number Display -->
         <div class="admin-num-box" id="adminNumBox">
             Send Money (Personal): <strong>01700000000</strong> (bKash/Nagad)
         </div>
@@ -50,8 +72,15 @@
             </div>
 
             <div class="form-group">
-                <label>Amount (BDT)</label>
-                <input type="number" id="amount" placeholder="e.g. 5000" min="500" required>
+                <label id="amountLabel">Amount (BDT)</label>
+                <input type="number" id="amount" placeholder="e.g. 1250" min="100" oninput="calculateConversion()" required>
+                
+                <!-- Live USD Conversion Preview -->
+                <div class="conversion-preview" id="conversionPreview">
+                    <span>You will receive:</span>
+                    <span id="usdOutput">$ 0.00 USD</span>
+                </div>
+                <div class="rate-info" id="rateInfoText">Exchange Rate: $1 = ৳ 125 BDT</div>
             </div>
 
             <div class="form-group">
@@ -71,11 +100,19 @@
     </div>
 
     <script>
+        // ==========================================
+        // ১ ডলারের মান এখান থেকে পরিবর্তন করুন:
+        const USD_RATE = 125; // ১২৫ টাকার জায়গায় ১২৬ করতে চাইলে এখানে বদলে দিন।
+        // ==========================================
+
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentType = 'deposit';
+
+        // ইনিশিয়াল পেজ লোড হবার পর এক্সচেঞ্জ রেট মেসেজ আপডেট করা
+        document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
 
         function switchTab(type) {
             currentType = type;
@@ -103,6 +140,25 @@
                 document.getElementById('trxId').required = false;
                 submitBtn.innerText = 'Submit Withdraw Request';
             }
+
+            calculateConversion(); // ট্যাব পরিবর্তন করার পর ক্যালকুলেশন আপডেট করা
+        }
+
+        // Live BDT to USD Calculation Function
+        function calculateConversion() {
+            const bdtInput = parseFloat(document.getElementById('amount').value) || 0;
+            const usdValue = (bdtInput / USD_RATE).toFixed(2);
+            
+            const previewLabel = document.querySelector('#conversionPreview span:first-child');
+            const usdOutput = document.getElementById('usdOutput');
+
+            if (currentType === 'deposit') {
+                previewLabel.innerText = 'You will receive:';
+                usdOutput.innerText = `$ ${usdValue} USD`;
+            } else {
+                previewLabel.innerText = 'Withdraw Amount:';
+                usdOutput.innerText = `$ ${usdValue} USD (৳ ${bdtInput} BDT)`;
+            }
         }
 
         async function handleTransaction(e) {
@@ -117,10 +173,17 @@
             }
 
             const method = document.getElementById('method').value;
-            const amount = parseFloat(document.getElementById('amount').value);
+            const bdtAmount = parseFloat(document.getElementById('amount').value);
+            const usdAmount = parseFloat((bdtAmount / USD_RATE).toFixed(2)); // BDT টাকাকে USD ডলারে কনভার্ট করা
             const phone = document.getElementById('phone').value;
             const trxId = document.getElementById('trxId').value || null;
 
+            if (usdAmount <= 0) {
+                alert('দয়া করে সঠিক টাকার পরিমাণ প্রদান করুন।');
+                return;
+            }
+
+            // Database insert with USD Amount
             const { data, error } = await supabaseClient
                 .from('transactions')
                 .insert([
@@ -129,7 +192,7 @@
                         user_email: user.email,
                         type: currentType,
                         method: method,
-                        amount: amount,
+                        amount: usdAmount, // ডাটাবেজে ডলার অ্যামাউন্ট জমা হচ্ছে ($10.00)
                         sender_receiver_number: phone,
                         trx_id: trxId,
                         status: 'pending'
@@ -139,9 +202,16 @@
             if (error) {
                 alert('রিকোয়েস্ট জমা করতে সমস্যা হয়েছে: ' + error.message);
             } else {
-                alert(`আপনার ${currentType.toUpperCase()} রিকোয়েস্ট সফলভাবে জমা হয়েছে। অ্যাডমিন পর্যালোচনার পর ব্যালেন্স আপডেট করা হবে।`);
+                alert(`আপনার ${currentType.toUpperCase()} রিকোয়েস্ট ($${usdAmount} USD / ৳${bdtAmount} BDT) সফলভাবে জমা হয়েছে। অ্যাডমিন পর্যালোচনার পর ব্যালেন্স আপডেট করা হবে।`);
                 window.location.href = 'dashboard.html';
             }
+        }
+
+        // URL চেক করা যদি dashboard থেকে ?type=withdraw বা ?type=deposit দিয়ে আসে
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialType = urlParams.get('type');
+        if (initialType === 'withdraw' || initialType === 'deposit') {
+            switchTab(initialType);
         }
     </script>
 </body>
