@@ -16,24 +16,29 @@
             font-family: 'Inter', sans-serif;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden; /* স্ক্রিন ডানে-বামে সরে যাওয়া সম্পূর্ণ বন্ধ করবে */
             background-color: #080c14;
             color: #ffffff;
             min-height: 100vh;
+        }
+
+        body {
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
             padding: 0 0 30px 0;
             position: relative;
-            overflow-x: hidden;
         }
 
         /* Floating Background Crypto Symbols with Animation */
         .bg-crypto {
             position: fixed;
-            color: rgba(245, 158, 11, 0.04);
+            color: rgba(245, 158, 11, 0.03);
             font-weight: 700;
-            font-size: 110px;
+            font-size: 80px;
             user-select: none;
             z-index: 0;
             pointer-events: none;
@@ -43,17 +48,17 @@
             0% { transform: translateY(0px) rotate(0deg); }
             100% { transform: translateY(-15px) rotate(5deg); }
         }
-        .bg-btc { top: 8%; left: 3%; }
-        .bg-eth { top: 40%; right: 4%; animation-delay: 1s; }
-        .bg-usdt { top: 70%; left: 5%; animation-delay: 2s; }
-        .bg-usd { bottom: 2%; right: 8%; animation-delay: 3s; }
+        .bg-btc { top: 10%; left: 2%; }
+        .bg-eth { top: 40%; right: 2%; animation-delay: 1s; }
+        .bg-usdt { top: 70%; left: 3%; animation-delay: 2s; }
+        .bg-usd { bottom: 2%; right: 3%; animation-delay: 3s; }
 
         /* Top Crypto Live Ticker */
         .crypto-ticker-bar {
             width: 100%;
             background: #020617;
             border-bottom: 1px solid #1e293b;
-            padding: 6px 12px;
+            padding: 6px 8px;
             font-size: 11px;
             display: flex;
             justify-content: space-around;
@@ -72,7 +77,7 @@
         .app-container {
             width: 100%;
             max-width: 440px;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(12px);
             border-radius: 0 0 24px 24px;
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -80,6 +85,7 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
             position: relative;
             z-index: 1;
+            margin: 0 auto;
         }
 
         /* Header Navigation */
@@ -141,7 +147,7 @@
             box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
         }
 
-        /* Side Menu Modal/Drawer */
+        /* Side Menu Drawer */
         .nav-drawer {
             position: fixed;
             top: 0;
@@ -541,7 +547,6 @@
             }
         }
 
-        // পেজ লোড হলে পেমেন্ট আপডেট হবে
         loadPayouts();
     </script>
 </body>
