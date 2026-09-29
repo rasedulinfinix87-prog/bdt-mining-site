@@ -168,13 +168,15 @@
             background: #ef4444;
             color: #ffffff;
             border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 11px;
+            font-size: 12px;
             cursor: pointer;
             text-transform: uppercase;
             font-family: 'Space Grotesk', sans-serif;
+            width: 100%;
+            margin-top: 10px;
         }
 
         .user-email-badge {
@@ -189,6 +191,18 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        /* Top Bar Balance Badge */
+        .top-balance-badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
         }
 
         /* Side Menu Drawer */
@@ -471,7 +485,7 @@
             <span>⚡ BDTMINER Menu</span>
             <button class="close-drawer" onclick="toggleMenu()">✕</button>
         </div>
-        <div class="drawer-links">
+        <div class="drawer-links" id="drawerLinks">
             <a href="index.html" onclick="toggleMenu()">Home</a>
             <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
             <a href="payout.html">Live Payouts</a>
@@ -603,16 +617,44 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
 
             const navButtons = document.getElementById('navButtons');
+            const drawerLinks = document.getElementById('drawerLinks');
 
             if (user) {
+                // ইউজারের ব্যালেন্স ফেচ করা
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('balance')
+                    .eq('id', user.id)
+                    .single();
+
+                const userBalance = profile && profile.balance !== undefined ? parseFloat(profile.balance).toFixed(2) : '0.00';
+
+                // Top bar-এ ব্যালেন্স শো করার লজিক (লগআউট বাটন সরিয়ে)
                 navButtons.innerHTML = `
-                    <div class="user-email-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="${user.email}">${user.email.split('@')[0]}</div>
+                    <div class="top-balance-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="Current Balance">$${userBalance}</div>
+                `;
+
+                // Menu (Drawer)-এর মধ্যে লগআউট বাটন যোগ করার লজিক
+                drawerLinks.innerHTML = `
+                    <a href="index.html" onclick="toggleMenu()">Home</a>
+                    <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
+                    <a href="payout.html">Live Payouts</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
                     <button class="btn-logout" onclick="handleLogout()">Logout</button>
                 `;
             } else {
                 navButtons.innerHTML = `
                     <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
                     <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
+                `;
+
+                drawerLinks.innerHTML = `
+                    <a href="index.html" onclick="toggleMenu()">Home</a>
+                    <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
+                    <a href="payout.html">Live Payouts</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
                 `;
             }
         }
