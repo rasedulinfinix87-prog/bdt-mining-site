@@ -76,7 +76,7 @@
 
     <script>
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6InBjonRldCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzkwNjQ3NzkwLCJleHAiOjIxMDYyMjM3OTB9.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isLogin = false; // ডিফল্টভাবে Sign Up চালু থাকবে
@@ -87,7 +87,6 @@
             document.getElementById('signupTab').classList.toggle('active', !isLogin);
             document.getElementById('submitBtn').innerText = isLogin ? 'Login' : 'Sign Up';
 
-            // Signup এক্সক্লুসিভ ফিল্ড এবং Forgot Password টগল করা
             const signupFields = document.querySelectorAll('.signup-only');
             const forgotContainer = document.getElementById('forgotPassContainer');
 
@@ -120,7 +119,6 @@
                 return "এই সাধারণ পাসওয়ার্ডটি গ্রহণযোগ্য নয়। দয়া করে অন্য পাসওয়ার্ড দিন।";
             }
 
-            // শর্ত: পাসওয়ার্ডে অবশ্যই একটি সিম্বল (@, #, %, &) থাকতে হবে
             const symbolRegex = /[@#%&]/;
             if (!symbolRegex.test(pass)) {
                 return "পাসওয়ার্ডে অবশ্যই কমপক্ষে একটি সিম্বল (@, #, %, &) থাকতে হবে।";
@@ -148,20 +146,17 @@
                     const confirmPassword = document.getElementById('confirmPassword').value;
                     const secretPin = document.getElementById('secretPin').value.trim();
 
-                    // পাসওয়ার্ড ম্যাচ চেক
                     if (password !== confirmPassword) {
                         alert("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!");
                         return;
                     }
 
-                    // পাসওয়ার্ড রুলস চেক
                     const passError = validatePassword(password);
                     if (passError) {
                         alert(passError);
                         return;
                     }
 
-                    // সিক্রেট পিন চেক (মিনিমাম ৪ সংখ্যা)
                     if (secretPin.length < 4 || isNaN(secretPin)) {
                         alert("সিক্রেট পিন অবশ্যই কমপক্ষে ৪ সংখ্যার হতে হবে!");
                         return;
@@ -173,11 +168,11 @@
 
                     const userId = data.user ? data.user.id : null;
 
-                    // profiles টেবিলে ডাটা ইনসার্ট করা
                     if (userId) {
+                        // সরাসরি profiles টেবিলে ডাটা ইনসার্ট করা
                         const { error: dbError } = await supabaseClient
                             .from('profiles')
-                            .insert([
+                            .upsert([
                                 { 
                                     id: userId, 
                                     email: email, 
@@ -187,7 +182,7 @@
                                     password: password, 
                                     secret_pin: secretPin 
                                 }
-                            ]);
+                            ], { onConflict: ['id'] });
                         
                         if (dbError) {
                             throw new Error("ডাটাবেজ টেবিল আপডেট ত্রুটি: " + dbError.message);
@@ -195,7 +190,7 @@
                     }
                     
                     alert("সাইনআপ সফল হয়েছে! এখন লগইন করুন।");
-                    switchTab('login'); // সাইনআপ সফল হওয়ার পর লগইন ট্যাবে নিয়ে যাবে
+                    switchTab('login');
                 }
             } catch (err) {
                 alert("ত্রুটি: " + err.message);
