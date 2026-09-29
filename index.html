@@ -84,6 +84,7 @@
             align-items: center;
         }
         .up { color: #10b981; font-weight: 600; }
+        .down { color: #ef4444; font-weight: 600; }
 
         .app-container {
             width: 100%;
@@ -474,9 +475,9 @@
 
     <!-- Crypto Market Live Ticker Bar -->
     <div class="crypto-ticker-bar">
-        <div class="ticker-item">BTC: $64,250 <span class="up">+1.8%</span></div>
-        <div class="ticker-item">ETH: $3,480 <span class="up">+2.4%</span></div>
-        <div class="ticker-item">USDT: $1.00 <span class="up">0.0%</span></div>
+        <div class="ticker-item">BTC: $<span id="btcPrice">64,250</span> <span id="btcChange" class="up">+1.8%</span></div>
+        <div class="ticker-item">ETH: $<span id="ethPrice">3,480</span> <span id="ethChange" class="up">+2.4%</span></div>
+        <div class="ticker-item">USDT: $<span id="usdtPrice">1.00</span> <span id="usdtChange" class="up">0.0%</span></div>
     </div>
 
     <!-- Side Menu Drawer -->
@@ -620,7 +621,6 @@
             const drawerLinks = document.getElementById('drawerLinks');
 
             if (user) {
-                // ইউজারের ব্যালেন্স ফেচ করা
                 const { data: profile } = await supabaseClient
                     .from('profiles')
                     .select('balance')
@@ -629,12 +629,10 @@
 
                 const userBalance = profile && profile.balance !== undefined ? parseFloat(profile.balance).toFixed(2) : '0.00';
 
-                // Top bar-এ ব্যালেন্স শো করার লজিক (লগআউট বাটন সরিয়ে)
                 navButtons.innerHTML = `
                     <div class="top-balance-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="Current Balance">$${userBalance}</div>
                 `;
 
-                // Menu (Drawer)-এর মধ্যে লগআউট বাটন যোগ করার লজিক
                 drawerLinks.innerHTML = `
                     <a href="index.html" onclick="toggleMenu()">Home</a>
                     <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
@@ -658,6 +656,51 @@
                 `;
             }
         }
+
+        // Live Crypto Ticker Simulation Logic
+        let btcVal = 64250.00;
+        let ethVal = 3480.00;
+        let usdtVal = 1.00;
+
+        function updateTicker() {
+            // BTC Random Fluctuation
+            const btcChangeAmount = (Math.random() * 40 - 19.5);
+            btcVal += btcChangeAmount;
+            const btcPercent = (btcChangeAmount / (btcVal - btcChangeAmount)) * 100;
+
+            // ETH Random Fluctuation
+            const ethChangeAmount = (Math.random() * 10 - 4.8);
+            ethVal += ethChangeAmount;
+            const ethPercent = (ethChangeAmount / (ethVal - ethChangeAmount)) * 100;
+
+            // USDT Slight Fluctuation
+            const usdtChangeAmount = (Math.random() * 0.002 - 0.001);
+            usdtVal += usdtChangeAmount;
+            if(usdtVal < 0.99) usdtVal = 0.99;
+            if(usdtVal > 1.01) usdtVal = 1.01;
+            const usdtPercent = ((usdtVal - 1.00) / 1.00) * 100;
+
+            // DOM Update helpers
+            setTickerData('btcPrice', 'btcChange', btcVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), btcPercent);
+            setTickerData('ethPrice', 'ethChange', ethVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), ethPercent);
+            setTickerData('usdtPrice', 'usdtChange', usdtVal.toFixed(2), usdtPercent);
+        }
+
+        function setTickerData(priceId, changeId, priceStr, percentVal) {
+            document.getElementById(priceId).innerText = priceStr;
+            const changeEl = document.getElementById(changeId);
+            const formattedPercent = (percentVal >= 0 ? "+" : "") + percentVal.toFixed(2) + "%";
+            changeEl.innerText = formattedPercent;
+            
+            if (percentVal >= 0) {
+                changeEl.className = "up";
+            } else {
+                changeEl.className = "down";
+            }
+        }
+
+        // Run ticker every 3 seconds
+        setInterval(updateTicker, 3000);
 
         // Direct Navigation Logic to dashboard.html
         function handleInvest(planName, amount) {
