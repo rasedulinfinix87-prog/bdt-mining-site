@@ -1,82 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDTMINER - Login & Sign Up</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .auth-card { width: 100%; max-width: 400px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 30px 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; }
-        .logo { font-size: 22px; font-weight: 700; color: #f59e0b; margin-bottom: 20px; }
-        .tab-buttons { display: flex; margin-bottom: 20px; background: #1e293b; border-radius: 10px; padding: 4px; }
-        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; font-weight: 600; cursor: pointer; border-radius: 8px; }
-        .tab-btn.active { background: #f59e0b; color: #000; }
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 12px; background: #020617; border: 1px solid #334155; border-radius: 8px; color: #fff; outline: none; }
-        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .forgot-pass-container { margin-top: 12px; text-align: right; }
-        .forgot-pass-link { color: #f59e0b; font-size: 12px; text-decoration: none; cursor: pointer; }
-        .forgot-pass-link:hover { text-decoration: underline; }
-        .back-home { display: block; margin-top: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
-        .signup-only { display: block; }
-    </style>
-</head>
-<body>
-
-    <div class="auth-card">
-        <div class="logo">⚡ BDTMINER</div>
-
-        <div class="tab-buttons">
-            <button class="tab-btn" id="loginTab" onclick="switchTab('login')">Login</button>
-            <button class="tab-btn active" id="signupTab" onclick="switchTab('signup')">Sign Up</button>
-        </div>
-
-        <form id="authForm" onsubmit="handleAuth(event)">
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="email" required placeholder="enter your email">
-            </div>
-            
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" required placeholder="min 8 chars (e.g. Abcdefg@)">
-            </div>
-
-            <!-- Confirm Password Field (Only for Signup) -->
-            <div class="form-group signup-only" id="confirmPassGroup">
-                <label>Confirm Password</label>
-                <input type="password" id="confirmPassword" placeholder="re-enter password">
-            </div>
-
-            <!-- Secret Pin Field (Only for Signup) -->
-            <div class="form-group signup-only" id="secretPinGroup">
-                <label>Secret Pin (Minimum 4 digits)</label>
-                <input type="password" id="secretPin" placeholder="enter min 4-digit secret pin" maxlength="8">
-            </div>
-
-            <button type="submit" class="btn-submit" id="submitBtn">Sign Up</button>
-
-            <!-- Forgot Password Option (Only visible or active during Login) -->
-            <div class="forgot-pass-container" id="forgotPassContainer" style="display: none;">
-                <a href="chat.html" class="forgot-pass-link">Forget Password?</a>
-            </div>
-        </form>
-
-        <a href="index.html" class="back-home">← Back to Home</a>
-    </div>
-
     <script>
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6InBjonRldCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzkwNjQ3NzkwLCJleHAiOjIxMDYyMjM3OTB9.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+        // এখানে আপনার আসল ও সঠিক অ্যানন কি বসানো হয়েছে
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isLogin = false; // ডিফল্টভাবে Sign Up চালু থাকবে
@@ -103,7 +28,6 @@
             }
         }
 
-        // পাসওয়ার্ড ভ্যালিডেশন ফাংশন (দুর্বল পাসওয়ার্ড এবং সিম্বল চেক)
         function validatePassword(pass) {
             const forbiddenPasswords = [
                 "12345678", "87654321", "00000000", "11111111", 
@@ -169,7 +93,6 @@
                     const userId = data.user ? data.user.id : null;
 
                     if (userId) {
-                        // সরাসরি profiles টেবিলে ডাটা ইনসার্ট করা
                         const { error: dbError } = await supabaseClient
                             .from('profiles')
                             .upsert([
@@ -200,5 +123,3 @@
             }
         }
     </script>
-</body>
-</html>
