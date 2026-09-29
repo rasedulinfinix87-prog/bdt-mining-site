@@ -31,12 +31,32 @@
             color: #f59e0b;
             margin-bottom: 20px;
             line-height: 1.5;
+            text-align: center;
         }
 
+        /* Yellow Glow Spinning Verification Badge Container */
         .verified-badge-box {
-            background: rgba(16, 185, 129, 0.1) !important;
-            border: 1px solid rgba(16, 185, 129, 0.3) !important;
-            color: #10b981 !important;
+            background: rgba(245, 158, 11, 0.1) !important;
+            border: 2px solid #f59e0b !important;
+            color: #f59e0b !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px !important;
+            animation: yellowGlowSpin 3s linear infinite;
+        }
+
+        @keyframes yellowGlowSpin {
+            0% { box-shadow: 0 0 5px #f59e0b, inset 0 0 5px #f59e0b; border-color: #f59e0b; }
+            50% { box-shadow: 0 0 20px #f59e0b, inset 0 0 10px #f59e0b; border-color: #d97706; }
+            100% { box-shadow: 0 0 5px #f59e0b, inset 0 0 5px #f59e0b; border-color: #f59e0b; }
+        }
+
+        .large-verify-symbol {
+            font-size: 45px;
+            margin-bottom: 8px;
+            animation: bounceIcon 1s infinite alternate;
         }
 
         .btn-submit { 
@@ -56,7 +76,28 @@
         }
         .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; display: none; }
 
-        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
+        /* Verification Based Article/Notice above Back to Home */
+        .verification-article {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px dashed rgba(245, 158, 11, 0.4);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 11.5px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            text-align: center;
+        }
+        .verification-article span {
+            color: #f59e0b;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 10px; }
+        .back-home:hover { color: #f59e0b; }
 
         /* Custom Popup Modal Styles */
         .custom-popup-overlay {
@@ -140,6 +181,12 @@
             <button type="submit" class="btn-submit" id="submitBtn">Submit for Verification</button>
         </form>
 
+        <!-- Verification Based Article (Above Back to Home) -->
+        <div class="verification-article" id="verificationArticle">
+            <span id="articleTitle">Verification Required (ভেরিফিকেশন প্রয়োজন)</span>
+            <p id="articleText">Please submit your accurate NID credentials to unlock full account features and secure your profile.</p>
+        </div>
+
         <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
     </div>
 
@@ -201,11 +248,25 @@
 
                 const status = profile.verification_status ? profile.verification_status.toLowerCase().trim() : 'unverified';
 
+                const noticeBox = document.getElementById('statusNotice');
+                const articleTitle = document.getElementById('articleTitle');
+                const articleText = document.getElementById('articleText');
+
                 // ১. যদি Approved হয়
                 if (status === 'approved') {
-                    setFormDisabled(true, 'Account ভেরফিফাই এবং verified base শো করছে');
-                    document.getElementById('statusNotice').classList.add('verified-badge-box');
+                    setFormDisabled(true);
                     
+                    // ইয়েলো গ্লো স্পিনিং বেজ ও বড় সিম্বল প্রদর্শন
+                    noticeBox.className = 'notice-box verified-badge-box';
+                    noticeBox.innerHTML = `
+                        <div class="large-verify-symbol">🛡️️</div>
+                        <div style="font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 14px; text-transform: uppercase;">Verified Account Base</div>
+                    `;
+
+                    // আর্টিকেল আপডেট
+                    articleTitle.innerText = "Account Verified (অ্যাকাউন্ট ভেরিফাই সম্পন্ন)";
+                    articleText.innerText = "Your account is fully secured and verified with official NID credentials. All platform features are unlocked.";
+
                     showCustomPopup(
                         'success',
                         'Account Verified',
@@ -218,8 +279,12 @@
 
                 // ২. যদি Pending হয়
                 if (status === 'pending') {
-                    setFormDisabled(true, 'Verification is under review. Your NID details are locked.');
+                    setFormDisabled(true);
+                    noticeBox.innerText = 'Verification is under review. Your NID details are locked.';
                     
+                    articleTitle.innerText = "Verification Pending (ভেরিফিকেশন প্রক্রিয়াধীন)";
+                    articleText.innerText = "Your NID details are currently under review by our admin team. Please wait shortly for confirmation.";
+
                     showCustomPopup(
                         'pending',
                         'Verification Pending',
@@ -230,14 +295,26 @@
                     return;
                 }
 
-                // ৩. যদি Unverified হয়
+                // ৩. যদি Unverified হয় বা স্ট্যাটাস না থাকে
                 if (status === 'unverified' || status === '') {
-                    setFormDisabled(false, 'Please enter your exact NID details as shown on your National Identity Card (Bangla or English accepted).');
+                    setFormDisabled(false);
+                    noticeBox.innerText = 'Please enter your exact NID details as shown on your National Identity Card (Bangla or English accepted).';
+                    
+                    articleTitle.innerText = "Verification Required (ভেরিফিকেশন প্রয়োজন)";
+                    articleText.innerText = "Please submit accurate information matching your National ID card to secure your account and access all withdrawals and features.";
+
+                    showCustomPopup(
+                        'error',
+                        'Verification Rejected, Try Again',
+                        'Your account verification is unverified or rejected. Please submit correct NID details.',
+                        'Please check your information carefully and try again.',
+                        false
+                    );
                 }
             }
         }
 
-        function setFormDisabled(disabled, noticeText) {
+        function setFormDisabled(disabled) {
             document.getElementById('fullName').disabled = disabled;
             document.getElementById('fatherName').disabled = disabled;
             document.getElementById('motherName').disabled = disabled;
@@ -249,10 +326,6 @@
             if (submitBtn) {
                 submitBtn.disabled = disabled;
                 submitBtn.style.display = disabled ? 'none' : 'block';
-            }
-
-            if (noticeText) {
-                document.getElementById('statusNotice').innerText = noticeText;
             }
         }
 
@@ -292,7 +365,8 @@
                 submitBtn.innerText = 'Submit for Verification';
             } else {
                 document.getElementById('nidNumber').value = maskNidNumber(nidNumber);
-                setFormDisabled(true, 'Verification is under review. Your NID details are locked.');
+                setFormDisabled(true);
+                document.getElementById('statusNotice').innerText = 'Verification is under review. Your NID details are locked.';
 
                 showCustomPopup(
                     'success',
