@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BDTMINER - Smart Mining Platform</title>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         * {
@@ -19,40 +17,67 @@
         }
 
         body {
-            background-color: #0b0f19;
+            background-color: #080c14;
             color: #ffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 20px 10px;
+            padding: 0 0 30px 0;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Floating Background Crypto Symbols */
+        /* Floating Background Crypto Symbols with Animation */
         .bg-crypto {
             position: fixed;
-            color: rgba(255, 255, 255, 0.03);
+            color: rgba(245, 158, 11, 0.04);
             font-weight: 700;
-            font-size: 90px;
+            font-size: 110px;
             user-select: none;
             z-index: 0;
             pointer-events: none;
+            animation: float 6s ease-in-out infinite alternate;
         }
-        .bg-btc { top: 5%; left: 5%; }
-        .bg-eth { top: 35%; right: 5%; }
-        .bg-usdt { top: 65%; left: 8%; }
-        .bg-usd { bottom: 5%; right: 10%; }
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-15px) rotate(5deg); }
+        }
+        .bg-btc { top: 8%; left: 3%; }
+        .bg-eth { top: 40%; right: 4%; animation-delay: 1s; }
+        .bg-usdt { top: 70%; left: 5%; animation-delay: 2s; }
+        .bg-usd { bottom: 2%; right: 8%; animation-delay: 3s; }
+
+        /* Top Crypto Live Ticker */
+        .crypto-ticker-bar {
+            width: 100%;
+            background: #020617;
+            border-bottom: 1px solid #1e293b;
+            padding: 6px 12px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-around;
+            color: #94a3b8;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .ticker-item {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .up { color: #10b981; font-weight: 600; }
 
         .app-container {
             width: 100%;
-            max-width: 420px;
-            background: #0f172a;
-            border-radius: 20px;
-            border: 1px solid #1e293b;
-            padding: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            max-width: 440px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 0 0 24px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
             position: relative;
             z-index: 1;
         }
@@ -62,59 +87,112 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #f59e0b;
+            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
             font-weight: 700;
             font-size: 18px;
             color: #f59e0b;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
         }
 
         .nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-login {
             background: #1e293b;
             color: #fff;
             border: 1px solid #334155;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
             font-weight: 500;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
         }
 
         .btn-signup {
-            background: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #000;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
-            font-weight: 600;
-            font-size: 13px;
+            font-weight: 700;
+            font-size: 12px;
             cursor: pointer;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
         }
 
-        .user-logged-info {
-            font-weight: 600;
+        /* Side Menu Modal/Drawer */
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 260px;
+            height: 100%;
+            background: #0f172a;
+            border-right: 1px solid #1e293b;
+            z-index: 1000;
+            transition: 0.3s ease;
+            padding: 20px;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+        }
+        .nav-drawer.active {
+            left: 0;
+        }
+        .drawer-header {
             display: flex;
-            gap: 12px;
+            justify-content: space-between;
             align-items: center;
-            font-size: 13px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #f59e0b;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 10px;
         }
-
-        .nav-balance {
+        .drawer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .drawer-links a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.02);
+            transition: 0.2s;
+        }
+        .drawer-links a:hover {
             background: #1e293b;
-            padding: 4px 10px;
-            border-radius: 12px;
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #f59e0b;
+        }
+        .close-drawer {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 20px;
+            cursor: pointer;
         }
 
         /* Hero Section */
@@ -126,7 +204,8 @@
         .hero h1 {
             font-size: 22px;
             color: #f59e0b;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
         }
 
         .hero p {
@@ -135,11 +214,11 @@
             line-height: 1.4;
         }
 
-        /* 5% Feasibility Banner */
+        /* Feasibility Banner */
         .feasibility-tag {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px dashed #10b981;
-            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px dashed rgba(16, 185, 129, 0.5);
+            border-radius: 12px;
             padding: 10px;
             text-align: center;
             margin-bottom: 20px;
@@ -149,30 +228,32 @@
 
         .section-title {
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 15px;
             color: #e2e8f0;
             font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
-        /* Plans List */
+        /* Plan Cards */
         .plans-list {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        /* Plan Card */
         .plan-card {
-            background: #1e293b;
+            background: rgba(30, 41, 59, 0.7);
             border-radius: 16px;
             padding: 20px;
             position: relative;
-            border: 1px solid #334155;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .plan-card.featured {
-            border: 2px solid #f59e0b;
+            border: 1px solid #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
         }
 
         .badge-days {
@@ -208,7 +289,7 @@
 
         .plan-amount {
             text-align: center;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 4px;
@@ -223,7 +304,7 @@
         }
 
         .plan-details {
-            border-top: 1px solid #334155;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding-top: 12px;
             display: flex;
             flex-direction: column;
@@ -233,7 +314,6 @@
             text-align: center;
         }
 
-        /* Scattered Feasibility Badges */
         .crypto-badges {
             display: flex;
             justify-content: space-between;
@@ -243,8 +323,8 @@
 
         .crypto-pill {
             flex: 1;
-            background: #0f172a;
-            border: 1px solid #334155;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             padding: 6px 4px;
             text-align: center;
@@ -261,7 +341,7 @@
 
         .btn-invest {
             width: 100%;
-            background: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #000;
             border: none;
             padding: 12px;
@@ -272,118 +352,47 @@
             cursor: pointer;
         }
 
-        /* Active Mining Dashboard */
-        .active-mining-section {
-            margin-top: 25px;
-            background: #1e293b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
+        /* Recent Live Payouts Section */
+        .payouts-section {
+            margin-top: 30px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 15px;
         }
 
-        .mining-box-card {
+        .payout-list {
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
-        .dice-box {
-            width: 60px;
-            height: 60px;
-            background: #f59e0b;
-            border-radius: 12px;
+        .payout-item {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+            background: rgba(30, 41, 59, 0.5);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            border-left: 3px solid #10b981;
         }
 
-        .currency-dice {
-            font-size: 2rem;
-            color: #000;
-            font-weight: bold;
-            animation: rotateDice 2s infinite linear;
+        .payout-user {
+            font-weight: 600;
+            color: #e2e8f0;
         }
 
-        @keyframes rotateDice {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
+        .payout-time {
+            font-size: 10px;
+            color: #64748b;
         }
 
-        .mining-details {
-            flex: 1;
-            font-size: 13px;
-        }
-
-        .progress-bar-wrap {
-            width: 100%;
-            height: 8px;
-            background: #0f172a;
-            border-radius: 4px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            width: 30%;
-            height: 100%;
-            background: #10b981;
-        }
-
-        /* Modal Popup */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-card {
-            background: #1e293b;
-            padding: 1.5rem;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 350px;
-            position: relative;
-            border: 1px solid #334155;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .modal-inputs input {
-            width: 100%;
-            padding: 0.7rem;
-            margin: 8px 0;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: #fff;
-        }
-
-        .btn-modal-submit {
-            width: 100%;
-            padding: 0.7rem;
-            border-radius: 8px;
-            border: none;
-            background: #f59e0b;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 8px;
+        .payout-amount {
+            color: #10b981;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -395,19 +404,38 @@
     <div class="bg-crypto bg-usdt">₮</div>
     <div class="bg-crypto bg-usd">$</div>
 
+    <!-- Crypto Market Live Ticker Bar -->
+    <div class="crypto-ticker-bar">
+        <div class="ticker-item">BTC: $64,250 <span class="up">+1.8%</span></div>
+        <div class="ticker-item">ETH: $3,480 <span class="up">+2.4%</span></div>
+        <div class="ticker-item">USDT: $1.00 <span class="up">0.0%</span></div>
+    </div>
+
+    <!-- Side Menu Drawer -->
+    <div class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">
+            <span>⚡ BDTMINER Menu</span>
+            <button class="close-drawer" onclick="toggleMenu()">✕</button>
+        </div>
+        <div class="drawer-links">
+            <a href="index.html" onclick="toggleMenu()">Home</a>
+            <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
+            <a href="#payouts" onclick="toggleMenu()">Live Payouts</a>
+            <a href="signup.html">Deposit & Withdraw</a>
+            <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
+        </div>
+    </div>
+
     <div class="app-container">
-        <!-- Header Navigation -->
+        <!-- Header -->
         <header>
-            <div class="logo">
-                ⚡ BDTMINER
+            <div class="logo-area">
+                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                <div class="logo">⚡ BDTMINER</div>
             </div>
-            <div class="nav-buttons" id="authNav">
-                <button class="btn-login" onclick="openAuthModal('login')">Login</button>
-                <button class="btn-signup" onclick="openAuthModal('signup')">Sign Up</button>
-            </div>
-            <div class="user-logged-info" id="userNav" style="display: none;">
-                <span id="navEmail">user@mail.com</span>
-                <span class="nav-balance" id="navBalance">৳ 0.00</span>
+            <div class="nav-buttons">
+                <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
+                <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
             </div>
         </header>
 
@@ -417,17 +445,16 @@
             <p>Grow your investment profit safely and reliably with integrated crypto & USD liquidity</p>
         </div>
 
-        <!-- 5% Feasibility Summary Banner -->
+        <!-- 5% Feasibility Banner -->
         <div class="feasibility-tag">
             ⚡ <strong>5% Feasibility Fee Active</strong> (USDT / USD Auto-Conversion)
         </div>
 
-        <div class="section-title">Our Profitable Plans</div>
+        <div class="section-title" id="plans">Our Profitable Plans</div>
 
         <!-- Plans List -->
         <div class="plans-list">
             
-            <!-- 15 Days Plan -->
             <div class="plan-card">
                 <div class="badge-days">15 Days</div>
                 <div class="plan-title">Starter Plan</div>
@@ -441,24 +468,14 @@
                 </div>
 
                 <div class="crypto-badges">
-                    <div class="crypto-pill">
-                        BTC / USD
-                        <span>5% Fee Cap</span>
-                    </div>
-                    <div class="crypto-pill">
-                        USDT Yield
-                        <span>+5% Buffer</span>
-                    </div>
-                    <div class="crypto-pill">
-                        System Return
-                        <span>95% Net Profit</span>
-                    </div>
+                    <div class="crypto-pill">BTC / USD <span>5% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+5% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
                 </div>
 
-                <button class="btn-invest" onclick="handleInvestClick(5000, 15)">Invest Now</button>
+                <button class="btn-invest" onclick="window.location.href='signup.html'">Invest Now</button>
             </div>
 
-            <!-- 30 Days Plan -->
             <div class="plan-card featured">
                 <div class="badge-popular">Popular</div>
                 <div class="badge-days">30 Days</div>
@@ -473,148 +490,59 @@
                 </div>
 
                 <div class="crypto-badges">
-                    <div class="crypto-pill">
-                        ETH / USD
-                        <span>5% Fee Cap</span>
-                    </div>
-                    <div class="crypto-pill">
-                        USDT Yield
-                        <span>+5% Buffer</span>
-                    </div>
-                    <div class="crypto-pill">
-                        System Return
-                        <span>95% Net Profit</span>
-                    </div>
+                    <div class="crypto-pill">ETH / USD <span>5% Fee Cap</span></div>
+                    <div class="crypto-pill">USDT Yield <span>+5% Buffer</span></div>
+                    <div class="crypto-pill">System Return <span>95% Net Profit</span></div>
                 </div>
 
-                <button class="btn-invest" onclick="handleInvestClick(10000, 30)">Invest Now</button>
-            </div>
-
-            <!-- 45 Days Plan -->
-            <div class="plan-card">
-                <div class="badge-days">45 Days</div>
-                <div class="plan-title">Pro Plan</div>
-                <div class="plan-amount">৳ 30,000 Invest</div>
-                <div class="plan-profit">+ ৳ 19,999 Profit</div>
-
-                <div class="plan-details">
-                    <div>Duration: <strong>45 Days</strong></div>
-                    <div>Total Return: <strong>৳ 49,999</strong></div>
-                    <div>Auto Claim System</div>
-                </div>
-
-                <div class="crypto-badges">
-                    <div class="crypto-pill">
-                        CRYPTO / USD
-                        <span>5% Fee Cap</span>
-                    </div>
-                    <div class="crypto-pill">
-                        USDT Yield
-                        <span>+5% Buffer</span>
-                    </div>
-                    <div class="crypto-pill">
-                        System Return
-                        <span>95% Net Profit</span>
-                    </div>
-                </div>
-
-                <button class="btn-invest" onclick="handleInvestClick(30000, 45)">Invest Now</button>
+                <button class="btn-invest" onclick="window.location.href='signup.html'">Invest Now</button>
             </div>
 
         </div>
 
-        <!-- Active Mining Dashboard Section -->
-        <section class="active-mining-section" id="activeMiningSection" style="display: none;">
-            <div class="section-title" style="margin-bottom: 10px;">Active Mining Session</div>
-            <div class="mining-box-card">
-                <div class="dice-box">
-                    <div class="currency-dice" id="currencyDice">৳</div>
-                </div>
-                <div class="mining-details">
-                    <h4 id="activePlanName">Mining Active...</h4>
-                    <p style="color: #94a3b8; margin-top: 4px;">Countdown: <span id="daysCounter" style="color: #f59e0b; font-weight: bold;">--</span> days left</p>
-                    <div class="progress-bar-wrap">
-                        <div class="progress-bar-fill" id="miningProgress"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- Auth Modal Popup -->
-    <div class="modal-overlay" id="authModal" style="display: none;">
-        <div class="modal-card">
-            <button class="close-modal" onclick="closeAuthModal()">✕</button>
-            <h3 id="modalTitle" style="margin-bottom: 10px; font-size: 16px;">Login</h3>
-            <div class="modal-inputs">
-                <input type="email" id="email" placeholder="Your Email">
-                <input type="password" id="password" placeholder="Password">
-            </div>
-            <div class="modal-actions">
-                <button class="btn-modal-submit" id="modalSubmitBtn" onclick="handleAuthSubmit()">Submit</button>
+        <!-- Live Payouts Section (Dynamic JSON Loader) -->
+        <div class="payouts-section" id="payouts">
+            <div class="section-title" style="margin-bottom: 10px;">⚡ Recent Live Payouts</div>
+            <div class="payout-list" id="payoutContainer">
+                <div style="text-align: center; color: #64748b; font-size: 12px; padding: 10px;">Loading payouts...</div>
             </div>
         </div>
+
     </div>
 
     <script>
-        let isLoggedIn = false;
-        let userBalance = 0;
-        let currentAuthMode = 'login';
-
-        function openAuthModal(mode) {
-            currentAuthMode = mode;
-            document.getElementById('modalTitle').innerText = mode === 'login' ? 'Login' : 'Sign Up';
-            document.getElementById('authModal').style.display = 'flex';
+        function toggleMenu() {
+            document.getElementById('navDrawer').classList.toggle('active');
         }
 
-        function closeAuthModal() {
-            document.getElementById('authModal').style.display = 'none';
-        }
-
-        function handleAuthSubmit() {
-            const email = document.getElementById('email').value;
-            if(!email) {
-                alert('Please enter your email address');
-                return;
-            }
-            
-            isLoggedIn = true;
-            userBalance = 50000; // Demo Balance
-            
-            document.getElementById('authNav').style.display = 'none';
-            document.getElementById('userNav').style.display = 'flex';
-            document.getElementById('navEmail').innerText = email;
-            document.getElementById('navBalance').innerText = '৳ ' + userBalance.toLocaleString();
-            
-            closeAuthModal();
-            alert(currentAuthMode === 'login' ? 'Successfully logged in!' : 'Sign up completed!');
-        }
-
-        function handleInvestClick(amount, days) {
-            if(!isLoggedIn) {
-                alert('Please login or sign up first to invest!');
-                openAuthModal('signup');
-                return;
-            }
-
-            if(userBalance < amount) {
-                alert('Insufficient balance!');
-                return;
-            }
-
-            if(confirm(`Do you want to start the ${days}-day plan with ৳ ${amount.toLocaleString()}?`)) {
-                userBalance -= amount;
-                document.getElementById('navBalance').innerText = '৳ ' + userBalance.toLocaleString();
+        // payouts.json ফাইল থেকে ডাটা লোড করার স্ক্রিপ্ট
+        async function loadPayouts() {
+            try {
+                const response = await fetch('payouts.json');
+                const payouts = await response.json();
                 
-                document.getElementById('activeMiningSection').style.display = 'block';
-                document.getElementById('activePlanName').innerText = `${days} Days Mining Session`;
-                document.getElementById('daysCounter').innerText = days;
-                document.getElementById('miningProgress').style.width = '35%';
-                
-                alert('Congratulations! Your mining investment has successfully started.');
+                const container = document.getElementById('payoutContainer');
+                container.innerHTML = '';
+
+                payouts.forEach(item => {
+                    const html = `
+                        <div class="payout-item">
+                            <div>
+                                <div class="payout-user">${item.username}</div>
+                                <div class="payout-time">${item.time}</div>
+                            </div>
+                            <div class="payout-amount">+ ৳ ${item.amount}</div>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            } catch (error) {
+                console.log('Error loading payouts, showing fallback data');
             }
         }
+
+        // পেজ লোড হলে পেমেন্ট আপডেট হবে
+        loadPayouts();
     </script>
 </body>
 </html>
