@@ -15,15 +15,19 @@
         
         .page-title { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: #f59e0b; text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .form-group { margin-bottom: 15px; }
+        .status-box { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 15px; font-size: 13px; color: #f59e0b; font-weight: 600; }
+
+        .form-group { margin-bottom: 15px; position: relative; }
         label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
         input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
         input:focus { border-color: #f59e0b; }
-        input:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border-color: #1e293b; }
+        input:disabled { background: #1e293b; color: #94a3b8; cursor: not-allowed; border-color: #1e293b; }
 
-        .section-title { font-family: 'Orbitron', sans-serif; font-size: 13px; color: #f59e0b; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 5px; text-transform: uppercase; }
+        .eye-icon { position: absolute; right: 12px; top: 35px; cursor: pointer; color: #94a3b8; font-size: 16px; user-select: none; }
 
-        .btn-submit { 
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 13px; color: #f59e0b; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 5px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        .btn-action { 
             width: 100%; 
             padding: 12px; 
             background: linear-gradient(135deg, #f59e0b, #d97706); 
@@ -39,9 +43,15 @@
             text-transform: uppercase;
         }
 
+        .btn-secondary {
+            background: #1e293b;
+            color: #f59e0b;
+            border: 1px solid #334155;
+        }
+
         .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
 
-        /* Custom Popup Modal Styles */
+        /* Custom Popup & Modal Styles */
         .custom-popup-overlay {
             position: fixed;
             top: 0;
@@ -65,19 +75,17 @@
             border-radius: 20px;
             width: 90%;
             max-width: 360px;
-            padding: 30px 20px;
+            padding: 25px 20px;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.15);
             transform: scale(0.6) translateY(30px);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .custom-popup-overlay.active .custom-popup-box { transform: scale(1) translateY(0); }
-        .popup-icon { font-size: 45px; margin-bottom: 15px; animation: bounceIcon 1s infinite alternate; }
-        @keyframes bounceIcon { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
-        .popup-title { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: #f59e0b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .popup-message { font-size: 13.5px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.6; }
-        .popup-note { font-size: 12px; color: #f59e0b; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 20px; font-weight: 500; }
-        .popup-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 12px 20px; font-weight: 800; font-size: 14px; border-radius: 10px; cursor: pointer; width: 100%; font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; }
+        .popup-title { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 700; color: #f59e0b; margin-bottom: 15px; text-transform: uppercase; }
+        .popup-message { font-size: 13.5px; color: #cbd5e1; margin-bottom: 15px; line-height: 1.5; }
+        .popup-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 10px 20px; font-weight: 800; font-size: 13px; border-radius: 8px; cursor: pointer; width: 100%; font-family: 'Orbitron', sans-serif; margin-top: 10px; }
+        .popup-btn-close { background: #334155; color: #fff; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -85,44 +93,73 @@
     <div class="container">
         <div class="page-title">Account Info</div>
 
-        <form id="accountForm" onsubmit="updateAccountInfo(event)">
-            <div class="section-title">NID Verified Information</div>
-            
-            <div class="form-group">
-                <label>Full Name (From NID)</label>
-                <input type="text" id="fullName" disabled placeholder="Not Verified Yet">
-            </div>
+        <!-- Verification Status Display -->
+        <div class="status-box" id="verificationStatusBox">
+            Account Status: Loading...
+        </div>
 
-            <div class="form-group">
-                <label>Birth Date (From NID)</label>
-                <input type="text" id="birthDate" disabled placeholder="Not Verified Yet">
-            </div>
+        <div class="section-title">NID Verified Information</div>
+        
+        <div class="form-group">
+            <label>Full Name (From NID)</label>
+            <input type="text" id="fullName" disabled placeholder="Not Verified Yet">
+        </div>
 
-            <div class="section-title">Security Settings</div>
+        <div class="form-group">
+            <label>Birth Date (From NID)</label>
+            <input type="text" id="birthDate" disabled placeholder="Not Verified Yet">
+        </div>
 
-            <div class="form-group">
-                <label>New Password</label>
-                <input type="password" id="newPassword" placeholder="Enter new password (optional)">
-            </div>
+        <div class="form-group">
+            <label>Registered Email ID (Locked)</label>
+            <input type="text" id="regEmail" disabled placeholder="Loading email...">
+        </div>
 
-            <div class="form-group">
-                <label>Secret Pin</label>
-                <input type="text" id="secretPin" placeholder="Enter 4 or 6 digit secret pin">
-            </div>
+        <div class="section-title">
+            <span>Security Settings</span>
+        </div>
 
-            <button type="submit" class="btn-submit" id="updateBtn">Update Information</button>
-        </form>
+        <div class="form-group">
+            <label>Secret Pin (Locked)</label>
+            <input type="password" id="secretPin" disabled value="****">
+            <span class="eye-icon" onclick="toggleSecretPin()">👁️</span>
+        </div>
+
+        <button type="button" class="btn-action btn-secondary" onclick="openPasswordModal()">Change Password</button>
 
         <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
     </div>
 
-    <!-- Custom Popup Modal -->
+    <!-- Password Change Modal -->
+    <div class="custom-popup-overlay" id="passwordModal">
+        <div class="custom-popup-box" style="text-align: left;">
+            <div class="popup-title" style="text-align: center;">Change Password</div>
+            
+            <div class="form-group">
+                <label>Old Password</label>
+                <input type="password" id="oldPassword" placeholder="Enter current password">
+            </div>
+
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="modalNewPassword" placeholder="Enter new password">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 5px;">
+                <label>Confirm New Password</label>
+                <input type="password" id="modalConfirmPassword" placeholder="Confirm new password">
+            </div>
+
+            <button type="button" class="popup-btn" id="changePassBtn" onclick="submitPasswordChange()">Update Password</button>
+            <button type="button" class="popup-btn popup-btn-close" onclick="closePasswordModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- General Alert Popup Modal -->
     <div class="custom-popup-overlay" id="customPopup">
         <div class="custom-popup-box">
-            <div class="popup-icon" id="popupIcon">🎉</div>
             <div class="popup-title" id="popupTitle">Success</div>
-            <div class="popup-message" id="popupMessage">Information updated successfully.</div>
-            <div class="popup-note" id="popupNote">Your changes have been saved.</div>
+            <div class="popup-message" id="popupMessage">Action completed successfully.</div>
             <button type="button" class="popup-btn" onclick="closePopup()">OK</button>
         </div>
     </div>
@@ -133,6 +170,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUser = null;
+        let rawSecretPin = '';
 
         async function fetchAccountData() {
             const { data: { user } } = await supabaseClient.auth.getUser();
@@ -141,86 +179,111 @@
                 return;
             }
             currentUser = user;
+            document.getElementById('regEmail').value = user.email;
 
-            // Fetch profile info
+            // Fetch profile info including verification_status and secret_pin
             const { data: profile, error } = await supabaseClient
                 .from('profiles')
-                .select('full_name, birth_date, secret_pin')
+                .select('full_name, birth_date, secret_pin, verification_status')
                 .eq('id', user.id)
                 .single();
 
             if (profile) {
-                if (profile.full_name) {
-                    document.getElementById('fullName').value = profile.full_name;
-                }
-                if (profile.birth_date) {
-                    document.getElementById('birthDate').value = profile.birth_date;
-                }
+                if (profile.full_name) document.getElementById('fullName').value = profile.full_name;
+                if (profile.birth_date) document.getElementById('birthDate').value = profile.birth_date;
                 if (profile.secret_pin) {
-                    document.getElementById('secretPin').value = profile.secret_pin;
+                    rawSecretPin = profile.secret_pin;
+                    document.getElementById('secretPin').value = '•'.repeat(rawSecretPin.length);
                 }
+
+                const vStatus = profile.verification_status ? profile.verification_status.toUpperCase() : 'UNVERIFIED';
+                document.getElementById('verificationStatusBox').innerText = `Account Verification Status: ${vStatus}`;
+            } else {
+                document.getElementById('verificationStatusBox').innerText = `Account Verification Status: UNVERIFIED`;
             }
         }
 
-        async function updateAccountInfo(e) {
-            e.preventDefault();
-            if (!currentUser) return;
-
-            const updateBtn = document.getElementById('updateBtn');
-            updateBtn.disabled = true;
-            updateBtn.innerText = 'Updating...';
-
-            const newPassword = document.getElementById('newPassword').value.trim();
-            const secretPin = document.getElementById('secretPin').value.trim();
-
-            let updateFields = {};
-            if (secretPin) {
-                updateFields.secret_pin = secretPin;
+        // Toggle Secret Pin Visibility
+        let isPinVisible = false;
+        function toggleSecretPin() {
+            const pinInput = document.getElementById('secretPin');
+            if (!rawSecretPin) return;
+            isPinVisible = !isPinVisible;
+            if (isPinVisible) {
+                pinInput.value = rawSecretPin;
+            } else {
+                pinInput.value = '•'.repeat(rawSecretPin.length);
             }
-
-            // Update secret_pin in profiles table
-            if (Object.keys(updateFields).length > 0) {
-                const { error: profileError } = await supabaseClient
-                    .from('profiles')
-                    .update(updateFields)
-                    .eq('id', currentUser.id);
-
-                if (profileError) {
-                    showCustomPopup('error', 'Update Failed', profileError.message, 'Please try again', false);
-                    updateBtn.disabled = false;
-                    updateBtn.innerText = 'Update Information';
-                    return;
-                }
-            }
-
-            // Update password in Supabase Auth if provided
-            if (newPassword) {
-                const { error: authError } = await supabaseClient.auth.updateUser({
-                    password: newPassword
-                });
-
-                if (authError) {
-                    showCustomPopup('error', 'Password Update Failed', authError.message, 'Please try again', false);
-                    updateBtn.disabled = false;
-                    updateBtn.innerText = 'Update Information';
-                    return;
-                }
-            }
-
-            showCustomPopup('success', 'Updated Successfully', 'Your account information has been updated successfully.', 'Changes Saved', false);
-            document.getElementById('newPassword').value = '';
-            updateBtn.disabled = false;
-            updateBtn.innerText = 'Update Information';
         }
 
-        function showCustomPopup(type, title, message, note, redirect = false) {
-            const iconElem = document.getElementById('popupIcon');
-            if (type === 'success') iconElem.innerText = '🎉';
-            else iconElem.innerText = '⚠️️';
+        // Password Modal Controls
+        function openPasswordModal() {
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('modalNewPassword').value = '';
+            document.getElementById('modalConfirmPassword').value = '';
+            document.getElementById('passwordModal').classList.add('active');
+        }
 
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+
+        async function submitPasswordChange() {
+            const oldPass = document.getElementById('oldPassword').value;
+            const newPass = document.getElementById('modalNewPassword').value;
+            const confirmPass = document.getElementById('modalConfirmPassword').value;
+
+            if (!oldPass || !newPass || !confirmPass) {
+                showCustomPopup('Error', 'Please fill in all password fields.');
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                showCustomPopup('Error', 'New password and confirm password do not match.');
+                return;
+            }
+
+            if (newPass.length < 6) {
+                showCustomPopup('Error', 'New password must be at least 6 characters long.');
+                return;
+            }
+
+            const changeBtn = document.getElementById('changePassBtn');
+            changeBtn.disabled = true;
+            changeBtn.innerText = 'Updating...';
+
+            // Verify old password by signing in
+            const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+                email: currentUser.email,
+                password: oldPass
+            });
+
+            if (signInError) {
+                showCustomPopup('Error', 'Incorrect old password provided.');
+                changeBtn.disabled = false;
+                changeBtn.innerText = 'Update Password';
+                return;
+            }
+
+            // Update to new password
+            const { error: updateError } = await supabaseClient.auth.updateUser({
+                password: newPass
+            });
+
+            changeBtn.disabled = false;
+            changeBtn.innerText = 'Update Password';
+
+            if (updateError) {
+                showCustomPopup('Error', updateError.message);
+            } else {
+                closePasswordModal();
+                showCustomPopup('Success', 'Password has been updated successfully!');
+            }
+        }
+
+        function showCustomPopup(title, message) {
             document.getElementById('popupTitle').innerText = title;
             document.getElementById('popupMessage').innerText = message;
-            document.getElementById('popupNote').innerText = note;
             document.getElementById('customPopup').classList.add('active');
         }
 
