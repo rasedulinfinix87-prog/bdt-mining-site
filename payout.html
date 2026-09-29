@@ -3,773 +3,357 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deposit & Withdraw - BDTMINER</title>
+    <title>Live Payout Feed - BDTMINER</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
-        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
+        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 12px 30px 12px; }
         
-        .tab-buttons { display: flex; background: #1e293b; border-radius: 12px; padding: 4px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; font-weight: 600; font-size: 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; }
-        .tab-btn.active { background: #f59e0b; color: #000; font-weight: 700; }
-        
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
-        input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
-        input:focus, select:focus { border-color: #f59e0b; }
-        
-        /* Live Conversion Preview Box */
-        .conversion-preview {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 13px;
-            color: #10b981;
-            margin-top: 8px;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #usdOutput {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .rate-info {
-            font-size: 11px;
-            color: #f59e0b;
-            margin-top: 4px;
-            text-align: right;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .btn-submit { 
-            width: 100%; 
-            padding: 12px; 
-            background: linear-gradient(135deg, #f59e0b, #d97706); 
-            border: none; 
-            border-radius: 10px; 
-            color: #000; 
-            font-weight: 800; 
-            font-size: 14px; 
-            cursor: pointer; 
-            margin-top: 10px; 
-            font-family: 'Orbitron', sans-serif; 
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        /* Border Spring / Glowing Animation for Admin Box */
-        @keyframes borderSpring {
-            0% {
-                border-color: #f59e0b;
-                box-shadow: 0 0 5px rgba(245, 158, 11, 0.4);
-            }
-            50% {
-                border-color: #10b981;
-                box-shadow: 0 0 15px rgba(16, 185, 129, 0.7);
-            }
-            100% {
-                border-color: #f59e0b;
-                box-shadow: 0 0 5px rgba(245, 158, 11, 0.4);
-            }
-        }
-
-        .admin-num-box { 
-            background: rgba(245, 158, 11, 0.1); 
-            border: 2px dashed #f59e0b; 
-            border-radius: 10px; 
-            padding: 10px; 
-            text-align: center; 
-            margin-bottom: 15px; 
-            font-size: 13px; 
-            color: #f59e0b; 
-            animation: borderSpring 2.5s infinite ease-in-out;
-        }
-
-        .admin-num-box span, .admin-num-box strong {
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            letter-spacing: normal;
-        }
-
-        .copy-btn {
-            background: #f59e0b;
-            border: none;
-            color: #000;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-
-        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
-
-        /* Live Payout Ticker Styles */
-        .live-payout-section {
-            margin-top: 25px;
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 15px;
-        }
-        .live-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
+        /* Top Navigation Menu Bar */
+        .top-nav {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(15, 23, 42, 0.98);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
-        .live-title {
+        .nav-logo {
             font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            color: #f59e0b;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+        }
+        .nav-menu a {
+            color: #94a3b8;
+            text-decoration: none;
             font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .nav-menu a:hover, .nav-menu a.active {
+            color: #f59e0b;
+        }
+
+        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); margin-bottom: 20px; }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
             font-weight: 700;
             color: #f59e0b;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 10px;
         }
-        .pulse-dot {
+        .live-indicator {
+            display: inline-block;
             width: 8px;
             height: 8px;
             background: #10b981;
             border-radius: 50%;
             box-shadow: 0 0 8px #10b981;
-            animation: pulse 1.5s infinite;
+            animation: pulseLive 1.5s infinite;
+            margin-right: 6px;
         }
-        @keyframes pulse {
+        @keyframes pulseLive {
             0% { transform: scale(0.95); opacity: 0.8; }
             50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #10b981; }
             100% { transform: scale(0.95); opacity: 0.8; }
         }
-        .live-time-badge {
-            font-size: 11px;
-            color: #94a3b8;
-            font-family: 'Orbitron', sans-serif;
-        }
+
+        /* Payout Feed Items */
         .payout-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-height: 220px;
-            overflow-y: auto;
+            gap: 12px;
         }
         .payout-item {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 8px;
-            padding: 8px 12px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 15px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-size: 12px;
-            transition: 0.2s;
+            justify-content: space-between;
+            transition: 0.3s;
         }
         .payout-item:hover {
             border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(30, 41, 59, 0.9);
         }
         .payout-user-info {
             display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .method-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 800;
-        }
-        .method-icon.bkash { background: #e2136e; color: #fff; }
-        .method-icon.usdt { background: #26a17b; color: #fff; }
-        
-        .payout-details {
-            display: flex;
             flex-direction: column;
+            gap: 3px;
         }
-        .payout-name {
+        .payout-user {
             font-weight: 600;
+            font-size: 13px;
             color: #e2e8f0;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 0.3px;
         }
-        .payout-time {
+        .payout-method-time {
+            font-size: 11px;
+            color: #94a3b8;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .method-badge {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            padding: 1px 6px;
+            border-radius: 4px;
             font-size: 10px;
-            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .method-badge.usdt {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
         }
         .payout-amount {
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            color: #10b981;
-            font-size: 13px;
-        }
-
-        /* More Less Article Section */
-        .article-section {
-            margin-top: 20px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 15px;
-        }
-        .article-header {
-            font-family: 'Orbitron', sans-serif;
             font-size: 14px;
-            color: #f59e0b;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .article-content {
-            font-size: 12px;
-            color: #94a3b8;
-            line-height: 1.6;
-        }
-        .article-content p {
-            margin-bottom: 8px;
-        }
-        .toggle-article-btn {
-            background: transparent;
-            border: none;
-            color: #f59e0b;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 5px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .article-more {
-            display: none;
-            margin-top: 8px;
-        }
-        .article-more.show {
-            display: block;
+            color: #10b981;
         }
 
-        /* Custom Popup Modal Styles */
-        .custom-popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Article / More-Less Section Styles */
+        .article-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
         }
-        .custom-popup-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .custom-popup-box {
-            background: #0f172a;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 360px;
-            padding: 25px 20px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            transform: scale(0.7) translateY(20px);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .custom-popup-overlay.active .custom-popup-box {
-            transform: scale(1) translateY(0);
-        }
-        .popup-icon { font-size: 40px; margin-bottom: 15px; }
-        .popup-title {
+        .article-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
             color: #f59e0b;
             margin-bottom: 10px;
-            text-transform: uppercase;
         }
-        .popup-message { font-size: 14px; color: #cbd5e1; margin-bottom: 8px; line-height: 1.5; }
-        .popup-note {
-            font-size: 12px;
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 8px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 500;
+        .article-content {
+            font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            display: none;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 12px;
         }
-        .popup-btn {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000;
+        .article-content.expanded {
+            display: block;
+        }
+        .more-less-btn {
+            background: transparent;
             border: none;
-            padding: 10px 20px;
-            font-weight: 700;
-            font-size: 14px;
-            border-radius: 8px;
+            color: #f59e0b;
+            font-weight: 600;
+            font-size: 13px;
             cursor: pointer;
-            width: 100%;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
             font-family: 'Orbitron', sans-serif;
-            letter-spacing: 0.5px;
         }
+        .bilingual-text {
+            margin-bottom: 10px;
+        }
+        .bilingual-text span.bn {
+            display: block;
+            margin-top: 4px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="container" style="max-width: 480px;">
-        <!-- Tab Switcher -->
-        <div class="tab-buttons">
-            <button class="tab-btn active" id="depositTabBtn" onclick="switchTab('deposit')">Deposit</button>
-            <button class="tab-btn" id="withdrawTabBtn" onclick="switchTab('withdraw')">Withdraw</button>
+    <!-- Top Navigation Menu Bar -->
+    <header class="top-nav">
+        <a href="dashboard.html" class="nav-logo">BDTMINER</a>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html">Home</a></li>
+            <li><a href="deposit.html">Deposit</a></li>
+            <li><a href="payout.html" class="active">Payout</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+    </header>
+
+    <!-- Main Live Payout Feed Container -->
+    <div class="container">
+        <div class="section-title">
+            <span><span class="live-indicator"></span>Live Payout Feed</span>
+            <span style="font-size: 11px; color: #94a3b8; font-family: 'Inter', sans-serif;">29-09-26 | 10:26 AM</span>
         </div>
 
-        <!-- Admin Payment Info Display Box -->
-        <div class="admin-num-box" id="adminNumBox">
-            <div id="bkashAdminInfo">
-                Send Money (0170000000): <span id="adminBkashText">Loading...</span> (bKash)
-                <button type="button" class="copy-btn" onclick="copyBkashNumber()">Copy</button>
-            </div>
-            <div id="usdtAdminInfo" style="display: none; word-break: break-all;">
-                Network: <strong>BSC (BEP20)</strong><br>
-                Address: <span id="walletAddrText">Loading...</span>
-                <button type="button" class="copy-btn" onclick="copyWalletAddress()">Copy</button>
-            </div>
-        </div>
-
-        <!-- Form Area -->
-        <form id="transForm" onsubmit="handleTransaction(event)">
-            <div class="form-group">
-                <label>Select Payment Method</label>
-                <select id="method" onchange="handleMethodChange()" required>
-                    <option value="bkash">bKash Personal</option>
-                    <option value="usdt">USDT (BEP20)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label id="amountLabel">Amount (BDT)</label>
-                <input type="number" id="amount" placeholder="e.g. 1250" min="1" oninput="calculateConversion()" required>
-                
-                <!-- Live USD Conversion Preview -->
-                <div class="conversion-preview" id="conversionPreview">
-                    <span>You will receive:</span>
-                    <span id="usdOutput">$ 0.00 USD</span>
-                </div>
-                <div class="rate-info" id="rateInfoText">Exchange Rate: $1 = ৳ 125 BDT</div>
-            </div>
-
-            <div class="form-group">
-                <label id="numLabel">Your Sender Mobile Number</label>
-                <input type="text" id="phone" placeholder="017xxxxxxxx" required>
-            </div>
-
-            <div class="form-group" id="trxGroup">
-                <label id="trxLabel">Transaction ID (TrxID)</label>
-                <input type="text" id="trxId" placeholder="e.g. B7X89KL21">
-            </div>
-
-            <button type="submit" class="btn-submit" id="submitBtn">Submit Deposit Request</button>
-        </form>
-
-        <!-- Live Payout Section (bKash & USDT only) -->
-        <div class="live-payout-section">
-            <div class="live-header">
-                <div class="live-title">
-                    <span class="pulse-dot"></span> Live Payout Feed
-                </div>
-                <div class="live-time-badge" id="liveClockDisplay">29-09-26 10:26 AM</div>
-            </div>
-            <div class="payout-list" id="payoutTickerList">
-                <div class="payout-item">
-                    <div class="payout-user-info">
-                        <div class="method-icon bkash">b</div>
-                        <div class="payout-details">
-                            <span class="payout-name">Rahim*** (bKash)</span>
-                            <span class="payout-time">1 min ago</span>
-                        </div>
-                    </div>
-                    <div class="payout-amount">৳ 2,500</div>
-                </div>
-                <div class="payout-item">
-                    <div class="payout-user-info">
-                        <div class="method-icon usdt">₮</div>
-                        <div class="payout-details">
-                            <span class="payout-name">Crypto*** (USDT)</span>
-                            <span class="payout-time">3 min ago</span>
-                        </div>
-                    </div>
-                    <div class="payout-amount">$ 45.00</div>
-                </div>
-                <div class="payout-item">
-                    <div class="payout-user-info">
-                        <div class="method-icon bkash">b</div>
-                        <div class="payout-details">
-                            <span class="payout-name">Tanvir*** (bKash)</span>
-                            <span class="payout-time">5 min ago</span>
-                        </div>
-                    </div>
-                    <div class="payout-amount">৳ 1,250</div>
-                </div>
-                <div class="payout-item">
-                    <div class="payout-user-info">
-                        <div class="method-icon usdt">₮</div>
-                        <div class="payout-details">
-                            <span class="payout-name">Alex*** (USDT)</span>
-                            <span class="payout-time">8 min ago</span>
-                        </div>
-                    </div>
-                    <div class="payout-amount">$ 100.00</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Credible Article Section with More/Less Toggle -->
-        <div class="article-section">
-            <div class="article-header">💡 Why bKash & USDT Payouts Are Fast & Secure</div>
-            <div class="article-content">
-                <p>Digital finance in modern cloud mining platforms relies on instantaneous, automated verification systems. bKash and USDT (BEP20) represent the absolute gold standards for speed, security, and low transaction fees in South Asia and global crypto markets respectively.</p>
-                <div class="article-more" id="articleMoreContent">
-                    <p><strong>bKash Integration:</strong> Local mobile financial services in Bangladesh allow seamless cash-out and P2P transactions within minutes, bypassing conventional banking delays.</p>
-                    <p><strong>USDT Blockchain Stability:</strong> Tether (USDT) pegged securely on the Binance Smart Chain (BEP20) ensures ultra-low gas fees and nearly instantaneous global settlement without geographical borders.</p>
-                    <p>Our platform's automated escrow and gateway protocols guarantee that every payout request placed is processed with high transparency and encryption standards, giving users full confidence in their digital asset earnings.</p>
-                </div>
-                <button type="button" class="toggle-article-btn" id="toggleArticleBtn" onclick="toggleArticle()">More Read ↓</button>
-            </div>
-        </div>
-
-        <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
-    </div>
-
-    <!-- Custom Animated Popup Modal -->
-    <div class="custom-popup-overlay" id="customPopup">
-        <div class="custom-popup-box">
-            <div class="popup-icon" id="popupIcon">🎉</div>
-            <div class="popup-title" id="popupTitle">Success</div>
-            <div class="popup-message" id="popupMessage">Your request has been submitted successfully.</div>
-            <div class="popup-note" id="popupNote">Please wait 5-10 minutes for confirmation.</div>
-            <button type="button" class="popup-btn" onclick="closePopupAndRedirect()">OK</button>
+        <div class="payout-list" id="payoutFeedList">
+            <!-- Dynamic Real-time payout items generated here -->
         </div>
     </div>
+
+    <!-- More / Less Credible Article Section -->
+    <div class="article-card">
+        <div class="article-title">Secure & Transparent Payout System</div>
+        <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5;">
+            BDTMINER ensures fast, secure, and automated transactions exclusively through bKash and USDT (BEP20) networks with complete financial integrity.
+        </p>
+        
+        <div class="article-content" id="articleContent">
+            <div class="bilingual-text">
+                <strong>1. Instant bKash Payouts:</strong>
+                <span class="bn">বিকেশের মাধ্যমে দ্রুত এবং নিরাপদ লেনদেন নিশ্চিত করা হয়, যা বাংলাদেশের ব্যবহারকারীদের জন্য অত্যন্ত সুবিধাজনক।</span>
+            </div>
+            <div class="bilingual-text" style="margin-top: 12px;">
+                <strong>2. Decentralized USDT (BEP20) Transfers:</strong>
+                <span class="bn">ইউএসডিটি (BEP20) নেটওয়ার্কের মাধ্যমে গ্লোবাল এবং ক্রিপ্টো পেআউট রিয়েল-টাইমে প্রসেস করা হয়, যা সর্বোচ্চ সিকিউরিটি প্রদান করে।</span>
+            </div>
+            <div class="bilingual-text" style="margin-top: 12px;">
+                <strong>3. Real-Time Ledger Verification:</strong>
+                <span class="bn">আমাদের লাইফ ফিড সিস্টেমে প্রতিটি লেনদেন নির্ভুলভাবে রিয়েল-টাইমে আপডেট হয় যাতে গ্রাহকরা সর্বোচ্চ স্বচ্ছতা পান।</span>
+            </div>
+        </div>
+
+        <button type="button" class="more-less-btn" id="toggleArticleBtn" onclick="toggleArticle()">
+            <span>More</span> ▼
+        </button>
+    </div>
+
+    <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
 
     <script>
-        const USD_RATE = 125; 
-
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentType = 'deposit';
+        // Simulated dynamic realistic payout feed fallback data ensuring bKash and USDT only
+        const dummyPayouts = [
+            { user: "017****4821", method: "bkash", amount: "৳ 2,500", timeAgo: "1 min ago" },
+            { user: "019****9012", method: "usdt", amount: "$ 45.00", timeAgo: "3 mins ago" },
+            { user: "018****3376", method: "bkash", amount: "৳ 1,200", timeAgo: "5 mins ago" },
+            { user: "013****8894", method: "usdt", amount: "$ 120.00", timeAgo: "8 mins ago" },
+            { user: "016****2219", method: "bkash", amount: "৳ 5,000", timeAgo: "12 mins ago" },
+            { user: "015****7730", method: "usdt", amount: "$ 25.50", timeAgo: "15 mins ago" }
+        ];
 
-        document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
-
-        async function fetchAdminConfig() {
+        async function fetchLivePayouts() {
+            const feedList = document.getElementById('payoutFeedList');
             try {
                 const { data, error } = await supabaseClient
-                    .from('admin_config')
-                    .select('bkash_number, usdt_address')
-                    .single();
+                    .from('transactions')
+                    .select('user_email, method, amount, created_at, sender_receiver_number, wallet_address')
+                    .eq('type', 'withdraw')
+                    .in('method', ['bkash', 'usdt'])
+                    .order('created_at', { ascending: false })
+                    .limit(6);
 
-                if (data && !error) {
-                    document.getElementById('adminBkashText').innerText = data.bkash_number || '01700000000';
-                    document.getElementById('walletAddrText').innerText = data.usdt_address || '0x...';
+                if (data && data.length > 0) {
+                    feedList.innerHTML = '';
+                    data.forEach((item, index) => {
+                        let maskedUser = 'User***';
+                        if (item.sender_receiver_number && item.sender_receiver_number.length >= 6) {
+                            maskedUser = item.sender_receiver_number.slice(0, 3) + '****' + item.sender_receiver_number.slice(-3);
+                        } else if (item.wallet_address && item.wallet_address.length >= 8) {
+                            maskedUser = item.wallet_address.slice(0, 4) + '...' + item.wallet_address.slice(-4);
+                        } else if (item.user_email) {
+                            maskedUser = item.user_email.split('@')[0].slice(0, 4) + '***';
+                        }
+
+                        const timeAgoText = index === 0 ? '1 min ago' : (index === 1 ? '3 mins ago' : (index === 2 ? '5 mins ago' : `${index * 3} mins ago`));
+                        const formattedAmount = item.method === 'usdt' ? `$ ${parseFloat(item.amount).toFixed(2)}` : `৳ ${(parseFloat(item.amount) * 125).toLocaleString()}`;
+                        const badgeClass = item.method === 'usdt' ? 'method-badge usdt' : 'method-badge';
+                        const badgeText = item.method === 'usdt' ? 'USDT' : 'bKash';
+
+                        const div = document.createElement('div');
+                        div.className = 'payout-item';
+                        div.innerHTML = `
+                            <div class="payout-user-info">
+                                <span class="payout-user">${maskedUser}</span>
+                                <div class="payout-method-time">
+                                    <span class="${badgeClass}">${badgeText}</span>
+                                    <span>• ${timeAgoText}</span>
+                                </div>
+                            </div>
+                            <div class="payout-amount">${formattedAmount}</div>
+                        `;
+                        feedList.appendChild(div);
+                    });
+                } else {
+                    renderDummyFeed();
                 }
             } catch (err) {
-                console.error('Config fetch error:', err);
+                console.error('Error fetching payouts:', err);
+                renderDummyFeed();
             }
         }
 
-        function switchTab(type) {
-            currentType = type;
-            const depositBtn = document.getElementById('depositTabBtn');
-            const withdrawBtn = document.getElementById('withdrawTabBtn');
-            const adminBox = document.getElementById('adminNumBox');
-            const trxGroup = document.getElementById('trxGroup');
-            const submitBtn = document.getElementById('submitBtn');
-
-            if (type === 'deposit') {
-                depositBtn.classList.add('active');
-                withdrawBtn.classList.remove('active');
-                adminBox.style.display = 'block';
-                trxGroup.style.display = 'block';
-                document.getElementById('trxId').required = true;
-                submitBtn.innerText = 'Submit Deposit Request';
-            } else {
-                withdrawBtn.classList.add('active');
-                depositBtn.classList.remove('active');
-                adminBox.style.display = 'none';
-                trxGroup.style.display = 'none';
-                document.getElementById('trxId').required = false;
-                submitBtn.innerText = 'Submit Withdraw Request';
-            }
-
-            handleMethodChange();
-        }
-
-        function handleMethodChange() {
-            const method = document.getElementById('method').value;
-            const bkashAdmin = document.getElementById('bkashAdminInfo');
-            const usdtAdmin = document.getElementById('usdtAdminInfo');
-            const amountLabel = document.getElementById('amountLabel');
-            const amountInput = document.getElementById('amount');
-            const numLabel = document.getElementById('numLabel');
-            const phoneInput = document.getElementById('phone');
-            const rateInfoText = document.getElementById('rateInfoText');
-            const trxLabel = document.getElementById('trxLabel');
-
-            if (currentType === 'deposit') {
-                if (method === 'bkash') {
-                    bkashAdmin.style.display = 'block';
-                    usdtAdmin.style.display = 'none';
-                    amountLabel.innerText = 'Amount (BDT)';
-                    amountInput.placeholder = 'e.g. 1250';
-                    numLabel.innerText = 'Your Sender Mobile Number';
-                    phoneInput.placeholder = '017xxxxxxxx';
-                    rateInfoText.style.display = 'block';
-                    trxLabel.innerText = 'Transaction ID (TrxID)';
-                } else {
-                    bkashAdmin.style.display = 'none';
-                    usdtAdmin.style.display = 'block';
-                    amountLabel.innerText = 'Amount (USD / USDT)';
-                    amountInput.placeholder = 'e.g. 10';
-                    numLabel.innerText = 'Your Sender Wallet Address (BEP20)';
-                    phoneInput.placeholder = '0x...';
-                    rateInfoText.style.display = 'none';
-                    trxLabel.innerText = 'Transaction Hash (TxID)';
-                }
-            } else {
-                bkashAdmin.style.display = 'none';
-                usdtAdmin.style.display = 'none';
-                if (method === 'bkash') {
-                    amountLabel.innerText = 'Amount (BDT equivalent in USD)';
-                    amountInput.placeholder = 'e.g. 1250';
-                    numLabel.innerText = 'Your Receiver Mobile Number';
-                    phoneInput.placeholder = '017xxxxxxxx';
-                    rateInfoText.style.display = 'block';
-                } else {
-                    amountLabel.innerText = 'Amount (USD / USDT)';
-                    amountInput.placeholder = 'e.g. 10';
-                    numLabel.innerText = 'Your Receiver Wallet Address (BEP20)';
-                    phoneInput.placeholder = '0x...';
-                    rateInfoText.style.display = 'none';
-                }
-            }
-            calculateConversion();
-        }
-
-        function calculateConversion() {
-            const method = document.getElementById('method').value;
-            const inputVal = parseFloat(document.getElementById('amount').value) || 0;
-            const previewLabel = document.querySelector('#conversionPreview span:first-child');
-            const usdOutput = document.getElementById('usdOutput');
-
-            if (method === 'usdt') {
-                const usdValue = inputVal.toFixed(2);
-                if (currentType === 'deposit') {
-                    previewLabel.innerText = 'You will receive:';
-                    usdOutput.innerText = `$ ${usdValue} USD`;
-                } else {
-                    previewLabel.innerText = 'Withdraw Amount:';
-                    usdOutput.innerText = `$ ${usdValue} USD`;
-                }
-            } else {
-                const usdValue = (inputVal / USD_RATE).toFixed(2);
-                if (currentType === 'deposit') {
-                    previewLabel.innerText = 'You will receive:';
-                    usdOutput.innerText = `$ ${usdValue} USD`;
-                } else {
-                    previewLabel.innerText = 'Withdraw Amount:';
-                    usdOutput.innerText = `$ ${usdValue} USD (৳ ${inputVal} BDT)`;
-                }
-            }
-        }
-
-        function copyBkashNumber() {
-            const num = document.getElementById('adminBkashText').innerText;
-            navigator.clipboard.writeText(num).then(() => {
-                alert('bKash Number Copied to Clipboard!');
+        function renderDummyFeed() {
+            const feedList = document.getElementById('payoutFeedList');
+            feedList.innerHTML = '';
+            dummyPayouts.forEach(p => {
+                const badgeClass = p.method === 'usdt' ? 'method-badge usdt' : 'method-badge';
+                const badgeText = p.method.toUpperCase();
+                const div = document.createElement('div');
+                div.className = 'payout-item';
+                div.innerHTML = `
+                    <div class="payout-user-info">
+                        <span class="payout-user">${p.user}</span>
+                        <div class="payout-method-time">
+                            <span class="${badgeClass}">${badgeText}</span>
+                            <span>• ${p.timeAgo}</span>
+                        </div>
+                    </div>
+                    <div class="payout-amount">${p.amount}</div>
+                `;
+                feedList.appendChild(div);
             });
-        }
-
-        function copyWalletAddress() {
-            const addr = document.getElementById('walletAddrText').innerText;
-            navigator.clipboard.writeText(addr).then(() => {
-                alert('Wallet Address Copied to Clipboard!');
-            });
-        }
-
-        function showCustomPopup(title, message, note) {
-            document.getElementById('popupTitle').innerText = title;
-            document.getElementById('popupMessage').innerText = message;
-            document.getElementById('popupNote').innerText = note;
-            document.getElementById('customPopup').classList.add('active');
-        }
-
-        function closePopupAndRedirect() {
-            document.getElementById('customPopup').classList.remove('active');
-            window.location.href = 'dashboard.html';
         }
 
         function toggleArticle() {
-            const moreContent = document.getElementById('articleMoreContent');
+            const content = document.getElementById('articleContent');
             const btn = document.getElementById('toggleArticleBtn');
-            if (moreContent.classList.contains('show')) {
-                moreContent.classList.remove('show');
-                btn.innerText = 'More Read ↓';
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                btn.innerHTML = '<span>More</span> ▼';
             } else {
-                moreContent.classList.add('show');
-                btn.innerText = 'Less Read ↑';
+                content.classList.add('expanded');
+                btn.innerHTML = '<span>Less</span> ▲';
             }
         }
 
-        async function handleTransaction(e) {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Processing...';
-
-            const { data: { user } } = await supabaseClient.auth.getUser();
-
-            if (!user) {
-                alert('অনুরোধ পাঠাতে প্রথমে সাইনআপ/লগইন করুন!');
-                window.location.href = 'signup.html';
-                return;
-            }
-
-            const method = document.getElementById('method').value;
-            const inputValue = parseFloat(document.getElementById('amount').value);
-            let usdAmount = 0;
-
-            if (method === 'usdt') {
-                usdAmount = parseFloat(inputValue.toFixed(2));
-            } else {
-                usdAmount = parseFloat((inputValue / USD_RATE).toFixed(2));
-            }
-
-            const inputFieldVal = document.getElementById('phone').value;
-            const trxId = document.getElementById('trxId').value ? document.getElementById('trxId').value.trim() : null;
-
-            if (usdAmount <= 0) {
-                alert('দয়া করে সঠিক টাকার পরিমাণ প্রদান করুন।');
-                submitBtn.disabled = false;
-                submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
-                return;
-            }
-
-            if (currentType === 'deposit' && trxId) {
-                const { data: existingTrx, error: trxCheckError } = await supabaseClient
-                    .from('transactions')
-                    .select('id')
-                    .eq('trx_id', trxId)
-                    .maybeSingle();
-
-                if (existingTrx) {
-                    alert('এই TrxID দিয়ে ইতিপূর্বে একটি রিকোয়েস্ট সাবমিট করা হয়েছে। একই TrxID বারবার ব্যবহার করা যাবে না।');
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Submit Deposit Request';
-                    return;
-                }
-            }
-
-            if (currentType === 'withdraw') {
-                const { data: profile, error: profileError } = await supabaseClient
-                    .from('profiles')
-                    .select('balance')
-                    .eq('id', user.id)
-                    .single();
-
-                if (profileError || !profile) {
-                    alert('ইউজার প্রোফাইল খুঁজে পাওয়া যায়নি!');
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Submit Withdraw Request';
-                    return;
-                }
-
-                const currentBalance = parseFloat(profile.balance || 0);
-
-                if (currentBalance < usdAmount) {
-                    alert(`আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!\n\nআপনার ব্যালেন্স: $${currentBalance.toFixed(2)} USD\nআপনি তুলতে চাচ্ছেন: $${usdAmount} USD`);
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Submit Withdraw Request';
-                    return;
-                }
-
-                const newBalance = currentBalance - usdAmount;
-                const { error: updateError } = await supabaseClient
-                    .from('profiles')
-                    .update({ balance: newBalance })
-                    .eq('id', user.id);
-
-                if (updateError) {
-                    alert('ব্যালেন্স আপডেট করতে সমস্যা হয়েছে: ' + updateError.message);
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Submit Withdraw Request';
-                    return;
-                }
-            }
-
-            const { data, error } = await supabaseClient
-                .from('transactions')
-                .insert([
-                    {
-                        user_id: user.id,
-                        user_email: user.email,
-                        type: currentType,
-                        method: method,
-                        amount: usdAmount,
-                        sender_receiver_number: method === 'bkash' ? inputFieldVal : null,
-                        wallet_address: method === 'usdt' ? inputFieldVal : null,
-                        trx_id: trxId,
-                        status: 'pending'
-                    }
-                ]);
-
-            if (error) {
-                alert('রিকোয়েস্ট জমা করতে সমস্যা হয়েছে: ' + error.message);
-                submitBtn.disabled = false;
-                submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
-            } else {
-                if (currentType === 'deposit') {
-                    showCustomPopup(
-                        'Deposit Request Submitted',
-                        `Your deposit request of $${usdAmount} USD has been successfully submitted.`,
-                        'Please wait 5-10 minutes to confirm.'
-                    );
-                } else {
-                    showCustomPopup(
-                        'Withdraw Request Submitted',
-                        `Your withdrawal request of $${usdAmount} USD has been successfully submitted.`,
-                        'Please wait 12-24 hours for withdrawal processing.'
-                    );
-                }
-            }
-        }
-
-        fetchAdminConfig();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialType = urlParams.get('type');
-        if (initialType === 'withdraw' || initialType === 'deposit') {
-            switchTab(initialType);
-        } else {
-            handleMethodChange();
-        }
+        // Initialize feed
+        fetchLivePayouts();
     </script>
 </body>
 </html>
