@@ -452,7 +452,8 @@
             }
 
             const inputFieldVal = document.getElementById('phone').value;
-            const trxId = document.getElementById('trxId').value ? document.getElementById('trxId').value.trim() : null;
+            const rawTrxId = document.getElementById('trxId').value;
+            const trxId = rawTrxId ? rawTrxId.trim() : null;
 
             if (usdAmount <= 0) {
                 alert('দয়া করে সঠিক টাকার পরিমাণ প্রদান করুন।');
@@ -533,7 +534,12 @@
                 ]);
 
             if (error) {
-                alert('রিকোয়েস্ট জমা করতে সমস্যা হয়েছে: ' + error.message);
+                // যদি ডাটাবেজে ইউনিক কনস্ট্রেইন্ট দেওয়া থাকে এবং কোনোভাবে ডুপ্লিকেট এন্ট্রি পাস হয়ে যায়, তবে এরর হ্যান্ডেল করবে
+                if (error.code === '23505') {
+                    alert('এই TrxID ইতিমধ্যে ডাটাবেজে সংরক্ষিত রয়েছে। একই TrxID দুবার ব্যবহার করা নিষিদ্ধ।');
+                } else {
+                    alert('রিকোয়েস্ট জমা করতে সমস্যা হয়েছে: ' + error.message);
+                }
                 submitBtn.disabled = false;
                 submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
             } else {
