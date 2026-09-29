@@ -273,6 +273,56 @@
 
         .back-home { display: block; text-align: center; color: #6b7280; text-decoration: none; font-size: 13px; margin-top: 12px; font-weight: 600; transition: color 0.3s; }
         .back-home:hover { color: #9ca3af; }
+
+        /* Withdraw Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-title { font-size: 16px; font-weight: 700; color: #fff; }
+        .btn-close { background: none; border: none; color: #9ca3af; font-size: 20px; cursor: pointer; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: #9ca3af; margin-bottom: 6px; }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-input:focus { border-color: #10b981; }
+        .btn-submit-withdraw {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -323,7 +373,7 @@
             <button class="btn-action btn-deposit" onclick="window.location.href='deposit-withdraw.html'">
                 <span>↓</span> Deposit
             </button>
-            <button class="btn-action btn-withdraw" onclick="window.location.href='deposit-withdraw.html'">
+            <button class="btn-action btn-withdraw" onclick="openWithdrawModal()">
                 <span>↑</span> Withdraw
             </button>
         </div>
@@ -347,6 +397,32 @@
         </div>
 
         <a href="index.html" class="back-home">← Back to Home Page</a>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title">Withdraw Funds</div>
+                <button class="btn-close" onclick="closeWithdrawModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select id="withdrawMethod" class="form-input">
+                    <option value="Bkash">bKash (Personal)</option>
+                    <option value="Nagad">Nagad (Personal)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Account / Mobile Number</label>
+                <input type="text" id="withdrawAccount" class="form-input" placeholder="017XXXXXXXX">
+            </div>
+            <div class="form-group">
+                <label>Withdraw Amount (BDT)</label>
+                <input type="number" id="withdrawAmount" class="form-input" placeholder="e.g. 500">
+            </div>
+            <button class="btn-submit-withdraw" id="submitWithdrawBtn" onclick="handleWithdraw()">Submit Request</button>
+        </div>
     </div>
 
     <script>
@@ -391,7 +467,7 @@
                 document.getElementById('planDetailsText').innerText = `${planName} - ৳ ${selectedPlanData.amount.toLocaleString()} (${selectedPlanData.duration} Days)`;
             }
 
-            // Check Active Mining Plans (Supports Multiple Plans)
+            // Check Active Mining Plans
             checkActivePlans();
         }
 
@@ -408,6 +484,91 @@
             }
         }
 
+        /* Modal Functions */
+        function openWithdrawModal() {
+            document.getElementById('withdrawModal').style.display = 'flex';
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').style.display = 'none';
+        }
+
+        /* Withdraw Logic */
+        async function handleWithdraw() {
+            const method = document.getElementById('withdrawMethod').value;
+            const accountNumber = document.getElementById('withdrawAccount').value.trim();
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+
+            if (!accountNumber) {
+                alert('অনুগ্রহ করে মোবাইল নম্বর প্রদান করুন।');
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('সঠিক টাকার পরিমাণ দিন।');
+                return;
+            }
+
+            if (amount > currentBalance) {
+                alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!');
+                return;
+            }
+
+            const btn = document.getElementById('submitWithdrawBtn');
+            btn.disabled = true;
+            btn.innerText = 'Processing...';
+
+            try {
+                // ১. ইউজার একাউন্ট থেকে টাকা মাইনাস করা (Balance Deduct)
+                const newBalance = currentBalance - amount;
+
+                const { error: balError } = await supabaseClient
+                    .from('profiles')
+                    .update({ balance: newBalance })
+                    .eq('id', currentUser.id);
+
+                if (balError) throw balError;
+
+                // ২. withdrawals টেবিলে 'pending' স্ট্যাটাস সহ ডাটা ইনসার্ট করা
+                const { error: withdrawError } = await supabaseClient
+                    .from('withdrawals')
+                    .insert([{
+                        user_id: currentUser.id,
+                        amount: amount,
+                        method: method,
+                        account_number: accountNumber,
+                        status: 'pending',
+                        created_at: new Date().toISOString()
+                    }]);
+
+                if (withdrawError) {
+                    // কোনো এরর হলে কাটা ব্যালেন্স ফেরত দেওয়া (Rollback)
+                    await supabaseClient
+                        .from('profiles')
+                        .update({ balance: currentBalance })
+                        .eq('id', currentUser.id);
+
+                    throw withdrawError;
+                }
+
+                // ৩. সফল বার্তা এবং ব্যালেন্স আপডেট
+                alert(`৳ ${amount} টাকা উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে! বর্তমানে এটি Pending রয়েছে।`);
+                currentBalance = newBalance;
+                document.getElementById('userBalance').innerText = `৳ ${currentBalance.toFixed(2)}`;
+
+                // রিসেট ও মোডাল বন্ধ
+                document.getElementById('withdrawAccount').value = '';
+                document.getElementById('withdrawAmount').value = '';
+                closeWithdrawModal();
+
+            } catch (err) {
+                alert('উইথড্র রিকোয়েস্ট পাঠাতে ব্যর্থ হয়েছে: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Submit Request';
+            }
+        }
+
         async function activatePlan() {
             if (!selectedPlanData) return;
 
@@ -421,7 +582,6 @@
             btn.disabled = true;
             btn.innerText = 'Activating...';
 
-            // 1. Deduct Main Balance
             const newBalance = currentBalance - selectedPlanData.amount;
             const { error: balError } = await supabaseClient
                 .from('profiles')
@@ -435,11 +595,9 @@
                 return;
             }
 
-            // 2. Set Plan Dates
             const startDate = new Date();
             const endDate = new Date(startDate.getTime() + (selectedPlanData.duration * 24 * 60 * 60 * 1000));
 
-            // 3. Insert Plan Record
             const { error: planError } = await supabaseClient
                 .from('user_plans')
                 .insert([{
@@ -475,7 +633,7 @@
             if (activePlans && activePlans.length > 0) {
                 document.getElementById('planBanner').style.display = 'none';
 
-                activePlans.forEach((plan, index) => {
+                activePlans.forEach((plan) => {
                     const card = document.createElement('div');
                     card.className = 'mining-card';
                     card.id = `miningCard_${plan.id}`;
@@ -547,13 +705,11 @@
         }
 
         async function completeMiningPlan(plan) {
-            // 1. Update Plan Status to Completed
             await supabaseClient
                 .from('user_plans')
                 .update({ status: 'completed' })
                 .eq('id', plan.id);
 
-            // 2. Add Profit + Investment to Main Balance
             const newBalance = currentBalance + parseFloat(plan.total_return);
             await supabaseClient
                 .from('profiles')
