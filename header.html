@@ -11,7 +11,7 @@
 <div class="top-navbar-wrapper">
     <div class="header-left">
         <!-- Menu Hamburger Button -->
-        <button class="menu-toggle-btn" onclick="toggleSidebar()">
+        <button class="menu-toggle-btn" type="button" onclick="toggleSidebar()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffff00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -32,11 +32,11 @@
 <div class="sidebar-menu" id="sidebarMenu">
     <div class="sidebar-header">
         <span class="lightning-icon">⚡</span> <strong>BDTMINER</strong>
-        <button class="close-sidebar" onclick="toggleSidebar()">&times;</button>
+        <button class="close-sidebar" type="button" onclick="toggleSidebar()">&times;</button>
     </div>
     <div class="sidebar-links">
         <a href="index.html" class="nav-item">🏠 Home</a>
-        <a href="mining-plan.html" class="nav-item">⛏️ Mining Plan</a>
+        <a href="mining-plan.html" class="nav-item">⛏️️ Mining Plan</a>
         <a href="payout.html" class="nav-item">💸 Live Payouts</a>
         <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
         <a href="verification-details.html" class="nav-item">🛡️ NID Verification</a>
@@ -46,7 +46,6 @@
 </div>
 
 <style>
-    /* Crypto Ticker Bar Style - Matches Container Width */
     .crypto-ticker-bar {
         width: 100%;
         max-width: 420px;
@@ -74,7 +73,6 @@
     .price-green { color: #10b981; font-weight: 600; }
     .price-neutral { color: #94a3b8; font-weight: 600; }
 
-    /* Main Navbar Wrapper - Matches Container Width */
     .top-navbar-wrapper {
         width: 100%;
         max-width: 420px;
@@ -97,7 +95,6 @@
         gap: 12px;
     }
 
-    /* Menu Toggle Button Style */
     .menu-toggle-btn {
         background: #0f172a;
         border: 1px solid rgba(255, 255, 0, 0.4);
@@ -116,7 +113,6 @@
         border-color: #ffff00;
     }
 
-    /* Brand Logo Style */
     .brand-logo {
         font-family: 'Orbitron', sans-serif;
         font-size: 15px;
@@ -133,7 +129,6 @@
         font-size: 16px;
     }
 
-    /* Top Balance Style */
     .top-balance {
         font-family: 'Orbitron', sans-serif;
         font-size: 13px;
@@ -147,7 +142,6 @@
         box-shadow: inset 0 0 8px rgba(30, 144, 238, 0.2);
     }
 
-    /* Sidebar Drawer Styling */
     .sidebar-overlay {
         position: fixed;
         top: 0;
@@ -190,7 +184,7 @@
         font-family: 'Orbitron', sans-serif;
         color: #ffff00;
         font-size: 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 0, 0.2);
         padding-bottom: 15px;
         margin-bottom: 20px;
     }
