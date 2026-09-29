@@ -70,7 +70,7 @@
             <div class="balance-amount" id="userBalance">$ 0.00</div>
         </div>
 
-        <!-- Action Buttons connected to deposit-withdraw.html -->
+        <!-- Action Buttons -->
         <div class="action-buttons">
             <button class="btn-action btn-deposit" onclick="window.location.href='deposit-withdraw.html?type=deposit'">Deposit</button>
             <button class="btn-action btn-withdraw" onclick="window.location.href='deposit-withdraw.html?type=withdraw'">Withdraw</button>
@@ -96,9 +96,9 @@
 
         let currentUser = null;
         let selectedPlanData = null;
+        let currentBalance = 0;
         let userActivePlans = [];
 
-        // predefined plan configs
         const planConfigs = {
             '5 Airdrop': { daily_profit: 1.0, duration: 15, total_return: 15 },
             '30 AirDrop': { daily_profit: 2.26, duration: 30, total_return: 68 },
@@ -116,7 +116,7 @@
             currentUser = user;
             document.getElementById('userEmail').innerText = user.email;
 
-            // URL থেকে প্ল্যান চেক করা
+            // URL থেকে প্ল্যান প্যারামিটার চেক করা
             const urlParams = new URLSearchParams(window.location.search);
             const planName = urlParams.get('plan');
             const amount = parseFloat(urlParams.get('amount'));
@@ -134,8 +134,8 @@
                 infoText.innerText = `Selected Plan: ${planName} ($${amount})`;
             }
 
-            loadUserBalance();
-            loadActivePlans();
+            await loadUserBalance();
+            await loadActivePlans();
         }
 
         async function loadUserBalance() {
@@ -147,55 +147,85 @@
                     .single();
 
                 if (profile && profile.balance !== undefined) {
-                    document.getElementById('userBalance').innerText = `$ ${profile.balance.toFixed(2)}`;
+                    currentBalance = parseFloat(profile.balance);
+                    document.getElementById('userBalance').innerText = `$ ${currentBalance.toFixed(2)}`;
+                } else {
+                    currentBalance = 0;
+                    document.getElementById('userBalance').innerText = `$ 0.00`;
                 }
             } catch (e) {
-                console.log("Balance fetch error/fallback handled.");
+                console.log("Balance fetch error:", e);
             }
         }
 
-        // new plan activation into Supabase user_plan table
+        // ব্যালেন্স পর্যাপ্ত থাকলে প্ল্যান একটিভ এবং ব্যালেন্স কাটার লজিক
         async function activatePlan() {
             if (!selectedPlanData || !currentUser) return;
+
+            const planCost = selectedPlanData.invested_amount;
+
+            // ১. ইনসাফিসিয়েন্ট ব্যালেন্স চেকিং
+            if (currentBalance < planCost) {
+                alert(`আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!\n\nপ্ল্যানের দাম: $${planCost}\nআপনার বর্তমান ব্যালেন্স: $${currentBalance.toFixed(2)}\n\nদয়া করে প্রথমে ডিপোজিট করুন।`);
+                window.location.href = 'deposit-withdraw.html?type=deposit';
+                return;
+            }
 
             const btn = document.getElementById('activateBtn');
             btn.innerText = "Activating...";
             btn.disabled = true;
 
-            const startDate = new Date();
-            const endDate = new Date();
-            endDate.setDate(startDate.getDate() + selectedPlanData.duration);
+            const newBalance = currentBalance - planCost;
 
-            const { error } = await supabaseClient
-                .from('user_plan')
-                .insert([
-                    {
-                        user_id: currentUser.id,
-                        plan_name: selectedPlanData.plan_name,
-                        invested_amount: selectedPlanData.invested_amount,
-                        daily_profit: selectedPlanData.daily_profit,
-                        total_return: selectedPlanData.total_return,
-                        duration_days: selectedPlanData.duration,
-                        start_date: startDate.toISOString(),
-                        end_date: endDate.toISOString(),
-                        status: 'active'
-                    }
-                ]);
+            try {
+                // ২. Profiles টেবিল থেকে ব্যালেন্স কেটে নেওয়া
+                const { error: balanceError } = await supabaseClient
+                    .from('profiles')
+                    .update({ balance: newBalance })
+                    .eq('id', currentUser.id);
 
-            if (error) {
-                alert("Error activating plan: " + error.message);
-                btn.innerText = "Confirm & Activate Plan";
-                btn.disabled = false;
-            } else {
-                alert("Plan activated successfully!");
-                // Clear URL params and hide activation box
+                if (balanceError) throw balanceError;
+
+                // ৩. user_plan টেবিলে প্ল্যান সেভ করা
+                const startDate = new Date();
+                const endDate = new Date();
+                endDate.setDate(startDate.getDate() + selectedPlanData.duration);
+
+                const { error: planError } = await supabaseClient
+                    .from('user_plan')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            plan_name: selectedPlanData.plan_name,
+                            invested_amount: selectedPlanData.invested_amount,
+                            daily_profit: selectedPlanData.daily_profit,
+                            total_return: selectedPlanData.total_return,
+                            duration_days: selectedPlanData.duration,
+                            start_date: startDate.toISOString(),
+                            end_date: endDate.toISOString(),
+                            status: 'active'
+                        }
+                    ]);
+
+                if (planError) throw planError;
+
+                alert("অভিনন্দন! আপনার প্ল্যানটি সফলভাবে চালু হয়েছে।");
+                
+                // URL থেকে প্যারামিটার রিমুভ করা
                 window.history.replaceState({}, document.title, window.location.pathname);
                 document.getElementById('planActivationBox').style.display = 'none';
-                loadActivePlans();
+
+                // নতুন ব্যালেন্স এবং প্ল্যান রিফ্রেশ করা
+                await loadUserBalance();
+                await loadActivePlans();
+
+            } catch (error) {
+                alert("প্ল্যান চালু করতে সমস্যা হয়েছে: " + error.message);
+                btn.innerText = "Confirm & Activate Plan";
+                btn.disabled = false;
             }
         }
 
-        // load all active plans of current user
         async function loadActivePlans() {
             const { data: plans, error } = await supabaseClient
                 .from('user_plan')
@@ -218,7 +248,6 @@
             renderPlans();
         }
 
-        // Render multiple plans & dynamic calculations
         function renderPlans() {
             const container = document.getElementById('activePlansContainer');
             container.innerHTML = '';
@@ -232,11 +261,9 @@
                 const totalDurationSec = (endTime - startTime) / 1000;
                 const elapsedSec = Math.max(0, (now - startTime) / 1000);
 
-                // calculate percentage completion
                 let progressPercent = ((elapsedSec / totalDurationSec) * 100).toFixed(2);
                 if (progressPercent > 100) progressPercent = 100;
 
-                // calculate earned profit so far (daily profit / 86400 sec per day)
                 const profitPerSec = plan.daily_profit / 86400;
                 const earnedProfit = (profitPerSec * elapsedSec).toFixed(5);
 
@@ -259,7 +286,6 @@
             });
         }
 
-        // Realtime mining ticker effect
         setInterval(() => {
             if (userActivePlans.length > 0) {
                 const now = new Date().getTime();
