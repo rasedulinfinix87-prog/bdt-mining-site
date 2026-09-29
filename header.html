@@ -1,51 +1,56 @@
 <!-- Top Navigation Bar & Balance -->
-<div class="top-navbar">
+<div class="top-navbar-wrapper">
     <div class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="mining-plan.html">Mining Plan</a>
-        <a href="payout.html">Live Payouts</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="verification-details.html">NID Verification</a>
-        <a href="account-info.html">Account Info</a>
-        <a href="chat.html">Contact Support</a>
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="mining-plan.html" class="nav-item">Mining Plan</a>
+        <a href="payout.html" class="nav-item">Live Payouts</a>
+        <a href="dashboard.html" class="nav-item">Dashboard</a>
+        <a href="verification-details.html" class="nav-item">NID Verification</a>
+        <a href="account-info.html" class="nav-item">Account Info</a>
+        <a href="chat.html" class="nav-item">Contact Support</a>
     </div>
     <div class="top-balance" id="topBalance">$0.00</div>
 </div>
 
 <style>
-    /* Top Navigation Bar & Balance Styles */
-    .top-navbar {
+    .top-navbar-wrapper {
         width: 100%;
         max-width: 420px;
         background: rgba(15, 23, 42, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 15px;
+        border-radius: 16px;
         padding: 12px 15px;
-        margin-bottom: 15px;
+        margin: 10px auto 20px auto;
         display: flex;
         justify-content: space-between;
         align-items: center;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        box-sizing: border-box;
     }
     .nav-links {
         display: flex;
-        gap: 10px;
+        gap: 12px;
         overflow-x: auto;
         white-space: nowrap;
         scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
     }
-    .nav-links::-webkit-scrollbar { display: none; }
-    .nav-links a {
+    .nav-links::-webkit-scrollbar { 
+        display: none; 
+    }
+    .nav-item {
         color: #94a3b8;
-        text-align: center;
         text-decoration: none;
         font-size: 12px;
         font-weight: 600;
         transition: 0.3s;
         font-family: 'Orbitron', sans-serif;
+        letter-spacing: 0.3px;
     }
-    .nav-links a:hover, .nav-links a.active {
+    .nav-item:hover, .nav-item.active {
         color: #1E90EE;
+        text-shadow: 0 0 10px rgba(30, 144, 238, 0.5);
     }
     .top-balance {
         font-family: 'Orbitron', sans-serif;
@@ -53,9 +58,10 @@
         font-weight: 700;
         color: #1E90EE;
         background: rgba(30, 144, 238, 0.1);
-        padding: 6px 10px;
+        padding: 6px 12px;
         border-radius: 8px;
         border: 1px solid rgba(30, 144, 238, 0.3);
         white-space: nowrap;
+        box-shadow: inset 0 0 8px rgba(30, 144, 238, 0.2);
     }
 </style>
