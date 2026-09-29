@@ -1,0 +1,61 @@
+<!-- Top Navigation Bar & Balance -->
+<div class="top-navbar">
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="mining-plan.html">Mining Plan</a>
+        <a href="payout.html">Live Payouts</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="verification-details.html">NID Verification</a>
+        <a href="account-info.html">Account Info</a>
+        <a href="chat.html">Contact Support</a>
+    </div>
+    <div class="top-balance" id="topBalance">$0.00</div>
+</div>
+
+<style>
+    /* Top Navigation Bar & Balance Styles */
+    .top-navbar {
+        width: 100%;
+        max-width: 420px;
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 15px;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .nav-links {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a {
+        color: #94a3b8;
+        text-align: center;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        transition: 0.3s;
+        font-family: 'Orbitron', sans-serif;
+    }
+    .nav-links a:hover, .nav-links a.active {
+        color: #1E90EE;
+    }
+    .top-balance {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: #1E90EE;
+        background: rgba(30, 144, 238, 0.1);
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(30, 144, 238, 0.3);
+        white-space: nowrap;
+    }
+</style>
