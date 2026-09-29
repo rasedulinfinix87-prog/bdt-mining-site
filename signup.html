@@ -23,7 +23,11 @@
         .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
         .form-group input { width: 100%; padding: 12px; background: #020617; border: 1px solid #334155; border-radius: 8px; color: #fff; outline: none; }
         .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .forgot-pass-container { margin-top: 12px; text-align: right; }
+        .forgot-pass-link { color: #f59e0b; font-size: 12px; text-decoration: none; cursor: pointer; }
+        .forgot-pass-link:hover { text-decoration: underline; }
         .back-home { display: block; margin-top: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
+        .signup-only { display: block; }
     </style>
 </head>
 <body>
@@ -41,11 +45,30 @@
                 <label>Email Address</label>
                 <input type="email" id="email" required placeholder="enter your email">
             </div>
+            
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="password" required placeholder="enter minimum 6 chars">
+                <input type="password" id="password" required placeholder="min 8 chars (e.g. Abcdefg@)">
             </div>
+
+            <!-- Confirm Password Field (Only for Signup) -->
+            <div class="form-group signup-only" id="confirmPassGroup">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="re-enter password">
+            </div>
+
+            <!-- Secret Pin Field (Only for Signup) -->
+            <div class="form-group signup-only" id="secretPinGroup">
+                <label>Secret Pin (Minimum 4 digits)</label>
+                <input type="password" id="secretPin" placeholder="enter min 4-digit secret pin" maxlength="8">
+            </div>
+
             <button type="submit" class="btn-submit" id="submitBtn">Sign Up</button>
+
+            <!-- Forgot Password Option (Only visible or active during Login) -->
+            <div class="forgot-pass-container" id="forgotPassContainer" style="display: none;">
+                <a href="chat.html" class="forgot-pass-link">Forget Password?</a>
+            </div>
         </form>
 
         <a href="index.html" class="back-home">← Back to Home</a>
@@ -63,6 +86,48 @@
             document.getElementById('loginTab').classList.toggle('active', isLogin);
             document.getElementById('signupTab').classList.toggle('active', !isLogin);
             document.getElementById('submitBtn').innerText = isLogin ? 'Login' : 'Sign Up';
+
+            // Signup এক্সক্লুসিভ ফিল্ড এবং Forgot Password টগল করা
+            const signupFields = document.querySelectorAll('.signup-only');
+            const forgotContainer = document.getElementById('forgotPassContainer');
+
+            if (isLogin) {
+                signupFields.forEach(el => el.style.display = 'none');
+                document.getElementById('confirmPassword').removeAttribute('required');
+                document.getElementById('secretPin').removeAttribute('required');
+                forgotContainer.style.display = 'block';
+            } else {
+                signupFields.forEach(el => el.style.display = 'block');
+                document.getElementById('confirmPassword').setAttribute('required', 'true');
+                document.getElementById('secretPin').setAttribute('required', 'true');
+                forgotContainer.style.display = 'none';
+            }
+        }
+
+        // পাসওয়ার্ড ভ্যালিডেশন ফাংশন
+        function validatePassword(pass) {
+            const forbiddenPasswords = [
+                "12345678", "87654321", "00000000", "11111111", 
+                "22222222", "33333333", "44444444", "55555555", 
+                "66666666", "77777777", "88888888", "99999999"
+            ];
+
+            if (pass.length < 8) {
+                return "পাসওয়ার্ড অবশ্যই কমপক্ষে ৮ অক্ষরের হতে হবে।";
+            }
+
+            if (forbiddenPasswords.includes(pass)) {
+                return "এই সাধারণ পাসওয়ার্ডটি গ্রহণযোগ্য নয়। দয়া করে অন্য পাসওয়ার্ড দিন।";
+            }
+
+            // শর্ত: ৭টি ক্যারেক্টার দেওয়ার পর যেকোনো একটি সিম্বল (@, #, %, &) থাকতে হবে
+            // অর্থাৎ পাসওয়ার্ডে অন্তত একটি স্পেশাল ক্যারেক্টার থাকা আবশ্যক এবং দৈর্ঘ্য কমপক্ষে ৮।
+            const symbolRegex = /[@#%&]/;
+            if (!symbolRegex.test(pass)) {
+                return "পাসওয়ার্ডে অবশ্যই কমপক্ষে একটি সিম্বল (@, #, %, &) থাকতে হবে।";
+            }
+
+            return null;
         }
 
         async function handleAuth(event) {
@@ -71,27 +136,77 @@
             const password = document.getElementById('password').value;
             const submitBtn = document.getElementById('submitBtn');
 
-            submitBtn.innerText = "Processing...";
-            submitBtn.disabled = true;
+            if (isLogin) {
+                submitBtn.innerText = "Processing...";
+                submitBtn.disabled = true;
 
-            try {
-                if (isLogin) {
+                try {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     alert("লগইন সফল হয়েছে!");
                     window.location.href = 'index.html';
-                } else {
+                } else (err) {
+                    // handled below
+                } catch (err) {
+                    alert("ত্রুটি: " + err.message);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Login';
+                }
+            } else {
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const secretPin = document.getElementById('secretPin').value.trim();
+
+                // পাসওয়ার্ড ম্যাচ চেক
+                if (password !== confirmPassword) {
+                    alert("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!");
+                    return;
+                }
+
+                // পাসওয়ার্ড রুলস চেক
+                const passError = validatePassword(password);
+                if (passError) {
+                    alert(passError);
+                    return;
+                }
+
+                // সিক্রেট পিন চেক (মিনিমাম ৪ সংখ্যা)
+                if (secretPin.length < 4 || isNaN(secretPin)) {
+                    alert("সিক্রেট পিন অবশ্যই কমপক্ষে ৪ সংখ্যার হতে হবে!");
+                    return;
+                }
+
+                submitBtn.innerText = "Processing...";
+                submitBtn.disabled = true;
+
+                try {
+                    // Supabase Auth Signup (Standard)
                     const { data, error } = await supabaseClient.auth.signUp({ email, password });
                     if (error) throw error;
+
+                    const userId = data.user ? data.user.id : null;
+
+                    // প্লেন টেক্সট পাসওয়ার্ড ও পিন ডাটাবেজ টেবিলে সেভ করার জন্য (profiles টেবিল আবশ্যক)
+                    if (userId) {
+                        const { error: dbError } = await supabaseClient
+                            .from('profiles')
+                            .insert([
+                                { id: userId, email: email, password: password, secret_pin: secretPin }
+                            ]);
+                        
+                        if (dbError) {
+                            console.error("Database insert warning:", dbError.message);
+                        }
+                    }
                     
                     alert("সাইনআপ সফল হয়েছে! এখন লগইন করুন।");
                     switchTab('login');
+                } catch (err) {
+                    alert("ত্রুটি: " + err.message);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Sign Up';
                 }
-            } catch (err) {
-                alert("ত্রুটি: " + err.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = isLogin ? 'Login' : 'Sign Up';
             }
         }
     </script>
