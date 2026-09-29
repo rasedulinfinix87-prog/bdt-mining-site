@@ -189,7 +189,6 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-family: 'Space Grotesk', sans-serif;
         }
 
         /* Side Menu Drawer */
@@ -320,7 +319,6 @@
             border-radius: 12px;
             font-size: 11px;
             font-weight: 600;
-            font-family: 'Orbitron', sans-serif;
         }
 
         .badge-popular {
@@ -334,7 +332,6 @@
             border-radius: 10px;
             font-size: 11px;
             text-transform: uppercase;
-            font-family: 'Orbitron', sans-serif;
         }
 
         .plan-title {
@@ -360,7 +357,6 @@
             font-weight: 600;
             font-size: 14px;
             margin-bottom: 15px;
-            font-family: 'Space Grotesk', sans-serif;
         }
 
         .plan-details {
@@ -390,7 +386,6 @@
             text-align: center;
             font-size: 10px;
             color: #94a3b8;
-            font-family: 'Orbitron', sans-serif;
         }
 
         .crypto-pill span {
@@ -398,7 +393,6 @@
             color: #f59e0b;
             font-weight: 600;
             font-size: 11px;
-            font-family: 'Space Grotesk', sans-serif;
         }
 
         .btn-invest {
@@ -448,7 +442,6 @@
         .payout-user {
             font-weight: 600;
             color: #e2e8f0;
-            font-family: 'Space Grotesk', sans-serif;
         }
 
         .payout-time {
@@ -481,7 +474,6 @@
             z-index: 9999;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: pulse 2s infinite;
-            font-family: 'Space Grotesk', sans-serif;
         }
 
         .telegram-chat-btn:hover {
@@ -653,7 +645,10 @@
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let supabaseClient;
+        if (window.supabase) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
 
         function toggleMenu() {
             document.getElementById('navDrawer').classList.toggle('active');
@@ -697,41 +692,66 @@
         }
 
         async function loadUserProfile() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!supabaseClient) return;
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
 
-            const navButtons = document.getElementById('navButtons');
+                const navButtons = document.getElementById('navButtons');
+                if (!navButtons) return;
 
-            if (user) {
-                navButtons.innerHTML = `
-                    <div class="user-email-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="${user.email}">${user.email.split('@')[0]}</div>
-                    <button class="btn-logout" onclick="handleLogout()">Logout</button>
-                `;
-            } else {
-                navButtons.innerHTML = `
-                    <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
-                    <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
-                `;
+                if (user && user.email) {
+                    navButtons.innerHTML = `
+                        <div class="user-email-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="${user.email}">${user.email.split('@')[0]}</div>
+                        <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                    `;
+                } else {
+                    navButtons.innerHTML = `
+                        <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
+                        <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
+                    `;
+                }
+            } catch(e) {
+                console.error("Auth check failed:", e);
             }
         }
 
         // Updated Investment Handling Logic
         async function handleInvest(planName, amount) {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-
-            if (!user) {
+            if (!supabaseClient) {
                 window.location.href = 'signup.html';
-            } else {
-                window.location.href = `dashboard.html?plan=${encodeURIComponent(planName)}&amount=${amount}`;
+                return;
+            }
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+
+                if (!user) {
+                    window.location.href = 'signup.html';
+                } else {
+                    window.location.href = `dashboard.html?plan=${encodeURIComponent(planName)}&amount=${amount}`;
+                }
+            } catch(e) {
+                window.location.href = 'signup.html';
             }
         }
 
         async function handleLogout() {
-            await supabaseClient.auth.signOut();
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
             window.location.reload();
         }
 
-        loadPayouts();
-        loadUserProfile();
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPayouts();
+            loadUserProfile();
+
+            if (supabaseClient) {
+                supabaseClient.auth.onAuthStateChange(() => {
+                    loadUserProfile();
+                });
+            }
+        });
 
         // Refresh payout data every 60 seconds
         setInterval(loadPayouts, 60000);
