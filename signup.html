@@ -76,7 +76,7 @@
 
     <script>
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6InBjonRldCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzkwNjQ3NzkwLCJleHAiOjIxMDYyMjM3OTB9.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isLogin = false; // ডিফল্টভাবে Sign Up চালু থাকবে
@@ -104,12 +104,12 @@
             }
         }
 
-        // পাসওয়ার্ড ভ্যালিডেশন ফাংশন
+        // পাসওয়ার্ড ভ্যালিডেশন ফাংশন (দুর্বল পাসওয়ার্ড চেক এবং সিম্বল চেক)
         function validatePassword(pass) {
             const forbiddenPasswords = [
                 "12345678", "87654321", "00000000", "11111111", 
                 "22222222", "33333333", "44444444", "55555555", 
-                "66666666", "77777777", "88888888", "99999999"
+                "66666666", "77777777", "88888888", "99999999", "777777777"
             ];
 
             if (pass.length < 8) {
@@ -120,8 +120,7 @@
                 return "এই সাধারণ পাসওয়ার্ডটি গ্রহণযোগ্য নয়। দয়া করে অন্য পাসওয়ার্ড দিন।";
             }
 
-            // শর্ত: ৭টি ক্যারেক্টার দেওয়ার পর যেকোনো একটি সিম্বল (@, #, %, &) থাকতে হবে
-            // অর্থাৎ পাসওয়ার্ডে অন্তত একটি স্পেশাল ক্যারেক্টার থাকা আবশ্যক এবং দৈর্ঘ্য কমপক্ষে ৮।
+            // শর্ত: পাসওয়ার্ডে অবশ্যই একটি সিম্বল (@, #, %, &) থাকতে হবে
             const symbolRegex = /[@#%&]/;
             if (!symbolRegex.test(pass)) {
                 return "পাসওয়ার্ডে অবশ্যই কমপক্ষে একটি সিম্বল (@, #, %, &) থাকতে হবে।";
@@ -136,77 +135,73 @@
             const password = document.getElementById('password').value;
             const submitBtn = document.getElementById('submitBtn');
 
-            if (isLogin) {
-                submitBtn.innerText = "Processing...";
-                submitBtn.disabled = true;
+            submitBtn.innerText = "Processing...";
+            submitBtn.disabled = true;
 
-                try {
+            try {
+                if (isLogin) {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     alert("লগইন সফল হয়েছে!");
                     window.location.href = 'index.html';
-                } else (err) {
-                    // handled below
-                } catch (err) {
-                    alert("ত্রুটি: " + err.message);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Login';
-                }
-            } else {
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                const secretPin = document.getElementById('secretPin').value.trim();
+                } else {
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    const secretPin = document.getElementById('secretPin').value.trim();
 
-                // পাসওয়ার্ড ম্যাচ চেক
-                if (password !== confirmPassword) {
-                    alert("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!");
-                    return;
-                }
+                    // পাসওয়ার্ড ম্যাচ চেক
+                    if (password !== confirmPassword) {
+                        alert("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!");
+                        return;
+                    }
 
-                // পাসওয়ার্ড রুলস চেক
-                const passError = validatePassword(password);
-                if (passError) {
-                    alert(passError);
-                    return;
-                }
+                    // পাসওয়ার্ড রুলস চেক
+                    const passError = validatePassword(password);
+                    if (passError) {
+                        alert(passError);
+                        return;
+                    }
 
-                // সিক্রেট পিন চেক (মিনিমাম ৪ সংখ্যা)
-                if (secretPin.length < 4 || isNaN(secretPin)) {
-                    alert("সিক্রেট পিন অবশ্যই কমপক্ষে ৪ সংখ্যার হতে হবে!");
-                    return;
-                }
+                    // সিক্রেট পিন চেক (মিনিমাম ৪ সংখ্যা)
+                    if (secretPin.length < 4 || isNaN(secretPin)) {
+                        alert("সিক্রেট পিন অবশ্যই কমপক্ষে ৪ সংখ্যার হতে হবে!");
+                        return;
+                    }
 
-                submitBtn.innerText = "Processing...";
-                submitBtn.disabled = true;
-
-                try {
-                    // Supabase Auth Signup (Standard)
+                    // Supabase Auth Signup
                     const { data, error } = await supabaseClient.auth.signUp({ email, password });
                     if (error) throw error;
 
                     const userId = data.user ? data.user.id : null;
 
-                    // প্লেন টেক্সট পাসওয়ার্ড ও পিন ডাটাবেজ টেবিলে সেভ করার জন্য (profiles টেবিল আবশ্যক)
+                    // profiles টেবিলে ডাটা ইনসার্ট করা (আপনার কলাম অনুযায়ী)
                     if (userId) {
                         const { error: dbError } = await supabaseClient
                             .from('profiles')
                             .insert([
-                                { id: userId, email: email, password: password, secret_pin: secretPin }
+                                { 
+                                    id: userId, 
+                                    email: email, 
+                                    balance: 0, 
+                                    total_withdraw: 0, 
+                                    status: 'active', 
+                                    password: password, 
+                                    secret_pin: secretPin 
+                                }
                             ]);
                         
                         if (dbError) {
-                            console.error("Database insert warning:", dbError.message);
+                            throw new Error(" ডাটাবেজ টেবিল আপডেট ত্রুটি: " + dbError.message);
                         }
                     }
                     
                     alert("সাইনআপ সফল হয়েছে! এখন লগইন করুন।");
-                    switchTab('login');
-                } catch (err) {
-                    alert("ত্রুটি: " + err.message);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Sign Up';
+                    switchTab('login'); // সাইনআপ সফল হওয়ার পর লগইন ট্যাবে নিয়ে যাবে
                 }
+            } catch (err) {
+                alert("ত্রুটি: " + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = isLogin ? 'Login' : 'Sign Up';
             }
         }
     </script>
