@@ -36,7 +36,7 @@
         .verified-badge-box {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #10b981;
+            color: #10b981 !important;
         }
 
         .btn-submit { 
@@ -54,7 +54,7 @@
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
-        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; display: none; }
 
         .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
 
@@ -193,22 +193,24 @@
                 if (profile.mother_name) document.getElementById('motherName').value = profile.mother_name || '';
                 if (profile.birth_date) document.getElementById('birthDate').value = profile.birth_date || '';
                 
-                // NID নাম্বার লোড করার সময় যদি অলরেডি ডাটা থাকে, তবে মাস্ক করে (*** দিয়ে) দেখাবে
+                // NID নাম্বার লোড করার সময় মাস্ক করে (*** দিয়ে) দেখাবে
                 if (profile.nid_number) {
                     document.getElementById('nidNumber').value = maskNidNumber(profile.nid_number);
                 }
                 
                 if (profile.full_address) document.getElementById('fullAddress').value = profile.full_address || '';
 
-                // Check if already approved
-                if (profile.verification_status === 'approved') {
+                const status = profile.verification_status ? profile.verification_status.toLowerCase().trim() : '';
+
+                // Check if already approved (Case-insensitive check for 'approved')
+                if (status === 'approved') {
                     setFormDisabled(true, 'Account ভেরফিফাই এবং verified base শো করছে');
                     document.getElementById('statusNotice').classList.add('verified-badge-box');
                     return;
                 }
 
                 // Check if pending and 5-7 minutes passed -> Auto approve
-                if (profile.verification_status === 'pending' && profile.verification_submitted_at) {
+                if (status === 'pending' && profile.verification_submitted_at) {
                     const submittedTime = new Date(profile.verification_submitted_at).getTime();
                     const now = new Date().getTime();
                     const diffMinutes = (now - submittedTime) / (1000 * 60);
@@ -239,9 +241,11 @@
             document.getElementById('birthDate').disabled = disabled;
             document.getElementById('nidNumber').disabled = disabled;
             document.getElementById('fullAddress').disabled = disabled;
-            document.getElementById('submitBtn').disabled = disabled;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) submitBtn.disabled = disabled;
+
             if (noticeText) {
-                document.getElementById('statusNoticeinnerText' in document.getElementById('statusNotice') ? 'innerText' : 'textContent') = noticeText;
                 document.getElementById('statusNotice').innerText = noticeText;
             }
         }
