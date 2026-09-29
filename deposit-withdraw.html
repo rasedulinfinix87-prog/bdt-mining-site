@@ -67,7 +67,7 @@
             text-transform: uppercase;
         }
 
-        /* Border Spring / Glowing Animation for Admin Box */
+        /* Border Spring / Glowing Animation for Admin Box - Updated to Yellow Theme */
         @keyframes borderSpring {
             0% {
                 border-color: #f59e0b;
@@ -95,6 +95,7 @@
             animation: borderSpring 2.5s infinite ease-in-out;
         }
 
+        /* Normal font for admin number and address */
         .admin-num-box span, .admin-num-box strong {
             font-family: 'Inter', sans-serif;
             font-weight: 600;
@@ -115,7 +116,7 @@
 
         .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
 
-        /* Premium Custom Popup Modal Styles with Window Animation */
+        /* Custom Popup Modal Styles with Window Animation - Updated to Yellow Theme */
         .custom-popup-overlay {
             position: fixed;
             top: 0;
@@ -268,10 +269,10 @@
     <!-- Premium Custom Animated Popup Modal (English & Yellow Theme) -->
     <div class="custom-popup-overlay" id="customPopup">
         <div class="custom-popup-box">
-            <div class="popup-icon" id="popupIcon">⚠️️</div>
-            <div class="popup-title" id="popupTitle">Notice</div>
-            <div class="popup-message" id="popupMessage">Message goes here...</div>
-            <div class="popup-note" id="popupNote">Please follow instructions carefully.</div>
+            <div class="popup-icon" id="popupIcon">🎉</div>
+            <div class="popup-title" id="popupTitle">Success</div>
+            <div class="popup-message" id="popupMessage">Your request has been submitted successfully.</div>
+            <div class="popup-note" id="popupNote">Please wait 5-10 minutes for confirmation.</div>
             <button type="button" class="popup-btn" onclick="closePopup()">OK</button>
         </div>
     </div>
@@ -288,6 +289,7 @@
 
         document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
 
+        // Supabase থেকে অ্যাডমিনের তথ্য লোড করার ফাংশন
         async function fetchAdminConfig() {
             try {
                 const { data, error } = await supabaseClient
@@ -363,6 +365,7 @@
                     trxLabel.innerText = 'Transaction Hash (TxID)';
                 }
             } else {
+                // Withdraw Tab
                 bkashAdmin.style.display = 'none';
                 usdtAdmin.style.display = 'none';
                 if (method === 'bkash') {
@@ -412,18 +415,18 @@
         function copyBkashNumber() {
             const num = document.getElementById('adminBkashText').innerText;
             navigator.clipboard.writeText(num).then(() => {
-                showCustomPopup('success', 'Copied!', 'bKash Number copied to clipboard successfully.', 'Action Successful');
+                showCustomPopup('success', 'Copied!', 'bKash Number copied to clipboard successfully.', 'Action Successful', false);
             });
         }
 
         function copyWalletAddress() {
             const addr = document.getElementById('walletAddrText').innerText;
             navigator.clipboard.writeText(addr).then(() => {
-                showCustomPopup('success', 'Copied!', 'Wallet Address copied to clipboard successfully.', 'Action Successful');
+                showCustomPopup('success', 'Copied!', 'Wallet Address copied to clipboard successfully.', 'Action Successful', false);
             });
         }
 
-        // Advanced Premium Popup Trigger Function (English & Yellow)
+        // Custom Popup Trigger function (English & Premium Animation)
         function showCustomPopup(type, title, message, note, redirect = false) {
             const iconElem = document.getElementById('popupIcon');
             if (type === 'success') {
@@ -478,13 +481,13 @@
             const trxId = rawTrxId ? rawTrxId.trim() : null;
 
             if (usdAmount <= 0) {
-                showCustomPopup('error', 'Invalid Amount', 'Please enter a valid amount greater than zero.', 'Check your input');
+                showCustomPopup('error', 'Invalid Amount', 'Please enter a valid amount greater than zero.', 'Check your input', false);
                 submitBtn.disabled = false;
                 submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
                 return;
             }
 
-            // TrxID Duplicate Check
+            // ডিপোজিটের ক্ষেত্রে TrxID ইতিমধ্যে ব্যবহার করা হয়েছে কি না তা চেক করা (Premium English Popup for Duplicate TrxID)
             if (currentType === 'deposit' && trxId) {
                 const { data: existingTrx, error: trxCheckError } = await supabaseClient
                     .from('transactions')
@@ -493,14 +496,14 @@
                     .maybeSingle();
 
                 if (existingTrx) {
-                    showCustomPopup('error', 'Duplicate TrxID', 'This TrxID has already been used previously. Using the same TrxID multiple times is strictly prohibited.', 'Security Alert');
+                    showCustomPopup('error', 'Duplicate TrxID', 'This TrxID has already been used previously. Using the same TrxID multiple times is strictly prohibited.', 'Security Alert', false);
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Deposit Request';
                     return;
                 }
             }
 
-            // Withdraw Balance Check & Deduct Logic
+            // উইথড্র এর ক্ষেত্রে ব্যালেন্স চেক ও বিয়োগ (Deduct) করার লজিক
             if (currentType === 'withdraw') {
                 const { data: profile, error: profileError } = await supabaseClient
                     .from('profiles')
@@ -509,7 +512,7 @@
                     .single();
 
                 if (profileError || !profile) {
-                    showCustomPopup('error', 'Profile Error', 'User profile could not be found!', 'Please try again');
+                    showCustomPopup('error', 'Profile Error', 'User profile could not be found!', 'Please try again', false);
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
@@ -518,7 +521,7 @@
                 const currentBalance = parseFloat(profile.balance || 0);
 
                 if (currentBalance < usdAmount) {
-                    showCustomPopup('error', 'Insufficient Balance', `Your account balance is insufficient!\n\nYour Balance: $${currentBalance.toFixed(2)} USD\nRequested: $${usdAmount} USD`, 'Please deposit funds first');
+                    showCustomPopup('error', 'Insufficient Balance', `Your account balance is insufficient!\n\nYour Balance: $${currentBalance.toFixed(2)} USD\nRequested: $${usdAmount} USD`, 'Please deposit funds first', false);
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
@@ -531,14 +534,14 @@
                     .eq('id', user.id);
 
                 if (updateError) {
-                    showCustomPopup('error', 'Update Failed', 'Failed to update balance: ' + updateError.message, 'System Error');
+                    showCustomPopup('error', 'Update Failed', 'Failed to update balance: ' + updateError.message, 'System Error', false);
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
                 }
             }
 
-            // Insert Transaction Request
+            // Transactions টেবিলে রিকোয়েস্ট ইনসার্ট করা
             const { data, error } = await supabaseClient
                 .from('transactions')
                 .insert([
@@ -557,9 +560,9 @@
 
             if (error) {
                 if (error.code === '23505') {
-                    showCustomPopup('error', 'Duplicate TrxID', 'This TrxID already exists in the database. Duplicate submissions are not allowed.', 'Security Alert');
+                    showCustomPopup('error', 'Duplicate TrxID', 'This TrxID already exists in the database. Duplicate submissions are not allowed.', 'Security Alert', false);
                 } else {
-                    showCustomPopup('error', 'Submission Failed', 'Failed to submit request: ' + error.message, 'Please try again');
+                    showCustomPopup('error', 'Submission Failed', 'Failed to submit request: ' + error.message, 'Please try again', false);
                 }
                 submitBtn.disabled = false;
                 submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
@@ -584,6 +587,7 @@
             }
         }
 
+        // পেজ লোড হওয়ার সাথেই অ্যাডমিন কনফিগারেশন ফেচ করা হবে
         fetchAdminConfig();
 
         const urlParams = new URLSearchParams(window.location.search);
