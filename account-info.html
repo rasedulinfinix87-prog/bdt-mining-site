@@ -121,8 +121,8 @@
 
         <div class="form-group">
             <label>Secret Pin (Locked)</label>
-            <input type="password" id="secretPin" disabled value="****">
-            <span class="eye-icon" onclick="toggleSecretPin()">👁️</span>
+            <input type="text" id="secretPin" disabled value="••••">
+            <span class="eye-icon" onclick="toggleSecretPin()" id="eyeToggleIcon">👁️</span>
         </div>
 
         <button type="button" class="btn-action btn-secondary" onclick="openPasswordModal()">Change Password</button>
@@ -189,11 +189,16 @@
                 .single();
 
             if (profile) {
+                console.log("Fetched Profile Data:", profile); // Debugging log
                 if (profile.full_name) document.getElementById('fullName').value = profile.full_name;
                 if (profile.birth_date) document.getElementById('birthDate').value = profile.birth_date;
+                
                 if (profile.secret_pin) {
-                    rawSecretPin = profile.secret_pin;
+                    rawSecretPin = String(profile.secret_pin);
                     document.getElementById('secretPin').value = '•'.repeat(rawSecretPin.length);
+                } else {
+                    rawSecretPin = 'Not Set';
+                    document.getElementById('secretPin').value = 'Not Set';
                 }
 
                 const vStatus = profile.verification_status ? profile.verification_status.toUpperCase() : 'UNVERIFIED';
@@ -207,12 +212,16 @@
         let isPinVisible = false;
         function toggleSecretPin() {
             const pinInput = document.getElementById('secretPin');
-            if (!rawSecretPin) return;
+            const eyeIcon = document.getElementById('eyeToggleIcon');
+            if (!rawSecretPin || rawSecretPin === 'Not Set') return;
+            
             isPinVisible = !isPinVisible;
             if (isPinVisible) {
                 pinInput.value = rawSecretPin;
+                eyeIcon.innerText = '🙈'; // Change icon to hide symbol when visible
             } else {
                 pinInput.value = '•'.repeat(rawSecretPin.length);
+                eyeIcon.innerText = '👁️';
             }
         }
 
@@ -252,7 +261,6 @@
             changeBtn.disabled = true;
             changeBtn.innerText = 'Updating...';
 
-            // Verify old password by signing in
             const { error: signInError } = await supabaseClient.auth.signInWithPassword({
                 email: currentUser.email,
                 password: oldPass
@@ -265,7 +273,6 @@
                 return;
             }
 
-            // Update to new password
             const { error: updateError } = await supabaseClient.auth.updateUser({
                 password: newPass
             });
