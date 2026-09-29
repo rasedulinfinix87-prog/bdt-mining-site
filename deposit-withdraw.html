@@ -18,11 +18,11 @@
         .tab-btn.active { background: #f59e0b; color: #000; font-weight: 700; }
         
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; }
+        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
         input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
         input:focus, select:focus { border-color: #f59e0b; }
         
-        /* Live Conversion Preview Box (Changed green to yellow theme) */
+        /* Live Conversion Preview Box - Updated to Yellow Theme */
         .conversion-preview {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid rgba(245, 158, 11, 0.3);
@@ -67,7 +67,7 @@
             text-transform: uppercase;
         }
 
-        /* Border Spring / Glowing Animation for Admin Box (Changed green to yellow theme) */
+        /* Border Spring / Glowing Animation for Admin Box */
         @keyframes borderSpring {
             0% {
                 border-color: #f59e0b;
@@ -111,49 +111,54 @@
             cursor: pointer;
             font-weight: bold;
             margin-left: 5px;
-            font-family: 'Orbitron', sans-serif;
         }
 
-        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; font-family: 'Orbitron', sans-serif; }
+        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
 
-        /* Custom Popup Modal Styles with Window Animation */
+        /* Premium Custom Popup Modal Styles with Window Animation */
         .custom-popup-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .custom-popup-overlay.active {
             opacity: 1;
             visibility: visible;
         }
         .custom-popup-box {
-            background: #0f172a;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 16px;
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: 20px;
             width: 90%;
             max-width: 360px;
-            padding: 25px 20px;
+            padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            transform: scale(0.7) translateY(20px);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.15);
+            transform: scale(0.6) translateY(30px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .custom-popup-overlay.active .custom-popup-box {
             transform: scale(1) translateY(0);
         }
         .popup-icon {
-            font-size: 40px;
+            font-size: 45px;
             margin-bottom: 15px;
+            animation: bounceIcon 1s infinite alternate;
+        }
+        @keyframes bounceIcon {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
         }
         .popup-title {
             font-family: 'Orbitron', sans-serif;
@@ -162,20 +167,21 @@
             color: #f59e0b;
             margin-bottom: 10px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .popup-message {
-            font-size: 14px;
+            font-size: 13.5px;
             color: #cbd5e1;
-            margin-bottom: 8px;
-            line-height: 1.5;
+            margin-bottom: 12px;
+            line-height: 1.6;
         }
         .popup-note {
             font-size: 12px;
             color: #f59e0b;
             background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            padding: 8px;
-            border-radius: 8px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 10px;
+            border-radius: 10px;
             margin-bottom: 20px;
             font-weight: 500;
         }
@@ -183,14 +189,19 @@
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #000;
             border: none;
-            padding: 10px 20px;
-            font-weight: 700;
+            padding: 12px 20px;
+            font-weight: 800;
             font-size: 14px;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
             font-family: 'Orbitron', sans-serif;
             letter-spacing: 0.5px;
+            transition: 0.2s;
+        }
+        .popup-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
         }
     </style>
 </head>
@@ -254,13 +265,13 @@
         <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
     </div>
 
-    <!-- Custom Animated Popup Modal -->
+    <!-- Premium Custom Animated Popup Modal (English & Yellow Theme) -->
     <div class="custom-popup-overlay" id="customPopup">
         <div class="custom-popup-box">
-            <div class="popup-icon" id="popupIcon">🎉</div>
-            <div class="popup-title" id="popupTitle">Success</div>
-            <div class="popup-message" id="popupMessage">Your request has been submitted successfully.</div>
-            <div class="popup-note" id="popupNote">Please wait 5-10 minutes for confirmation.</div>
+            <div class="popup-icon" id="popupIcon">⚠️️</div>
+            <div class="popup-title" id="popupTitle">Notice</div>
+            <div class="popup-message" id="popupMessage">Message goes here...</div>
+            <div class="popup-note" id="popupNote">Please follow instructions carefully.</div>
             <button type="button" class="popup-btn" onclick="closePopup()">OK</button>
         </div>
     </div>
@@ -273,7 +284,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentType = 'deposit';
-        let isRedirectOnClose = true;
+        let isRedirectOnClose = false;
 
         document.getElementById('rateInfoText').innerText = `Exchange Rate: $1 = ৳ ${USD_RATE} BDT`;
 
@@ -401,24 +412,33 @@
         function copyBkashNumber() {
             const num = document.getElementById('adminBkashText').innerText;
             navigator.clipboard.writeText(num).then(() => {
-                showCustomPopup('Copied', 'bKash Number Copied to Clipboard!', 'You can paste it now.', false, '📋');
+                showCustomPopup('success', 'Copied!', 'bKash Number copied to clipboard successfully.', 'Action Successful');
             });
         }
 
         function copyWalletAddress() {
             const addr = document.getElementById('walletAddrText').innerText;
             navigator.clipboard.writeText(addr).then(() => {
-                showCustomPopup('Copied', 'Wallet Address Copied to Clipboard!', 'You can paste it now.', false, '📋');
+                showCustomPopup('success', 'Copied!', 'Wallet Address copied to clipboard successfully.', 'Action Successful');
             });
         }
 
-        function showCustomPopup(title, message, note, redirect = true, icon = '🎉') {
-            isRedirectOnClose = redirect;
-            document.getElementById('popupIcon').innerText = icon;
+        // Advanced Premium Popup Trigger Function (English & Yellow)
+        function showCustomPopup(type, title, message, note, redirect = false) {
+            const iconElem = document.getElementById('popupIcon');
+            if (type === 'success') {
+                iconElem.innerText = '🎉';
+            } else if (type === 'error') {
+                iconElem.innerText = '⚠️';
+            } else {
+                iconElem.innerText = '🔔';
+            }
+
             document.getElementById('popupTitle').innerText = title;
             document.getElementById('popupMessage').innerText = message;
             document.getElementById('popupNote').innerText = note;
             document.getElementById('customPopup').classList.add('active');
+            isRedirectOnClose = redirect;
         }
 
         function closePopup() {
@@ -438,7 +458,7 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
 
             if (!user) {
-                showCustomPopup('Authentication Error', 'Please sign up or log in first to submit requests!', 'Redirecting to sign up page.', true, '⚠️');
+                showCustomPopup('error', 'Authentication Required', 'Please sign up or log in first to submit your request!', 'Redirecting to Signup', false);
                 setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
                 return;
             }
@@ -458,12 +478,13 @@
             const trxId = rawTrxId ? rawTrxId.trim() : null;
 
             if (usdAmount <= 0) {
-                showCustomPopup('Invalid Amount', 'Please provide a valid transaction amount.', 'Check your input value.', false, '⚠️');
+                showCustomPopup('error', 'Invalid Amount', 'Please enter a valid amount greater than zero.', 'Check your input');
                 submitBtn.disabled = false;
                 submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
                 return;
             }
 
+            // TrxID Duplicate Check
             if (currentType === 'deposit' && trxId) {
                 const { data: existingTrx, error: trxCheckError } = await supabaseClient
                     .from('transactions')
@@ -472,19 +493,14 @@
                     .maybeSingle();
 
                 if (existingTrx) {
-                    showCustomPopup(
-                        'Duplicate TrxID', 
-                        'This TrxID has already been used previously.', 
-                        'Using the same TrxID repeatedly is strictly prohibited.', 
-                        false, 
-                        '❌'
-                    );
+                    showCustomPopup('error', 'Duplicate TrxID', 'This TrxID has already been used previously. Using the same TrxID multiple times is strictly prohibited.', 'Security Alert');
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Deposit Request';
                     return;
                 }
             }
 
+            // Withdraw Balance Check & Deduct Logic
             if (currentType === 'withdraw') {
                 const { data: profile, error: profileError } = await supabaseClient
                     .from('profiles')
@@ -493,7 +509,7 @@
                     .single();
 
                 if (profileError || !profile) {
-                    showCustomPopup('Profile Error', 'User profile not found!', 'Please try again later.', false, '⚠️');
+                    showCustomPopup('error', 'Profile Error', 'User profile could not be found!', 'Please try again');
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
@@ -502,13 +518,7 @@
                 const currentBalance = parseFloat(profile.balance || 0);
 
                 if (currentBalance < usdAmount) {
-                    showCustomPopup(
-                        'Insufficient Balance', 
-                        `You do not have enough balance!\nBalance: $${currentBalance.toFixed(2)} USD\nRequested: $${usdAmount} USD`, 
-                        'Please check your account balance.', 
-                        false, 
-                        '⚠️'
-                    );
+                    showCustomPopup('error', 'Insufficient Balance', `Your account balance is insufficient!\n\nYour Balance: $${currentBalance.toFixed(2)} USD\nRequested: $${usdAmount} USD`, 'Please deposit funds first');
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
@@ -521,13 +531,14 @@
                     .eq('id', user.id);
 
                 if (updateError) {
-                    showCustomPopup('Update Error', 'Failed to update balance: ' + updateError.message, 'Please try again.', false, '⚠️');
+                    showCustomPopup('error', 'Update Failed', 'Failed to update balance: ' + updateError.message, 'System Error');
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Withdraw Request';
                     return;
                 }
             }
 
+            // Insert Transaction Request
             const { data, error } = await supabaseClient
                 .from('transactions')
                 .insert([
@@ -546,28 +557,28 @@
 
             if (error) {
                 if (error.code === '23505') {
-                    showCustomPopup('Duplicate TrxID', 'This TrxID is already stored in the database.', 'Using the same TrxID twice is restricted.', false, '❌');
+                    showCustomPopup('error', 'Duplicate TrxID', 'This TrxID already exists in the database. Duplicate submissions are not allowed.', 'Security Alert');
                 } else {
-                    showCustomPopup('Submission Error', 'Failed to submit request: ' + error.message, 'Please check and try again.', false, '⚠️');
+                    showCustomPopup('error', 'Submission Failed', 'Failed to submit request: ' + error.message, 'Please try again');
                 }
                 submitBtn.disabled = false;
                 submitBtn.innerText = currentType === 'deposit' ? 'Submit Deposit Request' : 'Submit Withdraw Request';
             } else {
                 if (currentType === 'deposit') {
                     showCustomPopup(
+                        'success',
                         'Deposit Request Submitted',
                         `Your deposit request of $${usdAmount} USD has been successfully submitted.`,
-                        'Please wait 5-10 minutes to confirm.',
-                        true,
-                        '🎉'
+                        'Please wait 5-10 minutes for confirmation.',
+                        true
                     );
                 } else {
                     showCustomPopup(
+                        'success',
                         'Withdraw Request Submitted',
                         `Your withdrawal request of $${usdAmount} USD has been successfully submitted.`,
                         'Please wait 12-24 hours for withdrawal processing.',
-                        true,
-                        '🎉'
+                        true
                     );
                 }
             }
