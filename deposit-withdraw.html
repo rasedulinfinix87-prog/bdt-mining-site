@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit & Withdraw - BDTMINER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
+        .container { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
+        .tab-buttons { display: flex; background: #1e293b; border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; font-weight: 600; font-size: 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: #f59e0b; color: #000; font-weight: 700; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+        input:focus, select:focus { border-color: #f59e0b; }
+        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 10px; color: #000; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 10px; }
+        .admin-num-box { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; border-radius: 10px; padding: 10px; text-align: center; margin-bottom: 15px; font-size: 13px; color: #f59e0b; }
+        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Tab Switcher -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="depositTabBtn" onclick="switchTab('deposit')">Deposit</button>
+            <button class="tab-btn" id="withdrawTabBtn" onclick="switchTab('withdraw')">Withdraw</button>
+        </div>
+
+        <!-- Admin Mobile Number Display for Cash In/Cash Out -->
+        <div class="admin-num-box" id="adminNumBox">
+            Send Money (Personal): <strong>01700000000</strong> (bKash/Nagad)
+        </div>
+
+        <!-- Form Area -->
+        <form id="transForm" onsubmit="handleTransaction(event)">
+            <div class="form-group">
+                <label>Select Payment Method</label>
+                <select id="method" required>
+                    <option value="bkash">bKash Personal</option>
+                    <option value="nagad">Nagad Personal</option>
+                    <option value="rocket">Rocket Personal</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Amount (BDT)</label>
+                <input type="number" id="amount" placeholder="e.g. 5000" min="500" required>
+            </div>
+
+            <div class="form-group">
+                <label id="numLabel">Your Sender Mobile Number</label>
+                <input type="text" id="phone" placeholder="017xxxxxxxx" required>
+            </div>
+
+            <div class="form-group" id="trxGroup">
+                <label>Transaction ID (TrxID)</label>
+                <input type="text" id="trxId" placeholder="e.g. B7X89KL21">
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Submit Deposit Request</button>
+        </form>
+
+        <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentType = 'deposit';
+
+        function switchTab(type) {
+            currentType = type;
+            const depositBtn = document.getElementById('depositTabBtn');
+            const withdrawBtn = document.getElementById('withdrawTabBtn');
+            const adminBox = document.getElementById('adminNumBox');
+            const numLabel = document.getElementById('numLabel');
+            const trxGroup = document.getElementById('trxGroup');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (type === 'deposit') {
+                depositBtn.classList.add('active');
+                withdrawBtn.classList.remove('active');
+                adminBox.style.display = 'block';
+                numLabel.innerText = 'Your Sender Mobile Number';
+                trxGroup.style.display = 'block';
+                document.getElementById('trxId').required = true;
+                submitBtn.innerText = 'Submit Deposit Request';
+            } else {
+                withdrawBtn.classList.add('active');
+                depositBtn.classList.remove('active');
+                adminBox.style.display = 'none';
+                numLabel.innerText = 'Your Receiver Mobile Number';
+                trxGroup.style.display = 'none';
+                document.getElementById('trxId').required = false;
+                submitBtn.innerText = 'Submit Withdraw Request';
+            }
+        }
+
+        async function handleTransaction(e) {
+            e.preventDefault();
+
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (!user) {
+                alert('অনুরোধ পাঠাতে প্রথমে সাইনআপ/লগইন করুন!');
+                window.location.href = 'signup.html';
+                return;
+            }
+
+            const method = document.getElementById('method').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const phone = document.getElementById('phone').value;
+            const trxId = document.getElementById('trxId').value || null;
+
+            const { data, error } = await supabaseClient
+                .from('transactions')
+                .insert([
+                    {
+                        user_id: user.id,
+                        user_email: user.email,
+                        type: currentType,
+                        method: method,
+                        amount: amount,
+                        sender_receiver_number: phone,
+                        trx_id: trxId,
+                        status: 'pending'
+                    }
+                ]);
+
+            if (error) {
+                alert('রিকোয়েস্ট জমা করতে সমস্যা হয়েছে: ' + error.message);
+            } else {
+                alert(`আপনার ${currentType.toUpperCase()} রিকোয়েস্ট সফলভাবে জমা হয়েছে। অ্যাডমিন পর্যালোচনার পর ব্যালেন্স আপডেট করা হবে।`);
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>
