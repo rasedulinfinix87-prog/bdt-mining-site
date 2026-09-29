@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 12px; }
@@ -33,7 +34,7 @@
             100% { transform: scale(0.95); opacity: 0.8; }
         }
 
-        /* Smooth Continuous Slider Animation Container */
+        /* Smooth Continuous Slider Animation Container (Slowed down by 50% using 70s duration) */
         .payout-feed-wrapper {
             height: 340px;
             overflow: hidden;
@@ -50,7 +51,7 @@
             gap: 10px;
             position: absolute;
             width: 100%;
-            animation: smoothScroll 35s linear infinite;
+            animation: smoothScroll 70s linear infinite;
         }
 
         .payout-feed-wrapper:hover .payout-feed-list {
@@ -155,19 +156,20 @@
 </head>
 <body>
 
-    <!-- Top Navigation Menu Bar (As requested from index.html) -->
+    <!-- Top Navigation Menu Bar -->
     <div class="top-navbar">
-        <a href="index.html" class="nav-logo">BDTMINER</a>
+        <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/index.html" class="nav-logo">BDTMINER</a>
         <button class="menu-toggle" onclick="toggleMenu()">Menu ☰</button>
     </div>
 
-    <!-- Dropdown Menu List -->
+    <!-- Dropdown Menu List with Custom Links & Auth Logic -->
     <div class="dropdown-menu" id="dropdownMenu">
-        <a href="index.html">🏠 Home / Dashboard</a>
-        <a href="deposit.html">💳 Deposit</a>
-        <a href="withdraw.html">💸 Withdraw</a>
-        <a href="payout.html">📊 Live Payouts</a>
-        <a href="profile.html">👤 My Profile</a>
+        <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/index.html">🏠 Home</a>
+        <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/index.html#plans">⚡ Mining Plan</a>
+        <a href="https://rasedulinfinix87-prog.github.io/bdt-mining-site/payout.html">📊 Live Payouts</a>
+        <a href="/dashboard.html">💻 Dashboard</a>
+        <a href="/chat.html">💬 Contact Support</a>
+        <a href="/signup.html" id="authMenuLink">🔐 Signup</a>
     </div>
 
     <div class="container">
@@ -175,7 +177,7 @@
             <span class="live-dot"></span> Live Payout Feed
         </div>
 
-        <!-- Smooth Live Payout Feed Container -->
+        <!-- Smooth Live Payout Feed Container (Slowed Down) -->
         <div class="payout-feed-wrapper">
             <div class="payout-feed-list" id="payoutFeedList">
                 <!-- Bot will automatically generate and inject unique rows here dynamically -->
@@ -194,10 +196,34 @@
             <button class="more-less-btn" id="moreLessBtn" onclick="toggleArticle()">Read More ↓</button>
         </div>
 
-        <a href="dashboard.html" class="back-home">← Back to Dashboard</a>
+        <a href="/dashboard.html" class="back-home">← Back to Dashboard</a>
     </div>
 
     <script>
+        const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Check Login Status and Update Menu Auth Link Dynamically
+        async function checkAuthStatus() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const authLink = document.getElementById('authMenuLink');
+            if (user) {
+                authLink.innerText = '🚪 Logout';
+                authLink.href = '#';
+                authLink.onclick = async (e) => {
+                    e.preventDefault();
+                    await supabaseClient.auth.signOut();
+                    window.location.reload();
+                };
+            } else {
+                authLink.innerText = '🔐 Signup';
+                authLink.href = '/signup.html';
+                authLink.onclick = null;
+            }
+        }
+        checkAuthStatus();
+
         // Menu Bar Toggle Function
         function toggleMenu() {
             const menu = document.getElementById('dropdownMenu');
@@ -217,7 +243,7 @@
             }
         }
 
-        // Bot Logic for Generating Unique 300+ Payout List with bKash & USDT Only
+        // Bot Logic for Generating Unique Payout List with bKash & USDT Only (Reduced items by 50% i.e., 50 items pool)
         const firstNames = ["Rahim", "Hasan", "Karim", "Tanvir", "Sakib", "Rakibul", "Imran", "Nayeem", "Farhan", "Sumon", "Arif", "Jubaer", "Mehedi", "Al-Amin", "Fahim", "Shahed", "Nasir", "Tarek", "Sojib", "Rony", "Rubel", "Jewel", "Shohel", "Arman", "Mahmud", "Belal", "Joy", "Riaz", "Milon", "Biplob"];
         const lastNames = ["Ahmed", "Khan", "Hossain", "Chowdhury", "Islam", "Uddin", "Talukder", "Sarker", "Miah", "Bhuiyan", "Hawlader", "Pradhan", "Biswas", "Roy", "Siddique"];
         const methods = ["bKash", "USDT"];
@@ -228,8 +254,8 @@
             let itemsHTML = '';
             let usedCombinations = new Set();
 
-            // Generating 100 unique items pool for smooth seamless infinite scroll loop
-            for (let i = 0; i < 100; i++) {
+            // Generating 50 unique items pool (50% reduction) for smooth seamless infinite scroll loop
+            for (let i = 0; i < 50; i++) {
                 let name, method, amount, timeAgo;
                 let attempts = 0;
 
@@ -241,9 +267,9 @@
                     method = methods[Math.floor(Math.random() * methods.length)];
                     
                     if (method === 'bKash') {
-                        amount = '৳ ' + (Math.floor(Math.random() * 45) + 5) * 500; // e.g. ৳ 2500, ৳ 5000
+                        amount = '৳ ' + (Math.floor(Math.random() * 45) + 5) * 500; 
                     } else {
-                        amount = '$' + (Math.floor(Math.random() * 95) + 10) + '.00'; // e.g.$ 25.00
+                        amount = '$' + (Math.floor(Math.random() * 95) + 10) + '.00'; 
                     }
                     
                     timeAgo = timeAgoOptions[Math.floor(Math.random() * timeAgoOptions.length)];
@@ -268,7 +294,7 @@
                 `;
             }
 
-            // Duplicate the exact HTML structure to allow seamless CSS infinite loop scrolling effect
+            // Duplicate exact HTML structure to allow seamless infinite loop scrolling effect
             feedContainer.innerHTML = itemsHTML + itemsHTML;
         }
 
