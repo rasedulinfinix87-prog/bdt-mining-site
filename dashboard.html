@@ -6,44 +6,218 @@
     <title>User Dashboard - BDTMINER</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #080c14; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 10px; }
-        .dashboard-card { width: 100%; max-width: 420px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); }
-        .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 12px; }
-        .user-email { font-weight: 600; color: #f59e0b; font-size: 14px; }
-        .btn-logout { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
-        .balance-box { background: rgba(30, 41, 59, 0.7); border: 1px solid #334155; border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; }
-        .balance-title { font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
-        .balance-amount { font-size: 26px; font-weight: 700; color: #10b981; }
-        .action-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-action { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; text-decoration: none; }
-        .btn-deposit { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
-        .btn-withdraw { background: #1e293b; color: #fff; border: 1px solid #334155; }
-        .selected-plan { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; border-radius: 10px; padding: 12px; text-align: center; font-size: 13px; color: #f59e0b; margin-bottom: 15px; display: none; }
-        .back-home { display: block; text-align: center; color: #94a3b8; text-decoration: none; font-size: 13px; margin-top: 15px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { 
+            background: #030712; 
+            color: #f3f4f6; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px 12px; 
+        }
+
+        .dashboard-card { 
+            width: 100%; 
+            max-width: 440px; 
+            background: rgba(17, 24, 39, 0.85); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            border-radius: 24px; 
+            padding: 24px; 
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(245, 158, 11, 0.05); 
+        }
+
+        /* User Header */
+        .user-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 24px; 
+            padding-bottom: 16px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .avatar-box {
+            width: 38px; height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; color: #000; font-size: 16px;
+        }
+        .user-email { font-weight: 600; color: #f9fafb; font-size: 14px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .btn-logout { 
+            background: rgba(239, 68, 68, 0.15); 
+            color: #f87171; 
+            border: 1px solid rgba(239, 68, 68, 0.3); 
+            padding: 8px 14px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            font-weight: 600; 
+            transition: all 0.3s;
+        }
+        .btn-logout:hover { background: #ef4444; color: #fff; }
+
+        /* Main Balance Box */
+        .balance-box { 
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8)); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 18px; 
+            padding: 20px; 
+            text-align: center; 
+            margin-bottom: 20px; 
+            position: relative;
+            overflow: hidden;
+        }
+        .balance-box::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .balance-title { font-size: 12px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; }
+        .balance-amount { font-size: 32px; font-weight: 800; color: #10b981; text-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+
+        /* Action Buttons */
+        .action-buttons { display: flex; gap: 10px; margin-bottom: 24px; }
+        .btn-action { 
+            flex: 1; padding: 13px; border: none; border-radius: 12px; font-weight: 700; 
+            cursor: pointer; text-align: center; font-size: 13px; transition: all 0.3s;
+        }
+        .btn-deposit { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25); }
+        .btn-withdraw { background: rgba(30, 41, 59, 0.8); color: #e5e7eb; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-action:hover { transform: translateY(-2px); }
+
+        /* Plan Selection Banner */
+        .selected-plan-card { 
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.05)); 
+            border: 1px solid rgba(245, 158, 11, 0.4); 
+            border-radius: 16px; 
+            padding: 16px; 
+            margin-bottom: 24px; 
+            display: none; 
+        }
+        .plan-header-title { font-size: 12px; color: #f59e0b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .plan-details { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+        .btn-activate { 
+            width: 100%; padding: 12px; 
+            background: linear-gradient(135deg, #f59e0b, #d97706); 
+            border: none; border-radius: 10px; 
+            color: #000; font-weight: 800; font-size: 14px; 
+            cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            transition: all 0.3s;
+        }
+        .btn-activate:hover { filter: brightness(1.1); transform: scale(0.99); }
+
+        /* Mining Rig Section */
+        .mining-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.15);
+            display: none;
+        }
+        .mining-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .mining-title { font-weight: 700; font-size: 14px; color: #60a5fa; display: flex; align-items: center; gap: 8px; }
+        .status-badge { background: rgba(16, 185, 129, 0.2); color: #10b981; font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 700; }
+
+        /* Animated Mining Rig Icon */
+        .mining-animation-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px;
+        }
+        .gear-spin {
+            width: 36px; height: 36px;
+            border: 3px dashed #3b82f6;
+            border-top: 3px solid #f59e0b;
+            border-radius: 50%;
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .mining-stats-text { font-size: 13px; color: #9ca3af; }
+        .mining-stats-text strong { color: #fff; font-size: 15px; }
+
+        /* Progress Bar */
+        .progress-container { margin-top: 15px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #9ca3af; margin-bottom: 6px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: #1e293b; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 10px; transition: width 0.5s ease; }
+
+        .back-home { display: block; text-align: center; color: #6b7280; text-decoration: none; font-size: 13px; margin-top: 16px; font-weight: 500; transition: color 0.3s; }
+        .back-home:hover { color: #9ca3af; }
     </style>
 </head>
 <body>
 
     <div class="dashboard-card">
+        <!-- Header -->
         <div class="user-header">
-            <span class="user-email" id="userEmail">Loading...</span>
+            <div class="user-info">
+                <div class="avatar-box" id="avatarLetter">U</div>
+                <span class="user-email" id="userEmail">Loading...</span>
+            </div>
             <button class="btn-logout" onclick="handleLogout()">Logout</button>
         </div>
 
-        <div id="planBanner" class="selected-plan"></div>
+        <!-- Plan Activation Request (When Plan URL Param Exists) -->
+        <div id="planBanner" class="selected-plan-card">
+            <div class="plan-header-title">⚡ Ready to Activate</div>
+            <div class="plan-details" id="planDetailsText">Starter Plan (৳ 5000)</div>
+            <button class="btn-activate" id="activateBtn" onclick="activatePlan()">Activate Plan Now</button>
+        </div>
 
+        <!-- Main Balance Box -->
         <div class="balance-box">
             <div class="balance-title">Main Account Balance</div>
             <div class="balance-amount" id="userBalance">৳ 0.00</div>
         </div>
 
+        <!-- Action Buttons -->
         <div class="action-buttons">
             <button class="btn-action btn-deposit" onclick="window.location.href='deposit-withdraw.html'">Deposit</button>
             <button class="btn-action btn-withdraw" onclick="window.location.href='deposit-withdraw.html'">Withdraw</button>
+        </div>
+
+        <!-- Active Mining Rig Display -->
+        <div class="mining-card" id="activeMiningCard">
+            <div class="mining-header">
+                <div class="mining-title">
+                    <span>⛏️</span> <span id="activePlanTitle">Mining Rig</span>
+                </div>
+                <span class="status-badge">MINING ACTIVE</span>
+            </div>
+
+            <div class="mining-animation-box">
+                <div class="gear-spin"></div>
+                <div class="mining-stats-text">
+                    Total Return: <strong id="totalReturnText">৳ 0.00</strong><br>
+                    Time Left: <strong id="timeLeftText">--</strong>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Progress</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+            </div>
         </div>
 
         <a href="index.html" class="back-home">← Back to Home</a>
@@ -54,6 +228,17 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        let currentUser = null;
+        let currentBalance = 0;
+        let selectedPlanData = null;
+
+        // Plan Configurations (Name, Amount, Duration in Days, Total Profit Multiplier/Return)
+        const PLAN_CONFIGS = {
+            'Starter Plan': { amount: 5000, duration: 15, returnAmount: 7500 },
+            'Standard Plan': { amount: 10000, duration: 15, returnAmount: 16000 },
+            'Premium Plan': { amount: 25000, duration: 20, returnAmount: 42500 }
+        };
+
         async function initDashboard() {
             const { data: { user } } = await supabaseClient.auth.getUser();
 
@@ -62,29 +247,167 @@
                 return;
             }
 
+            currentUser = user;
             document.getElementById('userEmail').innerText = user.email;
+            document.getElementById('avatarLetter').innerText = user.email.charAt(0).toUpperCase();
 
-            // URL থেকে সিলেক্ট করা প্ল্যান চেক করা
+            // Load Balance
+            await loadBalance();
+
+            // Check URL Params for Plan Selection
             const urlParams = new URLSearchParams(window.location.search);
-            const plan = urlParams.get('plan');
-            const amount = urlParams.get('amount');
+            const planName = urlParams.get('plan');
+            const planAmount = parseFloat(urlParams.get('amount'));
 
-            if (plan && amount) {
+            if (planName && planAmount) {
+                selectedPlanData = PLAN_CONFIGS[planName] || { amount: planAmount, duration: 15, returnAmount: planAmount * 1.5 };
+                selectedPlanData.name = planName;
+
                 const banner = document.getElementById('planBanner');
                 banner.style.display = 'block';
-                banner.innerText = `Selected Plan: ${plan} (৳ ${amount})`;
+                document.getElementById('planDetailsText').innerText = `${planName} - ৳ ${selectedPlanData.amount.toLocaleString()} (${selectedPlanData.duration} Days)`;
             }
 
-            // Supabase থেকে ব্যালেন্স লোড করা
+            // Check Active Mining Plans
+            checkActivePlan();
+        }
+
+        async function loadBalance() {
             const { data: profile } = await supabaseClient
                 .from('profiles')
                 .select('balance')
-                .eq('id', user.id)
+                .eq('id', currentUser.id)
                 .single();
 
             if (profile && profile.balance !== null) {
-                document.getElementById('userBalance').innerText = `৳ ${profile.balance.toFixed(2)}`;
+                currentBalance = profile.balance;
+                document.getElementById('userBalance').innerText = `৳ ${currentBalance.toFixed(2)}`;
             }
+        }
+
+        async function activatePlan() {
+            if (!selectedPlanData) return;
+
+            if (currentBalance < selectedPlanData.amount) {
+                alert(`অপর্যাপ্ত ব্যালেন্স! প্ল্যান অ্যাক্টিভ করতে ৳ ${selectedPlanData.amount} টাকা প্রয়োজন। অনুগ্রহ করে আগে ডিপোজিট করুন।`);
+                window.location.href = 'deposit-withdraw.html';
+                return;
+            }
+
+            const btn = document.getElementById('activateBtn');
+            btn.disabled = true;
+            btn.innerText = 'Activating...';
+
+            // 1. Deduct Main Balance
+            const newBalance = currentBalance - selectedPlanData.amount;
+            const { error: balError } = await supabaseClient
+                .from('profiles')
+                .update({ balance: newBalance })
+                .eq('id', currentUser.id);
+
+            if (balError) {
+                alert('ব্যালেন্স আপডেট করতে সমস্যা হয়েছে: ' + balError.message);
+                btn.disabled = false;
+                btn.innerText = 'Activate Plan Now';
+                return;
+            }
+
+            // 2. Set Plan Dates
+            const startDate = new Date();
+            const endDate = new Date(startDate.getTime() + (selectedPlanData.duration * 24 * 60 * 60 * 1000));
+
+            // 3. Insert Plan Record
+            const { error: planError } = await supabaseClient
+                .from('user_plans')
+                .insert([{
+                    user_id: currentUser.id,
+                    plan_name: selectedPlanData.name,
+                    invested_amount: selectedPlanData.amount,
+                    total_return: selectedPlanData.returnAmount,
+                    duration_days: selectedPlanData.duration,
+                    start_date: startDate.toISOString(),
+                    end_date: endDate.toISOString(),
+                    status: 'active'
+                }]);
+
+            if (planError) {
+                alert('প্ল্যান চালু করতে সমস্যা হয়েছে: ' + planError.message);
+            } else {
+                alert('অভিনন্দন! আপনার মাইনিং প্ল্যানটি সফলভাবে অ্যাক্টিভ করা হয়েছে।');
+                // Remove URL Params and Reload Page
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        async function checkActivePlan() {
+            const { data: activePlans } = await supabaseClient
+                .from('user_plans')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .eq('status', 'active')
+                .order('id', { ascending: false });
+
+            if (activePlans && activePlans.length > 0) {
+                const plan = activePlans[0];
+                document.getElementById('planBanner').style.display = 'none'; // Hide banner if already active
+                document.getElementById('activeMiningCard').style.display = 'block';
+                document.getElementById('activePlanTitle').innerText = plan.plan_name;
+                document.getElementById('totalReturnText').innerText = `৳ ${parseFloat(plan.total_return).toLocaleString()}`;
+
+                startMiningTimer(plan);
+            }
+        }
+
+        function startMiningTimer(plan) {
+            const startDate = new Date(plan.start_date).getTime();
+            const endDate = new Date(plan.end_date).getTime();
+            const totalDuration = endDate - startDate;
+
+            const timerInterval = setInterval(async () => {
+                const now = new Date().getTime();
+                const timePassed = now - startDate;
+                const timeLeft = endDate - now;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    await completeMiningPlan(plan);
+                } else {
+                    // Calculate Progress Percentage
+                    let percent = Math.min(100, Math.max(0, (timePassed / totalDuration) * 100));
+                    document.getElementById('progressFill').style.width = percent.toFixed(1) + '%';
+                    document.getElementById('progressPercent').innerText = percent.toFixed(1) + '%';
+
+                    // Format Time Remaining
+                    const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const secsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                    document.getElementById('timeLeftText').innerText = `${daysLeft}d ${hoursLeft}h ${minsLeft}m ${secsLeft}s`;
+                }
+            }, 1000);
+        }
+
+        async function completeMiningPlan(plan) {
+            document.getElementById('timeLeftText').innerText = 'Completed!';
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressPercent').innerText = '100%';
+
+            // 1. Update Plan Status to Completed
+            await supabaseClient
+                .from('user_plans')
+                .update({ status: 'completed' })
+                .eq('id', plan.id);
+
+            // 2. Add Profit + Investment to Main Balance
+            const newBalance = currentBalance + parseFloat(plan.total_return);
+            await supabaseClient
+                .from('profiles')
+                .update({ balance: newBalance })
+                .eq('id', currentUser.id);
+
+            alert(`🎉 আপনার ${plan.plan_name} প্ল্যানটির মেয়াদ পূর্ণ হয়েছে! মুনাফাসহ ৳ ${plan.total_return} টাকা আপনার মেইন ব্যালেন্সে জমা করা হয়েছে।`);
+            location.reload();
         }
 
         async function handleLogout() {
