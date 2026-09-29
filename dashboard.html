@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -645,10 +647,7 @@
         const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
         
-        let supabaseClient;
-        if (window.supabase) {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        }
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function toggleMenu() {
             document.getElementById('navDrawer').classList.toggle('active');
@@ -692,55 +691,45 @@
         }
 
         async function loadUserProfile() {
-            if (!supabaseClient) return;
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
+            const { data: { user } } = await supabaseClient.auth.getUser();
 
-                const navButtons = document.getElementById('navButtons');
-                if (!navButtons) return;
+            const navButtons = document.getElementById('navButtons');
 
-                if (user && user.email) {
-                    navButtons.innerHTML = `
-                        <div class="user-email-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="${user.email}">${user.email.split('@')[0]}</div>
-                        <button class="btn-logout" onclick="handleLogout()">Logout</button>
-                    `;
-                } else {
-                    navButtons.innerHTML = `
-                        <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
-                        <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
-                    `;
-                }
-            } catch(e) {
-                console.error("Auth check failed:", e);
+            if (user) {
+                navButtons.innerHTML = `
+                    <div class="user-email-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="${user.email}">${user.email.split('@')[0]}</div>
+                    <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                `;
+            } else {
+                navButtons.innerHTML = `
+                    <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
+                    <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
+                `;
             }
         }
 
-        // Direct Navigation Logic (লগইন চেক বাদ দেওয়া হয়েছে যেন সরাসরি dashboard.html এ যায়)
-        function handleInvest(planName, amount) {
-            window.location.href = `dashboard.html?plan=${encodeURIComponent(planName)}&amount=${amount}`;
+        // Updated Investment Handling Logic
+        async function handleInvest(planName, amount) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (!user) {
+                window.location.href = 'signup.html';
+            } else {
+                window.location.href = `dashboard.html?plan=${encodeURIComponent(planName)}&amount=${amount}`;
+            }
         }
 
         async function handleLogout() {
-            if (supabaseClient) {
-                await supabaseClient.auth.signOut();
-            }
+            await supabaseClient.auth.signOut();
             window.location.reload();
         }
 
-        // DOM Content Loaded Handler
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPayouts();
-            loadUserProfile();
-
-            if (supabaseClient) {
-                supabaseClient.auth.onAuthStateChange(() => {
-                    loadUserProfile();
-                });
-            }
-        });
+        loadPayouts();
+        loadUserProfile();
 
         // Refresh payout data every 60 seconds
         setInterval(loadPayouts, 60000);
     </script>
 </body>
 </html>
+
