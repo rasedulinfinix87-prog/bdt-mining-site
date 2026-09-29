@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - BDTMINER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Floating Background Icons */
+        .bg-crypto {
+            position: fixed;
+            color: rgba(255, 255, 255, 0.03);
+            font-weight: 700;
+            font-size: 90px;
+            user-select: none;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-btc { top: 5%; left: 5%; }
+        .bg-eth { top: 35%; right: 5%; }
+        .bg-usdt { top: 65%; left: 8%; }
+        .bg-usd { bottom: 5%; right: 10%; }
+
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: #0f172a;
+            border-radius: 20px;
+            border: 1px solid #1e293b;
+            padding: 30px 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            text-align: center;
+            font-weight: 700;
+            font-size: 22px;
+            color: #f59e0b;
+            margin-bottom: 20px;
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #f59e0b;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #f59e0b;
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .auth-footer a {
+            color: #f59e0b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Background Crypto Symbols -->
+    <div class="bg-crypto bg-btc">₿</div>
+    <div class="bg-crypto bg-eth">Ξ</div>
+    <div class="bg-crypto bg-usdt">₮</div>
+    <div class="bg-crypto bg-usd">$</div>
+
+    <div class="auth-container">
+        <div class="logo">⚡ BDTMINER</div>
+        <h2 class="auth-title">Create an Account</h2>
+        <p class="auth-subtitle">Join now to start mining and earn daily profit</p>
+
+        <form id="signupForm" onsubmit="handleSignUp(event)">
+            <div class="input-group">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Create a password" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Sign Up</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Login</a>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Initialization Config
+        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function handleSignUp(event) {
+            event.preventDefault();
+            
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // 1. Supabase Auth এ অ্যাকাউন্ট তৈরি
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: { full_name: fullname }
+                    }
+                });
+
+                if (error) throw error;
+
+                alert('Account created successfully! Please check your email or log in.');
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                alert('Sign Up Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
