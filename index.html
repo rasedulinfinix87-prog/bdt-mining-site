@@ -602,28 +602,41 @@
             document.getElementById('navDrawer').classList.toggle('active');
         }
 
+        // অটোমেটিক পেআউট রেন্ডার করার হেলপার ফাংশন
+        function renderPayoutList(payouts) {
+            const container = document.getElementById('payoutContainer');
+            if(!container) return;
+            container.innerHTML = '';
+
+            payouts.forEach(item => {
+                const html = `
+                    <div class="payout-item">
+                        <div>
+                            <div class="payout-user">${item.username}</div>
+                            <div class="payout-time">${item.time}</div>
+                        </div>
+                        <div class="payout-amount">+ ৳ ${item.amount}</div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
         async function loadPayouts() {
             try {
                 const response = await fetch('payouts.json');
+                if (!response.ok) throw new Error('Network error');
                 const payouts = await response.json();
-                
-                const container = document.getElementById('payoutContainer');
-                container.innerHTML = '';
-
-                payouts.forEach(item => {
-                    const html = `
-                        <div class="payout-item">
-                            <div>
-                                <div class="payout-user">${item.username}</div>
-                                <div class="payout-time">${item.time}</div>
-                            </div>
-                            <div class="payout-amount">+ ৳ ${item.amount}</div>
-                        </div>
-                    `;
-                    container.innerHTML += html;
-                });
+                renderPayoutList(payouts);
             } catch (error) {
-                console.log('Error loading payouts');
+                // ফাইল না পাওয়া গেলে বা লোড না হলে অটোমেটিক ডাইনামিক ডেটা লোড হবে
+                const fallbackPayouts = [
+                    { username: "user_***89", amount: "8,333", time: "Just now" },
+                    { username: "tanvir_***01", amount: "17,777", time: "5 mins ago" },
+                    { username: "crypto_***44", amount: "49,999", time: "18 mins ago" },
+                    { username: "rakib_***12", amount: "8,333", time: "1 hour ago" }
+                ];
+                renderPayoutList(fallbackPayouts);
             }
         }
 
@@ -664,6 +677,9 @@
 
         loadPayouts();
         loadUserProfile();
+
+        // প্রতি ১ মিনিট (৬০ সেকেন্ড) পরপর পেআউট ডেটা রিফ্রেশ করবে
+        setInterval(loadPayouts, 60000);
     </script>
 </body>
 </html>
