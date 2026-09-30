@@ -1,1207 +1,349 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - BDTMINER</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-        body {
-            background-color: #080c14;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0;
-            margin: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvestBangla - Safe Investment, Better Tomorrow</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Hind Siliguri for Bangla -->
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* =========================================================
-           DASHBOARD DATA LOADING ANIMATION
-           ========================================================= */
-        #dashboardLoader {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(30, 64, 175, 0.12), rgba(8, 12, 20, 0.98) 55%);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 99999;
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.45s ease, visibility 0.45s ease;
-        }
-        #dashboardLoader.loader-hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        .loader-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .loader-ring {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            border: 3px solid rgba(56, 189, 248, 0.12);
-            border-top-color: #38bdf8;
-            border-right-color: #1d4ed8;
-            animation: dashboardLoaderSpin 1s linear infinite;
-            box-shadow: 0 0 18px rgba(56, 189, 248, 0.35), 0 0 45px rgba(29, 78, 216, 0.15);
-        }
-        .loader-inner {
-            position: absolute;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: 2px dashed rgba(245, 158, 11, 0.8);
-            animation: dashboardLoaderReverseSpin 2s linear infinite;
-        }
-        .loader-logo {
-            position: absolute;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 17px;
-            font-weight: 700;
-            color: #38bdf8;
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.8), 0 0 25px rgba(56, 189, 248, 0.35);
-            animation: loaderLogoPulse 1.4s ease-in-out infinite alternate;
-        }
-        .loader-spinner-wrap {
-            position: relative;
-            width: 90px;
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 18px;
-        }
-        .loader-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            color: #38bdf8;
-            letter-spacing: 1px;
-            margin-bottom: 7px;
-        }
-        .loader-text {
-            font-size: 11px;
-            color: #64748b;
-            animation: loaderTextPulse 1.5s ease-in-out infinite;
-        }
-        .loader-dots::after {
-            content: '';
-            animation: loadingDots 1.4s infinite;
-        }
-
-        @keyframes dashboardLoaderSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes dashboardLoaderReverseSpin {
-            0% { transform: rotate(360deg); }
-            100% { transform: rotate(0deg); }
-        }
-        @keyframes loaderLogoPulse {
-            0% { transform: scale(0.92); opacity: 0.65; }
-            100% { transform: scale(1.08); opacity: 1; }
-        }
-        @keyframes loaderTextPulse {
-            0%, 100% { opacity: 0.45; }
-            50% { opacity: 1; }
-        }
-        @keyframes loadingDots {
-            0% { content: ''; }
-            25% { content: '.'; }
-            50% { content: '..'; }
-            75% { content: '...'; }
-            100% { content: ''; }
-        }
-
-        /* Header Container Full Width */
-        #header-container {
-            width: 100%;
-            margin-bottom: 15px;
-        }
-
-        .dashboard-card {
-            width: 100%;
-            max-width: 440px;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        /* Activate Selected Plan Box with Neon Rotating Animation Border */
-        .selected-plan-box {
-            position: relative;
-            background: rgba(245, 158, 11, 0.08);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 20px;
-            display: none;
-            overflow: hidden;
-            z-index: 1;
-        }
-        .selected-plan-box::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: conic-gradient(from 0deg, transparent, #f59e0b, transparent 30%);
-            animation: rotateNeon 4s linear infinite;
-            z-index: -2;
-        }
-        .selected-plan-box::after {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: rgba(15, 23, 42, 0.95);
-            border-radius: 10px;
-            z-index: -1;
-        }
-        @keyframes rotateNeon {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .plan-info {
-            color: #38bdf8;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        .btn-activate {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 13px;
-            width: 100%;
-        }
-
-        /* Mining Section */
-        .section-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .active-plans-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        /* =========================================================
-           NEW CYBERPUNK ACTIVE MINING CARD STYLING (MATCHING THE IMAGE)
-           ========================================================= */
-        .mining-card {
-            position: relative;
-            background: linear-gradient(145deg, rgba(13, 20, 36, 0.9), rgba(20, 30, 55, 0.8));
-            border-radius: 16px;
-            padding: 16px;
-            cursor: pointer;
-            overflow: hidden;
-            box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.08), 0 8px 25px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            transition: all 0.3s ease;
-            z-index: 1;
-        }
-
-        /* Sci-Fi Border Glow Animation */
-        .mining-card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: conic-gradient(from 0deg, transparent, #38bdf8, #f59e0b, transparent 40%);
-            animation: rotateNeon 6s linear infinite;
-            z-index: -2;
-        }
-        .mining-card::after {
-            content: '';
-            position: absolute;
-            inset: 1.5px;
-            background: linear-gradient(145deg, #0b1326, #0f172a);
-            border-radius: 15px;
-            z-index: -1;
-        }
-
-        .mining-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25);
-            border-color: rgba(56, 189, 248, 0.5);
-        }
-
-        .mining-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            font-weight: 700;
-            color: #38bdf8;
-            margin-bottom: 12px;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 0.5px;
-        }
-
-        .mining-status {
-            background: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 9px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 700;
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
-            animation: statusPulse 2s infinite alternate;
-        }
-
-        .mining-status.completed {
-            background: rgba(34, 197, 94, 0.15);
-            color: #22c55e;
-            border-color: rgba(34, 197, 94, 0.3);
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
-        }
-
-        @keyframes statusPulse {
-            0% { opacity: 0.7; transform: scale(0.98); }
-            100% { opacity: 1; transform: scale(1.02); }
-        }
-
-        /* Futuristic Inner Stat Boxes (Like the Image Cards) */
-        .mining-stat-row {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(56, 189, 248, 0.12);
-            border-radius: 10px;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
-        }
-
-        .mining-stat-label {
-            font-size: 12px;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        .mining-stat-value {
-            font-size: 13px;
-            color: #38bdf8;
-            font-weight: 700;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .mining-profit {
-            color: #38bdf8;
-            text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
-        }
-
-        /* Cyberpunk Progress Bar */
-        .progress-bar-container {
-            margin: 10px 0 6px 0;
-        }
-
-        .progress-bar-bg {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            height: 10px;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            position: relative;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
-        }
-
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #1d4ed8, #38bdf8, #f59e0b);
-            background-size: 200% 100%;
-            height: 100%;
-            width: 0%;
-            border-radius: 5px;
-            transition: width 0.5s ease;
-            animation: gradientMove 3s linear infinite;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
-        }
-
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-
-        /* Claim Button inside card */
-        .btn-claim {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 12px;
-            width: 100%;
-            margin-top: 10px;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
-            transition: 0.2s;
-        }
-        .btn-claim:hover {
-            opacity: 0.9;
-            transform: scale(1.01);
-        }
-
-        .no-plans {
-            text-align: center;
-            font-size: 12px;
-            color: #64748b;
-            padding: 20px;
-            background: rgba(30, 41, 59, 0.2);
-            border-radius: 10px;
-            border: 1px dashed rgba(255, 255, 255, 0.08);
-        }
-
-        /* Article Box */
-        .article-card {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid #1e293b;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 12px;
-            color: #cbd5e1;
-            line-height: 1.6;
-        }
-        .article-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .article-title {
-            font-weight: 700;
-            color: #f59e0b;
-            font-size: 13px;
-        }
-        .lang-btn {
-            background: #1e293b;
-            color: #38bdf8;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 2px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .article-more {
-            display: none;
-            margin-top: 8px;
-        }
-        .read-more-btn {
-            color: #f59e0b;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 6px;
-            text-decoration: underline;
-            background: none;
-            border: none;
-            font-size: 12px;
-        }
-        .back-home {
-            display: block;
-            text-align: center;
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 13px;
-            margin-top: 15px;
-        }
-
-        /* ==================== ANIMATED MINING MODAL ==================== */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-        .modal-card {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 360px;
-            padding: 25px 20px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(29, 78, 216, 0.25);
-            position: relative;
-            animation: modalPop 0.3s ease-out;
-        }
-        @keyframes modalPop {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .close-modal {
-            position: absolute;
-            top: 12px; right: 15px;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .crypto-anim-container {
-            position: relative;
-            width: 100px; height: 100px;
-            margin: 10px auto 20px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .crypto-glow-ring {
-            position: absolute;
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 2px dashed #38bdf8;
-            animation: spinRing 8s linear infinite;
-        }
-        .crypto-icon {
-            width: 50px; height: 50px;
-            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 26px;
-            color: #fff;
-            font-weight: bold;
-            box-shadow: 0 0 20px #1d4ed8;
-            animation: pulseIcon 1.5s infinite alternate;
-        }
-        @keyframes spinRing {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes pulseIcon {
-            0% { transform: scale(0.95); box-shadow: 0 0 15px rgba(29, 78, 216, 0.5); }
-            100% { transform: scale(1.08); box-shadow: 0 0 30px rgba(56, 189, 248, 0.9); }
-        }
-        .modal-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #38bdf8;
-            margin-bottom: 4px;
-        }
-        .modal-sub {
-            font-size: 12px;
-            color: #38bdf8;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-        .modal-stat-box {
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-        }
-        .hashrate-text {
-            color: #38bdf8;
-            font-weight: bold;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        /* ==================== PREMIUM SUCCESS / NOTIFICATION POPUP ANIMATION ==================== */
-        .success-modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(6px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-        .success-modal-card {
-            background: linear-gradient(145deg, #0f172a, #1e293b);
-            border: 1px solid rgba(29, 78, 216, 0.4);
-            border-radius: 20px;
-            width: 100%; max-width: 330px;
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(29, 78, 216, 0.3);
-            animation: successPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes successPop {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .success-icon-circle {
-            width: 65px; height: 65px;
-            background: rgba(29, 78, 216, 0.15);
-            border: 2px solid #38bdf8;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 15px auto;
-            font-size: 30px;
-            color: #38bdf8;
-            box-shadow: 0 0 20px rgba(29, 78, 216, 0.4);
-        }
-        .success-modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #38bdf8;
-            margin-bottom: 8px;
-        }
-        .success-modal-msg {
-            font-size: 13px;
-            color: #cbd5e1;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            white-space: pre-line;
-        }
-        .success-modal-btn {
-            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-            color: #ffffff;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);
-            transition: 0.2s;
-        }
-        .success-modal-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        /* ==================== FLOATING LIVE CHAT BUTTON ==================== */
-        .floating-chat-btn {
-            position: fixed;
-            bottom: 20px; right: 20px;
-            background: linear-gradient(135deg, #0284c7, #38bdf8);
-            color: #ffffff;
-            border-radius: 30px;
-            padding: 10px 18px;
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            z-index: 999;
-            transition: all 0.3s ease;
-        }
-        .floating-chat-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.6);
-        }
-    </style>
+  <style>
+    body {
+      font-family: 'Hind Siliguri', sans-serif;
+      background-color: #f8fafc;
+    }
+  </style>
 </head>
-<body>
+<body class="pb-20 md:pb-0">
 
-    <!-- =========================================================
-       DASHBOARD DATA LOADING SCREEN
-       ========================================================= -->
-    <div id="dashboardLoader">
-        <div class="loader-content">
-            <div class="loader-spinner-wrap">
-                <div class="loader-ring"></div>
-                <div class="loader-inner"></div>
-                <div class="loader-logo">
-                    ₿
-                </div>
-            </div>
-            <div class="loader-title">
-                BDTMINER
-            </div>
-            <div class="loader-text">
-                Loading dashboard<span class="loader-dots"></span>
-            </div>
+  <!-- Header Section -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <!-- Logo -->
+      <div class="flex items-center space-x-2">
+        <div class="text-emerald-600 text-3xl font-bold flex items-center">
+          <i class="fa-solid me-2 fa-chart-line"></i>
+          <span>Invest<span class="text-emerald-700">Bangla</span></span>
         </div>
+      </div>
+      
+      <!-- Header Actions -->
+      <div class="flex items-center space-x-3">
+        <button class="relative p-2 text-gray-600 hover:text-emerald-600">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+        </button>
+        <a href="#" class="px-4 py-1.5 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-full border border-emerald-600 hover:bg-emerald-100">লগইন</a>
+        <a href="#" class="px-4 py-1.5 text-sm font-medium text-white bg-emerald-600 rounded-full hover:bg-emerald-700">সাইন আপ</a>
+        <button class="p-2 text-gray-600 md:hidden">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
     </div>
+  </header>
 
-    <!-- Dynamic Header Insertion Point (Full Width, No Gap) -->
-    <div id="header-container"></div>
-
-    <div class="dashboard-card">
-
-        <!-- Confirm Plan Box with Neon Border Animation -->
-        <div id="planActivationBox" class="selected-plan-box">
-            <div id="planInfoText" class="plan-info">
-                Selected Plan: -
-            </div>
-            <button id="activateBtn" class="btn-activate" onclick="activatePlan()">
-                Confirm & Activate Plan
-            </button>
-        </div>
-
-        <!-- Active Mining Plans Section -->
-        <div class="section-title">
-            <span>
-                ⚡ Active Mining Rigs
-            </span>
-            <span id="activePlanCount" style="font-size: 12px; color: #38bdf8;">
-                (0)
-            </span>
-        </div>
-
-        <div id="activePlansContainer" class="active-plans-container">
-            <div class="no-plans">
-                No active mining plan right now.
-            </div>
-        </div>
-
-        <!-- Trust & Security Article Box -->
-        <div class="article-card">
-            <div class="article-header">
-                <span class="article-title" id="artTitle">
-                    🛡️ Why BDTMINER is Trusted
-                </span>
-                <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">
-                    BN
-                </button>
-            </div>
-            <div id="artSummary">
-                BDTMINER utilizes high-efficiency cloud computing data centers to maximize cryptocurrency mining yields seamlessly for everyday users.
-            </div>
-            <div class="article-more" id="artMore">
-                Our infrastructure is built with enterprise-grade SSL security, multi-signature cold wallets, and 24/7 automated node monitoring. This ensures instant daily payouts and full capital security for every mining rig deployment.
-            </div>
-            <button class="read-more-btn" onclick="toggleReadMore()" id="readMoreBtn">
-                Read More...
-            </button>
-        </div>
-
-        <a href="index.html" class="back-home">
-            ← Back to Home
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-b from-emerald-50 via-teal-50 to-white py-10 px-4">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 mb-4 border border-blue-200">
+          <i class="fa-solid fa-bolt me-1.5 text-blue-500"></i> নিরাপদ ও লাভজনক বিনিয়োগ প্ল্যাটফর্ম
+        </span>
+        <h1 class="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+          আপনার ভবিষ্যৎ গড়ুন <br>
+          <span class="text-emerald-600">ক্রিপ্টো ইনভেস্টমেন্টের</span> সাথে
+        </h1>
+        <p class="text-gray-600 mb-6 text-base md:text-lg">
+          সহজভাবে বিনিয়োগ করুন, প্রতিদিন আয় করুন এবং গড়ে তুলুন আপনার আর্থিক স্বাধীনতা।
+        </p>
+        <a href="#" class="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-emerald-600 rounded-full shadow-lg hover:bg-emerald-700 transition">
+          এখনই শুরু করুন <i class="fa-solid fa-arrow-right ms-2"></i>
         </a>
-    </div>
+      </div>
 
-    <!-- Crypto Mining Live Animation Modal -->
-    <div class="modal-overlay" id="miningModal">
-        <div class="modal-card">
-            <button class="close-modal" onclick="closeMiningModal()">
-                ×
-            </button>
-            <div class="crypto-anim-container">
-                <div class="crypto-glow-ring"></div>
-                <div class="crypto-icon">
-                    ₿
-                </div>
-            </div>
-            <div class="modal-title" id="modalPlanTitle">
-                Starter Plan ($10)
-            </div>
-            <div class="modal-sub" id="modalStatusSub">
-                ● LIVE CLOUD MINING IN PROGRESS
-            </div>
-            <div class="modal-stat-box">
-                <span style="color: #94a3b8;">
-                    Hashrate Power:
-                </span>
-                <span class="hashrate-text" id="modalHashrate">
-                    24.5 MH/s
-                </span>
-            </div>
-            <div class="modal-stat-box">
-                <span style="color: #94a3b8;">
-                    Total Mined:
-                </span>
-                <span style="color: #38bdf8; font-weight: bold; font-family: 'Orbitron';" id="modalMined">
-                    +$0.00000
-                </span>
-            </div>
-            <div class="modal-stat-box">
-                <span style="color: #94a3b8;">
-                    Progress:
-                </span>
-                <span style="color: #38bdf8; font-weight: bold;" id="modalProgress">
-                    0%
-                </span>
-            </div>
+      <div class="relative flex justify-center">
+        <!-- Hero Banner Image / Graphic Representation -->
+        <div class="relative w-full max-w-md">
+          <img src="https://img.freepik.com/free-photo/young-handsome-man-holding-mobile-phone-pointing-up_176420-18635.jpg" alt="Hero Banner" class="rounded-2xl shadow-xl w-full object-cover h-80">
+          <div class="absolute -top-4 -left-4 bg-yellow-400 p-3 rounded-full shadow-lg">
+            <i class="fa-brands fa-bitcoin text-2xl text-white"></i>
+          </div>
+          <div class="absolute -bottom-4 -right-4 bg-emerald-500 p-3 rounded-full shadow-lg">
+            <i class="fa-solid fa-dollar-sign text-2xl text-white"></i>
+          </div>
         </div>
+      </div>
     </div>
+  </section>
 
-    <!-- ==================== PREMIUM POPUP ANIMATION WINDOW ==================== -->
-    <div class="success-modal-overlay" id="successModalOverlay">
-        <div class="success-modal-card">
-            <div class="success-icon-circle">
-                ✓
-            </div>
-            <div class="success-modal-title" id="successModalTitle">
-                Success!
-            </div>
-            <div class="success-modal-msg" id="successModalMsg">
-                Your request has been processed successfully.
-            </div>
-            <button class="success-modal-btn" onclick="closeSuccessModal()">
-                OK
-            </button>
+  <!-- Stats Section -->
+  <section class="max-w-7xl mx-auto px-4 -mt-6 relative z-10">
+    <div class="bg-white rounded-2xl shadow-lg p-6 grid grid-cols-2 md:grid-cols-4 gap-4 border border-gray-100">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-users"></i>
         </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">10,000+</h3>
+          <p class="text-xs text-gray-500">সক্রিয় ব্যবহারকারী</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">$2.5M+</h3>
+          <p class="text-xs text-gray-500">মোট বিনিয়োগ</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">99%</h3>
+          <p class="text-xs text-gray-500">সফল পেমেন্ট</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-calendar-days"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">256+</h3>
+          <p class="text-xs text-gray-500">দিন অনলাইনে</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Investment Plans Section -->
+  <section class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex justify-between items-end mb-8">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 flex items-center">
+          <i class="fa-solid fa-chart-line text-emerald-600 me-2"></i> বিনিয়োগ পরিকল্পনা
+        </h2>
+        <p class="text-sm text-gray-500">আপনার লক্ষ্য অনুযায়ী সেরা প্ল্যানটি নির্বাচন করুন</p>
+      </div>
+      <a href="#" class="text-sm font-semibold text-blue-600 hover:underline flex items-center">
+        সব প্ল্যান দেখুন <i class="fa-solid fa-arrow-right ms-1"></i>
+      </a>
     </div>
 
-    <!-- Floating Live Chat Button -->
-    <a href="chat.html" class="floating-chat-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-        </svg>
-        Live Chat
+    <!-- Cards Grid -->
+    <div class="grid md:grid-cols-3 gap-6">
+      
+      <!-- Basic Plan -->
+      <div class="bg-gradient-to-b from-emerald-50 to-white border border-emerald-200 rounded-3xl p-6 relative flex flex-col justify-between shadow-sm hover:shadow-md transition">
+        <div>
+          <span class="inline-block px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full mb-4">15 দিন</span>
+          <h3 class="text-lg font-bold text-gray-800">বেসিক প্ল্যান</h3>
+          <div class="text-3xl font-extrabold text-emerald-600 my-2">$10</div>
+          <p class="text-xs text-gray-500 mb-4">বিনিয়োগ করুন</p>
+          
+          <ul class="space-y-2 text-sm text-gray-600 mb-6">
+            <li class="flex items-center text-emerald-700 font-semibold"><i class="fa-solid fa-arrow-trend-up me-2"></i> প্রতিদিন 2.5% আয়</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-emerald-500 me-2"></i> মোট রিটার্ন: $11.50</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-emerald-500 me-2"></i> অটো পেআউট</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-emerald-500 me-2"></i> 24/7 সাপোর্ট</li>
+          </ul>
+        </div>
+        <button class="w-full py-2.5 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition">
+          বিনিয়োগ করুন <i class="fa-solid fa-arrow-right ms-1"></i>
+        </button>
+      </div>
+
+      <!-- Standard Plan (Popular) -->
+      <div class="bg-gradient-to-b from-blue-50 to-white border-2 border-blue-400 rounded-3xl p-6 relative flex flex-col justify-between shadow-md hover:shadow-lg transition">
+        <span class="absolute -top-3 right-6 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold shadow-sm">
+          ★ সর্বাধিক জনপ্রিয়
+        </span>
+        <div>
+          <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-4">30 দিন</span>
+          <h3 class="text-lg font-bold text-gray-800">স্ট্যান্ডার্ড প্ল্যান</h3>
+          <div class="text-3xl font-extrabold text-blue-600 my-2">$25</div>
+          <p class="text-xs text-gray-500 mb-4">বিনিয়োগ করুন</p>
+          
+          <ul class="space-y-2 text-sm text-gray-600 mb-6">
+            <li class="flex items-center text-blue-700 font-semibold"><i class="fa-solid fa-arrow-trend-up me-2"></i> প্রতিদিন 3.5% আয়</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-blue-500 me-2"></i> মোট রিটার্ন: $35.00</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-blue-500 me-2"></i> অটো পেআউট</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-blue-500 me-2"></i> 24/7 সাপোর্ট</li>
+          </ul>
+        </div>
+        <button class="w-full py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition">
+          বিনিয়োগ করুন <i class="fa-solid fa-arrow-right ms-1"></i>
+        </button>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="bg-gradient-to-b from-purple-50 to-white border border-purple-200 rounded-3xl p-6 relative flex flex-col justify-between shadow-sm hover:shadow-md transition">
+        <div>
+          <span class="inline-block px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full mb-4">45 দিন</span>
+          <h3 class="text-lg font-bold text-gray-800">প্রিমিয়াম প্ল্যান</h3>
+          <div class="text-3xl font-extrabold text-purple-600 my-2">$50</div>
+          <p class="text-xs text-gray-500 mb-4">বিনিয়োগ করুন</p>
+          
+          <ul class="space-y-2 text-sm text-gray-600 mb-6">
+            <li class="flex items-center text-purple-700 font-semibold"><i class="fa-solid fa-arrow-trend-up me-2"></i> প্রতিদিন 5.0% আয়</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 me-2"></i> মোট রিটার্ন: $75.00</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 me-2"></i> অটো পেআউট</li>
+            <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 me-2"></i> 24/7 সাপোর্ট</li>
+          </ul>
+        </div>
+        <button class="w-full py-2.5 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700 transition">
+          বিনিয়োগ করুন <i class="fa-solid fa-arrow-right ms-1"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="max-w-7xl mx-auto px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl mb-2">
+          <i class="fa-solid fa-shield"></i>
+        </div>
+        <h4 class="font-bold text-sm text-gray-800">নিরাপদ</h4>
+        <p class="text-xs text-gray-500">আপনার তথ্য সুরক্ষিত</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl mb-2">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <h4 class="font-bold text-sm text-gray-800">দ্রুত</h4>
+        <p class="text-xs text-gray-500">দ্রুত লেনদেন প্রসেস</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-xl mb-2">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <h4 class="font-bold text-sm text-gray-800">স্বচ্ছ</h4>
+        <p class="text-xs text-gray-500">সম্পূর্ণ স্বচ্ছতা</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl mb-2">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <h4 class="font-bold text-sm text-gray-800">24/7 সাপোর্ট</h4>
+        <p class="text-xs text-gray-500">সবসময় আপনার পাশে</p>
+      </div>
+      <div class="flex flex-col items-center col-span-2 md:col-span-1">
+        <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-xl mb-2">
+          <i class="fa-solid fa-gift"></i>
+        </div>
+        <h4 class="font-bold text-sm text-gray-800">আকর্ষণীয় বোনাস</h4>
+        <p class="text-xs text-gray-500">নিয়মিত পুরষ্কার</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="max-w-7xl mx-auto px-4 py-8">
+    <div class="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 flex items-center">
+            <i class="fa-solid fa-rocket text-emerald-600 me-2"></i> কীভাবে কাজ করে?
+          </h3>
+          <p class="text-xs text-gray-500">মাত্র ৩টি সহজ ধাপে শুরু করুন</p>
+        </div>
+        <a href="#" class="text-xs font-semibold text-emerald-700 hover:underline">বিস্তারিত দেখুন <i class="fa-solid fa-arrow-right ms-1"></i></a>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-sm">
+          <span class="w-7 h-7 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xs">1</span>
+          <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-lg">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-gray-800">একাউন্ট তৈরি করুন</h4>
+            <p class="text-xs text-gray-500">সহজ রেজিস্ট্রেশন করুন</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-sm">
+          <span class="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xs">2</span>
+          <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-lg">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-gray-800">বিনিয়োগ করুন</h4>
+            <p class="text-xs text-gray-500">আপনার পছন্দের প্ল্যান সিলেক্ট করুন</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-sm">
+          <span class="w-7 h-7 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-xs">3</span>
+          <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-lg">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-gray-800">প্রতিদিন আয় করুন</h4>
+            <p class="text-xs text-gray-500">আপনার রিটার্ন উপভোগ করুন</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Banner Section -->
+  <section class="max-w-7xl mx-auto px-4 mb-10">
+    <div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-600 rounded-2xl p-6 text-white flex flex-col md:flex-row justify-between items-center shadow-lg">
+      <div class="flex items-center space-x-4 mb-4 md:mb-0">
+        <div class="text-4xl text-yellow-300">
+          <i class="fa-solid fa-gift"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold">স্বাগতম বোনাস</h3>
+          <p class="text-xs text-emerald-100">নতুন ব্যবহারকারীদের জন্য বিশেষ বোনাস!</p>
+        </div>
+      </div>
+      <a href="#" class="px-5 py-2.5 bg-white text-emerald-800 font-semibold text-sm rounded-full shadow hover:bg-gray-100 transition flex items-center">
+        এখনই যোগ দিন <i class="fa-solid fa-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 flex justify-between items-center md:hidden z-50">
+    <a href="#" class="flex flex-col items-center text-emerald-600">
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-xs font-medium mt-1">হোম</span>
     </a>
+    <a href="#" class="flex flex-col items-center text-gray-500 hover:text-emerald-600">
+      <i class="fa-solid fa-chart-line text-lg"></i>
+      <span class="text-xs font-medium mt-1">বিনিয়োগ</span>
+    </a>
+    
+    <!-- Floating Center Button -->
+    <div class="-mt-6">
+      <button class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg text-xl hover:bg-emerald-700">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
 
-    <script>
-        // Toggle Sidebar Function for Mobile Menu
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebarMenu');
-            const overlay = document.getElementById('sidebarOverlay');
-            if (sidebar && overlay) {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-            }
-        }
+    <a href="#" class="flex flex-col items-center text-gray-500 hover:text-emerald-600">
+      <i class="fa-solid fa-gift text-lg"></i>
+      <span class="text-xs font-medium mt-1">রিওয়ার্ড</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-gray-500 hover:text-emerald-600">
+      <i class="fa-solid fa-user text-lg"></i>
+      <span class="text-xs font-medium mt-1">প্রোফাইল</span>
+    </a>
+  </nav>
 
-        // Load header.html dynamically
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-                const scripts = document.getElementById('header-container').querySelectorAll('script');
-                scripts.forEach(script => {
-                    const newScript = document.createElement('script');
-                    newScript.text = script.innerHTML;
-                    document.body.appendChild(newScript);
-                });
-            })
-            .catch(err => console.error('Header load failed:', err));
-
-        const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        let currentUser = null;
-        let selectedPlanData = null;
-        let currentBalance = 0;
-        let userActivePlans = [];
-        let activeModalIndex = null;
-        let successModalCallback = null;
-        let currentLang = 'EN';
-        let isExpanded = false;
-
-        function showSuccessModal(title, message, callback = null) {
-            document.getElementById('successModalTitle').innerText = title;
-            document.getElementById('successModalMsg').innerText = message;
-            document.getElementById('successModalOverlay').style.display = 'flex';
-            successModalCallback = callback;
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('successModalOverlay').style.display = 'none';
-            if (successModalCallback) {
-                successModalCallback();
-                successModalCallback = null;
-            }
-        }
-
-        const articleContent = {
-            EN: {
-                title: "🛡 Why BDTMINER is Trusted",
-                summary: "BDTMINER utilizes high-efficiency cloud computing data centers to maximize cryptocurrency mining yields seamlessly for everyday users.",
-                more: "Our infrastructure is built with enterprise-grade SSL security, multi-signature cold wallets, and 24/7 automated node monitoring. This ensures instant daily payouts and full capital security for every mining rig deployment.",
-                readMore: "Read More...",
-                readLess: "Read Less..."
-            },
-            BN: {
-                title: "🛡 কেন BDTMINER বিশ্বস্ত?",
-                summary: "BDTMINER হাই-এফিশিয়েন্সি ক্লাউড কম্পিউটিং ডেটা সেন্টার ব্যবহার করে সাধারণ ব্যবহারকারীদের জন্য ক্রিপ্টোকারেন্সি মাইনিং প্রফিট নিশ্চিত করে।",
-                more: "আমাদের অবকাঠামো ইন্টারপ্রাইজ-গ্রেড সিকিউরিটি, মাল্টি-সিগনেচার কোল্ড ওয়ালেট এবং ২৪/৭ স্বয়ংক্রিয় নোড পর্যবেক্ষণের সাথে সুরক্ষিত। এটি আপনার মাইনিং আমানতের সর্বোচ্চ নিরাপত্তা এবং দ্রুত পেমেন্ট নিশ্চিত করে।",
-                readMore: "আরও পড়ুন...",
-                readLess: "সংক্ষিপ্ত করুন..."
-            }
-        };
-
-        function toggleLanguage() {
-            currentLang = (currentLang === 'EN') ? 'BN' : 'EN';
-            document.getElementById('langBtn').innerText = (currentLang === 'EN') ? 'BN' : 'EN';
-            updateArticleUI();
-        }
-
-        function toggleReadMore() {
-            isExpanded = !isExpanded;
-            const moreBox = document.getElementById('artMore');
-            moreBox.style.display = isExpanded ? 'block' : 'none';
-            updateArticleUI();
-        }
-
-        function updateArticleUI() {
-            const data = articleContent[currentLang];
-            document.getElementById('artTitle').innerText = data.title;
-            document.getElementById('artSummary').innerText = data.summary;
-            document.getElementById('artMore').innerText = data.more;
-            document.getElementById('readMoreBtn').innerText = isExpanded ? data.readLess : data.readMore;
-        }
-
-        const planConfigs = {
-            '5 Airdrop': { daily_profit: 1.0, duration: 15, total_return: 15 },
-            '30 AirDrop': { daily_profit: 2.26, duration: 30, total_return: 68 },
-            '60 AirDrop': { daily_profit: 3.11, duration: 45, total_return: 140 }
-        };
-
-        /* =========================================================
-           INITIALIZE DASHBOARD
-           ========================================================= */
-        async function initDashboard() {
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (!user) {
-                    window.location.href = 'signup.html';
-                    return;
-                }
-                currentUser = user;
-
-                const urlParams = new URLSearchParams(window.location.search);
-                const planName = urlParams.get('plan');
-                const amount = parseFloat(urlParams.get('amount'));
-
-                if (planName && amount) {
-                    selectedPlanData = {
-                        plan_name: planName,
-                        invested_amount: amount,
-                        ...(planConfigs[planName] || { daily_profit: amount * 0.1, duration: 15, total_return: amount * 1.5 })
-                    };
-
-                    const box = document.getElementById('planActivationBox');
-                    const infoText = document.getElementById('planInfoText');
-                    box.style.display = 'block';
-                    infoText.innerText = `Selected Plan: ${planName} ($${amount})`;
-                }
-
-                await loadUserBalance();
-                await loadActivePlans();
-            } catch (error) {
-                console.error('Dashboard initialization error:', error);
-            } finally {
-                hideDashboardLoader();
-            }
-        }
-
-        function hideDashboardLoader() {
-            const loader = document.getElementById('dashboardLoader');
-            if (!loader) return;
-            loader.classList.add('loader-hidden');
-            setTimeout(function () {
-                if (loader) { loader.remove(); }
-            }, 500);
-        }
-
-        async function loadUserBalance() {
-            try {
-                const { data: profile } = await supabaseClient
-                    .from('profiles')
-                    .select('balance')
-                    .eq('id', currentUser.id)
-                    .single();
-                if (profile && profile.balance !== undefined) {
-                    currentBalance = parseFloat(profile.balance);
-                } else {
-                    currentBalance = 0;
-                }
-            } catch (e) {
-                console.log("Balance fetch error:", e);
-            }
-        }
-
-        async function activatePlan() {
-            if (!selectedPlanData || !currentUser) return;
-            const planCost = selectedPlanData.invested_amount;
-            if (currentBalance < planCost) {
-                showSuccessModal(
-                    "Insufficient Balance!",
-                    `You do not have enough balance in your account!\n\nPlan Price: $${planCost}\nYour Current Balance: $${currentBalance.toFixed(2)}\n\nPlease deposit first.`,
-                    () => { window.location.href = 'deposit-withdraw.html?type=deposit'; }
-                );
-                return;
-            }
-
-            const btn = document.getElementById('activateBtn');
-            btn.innerText = "Activating...";
-            btn.disabled = true;
-
-            const newBalance = currentBalance - planCost;
-
-            try {
-                const { error: balanceError } = await supabaseClient
-                    .from('profiles')
-                    .update({ balance: newBalance })
-                    .eq('id', currentUser.id);
-
-                if (balanceError) throw balanceError;
-
-                const startDate = new Date();
-                const endDate = new Date();
-                endDate.setDate(startDate.getDate() + selectedPlanData.duration);
-
-                const { error: planError } = await supabaseClient
-                    .from('user_plan')
-                    .insert([{
-                        user_id: currentUser.id,
-                        plan_name: selectedPlanData.plan_name,
-                        invested_amount: selectedPlanData.invested_amount,
-                        daily_profit: selectedPlanData.daily_profit,
-                        total_return: selectedPlanData.total_return,
-                        duration_days: selectedPlanData.duration,
-                        start_date: startDate.toISOString(),
-                        end_date: endDate.toISOString(),
-                        status: 'active'
-                    }]);
-
-                if (planError) throw planError;
-
-                showSuccessModal("Success!", "Your plan has been activated successfully.", async () => {
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    document.getElementById('planActivationBox').style.display = 'none';
-                    await loadUserBalance();
-                    await loadActivePlans();
-                });
-            } catch (error) {
-                showSuccessModal("Error!", "Failed to activate plan: " + error.message);
-                btn.innerText = "Confirm & Activate Plan";
-                btn.disabled = false;
-            }
-        }
-
-        async function loadActivePlans() {
-            const { data: plans, error } = await supabaseClient
-                .from('user_plan')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'active');
-
-            const container = document.getElementById('activePlansContainer');
-            const countLabel = document.getElementById('activePlanCount');
-
-            if (error || !plans || plans.length === 0) {
-                container.innerHTML = `<div class="no-plans">No active mining plan right now.</div>`;
-                countLabel.innerText = `(0)`;
-                userActivePlans = [];
-                return;
-            }
-
-            userActivePlans = plans;
-            countLabel.innerText = `(${plans.length})`;
-            renderPlans();
-        }
-
-        function renderPlans() {
-            const container = document.getElementById('activePlansContainer');
-            container.innerHTML = '';
-            const now = new Date().getTime();
-
-            userActivePlans.forEach((plan, index) => {
-                const startTime = new Date(plan.start_date).getTime();
-                const endTime = new Date(plan.end_date).getTime();
-                const totalDurationSec = (endTime - startTime) / 1000;
-                const elapsedSec = Math.max(0, (now - startTime) / 1000);
-
-                let progressPercent = ((elapsedSec / totalDurationSec) * 100).toFixed(2);
-                if (progressPercent >= 100) { progressPercent = 100; }
-
-                const isCompleted = now >= endTime || progressPercent >= 100;
-                const earnedProfit = isCompleted ? plan.total_return : ((plan.daily_profit / 86400) * elapsedSec).toFixed(5);
-                const randomHash = (12.5 + (plan.invested_amount * 0.8)).toFixed(1);
-
-                /* Updated Card HTML matching the Sci-Fi/Cyberpunk Design Image */
-                const cardHtml = `
-                    <div class="mining-card" id="card-${index}" onclick="openMiningModal(${index})">
-                        <div class="mining-card-header">
-                            <span>${plan.plan_name} ($${plan.invested_amount})</span>
-                            <span class="mining-status ${isCompleted ? 'completed' : ''}" id="status-badge-${index}">
-                                ${isCompleted ? 'Completed' : 'Mining Active'}
-                            </span>
-                        </div>
-                        
-                        <div class="mining-stat-row">
-                            <span class="mining-stat-label">Hashrate Power:</span>
-                            <span class="mining-stat-value">${randomHash} MH/s</span>
-                        </div>
-
-                        <div class="mining-stat-row">
-                            <span class="mining-stat-label">Total Mined:</span>
-                            <span class="mining-stat-value mining-profit" id="profit-${index}">+$${earnedProfit}</span>
-                        </div>
-
-                        <div class="mining-stat-row">
-                            <span class="mining-stat-label">Progress:</span>
-                            <span class="mining-stat-value" id="percent-${index}">${progressPercent}%</span>
-                        </div>
-
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar-fill" id="progress-${index}" style="width: ${progressPercent}%;"></div>
-                            </div>
-                        </div>
-
-                        ${isCompleted ? `
-                            <button class="btn-claim" onclick="event.stopPropagation(); claimPlan('${plan.id}',${plan.total_return}, ${index})">                                 Claim Profit ($${plan.total_return})
-                            </button>
-                        ` : ''}
-                    </div>
-                `;
-                container.innerHTML += cardHtml;
-            });
-        }
-
-        function openMiningModal(index) {
-            activeModalIndex = index;
-            const plan = userActivePlans[index];
-            if (!plan) return;
-
-            const now = new Date().getTime();
-            const endTime = new Date(plan.end_date).getTime();
-            const isCompleted = now >= endTime;
-
-            document.getElementById('modalPlanTitle').innerText = `${plan.plan_name} ($${plan.invested_amount})`;
-            document.getElementById('modalStatusSub').innerText = isCompleted ? '● MINING COMPLETED - READY TO CLAIM' : '● LIVE CLOUD MINING IN PROGRESS';
-            
-            const randomHash = (12.5 + (plan.invested_amount * 0.8)).toFixed(1);
-            document.getElementById('modalHashrate').innerText = `${randomHash} MH/s`;
-            document.getElementById('miningModal').style.display = 'flex';
-        }
-
-        function closeMiningModal() {
-            document.getElementById('miningModal').style.display = 'none';
-            activeModalIndex = null;
-        }
-
-        setInterval(() => {
-            if (userActivePlans.length > 0) {
-                const now = new Date().getTime();
-                userActivePlans.forEach((plan, index) => {
-                    const startTime = new Date(plan.start_date).getTime();
-                    const endTime = new Date(plan.end_date).getTime();
-                    const totalDurationSec = (endTime - startTime) / 1000;
-                    const elapsedSec = Math.max(0, (now - startTime) / 1000);
-
-                    let progressPercent = ((elapsedSec / totalDurationSec) * 100).toFixed(2);
-                    if (progressPercent >= 100) { progressPercent = 100; }
-
-                    const isCompleted = now >= endTime || progressPercent >= 100;
-                    const earnedProfit = isCompleted ? plan.total_return : ((plan.daily_profit / 86400) * elapsedSec).toFixed(5);
-
-                    const progressEl = document.getElementById(`progress-${index}`);
-                    const profitEl = document.getElementById(`profit-${index}`);
-                    const percentEl = document.getElementById(`percent-${index}`);
-                    const cardEl = document.getElementById(`card-${index}`);
-                    const statusBadgeEl = document.getElementById(`status-badge-${index}`);
-
-                    if (progressEl) progressEl.style.width = `${progressPercent}%`;
-                    if (profitEl) profitEl.innerText = `+$${earnedProfit}`;
-                    if (percentEl) percentEl.innerText = `${progressPercent}%`;
-
-                    if (isCompleted && cardEl && !cardEl.querySelector('.btn-claim')) {
-                        if (statusBadgeEl) {
-                            statusBadgeEl.innerText = 'Completed';
-                            statusBadgeEl.classList.add('completed');
-                        }
-                        cardEl.insertAdjacentHTML('beforeend', `
-                            <button class="btn-claim" onclick="event.stopPropagation(); claimPlan('${plan.id}', ${plan.total_return}, ${index})">
-                                Claim Profit ($${plan.total_return})
-                            </button>
-                        `);
-                    }
-
-                    if (activeModalIndex === index) {
-                        document.getElementById('modalMined').innerText = `+$${earnedProfit}`;
-                        document.getElementById('modalProgress').innerText = `${progressPercent}%`;
-                        document.getElementById('modalStatusSub').innerText = isCompleted ? '● MINING COMPLETED - READY TO CLAIM' : '● LIVE CLOUD MINING IN PROGRESS';
-                    }
-                });
-            }
-        }, 1000);
-
-        async function claimPlan(planId, totalReturn, index) {
-            if (!currentUser) return;
-            try {
-                const newBalance = currentBalance + totalReturn;
-                const { error: balanceError } = await supabaseClient
-                    .from('profiles')
-                    .update({ balance: newBalance })
-                    .eq('id', currentUser.id);
-
-                if (balanceError) throw balanceError;
-
-                const { error: planError } = awaitsupabaseClient
-                    .from('user_plan')
-                    .update({ status: 'claimed' })
-                    .eq('id', planId);
-
-                if (planError) throw planError;
-
-                showSuccessModal("Success!", `Successfully claimed profit of $${totalReturn}!`, async () => {
-                    closeMiningModal();
-                    await loadUserBalance();
-                    await loadActivePlans();
-                });
-            } catch (error) {
-                showSuccessModal("Error!", "Failed to claim: " + error.message);
-            }
-        }
-
-        /* =========================================================
-           START DASHBOARD
-           ========================================================= */
-        initDashboard();
-    </script>
 </body>
 </html>
