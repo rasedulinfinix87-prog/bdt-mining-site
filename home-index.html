@@ -1,628 +1,409 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>গোল্ড ইনভেস্টমেন্ট - প্রিমিয়াম লুক</title>
+    <title>Goldmine Digital - Mining & Investment</title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN for Real-time Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            --bg-color: #0b0d10;
-            --card-bg: rgba(22, 26, 33, 0.85);
-            --gold-primary: #f3a833;
-            --gold-light: #ffe596;
-            --gold-gradient: linear-gradient(135deg, #e6b85c 0%, #ffe899 50%, #b8860b 100%);
-            --gold-glow: rgba(243, 168, 51, 0.25);
-            --border-color: rgba(243, 168, 51, 0.3);
-            --text-color: #f1f2f6;
-            --text-muted: #8e95a5;
+            --bg-color: #061913;
+            --card-bg: rgba(12, 38, 29, 0.75);
+            --card-border: rgba(46, 213, 115, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #8da499;
+            --gold-primary: #f5cf66;
+            --gold-gradient: linear-gradient(135deg, #e5ba41 0%, #fbe89d 50%, #b88a1a 100%);
+            --accent-green: #2ed573;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Hind Siliguri', sans-serif;
+            font-family: 'Outfit', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: #030d0a;
+            color: var(--text-primary);
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             min-height: 100vh;
             padding: 0;
         }
 
-        /* Mobile Container Layout */
+        /* Mobile Container Frame */
         .mobile-container {
             width: 100%;
-            max-width: 430px;
-            background: #090b0e;
+            max-width: 410px;
+            background: var(--bg-color);
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-            padding-bottom: 30px;
-        }
-
-        /* Background Ambient Glows */
-        .ambient-glow-1 {
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 250px;
-            height: 250px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .ambient-glow-2 {
-            position: absolute;
-            top: 350px;
-            left: -80px;
-            width: 250px;
-            height: 250px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Header */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 20px;
-            background: rgba(9, 11, 14, 0.8);
-            backdrop-filter: blur(12px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: 1.15rem;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: var(--gold-gradient);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-size: 1rem;
-            box-shadow: 0 0 10px var(--gold-glow);
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 25px 20px 10px 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-title {
-            font-size: 2.1rem;
-            font-weight: 700;
-            line-height: 1.25;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-
-        .hero-subtitle {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .btn-gold {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--gold-gradient);
-            color: #0d0f12;
-            font-weight: 700;
-            padding: 12px 26px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 20px var(--gold-glow);
-            border: none;
-        }
-
-        /* 3D Realistic Gold Bar Image Replacement */
-        .hero-img-box {
-            width: 100%;
-            height: 180px;
-            margin-top: -10px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            position: relative;
-        }
-
-        .hero-img-box img {
-            width: 220px;
-            height: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)) drop-shadow(0 0 15px rgba(243, 168, 51, 0.3));
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr 0.9fr;
-            gap: 10px;
-            padding: 0 15px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
-            position: relative;
+            border-radius: 25px;
             overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(243, 168, 51, 0.08) 0%, transparent 100%);
-            pointer-events: none;
-        }
-
-        .stat-title {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .stat-value {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .stat-sub {
-            font-size: 0.65rem;
-            color: #2ed573;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .sparkline {
-            width: 100%;
-            height: 20px;
-            margin-top: 6px;
-        }
-
-        /* Section Header */
-        .section-header {
-            text-align: center;
-            margin: 30px 0 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(46, 213, 115, 0.15);
             position: relative;
-            z-index: 1;
-        }
-
-        .section-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #fff;
-            letter-spacing: 0.3px;
-        }
-
-        /* Horizontal Scroll Plans */
-        .plans-container {
-            display: flex;
-            gap: 12px;
-            padding: 0 15px;
-            overflow-x: auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .plans-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .plan-card {
-            min-width: 135px;
-            flex: 1;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 14px 12px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .plan-icon-wrap {
-            width: 28px;
-            height: 28px;
-            background: rgba(243, 168, 51, 0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gold-primary);
-            margin-bottom: 8px;
-            font-size: 0.8rem;
+        /* Header */
+        header {
+            padding: 20px 20px 10px 20px;
+            text-align: center;
         }
 
-        .plan-name {
-            font-size: 0.85rem;
+        .brand-logo {
+            font-size: 1.3rem;
             font-weight: 700;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .plan-list {
-            list-style: none;
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-        }
-
-        .plan-list li {
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .btn-outline {
-            text-align: center;
-            padding: 6px 0;
-            border: 1px solid var(--gold-primary);
-            border-radius: 20px;
+            letter-spacing: 1px;
             color: var(--gold-primary);
-            text-decoration: none;
-            font-size: 0.68rem;
-            font-weight: 600;
-            background: rgba(243, 168, 51, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
         }
 
-        /* Features Section */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 0 15px;
-            position: relative;
-            z-index: 1;
+        .brand-logo span {
+            color: #ffffff;
+            font-weight: 400;
         }
 
-        .feature-card {
+        /* Main Content */
+        .content {
+            padding: 10px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Card Container */
+        .dashboard-card {
             background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 14px 8px;
-            text-align: center;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 14px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
-        .feature-card i {
-            font-size: 1.2rem;
-            color: var(--gold-primary);
-            margin-bottom: 8px;
-        }
-
-        .feature-card h4 {
-            font-size: 0.75rem;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-
-        .feature-card p {
-            font-size: 0.6rem;
-            color: var(--text-muted);
-            line-height: 1.2;
-        }
-
-        /* Testimonial */
-        .testimonial-box {
-            margin: 0 15px;
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .user-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: 2px solid var(--gold-primary);
-            margin: 0 auto 8px auto;
-        }
-
-        .testimonial-text {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-            font-style: italic;
-        }
-
-        /* Footer */
-        footer {
-            margin-top: 35px;
-            padding: 20px 15px;
-            background: #060709;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.7rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer-grid {
+        .card-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .footer-col h5 {
-            color: #fff;
-            margin-bottom: 8px;
-            font-size: 0.75rem;
-        }
-
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col ul li a {
-            color: var(--text-muted);
-            text-decoration: none;
-            line-height: 1.8;
-            font-size: 0.68rem;
-        }
-
-        .social-icons a {
-            color: var(--gold-primary);
-            margin-right: 10px;
-            font-size: 0.9rem;
-        }
-
-        .secure-badge {
-            background: rgba(46, 213, 115, 0.1);
-            border: 1px solid rgba(46, 213, 115, 0.4);
-            color: #2ed573;
-            padding: 6px 10px;
-            border-radius: 6px;
-            display: inline-flex;
             align-items: center;
-            gap: 5px;
-            font-size: 0.65rem;
+            margin-bottom: 6px;
+        }
+
+        .card-title {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .price-badge {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .badge-green {
+            color: var(--accent-green);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        /* Chart Wrapper */
+        .chart-box {
+            width: 100%;
+            height: 100px;
+            margin-top: 5px;
+        }
+
+        /* Crypto & Dollar Grid inside second box */
+        .crypto-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .crypto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .crypto-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
             font-weight: 600;
         }
 
-        .copyright {
-            text-align: center;
-            color: #444;
+        .crypto-info i {
+            color: var(--gold-primary);
+        }
+
+        .crypto-val {
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* Holdings Section */
+        .holdings-box {
+            margin-top: 2px;
+        }
+
+        .holdings-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            width: 65%;
+            height: 100%;
+            background: var(--accent-green);
+            border-radius: 10px;
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        /* CTA Button */
+        .btn-gold {
+            width: 100%;
+            padding: 13px;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 25px;
+            color: #030d0a;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(245, 207, 102, 0.4);
+            margin-top: 5px;
+            transition: transform 0.2s;
+        }
+
+        .btn-gold:active {
+            transform: scale(0.98);
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0 16px 0;
+            background: rgba(3, 13, 10, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: var(--text-secondary);
             font-size: 0.65rem;
-            margin-top: 15px;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: var(--gold-primary);
+        }
+
+        .nav-item i {
+            font-size: 1.1rem;
         }
     </style>
 </head>
 <body>
 
     <div class="mobile-container">
-        <!-- Ambient Glow Elements -->
-        <div class="ambient-glow-1"></div>
-        <div class="ambient-glow-2"></div>
-
         <!-- Header -->
         <header>
-            <div class="logo">
-                <div class="logo-icon"><i class="fa-solid fa-gem"></i></div>
-                <span>গোল্ড ইনভেস্টমেন্ট</span>
-            </div>
-            <div class="header-icons">
-                <div class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></div>
-                <div class="icon-btn"><i class="fa-regular fa-user"></i></div>
+            <div class="brand-logo">
+                GOLDMINE <span>DIGITAL</span>
             </div>
         </header>
 
-        <!-- Hero Section -->
-        <section class="hero">
-            <h1 class="hero-title">স্বর্ণে নিরাপদ<br>বিনিয়োগ</h1>
-            <p class="hero-subtitle">আপনার ভবিষ্যৎ সুরক্ষিত করুন</p>
-            <a href="signup.html" class="btn-gold">
-                শুরু করুন <i class="fa-solid fa-chevron-right"></i>
+        <!-- Main Dashboard Content -->
+        <div class="content">
+            
+            <!-- Box 1: Real-time Gold Price & Graph -->
+            <div class="dashboard-card">
+                <div class="card-title">CURRENT GOLD PRICE:</div>
+                <div class="price-badge">
+                    $<span id="gold-price">2,180.35</span>/oz 
+                    <span class="badge-green">(UP +<span id="gold-change">1.2</span>%)</span>
+                </div>
+                <div class="chart-box">
+                    <canvas id="goldChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Box 2: Crypto & Dollar Market Rates -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">MARKET RATES (CRYPTO & DOLLAR)</div>
+                    <span class="badge-green" style="font-size:0.65rem;"><i class="fa-solid fa-circle" style="font-size:0.4rem;"></i> LIVE</span>
+                </div>
+                
+                <div class="crypto-grid">
+                    <!-- Bitcoin Rate -->
+                    <div class="crypto-item">
+                        <div class="crypto-info">
+                            <i class="fa-brands fa-bitcoin"></i>
+                            <span>Bitcoin (BTC)</span>
+                        </div>
+                        <div class="crypto-val">$<span id="btc-price">65,420.00</span></div>
+                    </div>
+
+                    <!-- Ethereum Rate -->
+                    <div class="crypto-item">
+                        <div class="crypto-info">
+                            <i class="fa-brands fa-ethereum"></i>
+                            <span>Ethereum (ETH)</span>
+                        </div>
+                        <div class="crypto-val">$<span id="eth-price">3,480.50</span></div>
+                    </div>
+
+                    <!-- USDT / Dollar Index Rate -->
+                    <div class="crypto-item">
+                        <div class="crypto-info">
+                            <i class="fa-solid fa-dollar-sign"></i>
+                            <span>USD / USDT Rate</span>
+                        </div>
+                        <div class="crypto-val">$<span id="usdt-price">1.00</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Holdings Section -->
+            <div class="holdings-box">
+                <div class="holdings-title">MY HOLDINGS: 15.3 oz</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <!-- Start Investing CTA Button -->
+            <button class="btn-gold" onclick="window.location.href='signup.html'">START INVESTING</button>
+
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
             </a>
-            
-            <!-- Ultra Realistic 3D Gold Bars PNG Image -->
-            <div class="hero-img-box">
-                <img src="https://png.pngtree.com/png-clipart/20230303/ourmid/pngtree-3d-gold-bars-illustration-png-image_6628286.png" alt="3D Gold Investment">
-            </div>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-title">আজকের স্বর্ণের দাম</div>
-                <div class="stat-value">₹১,৩২,০০০</div>
-                <div class="stat-sub"><i class="fa-solid fa-arrow-trend-up"></i> +৩,৫০০/গ্রাম</div>
-                <svg class="sparkline" viewBox="0 0 100 25">
-                    <path d="M0,20 Q25,5 50,15 T100,2" fill="none" stroke="#f3a833" stroke-width="2.5" stroke-linecap="round"/>
-                </svg>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-title">আমার বিনিয়োগ</div>
-                <div class="stat-value">২,১২০</div>
-                <div class="stat-title" style="margin-top: 12px; color: var(--gold-primary);">
-                    বিনিয়োগ <i class="fa-solid fa-sack-dollar"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-title">লাভের হার</div>
-                <div class="stat-value" style="color: #2ed573;">৮০%</div>
-                <div style="text-align: right; margin-top: 12px; color: var(--gold-primary);">
-                    <i class="fa-solid fa-chart-line fa-lg"></i>
-                </div>
-            </div>
-        </section>
-
-        <!-- Plans Section -->
-        <div class="section-header">
-            <h3 class="section-title">আমাদের বিশেষ অফারগুলি</h3>
-        </div>
-
-        <section class="plans-container">
-            <div class="plan-card">
-                <div class="plan-icon-wrap"><i class="fa-solid fa-compass"></i></div>
-                <div class="plan-name">নবগত পরিকল্পনা</div>
-                <ul class="plan-list">
-                    <li><i class="fa-solid fa-check" style="color: var(--gold-primary);"></i> স্বল্পমেয়াদী আমানত</li>
-                    <li><i class="fa-solid fa-check" style="color: var(--gold-primary);"></i> সহজ ব্যবহার</li>
-                </ul>
-                <a href="plans.html" class="btn-outline">বিস্তারিত দেখুন <i class="fa-solid fa-chevron-right"></i></a>
-            </div>
-
-            <div class="plan-card">
-                <div class="plan-icon-wrap"><i class="fa-solid fa-vault"></i></div>
-                <div class="plan-name">সঞ্চয় পরিকল্পনা</div>
-                <ul class="plan-list">
-                    <li><i class="fa-solid fa-check" style="color: var(--gold-primary);"></i> আয়তন বৃদ্ধি</li>
-                    <li><i class="fa-solid fa-check" style="color: var(--gold-primary);"></i> স্বচ্ছ হিসাব</li>
-                </ul>
-                <a href="plans.html" class="btn-outline">বিস্তারিত দেখুন <i class="fa-solid fa-chevron-right"></i></a>
-            </div>
-
-            <div class="plan-card">
-                <div class="plan-icon-wrap"><i class="fa-solid fa-crown"></i></div>
-                <div class="plan-name">প্রিমিয়াম পোর্টফোলিও</div>
-                <ul class="plan-list">
-                    <li><i class="fa-solid fa-check" style="color: var(--gold-primary);"></i> উচ্চ রিটার্ন</li>
-                    <li><i class="fa-solid fa-check" style="color: var(--gold-primary);"></i> ভিআইপি সাপোর্ট</li>
-                </ul>
-                <a href="plans.html" class="btn-outline">বিস্তারিত দেখুন <i class="fa-solid fa-chevron-right"></i></a>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <div class="section-header">
-            <h3 class="section-title">কেন আমাদের বেছে নেবেন?</h3>
-        </div>
-
-        <section class="features-grid">
-            <div class="feature-card">
-                <i class="fa-solid fa-shield-halved"></i>
-                <h4>নিরাপত্তা</h4>
-                <p>নিরাপদ ফান্ড ও সম্পূর্ণ গ্যারান্টি</p>
-            </div>
-            <div class="feature-card">
-                <i class="fa-solid fa-scale-balanced"></i>
-                <h4>স্বচ্ছতা</h4>
-                <p>সহজ শর্ত ও দ্রুত লেনদেন</p>
-            </div>
-            <div class="feature-card">
-                <i class="fa-solid fa-headset"></i>
-                <h4>বিশ্বস্ত সেবা</h4>
-                <p>২৪/৭ সাপোর্ট সুবিধা</p>
-            </div>
-        </section>
-
-        <!-- Testimonial Section -->
-        <div class="section-header">
-            <h3 class="section-title">টেস্টিমোনিয়াল</h3>
-        </div>
-
-        <section class="testimonial-box">
-            <img src="https://i.pravatar.cc/100?img=33" alt="User" class="user-avatar">
-            <p class="testimonial-text">"এই প্ল্যাটফর্মে বিনিয়োগ করা অত্যন্ত সহজ ও নিরাপদ। আমার পোর্টফোলিও থেকে নিয়মিত চমৎকার রিটার্ন পাচ্ছি।"</p>
-        </section>
-
-        <!-- Footer -->
-        <footer>
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h5>Site Links</h5>
-                    <ul>
-                        <li><a href="index.html">হোম</a></li>
-                        <li><a href="plans.html">পরিকল্পনা</a></li>
-                        <li><a href="contact.html">যোগাযোগ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h5>Social Media</h5>
-                    <div class="social-icons">
-                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                    </div>
-                </div>
-                <div class="footer-col">
-                    <h5>Secure Payment</h5>
-                    <div class="secure-badge">
-                        <i class="fa-solid fa-shield"></i> SECURE PAYMENT
-                    </div>
-                </div>
-            </div>
-            <div class="copyright">
-                © 2026 Gold Investment. All rights reserved.
-            </div>
-        </footer>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-vault"></i>
+                <span>Vault</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Portfolio</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-store"></i>
+                <span>Market</span>
+            </a>
+        </nav>
     </div>
 
+    <!-- JavaScript Logic for Live Updating Chart & Prices -->
+    <script>
+        // Setup Chart.js Real-time Gold Chart
+        const ctx = document.getElementById('goldChart').getContext('2d');
+        
+        // Gradient background under line
+        const gradient = ctx.createLinearGradient(0, 0, 0, 100);
+        gradient.addColorStop(0, 'rgba(245, 207, 102, 0.35)');
+        gradient.addColorStop(1, 'rgba(245, 207, 102, 0)');
+
+        const goldData = [2170, 2172, 2168, 2175, 2173, 2178, 2180.35];
+
+        const goldChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1', '2', '3', '4', '5', '6', '7'],
+                datasets: [{
+                    data: goldData,
+                    borderColor: '#f5cf66',
+                    borderWidth: 2,
+                    fill: true,
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
+
+        // Real-time Dynamic Data Update Simulation Logic
+        function updateMarketData() {
+            // Gold Price Fluctuation Logic
+            let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
+            let randomGoldChange = (Math.random() - 0.48) * 1.5;
+            let newGoldPrice = (currentGold + randomGoldChange).toFixed(2);
+            document.getElementById('gold-price').innerText = Number(newGoldPrice).toLocaleString('en-US', {minimumFractionDigits: 2});
+
+            // Update Chart Dataset dynamically
+            goldChart.data.datasets[0].data.shift();
+            goldChart.data.datasets[0].data.push(newGoldPrice);
+            goldChart.update();
+
+            // Bitcoin Price Fluctuation
+            let btcPrice = parseFloat(document.getElementById('btc-price').innerText.replace(',', ''));
+            let newBtc = (btcPrice + (Math.random() - 0.49) * 20).toFixed(2);
+            document.getElementById('btc-price').innerText = Number(newBtc).toLocaleString('en-US', {minimumFractionDigits: 2});
+
+            // Ethereum Price Fluctuation
+            let ethPrice = parseFloat(document.getElementById('eth-price').innerText.replace(',', ''));
+            let newEth = (ethPrice + (Math.random() - 0.49) * 3).toFixed(2);
+            document.getElementById('eth-price').innerText = Number(newEth).toLocaleString('en-US', {minimumFractionDigits: 2});
+        }
+
+        // Trigger market updates every 3 seconds
+        setInterval(updateMarketData, 3000);
+    </script>
 </body>
 </html>
