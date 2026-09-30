@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Supabase JS Client library -->
+    
+    <!-- ১. Supabase CDN Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- ২. Central Config File (যেখানে URL ও Key রাখা আছে) -->
+    <script src="supabase-config.js"></script>
 
     <style>
         :root {
@@ -42,7 +45,6 @@
             padding: 0;
         }
 
-        /* Mobile Container Frame */
         .mobile-container {
             width: 100%;
             max-width: 410px;
@@ -58,7 +60,6 @@
             padding: 24px 20px;
         }
 
-        /* Header Logo */
         .brand-header {
             text-align: center;
             margin-top: 10px;
@@ -83,7 +84,6 @@
             margin-top: 4px;
         }
 
-        /* Auth Tabs (Toggle Login / Signup) */
         .tab-wrapper {
             display: flex;
             background: rgba(0, 0, 0, 0.3);
@@ -113,7 +113,6 @@
             box-shadow: 0 0 10px rgba(245, 207, 102, 0.3);
         }
 
-        /* Form Container */
         .auth-form-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -166,14 +165,12 @@
             border-color: var(--gold-primary);
         }
 
-        /* Secret PIN info */
         .pin-hint {
             font-size: 0.68rem;
             color: var(--accent-green);
             margin-top: 4px;
         }
 
-        /* Action Button */
         .btn-gold {
             width: 100%;
             padding: 13px;
@@ -194,7 +191,6 @@
             transform: scale(0.98);
         }
 
-        /* Security Footer */
         .security-footer {
             text-align: center;
             margin-top: 15px;
@@ -310,14 +306,9 @@
         </div>
     </div>
 
-    <!-- Supabase Integration Script -->
+    <!-- Page Authentication Handler -->
     <script>
-        // 1. Supabase Initialization (আপনাক নিজস্ব Credentials বসিয়ে নিন)
-        const SUPABASE_URL = "YOUR_SUPABASE_URL";
-        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // 2. Tab Switch Logic
+        // Tab Switch Logic
         function switchTab(type) {
             const signupForm = document.getElementById('signup-form');
             const loginForm = document.getElementById('login-form');
@@ -337,7 +328,7 @@
             }
         }
 
-        // 3. Signup Form Submission to Supabase 'user' Table
+        // Registration Handling (Using global _supabase instance)
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -348,8 +339,8 @@
             const secretPin = document.getElementById('signup-pin').value;
 
             try {
-                // Supabase 'user' টেবিলে নতুন ডেটা ইনসার্ট
-                const { data, error } = await supabase
+                // Insert new row to 'user' table
+                const { data, error } = await _supabase
                     .from('user')
                     .insert([
                         { 
@@ -365,15 +356,15 @@
                     alert('Error creating account: ' + error.message);
                 } else {
                     alert('Account created successfully!');
-                    window.location.href = 'home-index.html'; // হোম পেজে রিডাইরেক্ট
+                    window.location.href = 'home-index.html';
                 }
             } catch (err) {
                 console.error(err);
-                alert('Something went wrong. Please check connection.');
+                alert('Connection error. Make sure supabase-config.js is setup correctly.');
             }
         });
 
-        // 4. Login Submission Logic
+        // Login Handling
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -381,7 +372,7 @@
             const password = document.getElementById('login-password').value;
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await _supabase
                     .from('user')
                     .select('*')
                     .eq('email', email)
@@ -396,7 +387,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert('Login failed.');
+                alert('Login failed. Please try again.');
             }
         });
     </script>
