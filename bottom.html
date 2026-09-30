@@ -1,0 +1,49 @@
+<nav class="bottom-nav">
+    <a href="javascript:history.back()" class="nav-item">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back</span>
+    </a>
+    <a href="portfolio.html" class="nav-item">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Portfolio</span>
+    </a>
+    <a href="wallet.html" class="nav-item">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Wallet</span>
+    </a>
+    <a href="settings.html" class="nav-item">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+    </a>
+</nav>
+
+<style>
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 12px 0 16px 0;
+        background: rgba(3, 13, 10, 0.95);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        width: 100%;
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        color: #8da499;
+        font-size: 0.68rem;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .nav-item:hover, .nav-item.active {
+        color: #f5cf66;
+    }
+
+    .nav-item i {
+        font-size: 1.1rem;
+    }
+</style>
