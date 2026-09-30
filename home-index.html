@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Goldmine Digital - Mining & Investment</title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +21,6 @@
             --gold-primary: #f5cf66;
             --gold-gradient: linear-gradient(135deg, #e5ba41 0%, #fbe89d 50%, #b88a1a 100%);
             --accent-green: #2ed573;
-            --accent-cyan: #00e5ff;
         }
 
         * {
@@ -34,38 +33,36 @@
 
         html, body {
             height: 100%;
-            overflow: hidden; /* Fix landing page without unwanted scroll */
             background-color: #030d0a;
             color: var(--text-primary);
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
-        /* Mobile Container Frame */
+        /* Responsive Mobile Container Frame */
         .mobile-container {
             width: 100%;
             max-width: 410px;
             height: 100vh;
-            max-height: 890px;
             background: var(--bg-color);
-            border-radius: 25px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(46, 213, 115, 0.15);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Header */
+        /* Header Fix */
         header {
-            padding: 18px 20px 8px 20px;
+            padding: 15px 20px 5px 20px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .brand-logo {
-            font-size: 1.35rem;
+            font-size: 1.3rem;
             font-weight: 700;
             letter-spacing: 1.2px;
             color: var(--gold-primary);
@@ -81,14 +78,15 @@
             font-weight: 400;
         }
 
-        /* Main Content Fixed Layout */
+        /* Main Content Layout Adjustments */
         .content {
             padding: 10px 16px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            flex-grow: 1;
-            justify-content: center;
+            gap: 16px;
+            flex: 1;
+            justify-content: flex-start;
+            overflow-y: auto;
         }
 
         /* Card Container with Premium Glow */
@@ -98,7 +96,7 @@
             border-radius: 18px;
             padding: 14px;
             backdrop-filter: blur(12px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
 
         .card-header {
@@ -129,15 +127,14 @@
             margin-left: 5px;
         }
 
-        /* Enhanced High-End Chart Wrapper */
+        /* 15 Days Trend Graph Box */
         .chart-box {
             width: 100%;
-            height: 110px;
+            height: 115px;
             margin-top: 6px;
-            position: relative;
         }
 
-        /* Crypto Section with Live Chart */
+        /* Crypto Live Container */
         .crypto-container {
             display: flex;
             flex-direction: column;
@@ -172,40 +169,16 @@
             font-weight: 700;
         }
 
-        /* Holdings Section */
-        .holdings-box {
-            padding: 0 4px;
+        /* Start Investing CTA Button Spacing */
+        .cta-wrapper {
+            margin-top: auto;
+            padding-top: 10px;
+            padding-bottom: 5px;
         }
 
-        .holdings-title {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .progress-bar-bg {
-            width: 100%;
-            height: 7px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            width: 68%;
-            height: 100%;
-            background: var(--accent-green);
-            border-radius: 10px;
-            box-shadow: 0 0 10px var(--accent-green);
-        }
-
-        /* CTA Button */
         .btn-gold {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             background: var(--gold-gradient);
             border: none;
             border-radius: 25px;
@@ -222,9 +195,9 @@
             transform: scale(0.98);
         }
 
-        /* External Bottom Nav Placeholder */
         #bottom-nav-container {
             width: 100%;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -241,11 +214,14 @@
         <!-- Main Dashboard Content -->
         <div class="content">
             
-            <!-- Box 1: Premium Real-time Gold Price & Graph -->
+            <!-- Box 1: Gold Price & 15-Day Trend Graph -->
             <div class="dashboard-card">
-                <div class="card-title">CURRENT GOLD PRICE</div>
+                <div class="card-header">
+                    <div class="card-title">CURRENT GOLD PRICE</div>
+                    <span style="font-size: 0.65rem; color: var(--gold-primary); font-weight: 600;">15 DAYS TREND</span>
+                </div>
                 <div class="price-badge">
-                    $<span id="gold-price">2,180.35</span>/oz 
+                    $<span id="gold-price">2,184.00</span>/oz 
                     <span class="badge-green">(UP +<span id="gold-change">1.4</span>%)</span>
                 </div>
                 <div class="chart-box">
@@ -253,10 +229,10 @@
                 </div>
             </div>
 
-            <!-- Box 2: Crypto Rates with Dedicated Live Chart -->
+            <!-- Box 2: Crypto Rates & 15-Day Trend Graph -->
             <div class="dashboard-card">
                 <div class="card-header">
-                    <div class="card-title">MARKET RATES (CRYPTO LIVE GRAPH)</div>
+                    <div class="card-title">MARKET RATES (CRYPTO)</div>
                     <span class="badge-green" style="font-size:0.65rem;"><i class="fa-solid fa-circle" style="font-size:0.4rem;"></i> LIVE</span>
                 </div>
                 
@@ -266,29 +242,20 @@
                             <i class="fa-brands fa-bitcoin"></i>
                             <span>BTC / USD</span>
                         </div>
-                        <div class="crypto-val">$<span id="btc-price">65,420.00</span></div>
+                        <div class="crypto-val">$<span id="btc-price">65,432.03</span></div>
                     </div>
 
-                    <!-- Crypto Real-time Graph Box -->
-                    <div class="chart-box" style="height: 75px;">
+                    <!-- Crypto 15 Days Dynamic Graph Box -->
+                    <div class="chart-box" style="height: 85px;">
                         <canvas id="cryptoChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Holdings Section -->
-            <div class="holdings-box">
-                <div class="holdings-title">
-                    <span>MY HOLDINGS</span>
-                    <span style="color:var(--gold-primary)">15.3 oz</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill"></div>
-                </div>
+            <!-- Start Investing Button Container -->
+            <div class="cta-wrapper">
+                <button class="btn-gold" onclick="window.location.href='login-signup.html'">START INVESTING</button>
             </div>
-
-            <!-- Start Investing CTA Button -->
-            <button class="btn-gold" onclick="window.location.href='login-signup.html'">START INVESTING</button>
 
         </div>
 
@@ -296,7 +263,7 @@
         <div id="bottom-nav-container"></div>
     </div>
 
-    <!-- Script Section -->
+    <!-- JavaScript Section -->
     <script>
         // 1. Fetch & Append bottom.html dynamically
         fetch('bottom.html')
@@ -306,23 +273,26 @@
             })
             .catch(error => console.error('Error loading bottom navigation:', error));
 
-        // 2. High-End Gold Chart Implementation
+        // 15 Days Labels Array
+        const daysLabels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Day 11', 'Day 12', 'Day 13', 'Day 14', 'Day 15'];
+
+        // 2. High-End 15-Day Gold Chart
         const goldCtx = document.getElementById('goldChart').getContext('2d');
-        const goldGradient = goldCtx.createLinearGradient(0, 0, 0, 110);
+        const goldGradient = goldCtx.createLinearGradient(0, 0, 0, 115);
         goldGradient.addColorStop(0, 'rgba(245, 207, 102, 0.45)');
         goldGradient.addColorStop(1, 'rgba(245, 207, 102, 0.0)');
 
         const goldChart = new Chart(goldCtx, {
             type: 'line',
             data: {
-                labels: ['1', '2', '3', '4', '5', '6', '7', '8'],
+                labels: daysLabels,
                 datasets: [{
-                    data: [2165, 2170, 2168, 2176, 2172, 2179, 2180.35, 2184],
+                    data: [2110, 2115, 2108, 2125, 2130, 2128, 2140, 2148, 2142, 2155, 2160, 2168, 2175, 2180, 2184],
                     borderColor: '#f5cf66',
                     borderWidth: 2.5,
                     fill: true,
                     backgroundColor: goldGradient,
-                    tension: 0.45, // Extra smooth curves
+                    tension: 0.4,
                     pointRadius: 0
                 }]
             },
@@ -337,18 +307,18 @@
             }
         });
 
-        // 3. Crypto Live Chart Implementation
+        // 3. High-End 15-Day Crypto Chart
         const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
-        const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
+        const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 85);
         cryptoGradient.addColorStop(0, 'rgba(46, 213, 115, 0.35)');
         cryptoGradient.addColorStop(1, 'rgba(46, 213, 115, 0.0)');
 
         const cryptoChart = new Chart(cryptoCtx, {
             type: 'line',
             data: {
-                labels: ['1', '2', '3', '4', '5', '6'],
+                labels: daysLabels,
                 datasets: [{
-                    data: [64800, 65100, 64950, 65300, 65200, 65420],
+                    data: [61200, 61800, 61500, 62400, 62100, 63000, 62800, 63500, 64200, 63900, 64500, 64800, 65100, 65000, 65432],
                     borderColor: '#2ed573',
                     borderWidth: 2,
                     fill: true,
@@ -368,20 +338,18 @@
             }
         });
 
-        // Live Real-time Price Update Simulation
+        // Live Real-time Price Updates
         setInterval(() => {
-            // Gold price update
             let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
-            let newGold = (currentGold + (Math.random() - 0.47) * 1.8).toFixed(2);
+            let newGold = (currentGold + (Math.random() - 0.47) * 1.5).toFixed(2);
             document.getElementById('gold-price').innerText = Number(newGold).toLocaleString('en-US', {minimumFractionDigits: 2});
             
             goldChart.data.datasets[0].data.shift();
             goldChart.data.datasets[0].data.push(newGold);
             goldChart.update();
 
-            // Crypto BTC price update
             let btcPrice = parseFloat(document.getElementById('btc-price').innerText.replace(',', ''));
-            let newBtc = (btcPrice + (Math.random() - 0.48) * 35).toFixed(2);
+            let newBtc = (btcPrice + (Math.random() - 0.48) * 30).toFixed(2);
             document.getElementById('btc-price').innerText = Number(newBtc).toLocaleString('en-US', {minimumFractionDigits: 2});
 
             cryptoChart.data.datasets[0].data.shift();
