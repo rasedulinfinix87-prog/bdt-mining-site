@@ -273,7 +273,7 @@
                         <div class="pin-hint"><i class="fa-solid fa-circle-check"></i> Required for Vault Withdrawals & Actions</div>
                     </div>
 
-                    <button type="submit" class="btn-gold">REGISTER VAULT ACCOUNT</button>
+                    <button type="submit" class="btn-gold" id="btn-signup">REGISTER VAULT ACCOUNT</button>
                 </form>
 
                 <!-- LOGIN FORM -->
@@ -294,7 +294,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-gold">ACCESS VAULT</button>
+                    <button type="submit" class="btn-gold" id="btn-login">ACCESS VAULT</button>
                 </form>
 
             </div>
@@ -328,19 +328,30 @@
             }
         }
 
-        // Registration Handling (Using global _supabase instance)
+        // Registration Handling
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const fullName = document.getElementById('signup-fullname').value;
-            const email = document.getElementById('signup-email').value;
-            const phone = document.getElementById('signup-phone').value;
+            // Check if Supabase client initialized
+            const client = window._supabase || window.supabase;
+            if(!client) {
+                alert('Supabase connection failed! Please check supabase-config.js file.');
+                return;
+            }
+
+            const fullName = document.getElementById('signup-fullname').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim();
             const password = document.getElementById('signup-password').value;
-            const secretPin = document.getElementById('signup-pin').value;
+            const secretPin = document.getElementById('signup-pin').value.trim();
+
+            const signupBtn = document.getElementById('btn-signup');
+            signupBtn.innerText = 'CREATING ACCOUNT...';
+            signupBtn.disabled = true;
 
             try {
                 // Insert new row to 'user' table
-                const { data, error } = await _supabase
+                const { data, error } = await client
                     .from('user')
                     .insert([
                         { 
@@ -350,17 +361,25 @@
                             password: password, 
                             secret_pin: secretPin 
                         }
-                    ]);
+                    ])
+                    .select();
 
                 if (error) {
                     alert('Error creating account: ' + error.message);
-                } else {
+                } else if (data && data.length > 0) {
+                    // Save user ID to localStorage so account-info.html can read it
+                    localStorage.setItem('user_id', data[0].id);
                     alert('Account created successfully!');
                     window.location.href = 'home-index.html';
+                } else {
+                    alert('Registration failed. Please try again.');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Connection error. Make sure supabase-config.js is setup correctly.');
+                alert('Connection error: ' + err.message);
+            } finally {
+                signupBtn.innerText = 'REGISTER VAULT ACCOUNT';
+                signupBtn.disabled = false;
             }
         });
 
@@ -368,26 +387,43 @@
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById('login-email').value;
+            const client = window._supabase || window.supabase;
+            if(!client) {
+                alert('Supabase connection failed! Please check supabase-config.js file.');
+                return;
+            }
+
+            const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
 
+            const loginBtn = document.getElementById('btn-login');
+            loginBtn.innerText = 'VERIFYING...';
+            loginBtn.disabled = true;
+
             try {
-                const { data, error } = await _supabase
+                const { data, error } = await client
                     .from('user')
                     .select('*')
                     .eq('email', email)
                     .eq('password', password)
-                    .single();
+                    .maybeSingle();
 
-                if (error || !data) {
+                if (error) {
+                    alert('Login Error: ' + error.message);
+                } else if (!data) {
                     alert('Invalid Email or Password!');
                 } else {
+                    // Save user ID to localStorage
+                    localStorage.setItem('user_id', data.id);
                     alert('Login successful! Welcome back, ' + data.full_name);
                     window.location.href = 'home-index.html';
                 }
             } catch (err) {
                 console.error(err);
-                alert('Login failed. Please try again.');
+                alert('Login failed: ' + err.message);
+            } finally {
+                loginBtn.innerText = 'ACCESS VAULT';
+                loginBtn.disabled = false;
             }
         });
     </script>
