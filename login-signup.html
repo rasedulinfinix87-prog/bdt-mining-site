@@ -9,10 +9,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- ১. Supabase CDN Library -->
+    <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- ২. Central Config File (যেখানে URL ও Key রাখা আছে) -->
-    <script src="supabase-config.js"></script>
 
     <style>
         :root {
@@ -306,8 +304,19 @@
         </div>
     </div>
 
-    <!-- Page Authentication Handler -->
+    <!-- Self-Contained Supabase Authentication Script -->
     <script>
+        // Direct Supabase Client Setup
+        const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
+
+        function getSupabaseClient() {
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+            return null;
+        }
+
         // Tab Switch Logic
         function switchTab(type) {
             const signupForm = document.getElementById('signup-form');
@@ -332,10 +341,9 @@
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Check if Supabase client initialized
-            const client = window._supabase || window.supabase;
+            const client = getSupabaseClient();
             if(!client) {
-                alert('Supabase connection failed! Please check supabase-config.js file.');
+                alert('Supabase network connection loading... Please try again in 5 seconds.');
                 return;
             }
 
@@ -350,7 +358,6 @@
             signupBtn.disabled = true;
 
             try {
-                // Insert new row to 'user' table
                 const { data, error } = await client
                     .from('user')
                     .insert([
@@ -365,18 +372,17 @@
                     .select();
 
                 if (error) {
-                    alert('Error creating account: ' + error.message);
+                    alert('Registration Failed: ' + error.message);
                 } else if (data && data.length > 0) {
-                    // Save user ID to localStorage so account-info.html can read it
                     localStorage.setItem('user_id', data[0].id);
                     alert('Account created successfully!');
                     window.location.href = 'home-index.html';
                 } else {
-                    alert('Registration failed. Please try again.');
+                    alert('Could not save data. Please check Supabase RLS settings.');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Connection error: ' + err.message);
+                alert('Error: ' + err.message);
             } finally {
                 signupBtn.innerText = 'REGISTER VAULT ACCOUNT';
                 signupBtn.disabled = false;
@@ -387,9 +393,9 @@
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const client = window._supabase || window.supabase;
+            const client = getSupabaseClient();
             if(!client) {
-                alert('Supabase connection failed! Please check supabase-config.js file.');
+                alert('Supabase network connection loading... Please try again in 5 seconds.');
                 return;
             }
 
@@ -413,14 +419,13 @@
                 } else if (!data) {
                     alert('Invalid Email or Password!');
                 } else {
-                    // Save user ID to localStorage
                     localStorage.setItem('user_id', data.id);
                     alert('Login successful! Welcome back, ' + data.full_name);
                     window.location.href = 'home-index.html';
                 }
             } catch (err) {
                 console.error(err);
-                alert('Login failed: ' + err.message);
+                alert('Error: ' + err.message);
             } finally {
                 loginBtn.innerText = 'ACCESS VAULT';
                 loginBtn.disabled = false;
