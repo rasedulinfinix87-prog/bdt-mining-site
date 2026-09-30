@@ -194,12 +194,14 @@
         color: #fff;
     }
 
+    /* ডিপোজিট ও উইথড্র স্পেশাল মেনু বাটন স্টাইল */
     .deposit-withdraw-nav {
         background: linear-gradient(135deg, #1e3a8a, #2563eb) !important;
         border: 1px solid rgba(30, 144, 238, 0.4) !important;
         font-weight: 600;
     }
 
+    /* লগআউট বাটন স্টাইল */
     .logout-item {
         background: #ef4444 !important;
         color: #fff !important;
@@ -228,7 +230,7 @@
 <!-- টপ নেভবার -->
 <div class="top-navbar-wrapper">
     <div class="nav-left">
-        <button class="menu-toggle-btn" onclick="toggleMenu()">
+        <button class="menu-toggle-btn" onclick="toggleSidebar()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
         <a href="dashboard.html" class="brand-logo">
@@ -246,11 +248,11 @@
 </div>
 
 <!-- সাইডবার ওভারলে এবং মেনু ড্রয়ার -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 <div class="sidebar-menu" id="sidebarMenu">
     <div class="sidebar-header">
         <a href="dashboard.html" class="brand-logo">⚡ <span>BDTMINER Menu</span></a>
-        <button class="sidebar-close-btn" onclick="toggleMenu()">✕</button>
+        <button class="sidebar-close-btn" onclick="toggleSidebar()">✕</button>
     </div>
     <div class="sidebar-links">
         <a href="index.html" class="nav-item">🏠 Home</a>
@@ -259,8 +261,13 @@
         <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
         <a href="verification-details.html" class="nav-item">🛡️ NID Verification</a>
         <a href="account-info.html" class="nav-item">👤 Account Info</a>
+        
+        <!-- Contact Support-এর ঠিক উপরে Deposit & Withdraw বাটন -->
         <a href="deposit-withdraw.html" class="nav-item deposit-withdraw-nav">💳 Deposit & Withdraw</a>
+        
         <a href="chat.html" class="nav-item">🎧 Contact Support</a>
+        
+        <!-- লগআউট বাটন -->
         <a href="logout.php" class="logout-item">LOGOUT</a>
     </div>
 </div>
