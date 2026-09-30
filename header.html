@@ -12,24 +12,131 @@
 
     .crypto-ticker-bar {
         width: 100%;
-        background: #0f172a;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-sizing: border-box;
+        background: #080d1c;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(80, 100, 150, 0.25);
+        border-left: 1px solid rgba(255, 255, 255, 0.04);
+        border-right: 1px solid rgba(255, 255, 255, 0.04);
         border-radius: 0 !important;
-        padding: 8px 12px;
+
+        padding: 18px 14px 20px;
+
         display: flex;
         justify-content: space-around;
-        align-items: center;
-        gap: 15px;
-        font-size: 11px;
+        align-items: stretch;
+
+        gap: 12px;
+
         font-family: 'Orbitron', sans-serif;
-        margin-bottom: 1px;
+
+        margin-bottom: 0;
+
         white-space: nowrap;
         overflow-x: auto;
+
+        scrollbar-width: none;
     }
 
     .crypto-ticker-bar::-webkit-scrollbar {
         display: none;
     }
+
+
+    /* =========================
+       INDIVIDUAL COIN
+       ========================= */
+
+    .crypto-item {
+        flex: 1 1 0;
+
+        min-width: 145px;
+
+        display: flex;
+        flex-direction: column;
+
+        justify-content: center;
+
+        gap: 4px;
+
+        padding: 2px 8px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* COIN NAME */
+
+    .crypto-name {
+        font-size: 13px;
+
+        font-weight: 500;
+
+        letter-spacing: 0.5px;
+
+        color: #d6dbea;
+
+        line-height: 1.1;
+    }
+
+
+    /* PRICE + CHANGE */
+
+    .crypto-value-row {
+        display: flex;
+
+        align-items: baseline;
+
+        gap: 8px;
+
+        line-height: 1.1;
+    }
+
+
+    .crypto-price {
+        font-size: 21px;
+
+        font-weight: 500;
+
+        letter-spacing: 0.2px;
+    }
+
+
+    .crypto-change {
+        font-size: 13px;
+
+        font-weight: 500;
+    }
+
+
+    /* COIN COLORS */
+
+    .btc-price {
+        color: #2997ff;
+    }
+
+    .btc-change {
+        color: #2997ff;
+    }
+
+
+    .eth-price {
+        color: #2997ff;
+    }
+
+    .eth-change {
+        color: #2997ff;
+    }
+
+
+    .usdt-price {
+        color: #2997ff;
+    }
+
+    .usdt-change {
+        color: #2997ff;
+    }
+
 
     /* =========================
        TOP NAVBAR
@@ -37,25 +144,42 @@
 
     .top-navbar-wrapper {
         width: 100%;
-        background: rgba(15, 23, 42, 0.95);
+        box-sizing: border-box;
+
+        background: rgba(15, 23, 42, 0.97);
+
         border: 1px solid rgba(255, 255, 255, 0.08);
+
         border-radius: 0 !important;
+
         padding: 12px 16px;
+
         display: flex;
+
         justify-content: space-between;
+
         align-items: center;
+
         margin-bottom: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.5);
+
         position: relative;
+
         z-index: 9000;
     }
+
 
     .nav-left,
     .nav-right {
         display: flex;
+
         align-items: center;
+
         gap: 10px;
     }
+
 
     /* =========================
        MENU BUTTON
@@ -63,21 +187,33 @@
 
     .menu-toggle-btn {
         background: #1e293b;
+
         border: 1px solid rgba(255, 255, 255, 0.1);
+
         border-radius: 8px;
+
         padding: 8px 10px;
+
         color: #1E90EE;
+
         cursor: pointer;
+
         display: flex;
+
         align-items: center;
+
         justify-content: center;
+
         transition: 0.3s;
     }
 
+
     .menu-toggle-btn:hover {
         background: #1E90EE;
+
         color: #000;
     }
+
 
     /* =========================
        BRAND
@@ -85,18 +221,27 @@
 
     .brand-logo {
         font-family: 'Orbitron', sans-serif;
+
         font-weight: 800;
+
         font-size: 16px;
+
         color: #fff;
+
         text-decoration: none;
+
         display: flex;
+
         align-items: center;
+
         gap: 6px;
     }
+
 
     .brand-logo span {
         color: #ffff00;
     }
+
 
     /* =========================
        BALANCE BOX
@@ -104,64 +249,105 @@
 
     .top-balance-box {
         background: #1e293b;
+
         border: 1px solid rgba(30, 144, 238, 0.3);
+
         border-radius: 8px;
+
         padding: 6px 12px;
+
         font-family: 'Orbitron', sans-serif;
+
         font-size: 13px;
+
         font-weight: 700;
+
         color: #1E90EE;
+
         display: flex;
+
         align-items: center;
+
         gap: 6px;
+
         cursor: pointer;
+
         text-decoration: none;
+
         transition: 0.2s;
+
         min-width: 85px;
+
         justify-content: center;
     }
 
+
     .top-balance-box:hover {
         border-color: #1E90EE;
+
         background: rgba(30, 144, 238, 0.1);
     }
+
 
     .top-balance-box.balance-updated {
         animation: balanceFlash 0.6s ease;
     }
 
+
     @keyframes balanceFlash {
+
         0% {
             transform: scale(1);
-            box-shadow: 0 0 0 rgba(30, 144, 238, 0);
+
+            box-shadow:
+                0 0 0 rgba(30, 144, 238, 0);
         }
 
         50% {
             transform: scale(1.06);
-            box-shadow: 0 0 20px rgba(30, 144, 238, 0.55);
+
+            box-shadow:
+                0 0 20px rgba(30, 144, 238, 0.55);
         }
 
         100% {
             transform: scale(1);
-            box-shadow: 0 0 0 rgba(30, 144, 238, 0);
+
+            box-shadow:
+                0 0 0 rgba(30, 144, 238, 0);
         }
+
     }
 
-    /* Deposit + symbol */
+
+    /* =========================
+       DEPOSIT SYMBOL
+       ========================= */
 
     .deposit-symbol {
         background: #1E90EE;
+
         color: #0f172a;
+
         width: 18px;
+
         height: 18px;
+
         border-radius: 50%;
+
         display: flex;
+
         align-items: center;
+
         justify-content: center;
+
         font-size: 12px;
+
         font-weight: bold;
+
         flex-shrink: 0;
     }
+
 
     /* =========================
        SIDEBAR OVERLAY
@@ -169,22 +355,35 @@
 
     .sidebar-overlay {
         position: fixed;
+
         top: 0;
+
         left: 0;
+
         width: 100%;
+
         height: 100%;
+
         background: rgba(0, 0, 0, 0.7);
+
         backdrop-filter: blur(3px);
+
         z-index: 9998;
+
         opacity: 0;
+
         visibility: hidden;
+
         transition: 0.3s ease-in-out;
     }
 
+
     .sidebar-overlay.active {
         opacity: 1;
+
         visibility: visible;
     }
+
 
     /* =========================
        SIDEBAR
@@ -192,24 +391,49 @@
 
     .sidebar-menu {
         position: fixed;
+
         top: 0;
+
         left: -280px;
+
         width: 280px;
+
         height: 100%;
+
         background: #0f172a;
-        border-right: 1px solid rgba(255, 255, 255, 0.08);
+
+        border-right:
+            1px solid rgba(255, 255, 255, 0.08);
+
         z-index: 9999;
-        transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+        transition:
+            0.35s cubic-bezier(
+                0.4,
+                0,
+                0.2,
+                1
+            );
+
         display: flex;
+
         flex-direction: column;
+
         padding: 20px;
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+
+        box-shadow:
+            10px 0 30px rgba(0, 0, 0, 0.8);
+
         overflow-y: auto;
+
+        box-sizing: border-box;
     }
+
 
     .sidebar-menu.active {
         left: 0;
     }
+
 
     /* =========================
        SIDEBAR HEADER
@@ -217,25 +441,39 @@
 
     .sidebar-header {
         display: flex;
+
         justify-content: space-between;
+
         align-items: center;
+
         margin-bottom: 25px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+        border-bottom:
+            1px solid rgba(255, 255, 255, 0.08);
+
         padding-bottom: 15px;
     }
 
+
     .sidebar-header .brand-logo {
         font-size: 15px;
+
         color: #f59e0b;
     }
 
+
     .sidebar-close-btn {
         background: transparent;
+
         border: none;
+
         color: #94a3b8;
+
         font-size: 20px;
+
         cursor: pointer;
     }
+
 
     /* =========================
        SIDEBAR LINKS
@@ -243,47 +481,73 @@
 
     .sidebar-links {
         display: flex;
+
         flex-direction: column;
+
         gap: 12px;
+
         flex-grow: 1;
     }
 
+
     .nav-item {
         color: #fff;
+
         text-decoration: none;
+
         padding: 14px 18px;
+
         background: #1e293b;
-        border: 1px solid rgba(255, 255, 255, 0.03);
+
+        border:
+            1px solid rgba(255, 255, 255, 0.03);
+
         border-radius: 12px;
+
         font-weight: 500;
+
         font-size: 14px;
+
         transition: 0.2s;
+
         display: flex;
+
         align-items: center;
+
         justify-content: space-between;
     }
+
 
     .nav-item:hover,
     .nav-item.active {
         background: #2563eb;
-        border-color: rgba(255, 255, 255, 0.1);
+
+        border-color:
+            rgba(255, 255, 255, 0.1);
+
         color: #fff;
     }
+
 
     /* =========================
        DEPOSIT / WITHDRAW
        ========================= */
 
     .deposit-withdraw-nav {
-        background: linear-gradient(
-            135deg,
-            #1e3a8a,
-            #2563eb
-        ) !important;
+        background:
+            linear-gradient(
+                135deg,
+                #1e3a8a,
+                #2563eb
+            ) !important;
 
-        border: 1px solid rgba(30, 144, 238, 0.4) !important;
+        border:
+            1px solid rgba(30, 144, 238, 0.4)
+            !important;
+
         font-weight: 600;
     }
+
 
     /* =========================
        LOGOUT
@@ -291,20 +555,121 @@
 
     .logout-item {
         background: #ef4444 !important;
+
         color: #fff !important;
+
         text-align: center;
+
         justify-content: center;
+
         font-weight: 700;
+
         margin-top: auto;
+
         border-radius: 12px;
+
         padding: 14px 18px;
+
         text-decoration: none;
+
         transition: 0.2s;
     }
+
 
     .logout-item:hover {
         background: #dc2626 !important;
     }
+
+
+    /* =========================
+       MOBILE
+       ========================= */
+
+    @media (max-width: 600px) {
+
+        .crypto-ticker-bar {
+            padding:
+                17px 10px 19px;
+
+            gap: 4px;
+
+            justify-content: flex-start;
+        }
+
+
+        .crypto-item {
+            min-width: 145px;
+
+            padding:
+                0 8px;
+        }
+
+
+        .crypto-name {
+            font-size: 12px;
+        }
+
+
+        .crypto-price {
+            font-size: 20px;
+        }
+
+
+        .crypto-change {
+            font-size: 12px;
+        }
+
+
+        .top-navbar-wrapper {
+            padding:
+                10px 12px;
+        }
+
+
+        .brand-logo {
+            font-size: 14px;
+        }
+
+
+        .top-balance-box {
+            min-width: 78px;
+
+            padding:
+                6px 8px;
+
+            font-size: 12px;
+        }
+
+    }
+
+
+    /* =========================
+       VERY SMALL SCREEN
+       ========================= */
+
+    @media (max-width: 380px) {
+
+        .brand-logo {
+            font-size: 13px;
+        }
+
+
+        .crypto-item {
+            min-width: 135px;
+        }
+
+
+        .crypto-price {
+            font-size: 18px;
+        }
+
+
+        .crypto-change {
+            font-size: 11px;
+        }
+
+    }
+
 </style>
 
 
@@ -314,17 +679,114 @@
 
 <div class="crypto-ticker-bar">
 
-    <span style="color:#22c55e;">
-        BTC: 64,250 +1.8%
-    </span>
 
-    <span style="color:#3b82f6;">
-        ETH: 3,480 +2.4%
-    </span>
+    <!-- BTC -->
 
-    <span style="color:#eab308;">
-        USDT: 1.00 0.0%
-    </span>
+    <div class="crypto-item">
+
+        <div class="crypto-name">
+            BTC:
+        </div>
+
+        <div class="crypto-value-row">
+
+            <span
+                class="crypto-price btc-price"
+            >
+                64,250
+            </span>
+
+            <span
+                class="crypto-change btc-change"
+            >
+                +1.8%
+            </span>
+
+        </div>
+
+        <div
+            style="
+                color:#d6dbea;
+                font-size:13px;
+            "
+        >
+            $
+        </div>
+
+    </div>
+
+
+    <!-- ETH -->
+
+    <div class="crypto-item">
+
+        <div class="crypto-name">
+            ETH:
+        </div>
+
+        <div class="crypto-value-row">
+
+            <span
+                class="crypto-price eth-price"
+            >
+                3,480
+            </span>
+
+            <span
+                class="crypto-change eth-change"
+            >
+                +2.4%
+            </span>
+
+        </div>
+
+        <div
+            style="
+                color:#d6dbea;
+                font-size:13px;
+            "
+        >
+            $
+        </div>
+
+    </div>
+
+
+    <!-- USDT -->
+
+    <div class="crypto-item">
+
+        <div class="crypto-name">
+            USDT:
+        </div>
+
+        <div class="crypto-value-row">
+
+            <span
+                class="crypto-price usdt-price"
+            >
+                1.00
+            </span>
+
+            <span
+                class="crypto-change usdt-change"
+            >
+                0.0%
+            </span>
+
+        </div>
+
+        <div
+            style="
+                color:#d6dbea;
+                font-size:13px;
+            "
+        >
+            $
+        </div>
+
+    </div>
+
 
 </div>
 
@@ -335,7 +797,9 @@
 
 <div class="top-navbar-wrapper">
 
+
     <div class="nav-left">
+
 
         <button
             class="menu-toggle-btn"
@@ -354,9 +818,26 @@
                 stroke-linejoin="round"
             >
 
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
+                <line
+                    x1="3"
+                    y1="12"
+                    x2="21"
+                    y2="12"
+                ></line>
+
+                <line
+                    x1="3"
+                    y1="6"
+                    x2="21"
+                    y2="6"
+                ></line>
+
+                <line
+                    x1="3"
+                    y1="18"
+                    x2="21"
+                    y2="18"
+                ></line>
 
             </svg>
 
@@ -367,8 +848,15 @@
             href="dashboard.html"
             class="brand-logo"
         >
-            ⚡ <span>BDTMINER</span>
+
+            ⚡
+
+            <span>
+                BDTMINER
+            </span>
+
         </a>
+
 
     </div>
 
@@ -379,6 +867,7 @@
 
     <div class="nav-right">
 
+
         <a
             href="deposit-withdraw.html?type=deposit"
             class="top-balance-box"
@@ -386,7 +875,9 @@
             title="Deposit Money"
         >
 
-            <span id="topBalance">$0.00</span>
+            <span id="topBalance">
+                $0.00
+            </span>
 
             <span class="deposit-symbol">
                 +
@@ -394,7 +885,9 @@
 
         </a>
 
+
     </div>
+
 
 </div>
 
@@ -419,14 +912,23 @@
     id="sidebarMenu"
 >
 
+
     <div class="sidebar-header">
+
 
         <a
             href="dashboard.html"
             class="brand-logo"
         >
-            ⚡ <span>BDTMINER Menu</span>
+
+            ⚡
+
+            <span>
+                BDTMINER Menu
+            </span>
+
         </a>
+
 
         <button
             class="sidebar-close-btn"
@@ -436,10 +938,12 @@
             ✕
         </button>
 
+
     </div>
 
 
     <div class="sidebar-links">
+
 
         <a
             href="index.html"
@@ -512,7 +1016,9 @@
             LOGOUT
         </a>
 
+
     </div>
+
 
 </div>
 
@@ -525,12 +1031,14 @@
 
 (function () {
 
+
     /* ==========================================
        SUPABASE CONFIG
        ========================================== */
 
     const SUPABASE_URL =
         'https://pckocwvuxeseumynslwv.supabase.co';
+
 
     const SUPABASE_KEY =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzkwNjQ3Nzk0LCJleHAiOjIxMDYyMjM3OTR9.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
@@ -542,14 +1050,18 @@
 
     let headerSupabase;
 
+
     try {
+
 
         if (
             window.supabaseClient &&
-            typeof window.supabaseClient.from === 'function'
+            typeof window.supabaseClient.from ===
+            'function'
         ) {
 
-            headerSupabase = window.supabaseClient;
+            headerSupabase =
+                window.supabaseClient;
 
         } else {
 
@@ -561,12 +1073,15 @@
 
         }
 
+
     } catch (error) {
+
 
         console.error(
             'Supabase client error:',
             error
         );
+
 
         return;
 
@@ -574,7 +1089,9 @@
 
 
     let headerCurrentUser = null;
+
     let balanceChannel = null;
+
     let lastBalance = null;
 
 
@@ -584,10 +1101,13 @@
 
     function formatBalance(balance) {
 
+
         const number =
             parseFloat(balance) || 0;
 
+
         return '$ ' + number.toFixed(2);
+
 
     }
 
@@ -598,11 +1118,18 @@
 
     function updateHeaderBalance(balance) {
 
+
         const balanceElement =
-            document.getElementById('topBalance');
+            document.getElementById(
+                'topBalance'
+            );
+
 
         const balanceBox =
-            document.getElementById('topBalanceBox');
+            document.getElementById(
+                'topBalanceBox'
+            );
+
 
         if (!balanceElement) return;
 
@@ -615,32 +1142,43 @@
             formatBalance(newBalance);
 
 
-        /* Animation only when balance actually changes */
+        /* Animation only when balance changes */
 
         if (
             lastBalance !== null &&
-            Number(lastBalance.toFixed(2)) !==
-            Number(newBalance.toFixed(2))
+            Number(
+                lastBalance.toFixed(2)
+            ) !==
+            Number(
+                newBalance.toFixed(2)
+            )
         ) {
 
+
             if (balanceBox) {
+
 
                 balanceBox.classList.remove(
                     'balance-updated'
                 );
 
+
                 void balanceBox.offsetWidth;
+
 
                 balanceBox.classList.add(
                     'balance-updated'
                 );
+
 
             }
 
         }
 
 
-        lastBalance = newBalance;
+        lastBalance =
+            newBalance;
+
 
     }
 
@@ -651,7 +1189,9 @@
 
     async function loadHeaderBalance() {
 
+
         try {
+
 
             const {
                 data: {
@@ -659,15 +1199,19 @@
                 },
                 error: userError
             } =
-                await headerSupabase.auth.getUser();
+                await headerSupabase
+                    .auth
+                    .getUser();
 
 
             if (userError) {
+
 
                 console.error(
                     'User error:',
                     userError
                 );
+
 
                 return;
 
@@ -676,18 +1220,22 @@
 
             if (!user) {
 
+
                 console.log(
                     'No logged-in user.'
                 );
 
+
                 updateHeaderBalance(0);
+
 
                 return;
 
             }
 
 
-            headerCurrentUser = user;
+            headerCurrentUser =
+                user;
 
 
             const {
@@ -703,10 +1251,12 @@
 
             if (error) {
 
+
                 console.error(
                     'Balance fetch error:',
                     error
                 );
+
 
                 return;
 
@@ -715,28 +1265,37 @@
 
             if (
                 profile &&
-                profile.balance !== undefined &&
-                profile.balance !== null
+                profile.balance !==
+                undefined &&
+                profile.balance !==
+                null
             ) {
+
 
                 updateHeaderBalance(
                     profile.balance
                 );
 
+
             } else {
+
 
                 updateHeaderBalance(0);
 
             }
 
+
         } catch (error) {
+
 
             console.error(
                 'Header balance error:',
                 error
             );
 
+
         }
+
 
     }
 
@@ -747,11 +1306,14 @@
 
     function subscribeToBalance() {
 
+
         if (!headerCurrentUser) {
+
 
             console.log(
                 'Realtime: user not ready'
             );
+
 
             return;
 
@@ -762,19 +1324,26 @@
 
         if (balanceChannel) {
 
+
             try {
 
-                headerSupabase.removeChannel(
-                    balanceChannel
-                );
+
+                headerSupabase
+                    .removeChannel(
+                        balanceChannel
+                    );
+
 
             } catch (e) {
+
 
                 console.log(e);
 
             }
 
-            balanceChannel = null;
+
+            balanceChannel =
+                null;
 
         }
 
@@ -798,6 +1367,7 @@
                     Date.now()
                 )
 
+
                 .on(
                     'postgres_changes',
                     {
@@ -805,10 +1375,13 @@
                         schema: 'public',
                         table: 'profiles',
                         filter:
-                            'id=eq.' + userId
+                            'id=eq.' +
+                            userId
                     },
 
+
                     function (payload) {
+
 
                         console.log(
                             'REALTIME BALANCE UPDATE:',
@@ -819,29 +1392,32 @@
                         if (
                             payload &&
                             payload.new &&
-                            payload.new.balance !== undefined
+                            payload.new.balance !==
+                            undefined
                         ) {
+
 
                             updateHeaderBalance(
                                 payload.new.balance
                             );
 
+
                         } else {
 
-                            /*
-                             * If realtime payload doesn't
-                             * contain balance, fetch again.
-                             */
 
                             loadHeaderBalance();
 
                         }
 
+
                     }
+
                 )
+
 
                 .subscribe(
                     function (status) {
+
 
                         console.log(
                             'Balance realtime status:',
@@ -850,39 +1426,50 @@
 
 
                         if (
-                            status === 'SUBSCRIBED'
+                            status ===
+                            'SUBSCRIBED'
                         ) {
+
 
                             console.log(
                                 '✅ Balance realtime connected'
                             );
 
+
                         }
 
 
                         if (
-                            status === 'CHANNEL_ERROR'
+                            status ===
+                            'CHANNEL_ERROR'
                         ) {
+
 
                             console.error(
                                 '❌ Balance realtime channel error'
                             );
 
+
                         }
 
 
                         if (
-                            status === 'TIMED_OUT'
+                            status ===
+                            'TIMED_OUT'
                         ) {
+
 
                             console.error(
                                 '❌ Balance realtime timed out'
                             );
 
+
                         }
+
 
                     }
                 );
+
 
     }
 
@@ -893,14 +1480,18 @@
 
     async function initializeHeaderBalance() {
 
+
         await loadHeaderBalance();
 
 
         if (headerCurrentUser) {
 
+
             subscribeToBalance();
 
+
         }
+
 
     }
 
@@ -909,34 +1500,52 @@
        AUTH LISTENER
        ========================================== */
 
-    headerSupabase.auth.onAuthStateChange(
-        async function (event, session) {
+    headerSupabase
+        .auth
+        .onAuthStateChange(
+            async function (
+                event,
+                session
+            ) {
 
-            console.log(
-                'Auth event:',
-                event
-            );
+
+                console.log(
+                    'Auth event:',
+                    event
+                );
 
 
-            if (session && session.user) {
+                if (
+                    session &&
+                    session.user
+                ) {
 
-                headerCurrentUser =
-                    session.user;
 
-                await loadHeaderBalance();
+                    headerCurrentUser =
+                        session.user;
 
-                subscribeToBalance();
 
-            } else {
+                    await loadHeaderBalance();
 
-                headerCurrentUser = null;
 
-                updateHeaderBalance(0);
+                    subscribeToBalance();
+
+
+                } else {
+
+
+                    headerCurrentUser =
+                        null;
+
+
+                    updateHeaderBalance(0);
+
+
+                }
+
 
             }
-
-        }
-    );
+        );
 
 
     /* ==========================================
@@ -961,14 +1570,18 @@
         'visibilitychange',
         function () {
 
+
             if (
                 document.visibilityState ===
                 'visible'
             ) {
 
+
                 loadHeaderBalance();
 
+
             }
+
 
         }
     );
@@ -990,23 +1603,20 @@
 
     /* ==========================================
        FALLBACK BALANCE REFRESH
-       ==========================================
-
-       Realtime normally handles the update.
-
-       This fallback checks every 10 seconds
-       so balance still updates if the browser
-       temporarily disconnects from Realtime.
-    */
+       ========================================== */
 
     setInterval(
         function () {
 
+
             if (headerCurrentUser) {
+
 
                 loadHeaderBalance();
 
+
             }
+
 
         },
         10000
@@ -1017,31 +1627,37 @@
        SIDEBAR
        ========================================== */
 
-    window.toggleSidebar = function () {
+    window.toggleSidebar =
+        function () {
 
-        const menu =
-            document.getElementById(
-                'sidebarMenu'
+
+            const menu =
+                document.getElementById(
+                    'sidebarMenu'
+                );
+
+
+            const overlay =
+                document.getElementById(
+                    'sidebarOverlay'
+                );
+
+
+            if (!menu || !overlay)
+                return;
+
+
+            menu.classList.toggle(
+                'active'
             );
 
-        const overlay =
-            document.getElementById(
-                'sidebarOverlay'
+
+            overlay.classList.toggle(
+                'active'
             );
 
 
-        if (!menu || !overlay) return;
-
-
-        menu.classList.toggle(
-            'active'
-        );
-
-        overlay.classList.toggle(
-            'active'
-        );
-
-    };
+        };
 
 
     /* ==========================================
@@ -1052,12 +1668,18 @@
         'keydown',
         function (event) {
 
-            if (event.key === 'Escape') {
+
+            if (
+                event.key ===
+                'Escape'
+            ) {
+
 
                 const menu =
                     document.getElementById(
                         'sidebarMenu'
                     );
+
 
                 const overlay =
                     document.getElementById(
@@ -1067,22 +1689,28 @@
 
                 if (menu) {
 
+
                     menu.classList.remove(
                         'active'
                     );
+
 
                 }
 
 
                 if (overlay) {
 
+
                     overlay.classList.remove(
                         'active'
                     );
 
+
                 }
 
+
             }
+
 
         }
     );
@@ -1097,14 +1725,18 @@
         'loading'
     ) {
 
+
         document.addEventListener(
             'DOMContentLoaded',
             initializeHeaderBalance
         );
 
+
     } else {
 
+
         initializeHeaderBalance();
+
 
     }
 
