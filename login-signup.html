@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goldmine Digital - Authentication</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --bg-color: #061913;
+            --card-bg: rgba(12, 38, 29, 0.85);
+            --card-border: rgba(46, 213, 115, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #8da499;
+            --gold-primary: #f5cf66;
+            --gold-gradient: linear-gradient(135deg, #e5ba41 0%, #fbe89d 50%, #b88a1a 100%);
+            --accent-green: #2ed573;
+            --input-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #030d0a;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* Mobile Container Frame */
+        .mobile-container {
+            width: 100%;
+            max-width: 410px;
+            background: var(--bg-color);
+            min-height: 100vh;
+            border-radius: 25px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(46, 213, 115, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 20px;
+        }
+
+        /* Header Logo */
+        .brand-header {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--gold-primary);
+        }
+
+        .brand-logo span {
+            color: #ffffff;
+            font-weight: 400;
+        }
+
+        .brand-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Auth Tabs (Toggle Login / Signup) */
+        .tab-wrapper {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            padding: 4px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--gold-gradient);
+            color: #030d0a;
+            box-shadow: 0 0 10px rgba(245, 207, 102, 0.3);
+        }
+
+        /* Form Container */
+        .auth-form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 12px;
+            color: var(--gold-primary);
+            font-size: 0.9rem;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 12px 12px 12px 38px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-box input:focus {
+            border-color: var(--gold-primary);
+        }
+
+        /* Secret PIN info */
+        .pin-hint {
+            font-size: 0.68rem;
+            color: var(--accent-green);
+            margin-top: 4px;
+        }
+
+        /* Action Button */
+        .btn-gold {
+            width: 100%;
+            padding: 13px;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 25px;
+            color: #030d0a;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(245, 207, 102, 0.4);
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn-gold:active {
+            transform: scale(0.98);
+        }
+
+        /* Security Footer */
+        .security-footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .security-footer i {
+            color: var(--accent-green);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <div>
+            <!-- Header -->
+            <div class="brand-header">
+                <div class="brand-logo">GOLDMINE <span>DIGITAL</span></div>
+                <div class="brand-subtitle">Bank-Grade Vault Investment & Mining</div>
+            </div>
+
+            <!-- Tab Buttons -->
+            <div class="tab-wrapper">
+                <button class="tab-btn active" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+                <button class="tab-btn" id="tab-login" onclick="switchTab('login')">Login</button>
+            </div>
+
+            <!-- Form Container -->
+            <div class="auth-form-card">
+                
+                <!-- SIGNUP FORM -->
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="signup-fullname" placeholder="John Doe" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="signup-email" placeholder="name@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="signup-phone" placeholder="+8801700000000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="signup-password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Secret Security PIN (4-6 Digits)</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <input type="password" id="signup-pin" maxlength="6" placeholder="1234" required>
+                        </div>
+                        <div class="pin-hint"><i class="fa-solid fa-circle-check"></i> Required for Vault Withdrawals & Actions</div>
+                    </div>
+
+                    <button type="submit" class="btn-gold">REGISTER VAULT ACCOUNT</button>
+                </form>
+
+                <!-- LOGIN FORM -->
+                <form id="login-form" class="hidden">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="login-email" placeholder="name@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-gold">ACCESS VAULT</button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Bottom Security Note -->
+        <div class="security-footer">
+            <i class="fa-solid fa-lock"></i> 256-Bit Encrypted & Vault Secured Connection
+        </div>
+    </div>
+
+    <!-- Supabase Integration Script -->
+    <script>
+        // 1. Supabase Initialization (আপনাক নিজস্ব Credentials বসিয়ে নিন)
+        const SUPABASE_URL = "YOUR_SUPABASE_URL";
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 2. Tab Switch Logic
+        function switchTab(type) {
+            const signupForm = document.getElementById('signup-form');
+            const loginForm = document.getElementById('login-form');
+            const tabSignup = document.getElementById('tab-signup');
+            const tabLogin = document.getElementById('tab-login');
+
+            if(type === 'signup') {
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                tabSignup.classList.add('active');
+                tabLogin.classList.remove('active');
+            } else {
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                tabSignup.classList.remove('active');
+                tabLogin.classList.add('active');
+            }
+        }
+
+        // 3. Signup Form Submission to Supabase 'user' Table
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fullName = document.getElementById('signup-fullname').value;
+            const email = document.getElementById('signup-email').value;
+            const phone = document.getElementById('signup-phone').value;
+            const password = document.getElementById('signup-password').value;
+            const secretPin = document.getElementById('signup-pin').value;
+
+            try {
+                // Supabase 'user' টেবিলে নতুন ডেটা ইনসার্ট
+                const { data, error } = await supabase
+                    .from('user')
+                    .insert([
+                        { 
+                            full_name: fullName, 
+                            email: email, 
+                            phone: phone, 
+                            password: password, 
+                            secret_pin: secretPin 
+                        }
+                    ]);
+
+                if (error) {
+                    alert('Error creating account: ' + error.message);
+                } else {
+                    alert('Account created successfully!');
+                    window.location.href = 'home-index.html'; // হোম পেজে রিডাইরেক্ট
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Something went wrong. Please check connection.');
+            }
+        });
+
+        // 4. Login Submission Logic
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const { data, error } = await supabase
+                    .from('user')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password)
+                    .single();
+
+                if (error || !data) {
+                    alert('Invalid Email or Password!');
+                } else {
+                    alert('Login successful! Welcome back, ' + data.full_name);
+                    window.location.href = 'home-index.html';
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Login failed.');
+            }
+        });
+    </script>
+</body>
+</html>
