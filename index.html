@@ -1,799 +1,396 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDTMINER - Smart Mining Platform</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Crypto & Futuristic Tech Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Supabase JS Library SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        /* Applying Orbitron Font for Titles & Tech Text Styles */
-        h1, h2, h3, .logo, .plan-title, .plan-amount, .section-title, .drawer-header, .ticker-item {
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 0.8px;
-        }
-
-        html, body {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-            background-color: #080c14;
-            color: #ffffff;
-            min-height: 100vh;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 0 30px 0;
-            position: relative;
-        }
-
-        /* Global Data Loading Spinner Animation Overlay */
-        #globalLoader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(8, 12, 20, 0.85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
-        }
-        #globalLoader.fade-out {
-            opacity: 0;
-            visibility: hidden;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(245, 158, 11, 0.1);
-            border-top: 4px solid #1E90FF;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Floating Background Crypto Symbols with Animation */
-        .bg-crypto {
-            position: fixed;
-            color: rgba(245, 158, 11, 0.03);
-            font-weight: 700;
-            font-size: 80px;
-            user-select: none;
-            z-index: 0;
-            pointer-events: none;
-            animation: float 6s ease-in-out infinite alternate;
-            font-family: 'Orbitron', sans-serif;
-        }
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-15px) rotate(5deg); }
-        }
-        .bg-btc { top: 10%; left: 2%; }
-        .bg-eth { top: 40%; right: 2%; animation-delay: 1s; }
-        .bg-usdt { top: 70%; left: 3%; animation-delay: 2s; }
-        .bg-usd { bottom: 2%; right: 3%; animation-delay: 3s; }
-
-        /* Top Crypto Live Ticker */
-        .crypto-ticker-bar {
-            width: 100%;
-            background: #020617;
-            border-bottom: 1px solid #1e293b;
-            padding: 6px 8px;
-            font-size: 11px;
-            display: flex;
-            justify-content: space-around;
-            color: #94a3b8;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .ticker-item {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .up { color: #1E90FF; font-weight: 600; }
-        .down { color: #ef4444; font-weight: 600; }
-
-        .app-container {
-            width: 100%;
-            max-width: 440px;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(12px);
-            border-radius: 0 0 24px 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 20px 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-            position: relative;
-            z-index: 1;
-            margin: 0 auto;
-        }
-
-        /* Header Navigation */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .menu-btn {
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: #f59e0b;
-            font-size: 18px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .logo {
-            font-weight: 800;
-            font-size: 18px;
-            color: #f59e0b;
-            text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-            text-transform: uppercase;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .btn-login {
-            background: #1e293b;
-            color: #fff;
-            border: 1px solid #334155;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .btn-signup {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 12px;
-            cursor: pointer;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
-            text-transform: uppercase;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .btn-logout {
-            background: #ef4444;
-            color: #ffffff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-family: 'Space Grotesk', sans-serif;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .user-email-badge {
-            background: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            padding: 6px 10px;
-            border-radius: 15px;
-            font-size: 11px;
-            font-weight: 600;
-            max-width: 120px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Top Bar Balance Badge */
-        .top-balance-badge {
-            background: rgba(245, 158, 11, 0.15);
-            color: #1E90FF;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 700;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        /* Side Menu Drawer */
-        .nav-drawer {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 260px;
-            height: 100%;
-            background: #0f172a;
-            border-right: 1px solid #1e293b;
-            z-index: 1000;
-            transition: 0.3s ease;
-            padding: 20px;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.8);
-        }
-        .nav-drawer.active {
-            left: 0;
-        }
-        .drawer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            font-size: 16px;
-            color: #f59e0b;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #1e293b;
-            padding-bottom: 10px;
-        }
-        .drawer-links {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .drawer-links a {
-            color: #e2e8f0;
-            text-decoration: none;
-            font-size: 14px;
-            padding: 10px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.02);
-            transition: 0.2s;
-            font-weight: 500;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .drawer-links a:hover {
-            background: #1e293b;
-            color: #f59e0b;
-        }
-        .close-drawer {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .hero h1 {
-            font-size: 20px;
-            color: #f59e0b;
-            margin-bottom: 6px;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-        }
-
-        .hero p {
-            font-size: 12px;
-            color: #94a3b8;
-            line-height: 1.4;
-        }
-
-        /* Feasibility Banner */
-        .feasibility-tag {
-            background: rgba(245, 158, 11, 0.08);
-            border: 1px dashed rgba(245, 158, 11, 0.5);
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 12px;
-            color: #1E90FF;
-        }
-        .feasibility-tag strong {
-            color: #1E90FF;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 15px;
-            margin-bottom: 15px;
-            color: #e2e8f0;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* Plan Cards */
-        .plans-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .plan-card {
-            background: rgba(30, 41, 59, 0.7);
-            border-radius: 16px;
-            padding: 20px;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .plan-card.featured {
-            border: 1px solid #f59e0b;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-        }
-
-        .badge-days {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #334155;
-            color: #1E90FF;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .badge-popular {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: #f59e0b;
-            color: #000;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 11px;
-            text-transform: uppercase;
-        }
-
-        .plan-title {
-            font-size: 18px;
-            font-weight: 700;
-            text-align: center;
-            margin-top: 10px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
-
-        .plan-amount {
-            text-align: center;
-            font-size: 22px;
-            font-weight: 800;
-            color: #1E90FF;
-            margin-bottom: 4px;
-        }
-
-        .plan-profit {
-            text-align: center;
-            color: #1E90FF;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .plan-details {
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 13px;
-            color: #cbd5e1;
-            text-align: center;
-        }
-        
-        .plan-details strong {
-            color: #1E90FF;
-        }
-
-        .crypto-badges {
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .crypto-pill {
-            flex: 1;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 6px 4px;
-            text-align: center;
-            font-size: 10px;
-            color: #94a3b8;
-        }
-
-        .crypto-pill span {
-            display: block;
-            color: #1E90FF;
-            font-weight: 600;
-            font-size: 11px;
-        }
-
-        .btn-invest {
-            width: 100%;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            margin-top: 15px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-family: 'Space Grotesk', sans-serif;
-            letter-spacing: 0.5px;
-        }
-
-        /* Floating Telegram Live Chat Button */
-        .telegram-chat-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #2AABEE, #229ED9);
-            color: #ffffff;
-            padding: 10px 16px;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-            box-shadow: 0 8px 25px rgba(42, 171, 238, 0.4);
-            z-index: 9999;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: pulse 2s infinite;
-        }
-
-        .telegram-chat-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(42, 171, 238, 0.6);
-        }
-
-        .telegram-icon {
-            width: 20px;
-            height: 20px;
-            fill: #ffffff;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(42, 171, 238, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(42, 171, 238, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(42, 171, 238, 0); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050b1b">
+<title>Nexora Invest — Transparent Demo Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#050b1b;--panel:#0b1630;--panel2:#0d1d3d;--line:rgba(110,156,255,.22);
+  --text:#f4f7ff;--muted:#9eafd0;--cyan:#21e6ff;--blue:#4c7dff;--purple:#9a54ff;
+  --green:#34f5b4;--gold:#ffcb70;--danger:#ff6689;--radius:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{font-family:Inter,system-ui,sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;
+background:radial-gradient(ellipse at 50% -10%,rgba(65,91,220,.22),transparent 48%),linear-gradient(180deg,#050b1b,#071126 55%,#050a18)}
+button,a{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.ambient{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.ambient:before,.ambient:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;filter:blur(90px);opacity:.12}
+.ambient:before{background:#2d65ff;top:15%;left:-140px}
+.ambient:after{background:#9a36ff;right:-140px;top:55%}
+.app{width:min(100%,480px);min-height:100vh;margin:0 auto;position:relative;z-index:1;padding:0 15px 108px}
+.topline{display:flex;justify-content:space-between;align-items:center;padding:10px 2px 7px;color:#8193b7;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.demo-pill{display:inline-flex;align-items:center;gap:6px;color:#ffe0a5;background:rgba(255,190,84,.09);border:1px solid rgba(255,190,84,.26);border-radius:99px;padding:5px 9px;font-size:9px;font-weight:800;letter-spacing:.08em}
+.demo-pill i{width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 9px var(--gold)}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 1px 19px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:43px;height:43px;border-radius:15px;display:grid;place-items:center;position:relative;background:linear-gradient(145deg,rgba(33,230,255,.24),rgba(154,84,255,.23));border:1px solid rgba(90,180,255,.42);box-shadow:inset 0 0 18px rgba(33,230,255,.1),0 0 25px rgba(66,104,255,.13)}
+.brand-mark svg{width:27px;height:27px}
+.brand-name{font-family:Orbitron,sans-serif;font-size:17px;font-weight:800;letter-spacing:-.04em;white-space:nowrap}
+.brand-name span{color:var(--cyan)}
+.brand-sub{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.04em}
+.header-actions{display:flex;gap:8px;align-items:center}
+.icon-btn{width:38px;height:38px;border-radius:13px;background:rgba(14,29,60,.85);border:1px solid var(--line);color:#cbd9f6;display:grid;place-items:center}
+.icon-btn svg{width:18px;height:18px}
+.btn{border:0;border-radius:13px;padding:11px 15px;font-weight:800;font-size:12px;transition:transform .2s,filter .2s}
+.btn:active{transform:scale(.98)}
+.btn-primary{color:#061126;background:linear-gradient(100deg,var(--cyan),#6588ff 58%,#ad64ff);box-shadow:0 7px 24px rgba(61,133,255,.22)}
+.btn-outline{color:#dbe8ff;background:rgba(15,31,63,.7);border:1px solid rgba(100,147,255,.35)}
+.hero{border:1px solid rgba(83,135,255,.45);border-radius:26px;padding:19px 17px 17px;position:relative;overflow:hidden;background:linear-gradient(120deg,rgba(11,30,67,.97),rgba(8,19,45,.91) 54%,rgba(29,20,68,.88));box-shadow:0 18px 50px rgba(0,0,0,.25),inset 0 0 35px rgba(41,125,255,.07)}
+.hero:before{content:"";position:absolute;inset:-1px;background:linear-gradient(110deg,transparent 15%,rgba(33,230,255,.07) 47%,transparent 75%);transform:translateX(-80%);animation:shine 7s ease-in-out infinite}
+.hero-top{position:relative;z-index:1;display:flex;align-items:center;gap:7px;color:#b9c8e8;font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 10px var(--green)}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr .98fr;gap:4px;align-items:center;margin-top:17px}
+.hero h1{font-size:27px;line-height:1.12;letter-spacing:-.055em;margin-bottom:10px}
+.hero h1 span{display:block;background:linear-gradient(90deg,var(--cyan),#7b8cff 52%,#c17aff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-copy{color:#aebedc;font-size:11px;line-height:1.65;max-width:225px}
+.hero-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px}
+.hero-buttons .btn{padding:12px 13px;font-size:11px}
+.hero-foot{position:relative;z-index:1;display:flex;gap:13px;flex-wrap:wrap;margin-top:17px;color:#a7b9dc;font-size:9px}
+.hero-foot span{display:flex;align-items:center;gap:5px}
+.hero-foot b{color:var(--cyan);font-size:12px}
+.holo-stage{height:210px;position:relative;display:grid;place-items:center;perspective:700px}
+.orbit{position:absolute;width:180px;height:58px;border:1px solid rgba(33,230,255,.72);border-radius:50%;transform:rotate(-22deg);box-shadow:0 0 17px rgba(33,230,255,.17),inset 0 0 15px rgba(33,230,255,.08)}
+.orbit.two{width:155px;height:48px;border-color:rgba(160,89,255,.8);transform:rotate(36deg);animation:orbit 9s linear infinite}
+.platform{position:absolute;bottom:25px;width:170px;height:47px;border-radius:50%;background:linear-gradient(180deg,rgba(39,210,255,.22),rgba(50,58,155,.2));border:2px solid rgba(64,222,255,.75);box-shadow:0 0 23px rgba(33,230,255,.25),inset 0 -12px 15px rgba(104,61,255,.22);transform:rotateX(58deg)}
+.crystal{width:88px;height:100px;position:relative;z-index:2;transform:rotate(0deg);animation:crystalFloat 4s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(33,230,255,.55))}
+.crystal:before{content:"";position:absolute;inset:0;clip-path:polygon(50% 0,100% 27%,83% 78%,50% 100%,17% 78%,0 27%);background:linear-gradient(135deg,rgba(200,255,255,.95),rgba(33,230,255,.45) 26%,rgba(81,101,255,.75) 55%,rgba(186,88,255,.8));border:1px solid rgba(255,255,255,.8)}
+.crystal:after{content:"";position:absolute;inset:2px;clip-path:polygon(50% 0,50% 50%,0 27%);background:rgba(232,255,255,.55)}
+.crystal-core{position:absolute;inset:25px 22px;z-index:2;border-radius:50%;background:rgba(15,34,79,.68);border:1px solid rgba(255,255,255,.65);display:grid;place-items:center;color:#fff;font-family:Orbitron,sans-serif;font-size:21px;text-shadow:0 0 12px var(--cyan);box-shadow:0 0 22px rgba(33,230,255,.5)}
+.coin{position:absolute;z-index:3;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px;border:1px solid rgba(255,255,255,.55);box-shadow:0 0 20px currentColor;animation:coinFloat 4s ease-in-out infinite}
+.coin.c1{top:24px;left:7px;color:#ffcf79;background:linear-gradient(145deg,#ff9c37,#d86a17)}
+.coin.c2{right:2px;top:62px;color:#a7b4ff;background:linear-gradient(145deg,#617cff,#4631b8);animation-delay:-1.5s}
+.coin.c3{left:19px;bottom:28px;color:#8affdb;background:linear-gradient(145deg,#18d7ae,#087f96);animation-delay:-2.5s}
+.spark{position:absolute;width:4px;height:4px;border-radius:50%;background:#b7f9ff;box-shadow:0 0 12px var(--cyan);animation:sparkle 2.4s infinite alternate}
+.spark.s1{top:16%;right:18%}.spark.s2{bottom:29%;right:9%;animation-delay:.7s}.spark.s3{top:47%;left:4%;animation-delay:1.3s}
+.hero-note{position:relative;z-index:1;margin-top:13px;border:1px solid rgba(255,203,112,.2);background:rgba(255,203,112,.055);border-radius:11px;padding:9px 10px;color:#d6c7a9;font-size:9px;line-height:1.5}
+.hero-note strong{color:var(--gold)}
+.balance-card{margin-top:14px;padding:16px;border:1px solid rgba(89,134,255,.37);border-radius:21px;background:linear-gradient(110deg,rgba(28,46,105,.82),rgba(9,26,56,.95));box-shadow:inset 0 0 25px rgba(70,106,255,.07)}
+.balance-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.balance-label{font-size:10px;color:#a9bbdf}
+.balance-value{font-family:Orbitron,sans-serif;font-size:25px;font-weight:700;margin-top:7px;letter-spacing:-.04em;word-break:break-word}
+.balance-change{color:var(--green);font-size:10px;margin-top:6px}
+.wallet-symbol{width:43px;height:43px;flex:0 0 auto;border-radius:15px;background:linear-gradient(145deg,rgba(33,230,255,.23),rgba(115,80,255,.28));border:1px solid rgba(110,175,255,.3);display:grid;place-items:center;font-size:22px}
+.balance-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
+.balance-actions .btn{width:100%;padding:12px 8px}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}
+.quick-item{background:rgba(10,24,52,.84);border:1px solid rgba(93,139,255,.2);border-radius:17px;padding:12px 3px 10px;text-align:center;min-width:0}
+.quick-icon{width:38px;height:38px;border-radius:13px;margin:0 auto 8px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(33,230,255,.16),rgba(130,82,255,.2));border:1px solid rgba(100,163,255,.18);font-size:18px}
+.quick-item b{display:block;font-size:9px;line-height:1.3;font-weight:600;color:#cbd8f4}
+.section{margin-top:24px;scroll-margin-top:15px}
+.section-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-heading h2{font-family:Orbitron,sans-serif;font-size:13px;letter-spacing:-.025em}
+.section-heading small{font-size:9px;color:var(--muted)}
+.text-link{border:0;background:transparent;color:var(--cyan);font-size:10px;font-weight:700}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.plan-card{position:relative;overflow:hidden;padding:14px 12px 12px;border-radius:18px;border:1px solid rgba(104,146,255,.28);background:linear-gradient(145deg,rgba(15,34,72,.97),rgba(7,19,43,.98));min-width:0}
+.plan-card.featured{border-color:rgba(33,230,255,.65);box-shadow:0 0 20px rgba(33,230,255,.08),inset 0 0 22px rgba(33,230,255,.04)}
+.plan-card:after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-40px;top:-45px;background:rgba(117,79,255,.16);filter:blur(20px)}
+.plan-label{font-size:10px;color:#b8c8e8;font-weight:700;position:relative;z-index:1}
+.plan-amount{font-family:Orbitron,sans-serif;font-size:21px;font-weight:800;margin-top:13px;position:relative;z-index:1}
+.plan-amount span{font-family:Inter,sans-serif;font-size:9px;color:#9fb0d2;font-weight:500}
+.plan-duration{font-size:9px;color:#9eafd0;margin-top:5px;position:relative;z-index:1}
+.plan-art{height:53px;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.plan-gem{width:35px;height:40px;clip-path:polygon(50% 0,100% 28%,78% 80%,50% 100%,18% 80%,0 28%);background:linear-gradient(145deg,#d4ffff,#21e6ff 35%,#6d64ff 70%,#d48cff);filter:drop-shadow(0 0 9px rgba(33,230,255,.5));animation:crystalFloat 4s ease-in-out infinite}
+.plan-card:nth-child(2) .plan-gem{background:linear-gradient(145deg,#ffe8ad,#ff9b55 40%,#b44fff)}
+.plan-card:nth-child(3) .plan-gem{background:linear-gradient(145deg,#c2ffec,#28e4a4 45%,#287dff)}
+.plan-card:nth-child(4) .plan-gem{background:linear-gradient(145deg,#f0c7ff,#a54fff 45%,#465dff)}
+.plan-info{display:flex;justify-content:space-between;gap:5px;color:#a7b8da;font-size:9px;padding:8px 0;border-top:1px solid rgba(110,150,230,.13)}
+.plan-info strong{color:#eaf3ff;font-weight:700;text-align:right}
+.plan-card .btn{width:100%;margin-top:10px;padding:10px 5px;font-size:10px}
+.plan-tag{position:absolute;right:8px;top:8px;border-radius:99px;padding:4px 6px;background:rgba(33,230,255,.1);border:1px solid rgba(33,230,255,.25);font-size:7px;color:var(--cyan);font-weight:800;z-index:2}
+.airdrop{position:relative;overflow:hidden;margin-top:15px;border:1px solid rgba(160,87,255,.48);border-radius:18px;padding:15px;background:linear-gradient(110deg,rgba(69,38,135,.56),rgba(16,31,77,.9) 55%,rgba(10,26,57,.95));display:flex;align-items:center;gap:12px}
+.airdrop:after{content:"";position:absolute;width:110px;height:110px;right:-20px;top:-35px;border-radius:50%;background:rgba(159,72,255,.25);filter:blur(25px)}
+.airdrop-icon{width:47px;height:47px;flex:0 0 auto;border-radius:16px;background:linear-gradient(145deg,#7c5cff,#24dfff);display:grid;place-items:center;font-size:23px;box-shadow:0 0 22px rgba(135,90,255,.25)}
+.airdrop-copy{flex:1;position:relative;z-index:1}
+.airdrop-copy h3{font-size:12px;margin-bottom:4px}
+.airdrop-copy p{font-size:9px;line-height:1.45;color:#b6c5e4}
+.airdrop .btn{position:relative;z-index:1;padding:10px 11px;font-size:9px;white-space:nowrap}
+.activity-list{border:1px solid rgba(98,143,255,.22);border-radius:17px;background:rgba(10,24,51,.8);overflow:hidden}
+.activity-row{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid rgba(98,143,255,.12)}
+.activity-row:last-child{border-bottom:0}
+.activity-icon{width:34px;height:34px;border-radius:12px;background:rgba(33,230,255,.1);color:var(--cyan);display:grid;place-items:center;flex:0 0 auto}
+.activity-main{flex:1;min-width:0}
+.activity-main b{font-size:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.activity-main small{font-size:9px;color:var(--muted);display:block;margin-top:4px}
+.activity-amount{text-align:right;font-size:10px;font-weight:800;color:var(--green)}
+.activity-amount small{display:block;color:var(--muted);font-weight:500;margin-top:4px;font-size:8px}
+.empty-state{padding:20px 12px;text-align:center;color:var(--muted);font-size:10px;line-height:1.6}
+.status{display:inline-flex;align-items:center;gap:5px;font-size:8px;color:var(--green);text-transform:uppercase;font-weight:800}
+.status:before{content:"";width:5px;height:5px;background:currentColor;border-radius:50%}
+.status.pending{color:var(--gold)}.status.ended{color:#9eafd0}
+.disclaimer{margin-top:18px;padding:12px;border-radius:13px;border:1px solid rgba(255,203,112,.2);background:rgba(255,203,112,.045);font-size:9px;color:#c9bb9e;line-height:1.6}
+.disclaimer strong{color:var(--gold)}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,480px);z-index:20;padding:10px 13px calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:3px;border-top:1px solid rgba(91,143,255,.24);background:rgba(5,12,30,.94);backdrop-filter:blur(20px)}
+.nav-item{border:0;background:transparent;color:#8295bb;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:8px;padding:3px 0}
+.nav-item span:first-child{font-size:19px;line-height:1.1}
+.nav-item.active{color:var(--cyan)}
+.nav-item.center span:first-child{width:38px;height:38px;border-radius:14px;margin-top:-19px;display:grid;place-items:center;background:linear-gradient(145deg,var(--cyan),#7a65ff);color:#061126;font-size:24px;box-shadow:0 0 24px rgba(77,126,255,.4);border:3px solid #07132d}
+#globalLoader{position:fixed;inset:0;z-index:1000;background:rgba(4,9,22,.97);display:grid;place-items:center;transition:opacity .35s,visibility .35s}
+#globalLoader.fade{opacity:0;visibility:hidden;pointer-events:none}
+.loader-inner{text-align:center}
+.loader-gem{width:44px;height:50px;margin:0 auto 15px;clip-path:polygon(50% 0,100% 28%,80% 80%,50% 100%,20% 80%,0 28%);background:linear-gradient(145deg,#d8ffff,#21e6ff,#8d53ff);animation:crystalFloat 1.4s ease-in-out infinite}
+.loader-inner p{font-size:10px;color:#a8b9d9;letter-spacing:.14em;text-transform:uppercase}
+.toast{position:fixed;z-index:200;left:50%;bottom:90px;transform:translate(-50%,15px);opacity:0;pointer-events:none;transition:.25s;background:#14264a;border:1px solid rgba(33,230,255,.4);color:#edf8ff;padding:11px 15px;border-radius:13px;font-size:11px;max-width:90%;text-align:center;box-shadow:0 10px 35px #0008}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@keyframes shine{0%,25%{transform:translateX(-90%)}65%,100%{transform:translateX(90%)}}
+@keyframes crystalFloat{0%,100%{transform:translateY(0) rotateY(0deg)}50%{transform:translateY(-8px) rotateY(12deg)}}
+@keyframes coinFloat{0%,100%{transform:translateY(0) rotateY(0deg)}50%{transform:translateY(-9px) rotateY(25deg)}}
+@keyframes orbit{to{transform:rotate(396deg)}}
+@keyframes sparkle{from{opacity:.25;transform:scale(.7)}to{opacity:1;transform:scale(1.5)}}
+@media(min-width:390px){.hero h1{font-size:30px}.holo-stage{height:225px}.hero{padding:20px}.app{padding-left:17px;padding-right:17px}}
+@media(max-width:350px){.app{padding-left:10px;padding-right:10px}.hero-grid{grid-template-columns:1fr}.holo-stage{height:165px;grid-row:1}.hero h1{font-size:26px}.hero-copy{max-width:100%}.quick-grid{gap:5px}.quick-item b{font-size:8px}.plans{gap:7px}.plan-card{padding:12px 9px}.plan-amount{font-size:18px}.airdrop{gap:8px;padding:12px}.airdrop .btn{padding:9px 7px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
 </head>
 <body>
+<div class="ambient" aria-hidden="true"></div>
+<div id="globalLoader"><div class="loader-inner"><div class="loader-gem"></div><p>Loading Nexora Demo</p></div></div>
 
-    <!-- Global Loading Animation Overlay -->
-    <div id="globalLoader">
-        <div class="spinner"></div>
-    </div>
-
-    <!-- Floating Background Crypto Symbols -->
-    <div class="bg-crypto bg-btc">₿</div>
-    <div class="bg-crypto bg-eth">Ξ</div>
-    <div class="bg-crypto bg-usdt">₮</div>
-    <div class="bg-crypto bg-usd">$</div>
-
-    <!-- Crypto Market Live Ticker Bar -->
-    <div class="crypto-ticker-bar">
-        <div class="ticker-item">BTC: $<span id="btcPrice" style="color: #1E90FF;">64,250</span> <span id="btcChange" class="up">+1.8%</span></div>
-        <div class="ticker-item">ETH: $<span id="ethPrice" style="color: #1E90FF;">3,480</span> <span id="ethChange" class="up">+2.4%</span></div>
-        <div class="ticker-item">USDT: $<span id="usdtPrice" style="color: #1E90FF;">1.00</span> <span id="usdtChange" class="up">0.0%</span></div>
-    </div>
-
-    <!-- Side Menu Drawer -->
-    <div class="nav-drawer" id="navDrawer">
-        <div class="drawer-header">
-            <span>⚡ BDTMINER Menu</span>
-            <button class="close-drawer" onclick="toggleMenu()">✕</button>
-        </div>
-        <div class="drawer-links" id="drawerLinks">
-            <a href="index.html" onclick="toggleMenu()">Home</a>
-            <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
-            <a href="payout.html">Live Payouts</a>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="verification-details.html">NID Verification <span id="nidStatusSymbol">🛡️</span></a>
-            <a href="account-info.html">Account Info</a>
-            <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
-        </div>
-    </div>
-
-    <div class="app-container">
-        <!-- Header -->
-        <header>
-            <div class="logo-area">
-                <button class="menu-btn" onclick="toggleMenu()">☰</button>
-                <div class="logo">⚡ BDTMINER</div>
-            </div>
-            <div class="nav-buttons" id="navButtons">
-                <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
-                <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
-            </div>
-        </header>
-
-        <!-- Hero Section -->
-        <div class="hero">
-            <h1>Smart Mining Platform</h1>
-            <p>Grow your investment profit safely and reliably with integrated crypto & USD liquidity</p>
-        </div>
-
-        <!-- 5% Feasibility Banner -->
-        <div class="feasibility-tag">
-            ⚡ <strong><span style="color: #1E90FF;">5</span>% Feasibility Fee Active</strong> (USDT / USD Auto-Conversion)
-        </div>
-
-        <div class="section-title" id="plans">Our Profitable Plans</div>
-
-        <!-- Plans List -->
-        <div class="plans-list">
-            
-            <!-- Plan 1: 15 Days -->
-            <div class="plan-card">
-                <div class="badge-days"><span style="color: #1E90FF;">15</span> Days</div>
-                <div class="plan-title"><span style="color: #1E90FF;">5</span> Airdrop</div>
-                <div class="plan-amount"><span style="color: #1E90FF;">10</span>$ Invest</div>
-                <div class="plan-profit"><span style="color: #1E90FF;">15</span> Airdrop <span style="color: #1E90FF;">15</span>$ Return</div>
-
-                <div class="plan-details">
-                    <div>Duration: <strong><span style="color: #1E90FF;">15</span> Days</strong></div>
-                    <div>Total Return: <strong><span style="color: #1E90FF;">15</span>$</strong></div>
-                    <div>Auto Claim System</div>
-                </div>
-
-                <div class="crypto-badges">
-                    <div class="crypto-pill">BTC / USD <span><span style="color: #1E90FF;">5</span>% Fee Cap</span></div>
-                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1E90FF;">5</span>% Buffer</span></div>
-                    <div class="crypto-pill">System Return <span><span style="color: #1E90FF;">95</span>% Net Profit</span></div>
-                </div>
-
-                <button class="btn-invest" onclick="handleInvest('5 Airdrop', 10)">Invest Now</button>
-            </div>
-
-            <!-- Plan 2: 30 Days -->
-            <div class="plan-card featured">
-                <div class="badge-popular">Popular</div>
-                <div class="badge-days"><span style="color: #1E90FF;">30</span> Days</div>
-                <div class="plan-title"><span style="color: #1E90FF;">30</span> AirDrop</div>
-                <div class="plan-amount"><span style="color: #1E90FF;">25</span>$ Invest</div>
-                <div class="plan-profit"><span style="color: #1E90FF;">30</span> Airdrop + Extra <span style="color: #1E90FF;">3</span> Airdrop Bonus</div>
-
-                <div class="plan-details">
-                    <div>Duration: <strong><span style="color: #1E90FF;">30</span> Days</strong></div>
-                    <div>Total Return: <strong><span style="color: #1E90FF;">65</span>$+ Extra <span style="color: #1E90FF;">3</span>$ Bonus</strong></div>
-                    <div>Auto Claim System</div>
-                </div>
-
-                <div class="crypto-badges">
-                    <div class="crypto-pill">ETH / USD <span><span style="color: #1E90FF;">5</span>% Fee Cap</span></div>
-                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1E90FF;">5</span>% Buffer</span></div>
-                    <div class="crypto-pill">System Return <span><span style="color: #1E90FF;">95</span>% Net Profit</span></div>
-                </div>
-
-                <button class="btn-invest" onclick="handleInvest('30 AirDrop', 25)">Invest Now</button>
-            </div>
-
-            <!-- Plan 3: 45 Days -->
-            <div class="plan-card">
-                <div class="badge-days"><span style="color: #1E90FF;">45</span> Days</div>
-                <div class="plan-title"><span style="color: #1E90FF;">60</span> AirDrop</div>
-                <div class="plan-amount"><span style="color: #1E90FF;">50</span>$ Invest</div>
-                <div class="plan-profit"><span style="color: #1E90FF;">60</span> Airdrop + Extra <span style="color: #1E90FF;">5</span> Airdrop Bonus</div>
-
-                <div class="plan-details">
-                    <div>Duration: <strong><span style="color: #1E90FF;">45</span> Days</strong></div>
-                    <div>Total Return: <strong><span style="color: #1E90FF;">135</span>$+ Extra <span style="color: #1E90FF;">5</span>$ Bonus</strong></div>
-                    <div>Auto Claim System</div>
-                </div>
-
-                <div class="crypto-badges">
-                    <div class="crypto-pill">SOL / USD <span><span style="color: #1E90FF;">5</span>% Fee Cap</span></div>
-                    <div class="crypto-pill">USDT Yield <span>+<span style="color: #1E90FF;">5</span>% Buffer</span></div>
-                    <div class="crypto-pill">System Return <span><span style="color: #1E90FF;">95</span>% Net Profit</span></div>
-                </div>
-
-                <button class="btn-invest" onclick="handleInvest('60 AirDrop', 50)">Invest Now</button>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Telegram Live Chat Floating Button -->
-    <a href="https://t.me/your_telegram" target="_blank" class="telegram-chat-btn">
-        <svg class="telegram-icon" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.38-.49 1.07-.75 4.19-1.82 6.98-3.02 8.37-3.6 3.98-1.66 4.81-1.95 5.35-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.16-.03.22z"/>
-        </svg>
-        <span>Live Chat</span>
+<div class="app">
+  <div class="topline"><span>✦ FUTURE FINANCE UI</span><span class="demo-pill"><i></i> SIMULATION DEMO</span></div>
+  <header>
+    <a class="brand" href="index.html" aria-label="Nexora Invest Home">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2 28 9v14l-12 7L4 23V9L16 2Z" stroke="#6df5ff" stroke-width="1.4"/><path d="M16 2v28M4 9l24 14M28 9 4 23" stroke="#a9a0ff" stroke-width="1.2"/><path d="m16 7 7 4v8l-7 5-7-5v-8l7-4Z" fill="#22dfff" fill-opacity=".45"/></svg>
+      </div>
+      <div><div class="brand-name">NEXORA <span>INVEST</span></div><div class="brand-sub">Explore a virtual asset universe</div></div>
     </a>
+    <div class="header-actions" id="navButtons">
+      <button class="btn btn-outline" onclick="goSignup()">Log in</button>
+      <button class="btn btn-primary" onclick="goSignup()">Join</button>
+    </div>
+  </header>
 
-    <!-- Supabase Integration Script -->
-    <script>
-        const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <main>
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-top"><span class="live-dot"></span> Transparent virtual asset lab <span style="margin-left:auto;color:#93a8d0">Nº 001</span></div>
+      <div class="hero-grid">
+        <div>
+          <h1 id="heroTitle">Invest in the <span>Impossible.</span></h1>
+          <p class="hero-copy">Explore NOVA, a fictional digital asset concept. Preview a transparent investment-style dashboard in a futuristic app experience.</p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="showToast('Demo preview only — no real investment is processed.')">Explore Demo <span aria-hidden="true">↗</span></button>
+            <button class="btn btn-outline" onclick="document.getElementById('plans').scrollIntoView({behavior:'smooth'})">View Plans</button>
+          </div>
+        </div>
+        <div class="holo-stage" aria-label="Animated fictional holographic NOVA crystal">
+          <div class="orbit"></div><div class="orbit two"></div><div class="platform"></div>
+          <div class="crystal"><div class="crystal-core">N</div></div>
+          <div class="coin c1">N</div><div class="coin c2">✦</div><div class="coin c3">◇</div>
+          <i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i>
+        </div>
+      </div>
+      <div class="hero-foot"><span><b>✧</b> Transparent UI</span><span><b>◈</b> Demo asset</span><span><b>⌁</b> Animated hologram</span></div>
+      <div class="hero-note"><strong>Demo notice:</strong> NOVA is fictional. Any rates, sample plans or projected values shown in this interface are illustrative only—not real earnings or guaranteed returns.</div>
+    </section>
 
-        function toggleMenu() {
-            document.getElementById('navDrawer').classList.toggle('active');
-        }
+    <section class="balance-card" aria-label="Account balance">
+      <div class="balance-top">
+        <div style="display:flex;align-items:center;gap:11px;min-width:0">
+          <div class="wallet-symbol">▣</div>
+          <div style="min-width:0"><div class="balance-label">Your Account Balance</div><div class="balance-value" id="balanceValue">$0.00</div><div class="balance-change" id="balanceCaption">Sign in to view your account</div></div>
+        </div>
+      </div>
+      <div class="balance-actions">
+        <button class="btn btn-primary" onclick="handleAccountAction('deposit')">＋ Deposit</button>
+        <button class="btn btn-outline" onclick="handleAccountAction('withdraw')">－ Withdraw</button>
+      </div>
+    </section>
 
-        async function loadUserProfile() {
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
+    <section class="quick-grid" aria-label="Quick actions">
+      <a class="quick-item" href="#myInvestments"><div class="quick-icon">◈</div><b>My Plans</b></a>
+      <a class="quick-item" href="#rewards"><div class="quick-icon">🎁</div><b>Rewards</b></a>
+      <a class="quick-item" href="#rewards"><div class="quick-icon">✧</div><b>Airdrop</b></a>
+      <a class="quick-item" href="account-info.html"><div class="quick-icon">♙</div><b>My Profile</b></a>
+    </section>
 
-                const navButtons = document.getElementById('navButtons');
-                const drawerLinks = document.getElementById('drawerLinks');
+    <section class="section" id="plans">
+      <div class="section-heading"><h2>Explore Demo Plans</h2><small>FICTIONAL ASSET</small></div>
+      <div class="plans">
+        <article class="plan-card">
+          <span class="plan-tag">STARTER</span><div class="plan-label">NOVA Seed</div>
+          <div class="plan-amount">$10 <span>sample</span></div><div class="plan-duration">Illustrative term · 15 days</div>
+          <div class="plan-art"><div class="plan-gem"></div></div>
+          <div class="plan-info"><span>Asset</span><strong>NOVA / Demo</strong></div>
+          <div class="plan-info"><span>Term</span><strong>15 days</strong></div>
+          <button class="btn btn-primary" onclick="handleInvest('NOVA Seed',10,15)">Preview Plan ↗</button>
+        </article>
+        <article class="plan-card featured">
+          <span class="plan-tag">FEATURED</span><div class="plan-label">NOVA Orbit</div>
+          <div class="plan-amount">$25 <span>sample</span></div><div class="plan-duration">Illustrative term · 30 days</div>
+          <div class="plan-art"><div class="plan-gem"></div></div>
+          <div class="plan-info"><span>Asset</span><strong>NOVA / Demo</strong></div>
+          <div class="plan-info"><span>Term</span><strong>30 days</strong></div>
+          <button class="btn btn-primary" onclick="handleInvest('NOVA Orbit',25,30)">Preview Plan ↗</button>
+        </article>
+        <article class="plan-card">
+          <span class="plan-tag">ADVANCED</span><div class="plan-label">NOVA Nebula</div>
+          <div class="plan-amount">$50 <span>sample</span></div><div class="plan-duration">Illustrative term · 45 days</div>
+          <div class="plan-art"><div class="plan-gem"></div></div>
+          <div class="plan-info"><span>Asset</span><strong>NOVA / Demo</strong></div>
+          <div class="plan-info"><span>Term</span><strong>45 days</strong></div>
+          <button class="btn btn-primary" onclick="handleInvest('NOVA Nebula',50,45)">Preview Plan ↗</button>
+        </article>
+        <article class="plan-card">
+          <span class="plan-tag">COSMIC</span><div class="plan-label">NOVA Infinity</div>
+          <div class="plan-amount">$100 <span>sample</span></div><div class="plan-duration">Illustrative term · 60 days</div>
+          <div class="plan-art"><div class="plan-gem"></div></div>
+          <div class="plan-info"><span>Asset</span><strong>NOVA / Demo</strong></div>
+          <div class="plan-info"><span>Term</span><strong>60 days</strong></div>
+          <button class="btn btn-primary" onclick="handleInvest('NOVA Infinity',100,60)">Preview Plan ↗</button>
+        </article>
+      </div>
+      <div class="disclaimer"><strong>Important:</strong> Plan amounts are visual examples only. This page does not promise a profit, create a deposit, or execute an investment. “Preview Plan” opens the existing dashboard route for review; it does not write a new record into <code>user_plan</code>.</div>
+    </section>
 
-                let nidSymbol = '🛡'; // Default বা আনভেরিফাইড হলে শিল্ড আইকন দেখাবে
+    <section class="section" id="rewards">
+      <div class="airdrop">
+        <div class="airdrop-icon">✧</div>
+        <div class="airdrop-copy"><h3>NOVA Genesis Airdrop</h3><p>Preview a fictional token reward campaign. No real token or cash value is issued.</p></div>
+        <button class="btn btn-primary" onclick="showToast('NOVA Airdrop is a visual demo — no token is issued.')">Explore ↗</button>
+      </div>
+    </section>
 
-                if (user) {
-                    const { data: profile } = await supabaseClient
-                        .from('profiles')
-                        .select('balance, verification_status')
-                        .eq('id', user.id)
-                        .single();
+    <section class="section" id="myInvestments">
+      <div class="section-heading"><h2>My Investments</h2><button class="text-link" onclick="loadAccountData()">↻ Refresh</button></div>
+      <div class="activity-list" id="investmentList"><div class="empty-state">Sign in to load your investment records from <b>user_plan</b>.</div></div>
+    </section>
 
-                    if (profile) {
-                        const userBalance = profile.balance !== undefined ? parseFloat(profile.balance).toFixed(2) : '0.00';
+    <section class="section" id="activity">
+      <div class="section-heading"><h2>Account Snapshot</h2><small>FROM YOUR PROFILE</small></div>
+      <div class="activity-list" id="accountSnapshot">
+        <div class="activity-row"><div class="activity-icon">◉</div><div class="activity-main"><b>Account status</b><small>Sign in to load your profile</small></div><div class="activity-amount" style="color:var(--muted)">—</div></div>
+      </div>
+    </section>
+    <div class="disclaimer"><strong>Safety note:</strong> This front-end uses the Supabase anon key and relies on your database Row Level Security (RLS) policies. Never expose a service-role key or store plaintext passwords/secret PINs in a readable profile table.</div>
+  </main>
+</div>
 
-                        navButtons.innerHTML = `
-                            <div class="top-balance-badge" onclick="window.location.href='dashboard.html'" style="cursor:pointer;" title="Current Balance">$${userBalance}</div>
-                        `;
+<nav class="bottom-nav" aria-label="Main navigation">
+  <a class="nav-item active" href="index.html"><span>⌂</span><span>Home</span></a>
+  <a class="nav-item" href="#plans"><span>◈</span><span>Explore</span></a>
+  <button class="nav-item center" onclick="document.getElementById('plans').scrollIntoView({behavior:'smooth'})"><span>＋</span><span>Preview</span></button>
+  <a class="nav-item" href="#rewards"><span>♧</span><span>Rewards</span></a>
+  <a class="nav-item" href="account-info.html"><span>♙</span><span>Profile</span></a>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-                        // verification_status অনুযায়ী সঠিক সিম্বল নির্ধারণ করা (approved-এর জন্য শিল্ড 🛡️ আইকন)
-                        const vStatus = profile.verification_status ? profile.verification_status.toLowerCase().trim() : '';
-                        
-                        if (vStatus === 'approved') {
-                            nidSymbol = '🛡️';
-                        } else if (vStatus === 'pending') {
-                            nidSymbol = '⏳';
-                        } else if (vStatus === 'unverified') {
-                            nidSymbol = '❌';
-                        } else {
-                            nidSymbol = '🛡️️';
-                        }
-                    }
+<script>
+  // Public Supabase project URL + anon key. Keep RLS enabled on all user-owned tables.
+  const SUPABASE_URL = 'https://pckocwvuxeseumynslwv.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2IiwiaWF0IjoxNzkwNjQ3NzkwLCJleHAiOjIxMDYyMjM3OTB9.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-                    drawerLinks.innerHTML = `
-                        <a href="index.html" onclick="toggleMenu()">Home</a>
-                        <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
-                        <a href="payout.html">Live Payouts</a>
-                        <a href="dashboard.html">Dashboard</a>
-                        <a href="verification-details.html">NID Verification <span id="nidStatusSymbol">${nidSymbol}</span></a>
-                        <a href="account-info.html">Account Info</a>
-                        <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
-                        <button class="btn-logout" onclick="handleLogout()">Logout</button>
-                    `;
-                } else {
-                    navButtons.innerHTML = `
-                        <button class="btn-login" onclick="window.location.href='signup.html'">Login</button>
-                        <button class="btn-signup" onclick="window.location.href='signup.html'">Sign Up</button>
-                    `;
+  function goSignup(){ window.location.href = 'signup.html'; }
+  function showToast(message){
+    const el = document.getElementById('toast');
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(()=>el.classList.remove('show'), 3000);
+  }
+  function money(value){
+    const n = Number(value);
+    return Number.isFinite(n) ? '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '$0.00';
+  }
+  function escapeHTML(value){
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[ch]));
+  }
+  function handleAccountAction(action){
+    showToast((action === 'deposit' ? 'Deposit' : 'Withdraw') + ' is not connected yet. Add a secure server-side transaction flow before enabling real funds.');
+  }
+  function handleInvest(planName, amount, duration){
+    // This is intentionally a preview only; it does not deduct balance or create a user_plan row.
+    const params = new URLSearchParams({plan:planName, amount:String(amount), duration:String(duration), mode:'demo'});
+    showToast('Opening demo plan preview…');
+    setTimeout(()=>{ window.location.href = 'dashboard.html?' + params.toString(); }, 450);
+  }
+  function formatDate(value){
+    if(!value) return 'Date not set';
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? 'Date not set' : d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+  }
+  function statusClass(status){
+    const s = String(status || '').toLowerCase();
+    if(['active','approved','completed','success'].includes(s)) return 'status';
+    if(['pending','processing','review'].includes(s)) return 'status pending';
+    return 'status ended';
+  }
+  async function loadAccountData(){
+    const loader = document.getElementById('globalLoader');
+    try{
+      const {data:{user}, error:authError} = await supabaseClient.auth.getUser();
+      const navButtons = document.getElementById('navButtons');
+      if(authError) throw authError;
 
-                    drawerLinks.innerHTML = `
-                        <a href="index.html" onclick="toggleMenu()">Home</a>
-                        <a href="#plans" onclick="toggleMenu()">Mining Plans</a>
-                        <a href="payout.html">Live Payouts</a>
-                        <a href="dashboard.html">Dashboard</a>
-                        <a href="verification-details.html">NID Verification <span id="nidStatusSymbol">${nidSymbol}</span></a>
-                        <a href="account-info.html">Account Info</a>
-                        <a href="https://t.me/your_telegram" target="_blank">Contact Support</a>
-                    `;
-                }
-            } catch (error) {
-                console.error("Error loading user profile:", error);
-            } finally {
-                // ডেটা লোড সম্পন্ন হওয়া মাত্রই অ্যানিমেশন স্ক্রিনটি ফেড আউট হয়ে হারিয়ে যাবে
-                const loader = document.getElementById('globalLoader');
-                if (loader) {
-                    loader.classList.add('fade-out');
-                    setTimeout(() => loader.remove(), 400);
-                }
-            }
-        }
+      if(!user){
+        navButtons.innerHTML = '<button class="btn btn-outline" onclick="goSignup()">Log in</button><button class="btn btn-primary" onclick="goSignup()">Join</button>';
+        document.getElementById('balanceValue').textContent = '$0.00';
+        document.getElementById('balanceCaption').textContent = 'Sign in to view your account';
+        document.getElementById('investmentList').innerHTML = '<div class="empty-state">No account connected. Log in to see your own investment records.</div>';
+        document.getElementById('accountSnapshot').innerHTML = '<div class="activity-row"><div class="activity-icon">◉</div><div class="activity-main"><b>Account status</b><small>Please log in to load your profile</small></div><div class="activity-amount" style="color:var(--muted)">—</div></div>';
+        return;
+      }
 
-        // Live Crypto Ticker Simulation Logic
-        let btcVal = 64250.00;
-        let ethVal = 3480.00;
-        let usdtVal = 1.00;
+      navButtons.innerHTML = '<button class="btn btn-outline" onclick="window.location.href=\'account-info.html\'">Profile ↗</button>';
+      const [profileResult, planResult] = await Promise.all([
+        supabaseClient.from('profiles').select('id,email,balance,total_withdraw,status,full_name,verification_status').eq('id',user.id).maybeSingle(),
+        supabaseClient.from('user_plan').select('id,user_id,plan_name,invested_amount,daily_profit,total_return,duration_days,start_date,end_date,status').eq('user_id',user.id).order('start_date',{ascending:false}).limit(10)
+      ]);
 
-        function updateTicker() {
-            // BTC Random Fluctuation
-            const btcChangeAmount = (Math.random() * 40 - 19.5);
-            btcVal += btcChangeAmount;
-            const btcPercent = (btcChangeAmount / (btcVal - btcChangeAmount)) * 100;
+      if(profileResult.error) console.warn('Profile load:',profileResult.error.message);
+      if(planResult.error) console.warn('Investment load:',planResult.error.message);
 
-            // ETH Random Fluctuation
-            const ethChangeAmount = (Math.random() * 10 - 4.8);
-            ethVal += ethChangeAmount;
-            const ethPercent = (ethChangeAmount / (ethVal - ethChangeAmount)) * 100;
+      const profile = profileResult.data;
+      const plans = planResult.data || [];
+      if(profile){
+        document.getElementById('balanceValue').textContent = money(profile.balance);
+        document.getElementById('balanceCaption').textContent = (profile.full_name ? 'Welcome, ' + profile.full_name : (profile.email || user.email || 'Signed in')) + ' · ' + (profile.status || 'Account');
+        document.getElementById('accountSnapshot').innerHTML = `
+          <div class="activity-row"><div class="activity-icon">♙</div><div class="activity-main"><b>${escapeHTML(profile.full_name || 'Member account')}</b><small>${escapeHTML(profile.email || user.email || 'Email not available')}</small></div><div class="activity-amount"><span class="${statusClass(profile.status)}">${escapeHTML(profile.status || 'unknown')}</span></div></div>
+          <div class="activity-row"><div class="activity-icon">↗</div><div class="activity-main"><b>Total withdrawals</b><small>Recorded in profiles.total_withdraw</small></div><div class="activity-amount">${money(profile.total_withdraw)}</div></div>
+          <div class="activity-row"><div class="activity-icon">🛡</div><div class="activity-main"><b>Verification</b><small>Identity verification status</small></div><div class="activity-amount"><span class="${statusClass(profile.verification_status)}">${escapeHTML(profile.verification_status || 'unknown')}</span></div></div>`;
+      }else{
+        document.getElementById('accountSnapshot').innerHTML = '<div class="empty-state">Profile row was not found. Check that profiles.id matches the authenticated user UUID and that RLS permits the user to read their own row.</div>';
+      }
 
-            // USDT Slight Fluctuation
-            const usdtChangeAmount = (Math.random() * 0.002 - 0.001);
-            usdtVal += usdtChangeAmount;
-            if(usdtVal < 0.99) usdtVal = 0.99;
-            if(usdtVal > 1.01) usdtVal = 1.01;
-            const usdtPercent = ((usdtVal - 1.00) / 1.00) * 100;
+      if(plans.length){
+        document.getElementById('investmentList').innerHTML = plans.map(p=>`
+          <div class="activity-row">
+            <div class="activity-icon">◈</div>
+            <div class="activity-main">
+              <b>${escapeHTML(p.plan_name || 'Investment plan')}</b>
+              <small>${escapeHTML(p.duration_days ?? '—')} days · ${formatDate(p.start_date)} – ${formatDate(p.end_date)}</small>
+              <small>Invested ${money(p.invested_amount)} · Daily figure ${money(p.daily_profit)}</small>
+            </div>
+            <div class="activity-amount">${money(p.total_return)}<small><span class="${statusClass(p.status)}">${escapeHTML(p.status || 'unknown')}</span></small></div>
+          </div>`).join('');
+      }else{
+        document.getElementById('investmentList').innerHTML = '<div class="empty-state">No investment records were found in <b>user_plan</b> for this account.</div>';
+      }
+    }catch(err){
+      console.error('Could not load account data:',err);
+      document.getElementById('balanceCaption').textContent = 'Could not load account data';
+      document.getElementById('investmentList').innerHTML = '<div class="empty-state">Data could not be loaded. Check Supabase connectivity, table columns, and Row Level Security policies.</div>';
+    }finally{
+      if(loader){loader.classList.add('fade');setTimeout(()=>loader.remove(),400);}
+    }
+  }
 
-            // DOM Update helpers
-            setTickerData('btcPrice', 'btcChange', btcVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), btcPercent);
-            setTickerData('ethPrice', 'ethChange', ethVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), ethPercent);
-            setTickerData('usdtPrice', 'usdtChange', usdtVal.toFixed(2), usdtPercent);
-        }
-
-        function setTickerData(priceId, changeId, priceStr, percentVal) {
-            document.getElementById(priceId).innerText = priceStr;
-            const changeEl = document.getElementById(changeId);
-            const formattedPercent = (percentVal >= 0 ? "+" : "") + percentVal.toFixed(2) + "%";
-            changeEl.innerText = formattedPercent;
-            
-            if (percentVal >= 0) {
-                changeEl.className = "up";
-            } else {
-                changeEl.className = "down";
-            }
-        }
-
-        // Run ticker every 3 seconds
-        setInterval(updateTicker, 3000);
-
-        // Direct Navigation Logic to dashboard.html
-        function handleInvest(planName, amount) {
-            window.location.href = `dashboard.html?plan=${encodeURIComponent(planName)}&amount=${amount}`;
-        }
-
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
-            window.location.reload();
-        }
-
-        loadUserProfile();
-    </script>
+  document.addEventListener('DOMContentLoaded',loadAccountData);
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+    if(event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') loadAccountData();
+  });
+</script>
 </body>
 </html>
