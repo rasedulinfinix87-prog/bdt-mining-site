@@ -8,19 +8,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chart.js CDN for Real-time Chart -->
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
             --bg-color: #061913;
-            --card-bg: rgba(12, 38, 29, 0.75);
-            --card-border: rgba(46, 213, 115, 0.2);
+            --card-bg: rgba(12, 38, 29, 0.85);
+            --card-border: rgba(46, 213, 115, 0.25);
             --text-primary: #ffffff;
             --text-secondary: #8da499;
             --gold-primary: #f5cf66;
             --gold-gradient: linear-gradient(135deg, #e5ba41 0%, #fbe89d 50%, #b88a1a 100%);
             --accent-green: #2ed573;
+            --accent-cyan: #00e5ff;
         }
 
         * {
@@ -31,27 +32,27 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Fix landing page without unwanted scroll */
             background-color: #030d0a;
             color: var(--text-primary);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 0;
         }
 
         /* Mobile Container Frame */
         .mobile-container {
             width: 100%;
             max-width: 410px;
+            height: 100vh;
+            max-height: 890px;
             background: var(--bg-color);
-            min-height: 100vh;
             border-radius: 25px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(46, 213, 115, 0.15);
-            position: relative;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(46, 213, 115, 0.15);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -59,19 +60,20 @@
 
         /* Header */
         header {
-            padding: 20px 20px 10px 20px;
+            padding: 18px 20px 8px 20px;
             text-align: center;
         }
 
         .brand-logo {
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             color: var(--gold-primary);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
+            text-shadow: 0 0 10px rgba(245, 207, 102, 0.3);
         }
 
         .brand-logo span {
@@ -79,22 +81,24 @@
             font-weight: 400;
         }
 
-        /* Main Content */
+        /* Main Content Fixed Layout */
         .content {
             padding: 10px 16px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
+            flex-grow: 1;
+            justify-content: center;
         }
 
-        /* Card Container */
+        /* Card Container with Premium Glow */
         .dashboard-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 14px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
         }
 
         .card-header {
@@ -108,12 +112,12 @@
             font-size: 0.72rem;
             color: var(--text-secondary);
             font-weight: 600;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
             text-transform: uppercase;
         }
 
         .price-badge {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #fff;
         }
@@ -125,74 +129,77 @@
             margin-left: 5px;
         }
 
-        /* Chart Wrapper */
+        /* Enhanced High-End Chart Wrapper */
         .chart-box {
             width: 100%;
-            height: 100px;
-            margin-top: 5px;
+            height: 110px;
+            margin-top: 6px;
+            position: relative;
         }
 
-        /* Crypto & Dollar Grid inside second box */
-        .crypto-grid {
+        /* Crypto Section with Live Chart */
+        .crypto-container {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-top: 6px;
         }
 
-        .crypto-item {
+        .crypto-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 10px;
+            padding: 8px 12px;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .crypto-info {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             font-weight: 600;
         }
 
         .crypto-info i {
             color: var(--gold-primary);
+            font-size: 1rem;
         }
 
         .crypto-val {
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             font-weight: 700;
         }
 
         /* Holdings Section */
         .holdings-box {
-            margin-top: 2px;
+            padding: 0 4px;
         }
 
         .holdings-title {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
         }
 
         .progress-bar-bg {
             width: 100%;
-            height: 6px;
+            height: 7px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             overflow: hidden;
         }
 
         .progress-bar-fill {
-            width: 65%;
+            width: 68%;
             height: 100%;
             background: var(--accent-green);
             border-radius: 10px;
-            box-shadow: 0 0 8px var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
         }
 
         /* CTA Button */
@@ -204,44 +211,20 @@
             border-radius: 25px;
             color: #030d0a;
             font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
+            font-size: 0.92rem;
+            letter-spacing: 0.6px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(245, 207, 102, 0.4);
-            margin-top: 5px;
-            transition: transform 0.2s;
+            box-shadow: 0 0 20px rgba(245, 207, 102, 0.45);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .btn-gold:active {
             transform: scale(0.98);
         }
 
-        /* Bottom Nav */
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 12px 0 16px 0;
-            background: rgba(3, 13, 10, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            color: var(--text-secondary);
-            font-size: 0.65rem;
-            text-decoration: none;
-        }
-
-        .nav-item.active {
-            color: var(--gold-primary);
-        }
-
-        .nav-item i {
-            font-size: 1.1rem;
+        /* External Bottom Nav Placeholder */
+        #bottom-nav-container {
+            width: 100%;
         }
     </style>
 </head>
@@ -258,111 +241,118 @@
         <!-- Main Dashboard Content -->
         <div class="content">
             
-            <!-- Box 1: Real-time Gold Price & Graph -->
+            <!-- Box 1: Premium Real-time Gold Price & Graph -->
             <div class="dashboard-card">
-                <div class="card-title">CURRENT GOLD PRICE:</div>
+                <div class="card-title">CURRENT GOLD PRICE</div>
                 <div class="price-badge">
                     $<span id="gold-price">2,180.35</span>/oz 
-                    <span class="badge-green">(UP +<span id="gold-change">1.2</span>%)</span>
+                    <span class="badge-green">(UP +<span id="gold-change">1.4</span>%)</span>
                 </div>
                 <div class="chart-box">
                     <canvas id="goldChart"></canvas>
                 </div>
             </div>
 
-            <!-- Box 2: Crypto & Dollar Market Rates -->
+            <!-- Box 2: Crypto Rates with Dedicated Live Chart -->
             <div class="dashboard-card">
                 <div class="card-header">
-                    <div class="card-title">MARKET RATES (CRYPTO & DOLLAR)</div>
+                    <div class="card-title">MARKET RATES (CRYPTO LIVE GRAPH)</div>
                     <span class="badge-green" style="font-size:0.65rem;"><i class="fa-solid fa-circle" style="font-size:0.4rem;"></i> LIVE</span>
                 </div>
                 
-                <div class="crypto-grid">
-                    <!-- Bitcoin Rate -->
-                    <div class="crypto-item">
+                <div class="crypto-container">
+                    <div class="crypto-row">
                         <div class="crypto-info">
                             <i class="fa-brands fa-bitcoin"></i>
-                            <span>Bitcoin (BTC)</span>
+                            <span>BTC / USD</span>
                         </div>
                         <div class="crypto-val">$<span id="btc-price">65,420.00</span></div>
                     </div>
 
-                    <!-- Ethereum Rate -->
-                    <div class="crypto-item">
-                        <div class="crypto-info">
-                            <i class="fa-brands fa-ethereum"></i>
-                            <span>Ethereum (ETH)</span>
-                        </div>
-                        <div class="crypto-val">$<span id="eth-price">3,480.50</span></div>
-                    </div>
-
-                    <!-- USDT / Dollar Index Rate -->
-                    <div class="crypto-item">
-                        <div class="crypto-info">
-                            <i class="fa-solid fa-dollar-sign"></i>
-                            <span>USD / USDT Rate</span>
-                        </div>
-                        <div class="crypto-val">$<span id="usdt-price">1.00</span></div>
+                    <!-- Crypto Real-time Graph Box -->
+                    <div class="chart-box" style="height: 75px;">
+                        <canvas id="cryptoChart"></canvas>
                     </div>
                 </div>
             </div>
 
             <!-- Holdings Section -->
             <div class="holdings-box">
-                <div class="holdings-title">MY HOLDINGS: 15.3 oz</div>
+                <div class="holdings-title">
+                    <span>MY HOLDINGS</span>
+                    <span style="color:var(--gold-primary)">15.3 oz</span>
+                </div>
                 <div class="progress-bar-bg">
                     <div class="progress-bar-fill"></div>
                 </div>
             </div>
 
             <!-- Start Investing CTA Button -->
-            <button class="btn-gold" onclick="window.location.href='signup.html'">START INVESTING</button>
+            <button class="btn-gold" onclick="window.location.href='login-signup.html'">START INVESTING</button>
 
         </div>
 
-        <!-- Bottom Navigation Bar -->
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active">
-                <i class="fa-solid fa-house"></i>
-                <span>Home</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-vault"></i>
-                <span>Vault</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-chart-pie"></i>
-                <span>Portfolio</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-store"></i>
-                <span>Market</span>
-            </a>
-        </nav>
+        <!-- Dynamic Bottom Nav Connection -->
+        <div id="bottom-nav-container"></div>
     </div>
 
-    <!-- JavaScript Logic for Live Updating Chart & Prices -->
+    <!-- Script Section -->
     <script>
-        // Setup Chart.js Real-time Gold Chart
-        const ctx = document.getElementById('goldChart').getContext('2d');
-        
-        // Gradient background under line
-        const gradient = ctx.createLinearGradient(0, 0, 0, 100);
-        gradient.addColorStop(0, 'rgba(245, 207, 102, 0.35)');
-        gradient.addColorStop(1, 'rgba(245, 207, 102, 0)');
+        // 1. Fetch & Append bottom.html dynamically
+        fetch('bottom.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('bottom-nav-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading bottom navigation:', error));
 
-        const goldData = [2170, 2172, 2168, 2175, 2173, 2178, 2180.35];
+        // 2. High-End Gold Chart Implementation
+        const goldCtx = document.getElementById('goldChart').getContext('2d');
+        const goldGradient = goldCtx.createLinearGradient(0, 0, 0, 110);
+        goldGradient.addColorStop(0, 'rgba(245, 207, 102, 0.45)');
+        goldGradient.addColorStop(1, 'rgba(245, 207, 102, 0.0)');
 
-        const goldChart = new Chart(ctx, {
+        const goldChart = new Chart(goldCtx, {
             type: 'line',
             data: {
-                labels: ['1', '2', '3', '4', '5', '6', '7'],
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8'],
                 datasets: [{
-                    data: goldData,
+                    data: [2165, 2170, 2168, 2176, 2172, 2179, 2180.35, 2184],
                     borderColor: '#f5cf66',
+                    borderWidth: 2.5,
+                    fill: true,
+                    backgroundColor: goldGradient,
+                    tension: 0.45, // Extra smooth curves
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
+
+        // 3. Crypto Live Chart Implementation
+        const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
+        const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
+        cryptoGradient.addColorStop(0, 'rgba(46, 213, 115, 0.35)');
+        cryptoGradient.addColorStop(1, 'rgba(46, 213, 115, 0.0)');
+
+        const cryptoChart = new Chart(cryptoCtx, {
+            type: 'line',
+            data: {
+                labels: ['1', '2', '3', '4', '5', '6'],
+                datasets: [{
+                    data: [64800, 65100, 64950, 65300, 65200, 65420],
+                    borderColor: '#2ed573',
                     borderWidth: 2,
                     fill: true,
-                    backgroundColor: gradient,
+                    backgroundColor: cryptoGradient,
                     tension: 0.4,
                     pointRadius: 0
                 }]
@@ -378,32 +368,26 @@
             }
         });
 
-        // Real-time Dynamic Data Update Simulation Logic
-        function updateMarketData() {
-            // Gold Price Fluctuation Logic
+        // Live Real-time Price Update Simulation
+        setInterval(() => {
+            // Gold price update
             let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
-            let randomGoldChange = (Math.random() - 0.48) * 1.5;
-            let newGoldPrice = (currentGold + randomGoldChange).toFixed(2);
-            document.getElementById('gold-price').innerText = Number(newGoldPrice).toLocaleString('en-US', {minimumFractionDigits: 2});
-
-            // Update Chart Dataset dynamically
+            let newGold = (currentGold + (Math.random() - 0.47) * 1.8).toFixed(2);
+            document.getElementById('gold-price').innerText = Number(newGold).toLocaleString('en-US', {minimumFractionDigits: 2});
+            
             goldChart.data.datasets[0].data.shift();
-            goldChart.data.datasets[0].data.push(newGoldPrice);
+            goldChart.data.datasets[0].data.push(newGold);
             goldChart.update();
 
-            // Bitcoin Price Fluctuation
+            // Crypto BTC price update
             let btcPrice = parseFloat(document.getElementById('btc-price').innerText.replace(',', ''));
-            let newBtc = (btcPrice + (Math.random() - 0.49) * 20).toFixed(2);
+            let newBtc = (btcPrice + (Math.random() - 0.48) * 35).toFixed(2);
             document.getElementById('btc-price').innerText = Number(newBtc).toLocaleString('en-US', {minimumFractionDigits: 2});
 
-            // Ethereum Price Fluctuation
-            let ethPrice = parseFloat(document.getElementById('eth-price').innerText.replace(',', ''));
-            let newEth = (ethPrice + (Math.random() - 0.49) * 3).toFixed(2);
-            document.getElementById('eth-price').innerText = Number(newEth).toLocaleString('en-US', {minimumFractionDigits: 2});
-        }
-
-        // Trigger market updates every 3 seconds
-        setInterval(updateMarketData, 3000);
+            cryptoChart.data.datasets[0].data.shift();
+            cryptoChart.data.datasets[0].data.push(newBtc);
+            cryptoChart.update();
+        }, 3000);
     </script>
 </body>
 </html>
