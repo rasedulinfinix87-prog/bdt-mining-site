@@ -81,7 +81,7 @@
             cursor: pointer;
         }
 
-        /* Content Scrollable Section */
+        /* Content Section */
         .content {
             padding: 16px;
             display: flex;
@@ -103,9 +103,6 @@
             color: var(--text-secondary);
             font-weight: 500;
             letter-spacing: 0.5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .input-wrapper {
@@ -123,17 +120,11 @@
             color: var(--text-primary);
             font-size: 0.9rem;
             outline: none;
-            transition: border 0.3s;
         }
 
-        .form-input:focus {
-            border-color: var(--gold-primary);
-        }
-
-        /* Locked Input Style */
         .form-input[readonly] {
             background: rgba(255, 255, 255, 0.02);
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.6);
             border-color: rgba(255, 255, 255, 0.05);
             cursor: not-allowed;
         }
@@ -169,11 +160,7 @@
             margin-top: 10px;
         }
 
-        .btn-gold:active {
-            transform: scale(0.98);
-        }
-
-        /* Notification Toast Message */
+        /* Toast Message */
         #toast-msg {
             display: none;
             padding: 10px;
@@ -199,7 +186,7 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div class="header-title">ACCOUNT INFORMATION</div>
-            <div style="width: 20px;"></div> <!-- Spacer for layout balance -->
+            <div style="width: 20px;"></div>
         </header>
 
         <!-- Main Form Content -->
@@ -245,7 +232,7 @@
 
             <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 6px 0;">
 
-            <!-- Password Change Field (Editable) -->
+            <!-- Password Change Field -->
             <div class="form-group">
                 <label class="form-label" style="color: var(--gold-primary);">CHANGE PASSWORD</label>
                 <div class="input-wrapper">
@@ -263,35 +250,63 @@
         <div id="bottom-nav-container"></div>
     </div>
 
-    <!-- Script Logic -->
     <script>
-        let currentUserId = localStorage.getItem('user_id'); // LocalStorage থেকে ইউজারের ID নিবে
+        let currentUserId = null;
 
-        // 1. Bottom Nav dynamically load
+        // 1. Bottom Nav load
         fetch('bottom.html?v=' + new Date().getTime())
             .then(res => res.text())
             .then(data => document.getElementById('bottom-nav-container').innerHTML = data)
             .catch(err => console.log('Bottom nav load error:', err));
 
-        // 2. Fetch User Profile Data on Load
+        // 2. Multi-Check User Identification Logic
         document.addEventListener('DOMContentLoaded', async () => {
+            // Check 1: localStorage key 'user_id' or 'userId' or 'user'
+            currentUserId = localStorage.getItem('user_id') || localStorage.getItem('userId');
+
+            if (!currentUserId && typeof supabase !== 'undefined') {
+                // Check 2: Try fetching active Supabase Auth session
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session && session.user) {
+                    currentUserId = session.user.id;
+                }
+            }
+
             if (!currentUserId) {
                 showToast("User session not found! Please log in.", "error");
+                document.getElementById('full-name').value = 'Not Logged In';
+                document.getElementById('email').value = 'Not Logged In';
+                document.getElementById('phone').value = 'Not Logged In';
                 return;
             }
 
-            const res = await fetchUserProfile(currentUserId);
-            if (res.success && res.data) {
-                document.getElementById('full-name').value = res.data.full_name || 'N/A';
-                document.getElementById('email').value = res.data.email || 'N/A';
-                document.getElementById('phone').value = res.data.phone || 'N/A';
-                document.getElementById('secret-pin').value = res.data.secret_pin || '----';
-            } else {
-                showToast("Failed to load user info", "error");
-            }
+            loadUserData(currentUserId);
         });
 
-        // 3. Toggle Secret PIN Visibility
+        // Load data from 'user' table
+        async function loadUserData(userId) {
+            try {
+                const { data, error } = await supabase
+                    .from('user')
+                    .select('full_name, email, phone, secret_pin')
+                    .eq('id', userId)
+                    .single();
+
+                if (error) throw error;
+
+                if (data) {
+                    document.getElementById('full-name').value = data.full_name || 'N/A';
+                    document.getElementById('email').value = data.email || 'N/A';
+                    document.getElementById('phone').value = data.phone || 'N/A';
+                    document.getElementById('secret-pin').value = data.secret_pin || '----';
+                }
+            } catch (err) {
+                console.error("Fetch Error:", err);
+                showToast("Failed to fetch user details", "error");
+            }
+        }
+
+        // Toggle Secret PIN
         function togglePinVisibility() {
             const pinInput = document.getElementById('secret-pin');
             const pinIcon = document.getElementById('toggle-pin-btn');
@@ -305,7 +320,7 @@
             }
         }
 
-        // 4. Toggle New Password Visibility
+        // Toggle Password
         function togglePassVisibility() {
             const passInput = document.getElementById('new-password');
             const passIcon = document.getElementById('toggle-pass-btn');
@@ -319,39 +334,44 @@
             }
         }
 
-        // 5. Update Password Action
+        // Update Password
         async function handlePasswordUpdate() {
+            if (!currentUserId) {
+                showToast("Please log in first!", "error");
+                return;
+            }
+
             const newPassword = document.getElementById('new-password').value.trim();
 
-            if (!newPassword) {
-                showToast("Please enter a new password!", "error");
+            if (!newPassword || newPassword.length < 6) {
+                showToast("Password must be at least 6 characters!", "error");
                 return;
             }
 
-            if (newPassword.length < 6) {
-                showToast("Password must be at least 6 characters long!", "error");
-                return;
-            }
+            try {
+                const { error } = await supabase
+                    .from('user')
+                    .update({ 
+                        password: newPassword,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentUserId);
 
-            const res = await updateUserPassword(currentUserId, newPassword);
-            if (res.success) {
+                if (error) throw error;
+
                 showToast("Password updated successfully!", "success");
                 document.getElementById('new-password').value = '';
-            } else {
-                showToast("Failed to update password. Try again.", "error");
+            } catch (err) {
+                showToast("Failed to update password", "error");
             }
         }
 
-        // Helper: Show Toast Messages
         function showToast(msg, type) {
             const toast = document.getElementById('toast-msg');
             toast.innerText = msg;
             toast.className = type === 'success' ? 'toast-success' : 'toast-error';
             toast.style.display = 'block';
-
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
     </script>
 </body>
