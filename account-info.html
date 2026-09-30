@@ -2,28 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Information - Goldmine Digital</title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Supabase Config Script -->
-    <script src="supabase-config.js"></script>
 
     <style>
         :root {
-            --bg-color: #061913;
+            --bg-color: #030d0a;
             --card-bg: rgba(12, 38, 29, 0.85);
-            --card-border: rgba(46, 213, 115, 0.25);
+            --card-border: rgba(46, 213, 115, 0.2);
             --text-primary: #ffffff;
             --text-secondary: #8da499;
             --gold-primary: #f5cf66;
             --gold-gradient: linear-gradient(135deg, #e5ba41 0%, #fbe89d 50%, #b88a1a 100%);
             --accent-green: #2ed573;
             --input-bg: rgba(255, 255, 255, 0.05);
+            --danger-red: #ff4757;
         }
 
         * {
@@ -35,116 +35,95 @@
         }
 
         body {
-            background-color: #030d0a;
+            background-color: var(--bg-color);
             color: var(--text-primary);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
+            padding-bottom: 75px; /* Bottom Nav Bar Space */
         }
 
         .mobile-container {
             width: 100%;
             max-width: 410px;
-            height: 100vh;
-            height: 100dvh;
-            background: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
+            min-height: 100vh;
+            background: #061913;
+            padding: 20px 16px;
             position: relative;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Header Layout */
-        header {
-            padding: 20px 20px 10px 20px;
+        /* Top Bar Header */
+        .header-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .header-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--gold-primary);
-            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            padding-top: 10px;
         }
 
         .back-btn {
-            color: var(--text-secondary);
+            color: var(--gold-primary);
             font-size: 1.2rem;
-            text-decoration: none;
             cursor: pointer;
+            text-decoration: none;
         }
 
-        /* Content Section */
-        .content {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            flex: 1;
-            overflow-y: auto;
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            letter-spacing: 1px;
         }
 
-        /* Input Group Box */
+        /* Form Controls */
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            margin-bottom: 16px;
         }
 
-        .form-label {
-            font-size: 0.75rem;
+        .form-group label {
+            display: block;
+            font-size: 0.72rem;
             color: var(--text-secondary);
-            font-weight: 500;
+            margin-bottom: 6px;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .input-wrapper {
+        .input-box {
             position: relative;
             display: flex;
             align-items: center;
         }
 
-        .form-input {
+        .input-box input {
             width: 100%;
-            padding: 12px 14px;
+            padding: 12px 38px 12px 14px;
             background: var(--input-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: var(--text-primary);
+            border-radius: 10px;
+            color: #fff;
             font-size: 0.9rem;
             outline: none;
         }
 
-        .form-input[readonly] {
-            background: rgba(255, 255, 255, 0.02);
-            color: rgba(255, 255, 255, 0.6);
-            border-color: rgba(255, 255, 255, 0.05);
-            cursor: not-allowed;
-        }
-
-        .lock-icon {
-            position: absolute;
-            right: 14px;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.85rem;
-        }
-
-        .toggle-icon {
+        .input-box .lock-icon, .input-box .eye-icon {
             position: absolute;
             right: 14px;
             color: var(--gold-primary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
         }
 
-        /* Submit Button */
+        .section-divider {
+            margin: 25px 0 15px 0;
+            font-size: 0.78rem;
+            color: var(--gold-primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
         .btn-gold {
             width: 100%;
             padding: 14px;
@@ -153,226 +132,377 @@
             border-radius: 25px;
             color: #030d0a;
             font-weight: 700;
-            font-size: 0.92rem;
-            letter-spacing: 0.6px;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(245, 207, 102, 0.35);
+            box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
             margin-top: 10px;
         }
 
-        /* Toast Message */
-        #toast-msg {
-            display: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            text-align: center;
-        }
-        .toast-success { background: rgba(46, 213, 115, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .toast-error { background: rgba(255, 71, 87, 0.2); color: #ff4757; border: 1px solid #ff4757; }
-
-        #bottom-nav-container {
+        /* FIXED BOTTOM NAVIGATION BAR */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            flex-shrink: 0;
+            max-width: 410px;
+            height: 65px;
+            background: rgba(6, 25, 19, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.75rem;
+            gap: 4px;
+        }
+
+        .nav-item i {
+            font-size: 1.1rem;
+        }
+
+        .nav-item.active {
+            color: var(--gold-primary);
+        }
+
+        /* POPUP / MODAL STYLING */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-card {
+            width: 90%;
+            max-width: 360px;
+            background: #0c261d;
+            border: 1px solid var(--gold-primary);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 0 25px rgba(245, 207, 102, 0.25);
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .popup-overlay.show .popup-card {
+            transform: scale(1);
+        }
+
+        .popup-card i.main-icon {
+            font-size: 2.2rem;
+            color: var(--gold-primary);
+            margin-bottom: 10px;
+        }
+
+        .popup-card h3 {
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .info-list {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-item {
+            margin-bottom: 8px;
+            font-size: 0.82rem;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-item span.label {
+            color: var(--text-secondary);
+            display: inline-block;
+            width: 90px;
+        }
+
+        .info-item span.value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .btn-close-popup {
+            width: 100%;
+            padding: 10px;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 20px;
+            color: #030d0a;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div class="mobile-container">
-        <!-- Header -->
-        <header>
-            <a href="javascript:history.back()" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
-            <div class="header-title">ACCOUNT INFORMATION</div>
+        <!-- Top Header Bar -->
+        <div class="header-bar">
+            <a href="home-index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="page-title">ACCOUNT INFORMATION</div>
             <div style="width: 20px;"></div>
-        </header>
-
-        <!-- Main Form Content -->
-        <div class="content">
-            
-            <div id="toast-msg"></div>
-
-            <!-- Full Name (Locked) -->
-            <div class="form-group">
-                <label class="form-label">FULL NAME</label>
-                <div class="input-wrapper">
-                    <input type="text" id="full-name" class="form-input" readonly value="Loading...">
-                    <i class="fa-solid fa-lock lock-icon"></i>
-                </div>
-            </div>
-
-            <!-- Email (Locked) -->
-            <div class="form-group">
-                <label class="form-label">EMAIL ADDRESS</label>
-                <div class="input-wrapper">
-                    <input type="email" id="email" class="form-input" readonly value="Loading...">
-                    <i class="fa-solid fa-lock lock-icon"></i>
-                </div>
-            </div>
-
-            <!-- Phone (Locked) -->
-            <div class="form-group">
-                <label class="form-label">PHONE NUMBER</label>
-                <div class="input-wrapper">
-                    <input type="text" id="phone" class="form-input" readonly value="Loading...">
-                    <i class="fa-solid fa-lock lock-icon"></i>
-                </div>
-            </div>
-
-            <!-- Secret PIN (Locked + View Symbol) -->
-            <div class="form-group">
-                <label class="form-label">SECRET PIN</label>
-                <div class="input-wrapper">
-                    <input type="password" id="secret-pin" class="form-input" readonly value="****">
-                    <i class="fa-solid fa-eye toggle-icon" id="toggle-pin-btn" onclick="togglePinVisibility()"></i>
-                </div>
-            </div>
-
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 6px 0;">
-
-            <!-- Password Change Field -->
-            <div class="form-group">
-                <label class="form-label" style="color: var(--gold-primary);">CHANGE PASSWORD</label>
-                <div class="input-wrapper">
-                    <input type="password" id="new-password" class="form-input" placeholder="Enter new password">
-                    <i class="fa-solid fa-eye toggle-icon" id="toggle-pass-btn" onclick="togglePassVisibility()"></i>
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <button class="btn-gold" onclick="handlePasswordUpdate()">UPDATE PASSWORD</button>
-
         </div>
 
-        <!-- Dynamic Bottom Nav Connection -->
-        <div id="bottom-nav-container"></div>
+        <!-- Account Form -->
+        <div class="form-group">
+            <label>Full Name</label>
+            <div class="input-box">
+                <input type="text" id="acc-fullname" value="Loading..." readonly>
+                <i class="fa-solid fa-lock lock-icon"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-box">
+                <input type="email" id="acc-email" value="Loading..." readonly>
+                <i class="fa-solid fa-lock lock-icon"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <div class="input-box">
+                <input type="text" id="acc-phone" value="Loading..." readonly>
+                <i class="fa-solid fa-lock lock-icon"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Secret PIN</label>
+            <div class="input-box">
+                <input type="password" id="acc-pin" value="••••" readonly>
+                <i class="fa-solid fa-eye eye-icon" onclick="togglePinVisibility()"></i>
+            </div>
+        </div>
+
+        <!-- Password Change Section -->
+        <div class="section-divider">Change Password</div>
+
+        <div class="form-group">
+            <div class="input-box">
+                <input type="password" id="new-password" placeholder="Enter new password">
+                <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility()"></i>
+            </div>
+        </div>
+
+        <button class="btn-gold" id="btn-update-pass" onclick="updatePassword()">UPDATE PASSWORD</button>
     </div>
 
+    <!-- FIXED BOTTOM NAVIGATION BAR -->
+    <div class="bottom-nav">
+        <a href="home-index.html" class="nav-item">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Wallet</span>
+        </a>
+        <a href="account-info.html" class="nav-item active">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
+        </a>
+    </div>
+
+    <!-- POP-UP MODAL FOR USER INFORMATION -->
+    <div class="popup-overlay" id="user-popup">
+        <div class="popup-card">
+            <i class="fa-solid fa-shield-halved main-icon"></i>
+            <h3>Account Summary</h3>
+            
+            <div class="info-list">
+                <div class="info-item">
+                    <span class="label">Name:</span>
+                    <span class="value" id="pop-name">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Email:</span>
+                    <span class="value" id="pop-email">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Phone:</span>
+                    <span class="value" id="pop-phone">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Secret PIN:</span>
+                    <span class="value" id="pop-pin">••••</span>
+                </div>
+            </div>
+
+            <button class="btn-close-popup" onclick="closePopup()">GOT IT</button>
+        </div>
+    </div>
+
+    <!-- SUPABASE FUNCTIONALITY -->
     <script>
-        let currentUserId = null;
+        const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
 
-        // 1. Bottom Nav load
-        fetch('bottom.html?v=' + new Date().getTime())
-            .then(res => res.text())
-            .then(data => document.getElementById('bottom-nav-container').innerHTML = data)
-            .catch(err => console.log('Bottom nav load error:', err));
+        let client = null;
+        let actualPin = "";
 
-        // 2. Multi-Check User Identification Logic
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Check 1: localStorage key 'user_id' or 'userId' or 'user'
-            currentUserId = localStorage.getItem('user_id') || localStorage.getItem('userId');
-
-            if (!currentUserId && typeof supabase !== 'undefined') {
-                // Check 2: Try fetching active Supabase Auth session
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session && session.user) {
-                    currentUserId = session.user.id;
-                }
+        function getClient() {
+            if(!client && window.supabase && typeof window.supabase.createClient === 'function') {
+                client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
+            return client;
+        }
 
-            if (!currentUserId) {
-                showToast("User session not found! Please log in.", "error");
-                document.getElementById('full-name').value = 'Not Logged In';
-                document.getElementById('email').value = 'Not Logged In';
-                document.getElementById('phone').value = 'Not Logged In';
+        // Fetch User Information on Page Load
+        async function fetchUserData() {
+            const userId = localStorage.getItem('user_id');
+
+            if (!userId) {
+                alert('Session expired. Please login again.');
+                window.location.href = 'login-signup.html';
                 return;
             }
 
-            loadUserData(currentUserId);
-        });
+            const supabase = getClient();
+            if(!supabase) {
+                setTimeout(fetchUserData, 1000);
+                return;
+            }
 
-        // Load data from 'user' table
-        async function loadUserData(userId) {
             try {
                 const { data, error } = await supabase
                     .from('user')
-                    .select('full_name, email, phone, secret_pin')
+                    .select('*')
                     .eq('id', userId)
-                    .single();
+                    .maybeSingle();
 
-                if (error) throw error;
+                if (error) {
+                    alert('Error fetching user data: ' + error.message);
+                } else if (data) {
+                    // Fill Form Inputs
+                    document.getElementById('acc-fullname').value = data.full_name || 'N/A';
+                    document.getElementById('acc-email').value = data.email || 'N/A';
+                    document.getElementById('acc-phone').value = data.phone || 'N/A';
+                    actualPin = data.secret_pin || 'N/A';
 
-                if (data) {
-                    document.getElementById('full-name').value = data.full_name || 'N/A';
-                    document.getElementById('email').value = data.email || 'N/A';
-                    document.getElementById('phone').value = data.phone || 'N/A';
-                    document.getElementById('secret-pin').value = data.secret_pin || '----';
+                    // Fill Pop-up Details
+                    document.getElementById('pop-name').innerText = data.full_name || 'N/A';
+                    document.getElementById('pop-email').innerText = data.email || 'N/A';
+                    document.getElementById('pop-phone').innerText = data.phone || 'N/A';
+                    document.getElementById('pop-pin').innerText = actualPin;
+
+                    // Show Pop-up
+                    showPopup();
+                } else {
+                    alert('User record not found in database.');
                 }
             } catch (err) {
-                console.error("Fetch Error:", err);
-                showToast("Failed to fetch user details", "error");
+                console.error(err);
+                alert('Connection error while fetching details.');
             }
         }
 
-        // Toggle Secret PIN
-        function togglePinVisibility() {
-            const pinInput = document.getElementById('secret-pin');
-            const pinIcon = document.getElementById('toggle-pin-btn');
+        // Pop-up Control
+        function showPopup() {
+            document.getElementById('user-popup').classList.add('show');
+        }
 
+        function closePopup() {
+            document.getElementById('user-popup').classList.remove('show');
+        }
+
+        // PIN Visibility Toggle
+        function togglePinVisibility() {
+            const pinInput = document.getElementById('acc-pin');
             if (pinInput.type === 'password') {
                 pinInput.type = 'text';
-                pinIcon.classList.replace('fa-eye', 'fa-eye-slash');
+                pinInput.value = actualPin;
             } else {
                 pinInput.type = 'password';
-                pinIcon.classList.replace('fa-eye-slash', 'fa-eye');
+                pinInput.value = '••••';
             }
         }
 
-        // Toggle Password
-        function togglePassVisibility() {
+        // Password Visibility Toggle
+        function togglePasswordVisibility() {
             const passInput = document.getElementById('new-password');
-            const passIcon = document.getElementById('toggle-pass-btn');
-
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-                passIcon.classList.replace('fa-eye', 'fa-eye-slash');
-            } else {
-                passInput.type = 'password';
-                passIcon.classList.replace('fa-eye-slash', 'fa-eye');
-            }
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
         }
 
-        // Update Password
-        async function handlePasswordUpdate() {
-            if (!currentUserId) {
-                showToast("Please log in first!", "error");
-                return;
-            }
-
+        // Update Password Logic
+        async function updatePassword() {
             const newPassword = document.getElementById('new-password').value.trim();
+            const userId = localStorage.getItem('user_id');
 
-            if (!newPassword || newPassword.length < 6) {
-                showToast("Password must be at least 6 characters!", "error");
+            if (!newPassword) {
+                alert('Please enter a new password!');
                 return;
             }
+
+            const supabase = getClient();
+            const btn = document.getElementById('btn-update-pass');
+            btn.innerText = 'UPDATING...';
+            btn.disabled = true;
 
             try {
                 const { error } = await supabase
                     .from('user')
-                    .update({ 
-                        password: newPassword,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', currentUserId);
+                    .update({ password: newPassword })
+                    .eq('id', userId);
 
-                if (error) throw error;
-
-                showToast("Password updated successfully!", "success");
-                document.getElementById('new-password').value = '';
+                if (error) {
+                    alert('Password Update Failed: ' + error.message);
+                } else {
+                    alert('Password updated successfully!');
+                    document.getElementById('new-password').value = '';
+                }
             } catch (err) {
-                showToast("Failed to update password", "error");
+                console.error(err);
+                alert('Failed to update password.');
+            } finally {
+                btn.innerText = 'UPDATE PASSWORD';
+                btn.disabled = false;
             }
         }
 
-        function showToast(msg, type) {
-            const toast = document.getElementById('toast-msg');
-            toast.innerText = msg;
-            toast.className = type === 'success' ? 'toast-success' : 'toast-error';
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
-        }
+        // Execute on load
+        window.addEventListener('DOMContentLoaded', fetchUserData);
     </script>
 </body>
 </html>
