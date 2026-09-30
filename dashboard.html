@@ -34,11 +34,7 @@
             inset: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(
-                circle at center,
-                rgba(30, 64, 175, 0.12),
-                rgba(8, 12, 20, 0.98) 55%
-            );
+            background: radial-gradient(circle at center, rgba(30, 64, 175, 0.12), rgba(8, 12, 20, 0.98) 55%);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             display: flex;
@@ -115,6 +111,7 @@
             content: '';
             animation: loadingDots 1.4s infinite;
         }
+
         @keyframes dashboardLoaderSpin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -139,10 +136,12 @@
             100% { content: ''; }
         }
 
+        /* Header Container Full Width */
         #header-container {
             width: 100%;
             margin-bottom: 15px;
         }
+
         .dashboard-card {
             width: 100%;
             max-width: 440px;
@@ -155,7 +154,7 @@
             margin-bottom: 20px;
         }
 
-        /* Activate Selected Plan Box */
+        /* Activate Selected Plan Box with Neon Rotating Animation Border */
         .selected-plan-box {
             position: relative;
             background: rgba(245, 158, 11, 0.08);
@@ -170,16 +169,9 @@
         .selected-plan-box::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-                from 0deg,
-                transparent,
-                #f59e0b,
-                transparent 30%
-            );
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, #f59e0b, transparent 30%);
             animation: rotateNeon 4s linear infinite;
             z-index: -2;
         }
@@ -223,53 +215,53 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .active-plans-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
             margin-bottom: 20px;
         }
 
-        /* Premium Spinning Neon Border Mining Card */
+        /* =========================================================
+           NEW CYBERPUNK ACTIVE MINING CARD STYLING (MATCHING THE IMAGE)
+           ========================================================= */
         .mining-card {
             position: relative;
-            background: rgba(15, 23, 42, 0.95);
+            background: linear-gradient(145deg, rgba(13, 20, 36, 0.9), rgba(20, 30, 55, 0.8));
             border-radius: 16px;
             padding: 16px;
             cursor: pointer;
-            transition: transform 0.2s;
             overflow: hidden;
+            box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.08), 0 8px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            transition: all 0.3s ease;
             z-index: 1;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
+
+        /* Sci-Fi Border Glow Animation */
         .mining-card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-                from 0deg,
-                transparent,
-                #38bdf8,
-                #1d4ed8,
-                #f59e0b,
-                transparent 40%
-            );
-            animation: rotateNeon 5s linear infinite;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, #38bdf8, #f59e0b, transparent 40%);
+            animation: rotateNeon 6s linear infinite;
             z-index: -2;
         }
         .mining-card::after {
             content: '';
             position: absolute;
             inset: 1.5px;
-            background: rgba(15, 23, 42, 0.98);
+            background: linear-gradient(145deg, #0b1326, #0f172a);
             border-radius: 15px;
             z-index: -1;
         }
+
         .mining-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25);
+            border-color: rgba(56, 189, 248, 0.5);
         }
 
         .mining-card-header {
@@ -277,53 +269,100 @@
             justify-content: space-between;
             align-items: center;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             color: #38bdf8;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 0.5px;
         }
+
         .mining-status {
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
             padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 10px;
+            border-radius: 20px;
+            font-size: 9px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             font-weight: 700;
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+            animation: statusPulse 2s infinite alternate;
         }
+
         .mining-status.completed {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border-color: rgba(245, 158, 11, 0.4);
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+        }
+
+        @keyframes statusPulse {
+            0% { opacity: 0.7; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* Futuristic Inner Stat Boxes (Like the Image Cards) */
+        .mining-stat-row {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.12);
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .mining-stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .mining-stat-value {
+            font-size: 13px;
+            color: #38bdf8;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .mining-profit {
+            color: #38bdf8;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+        }
+
+        /* Cyberpunk Progress Bar */
+        .progress-bar-container {
+            margin: 10px 0 6px 0;
         }
 
         .progress-bar-bg {
             width: 100%;
-            background: #1e293b;
-            height: 8px;
-            border-radius: 4px;
+            background: rgba(15, 23, 42, 0.8);
+            height: 10px;
+            border-radius: 6px;
             overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #1d4ed8, #38bdf8);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
         }
 
-        .mining-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 6px;
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #1d4ed8, #38bdf8, #f59e0b);
+            background-size: 200% 100%;
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            animation: gradientMove 3s linear infinite;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
         }
-        .mining-profit {
-            font-weight: 700;
-            color: #38bdf8;
-            font-family: 'Orbitron', sans-serif;
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
         }
 
         /* Claim Button inside card */
@@ -337,20 +376,24 @@
             cursor: pointer;
             font-size: 12px;
             width: 100%;
-            margin-top: 12px;
+            margin-top: 10px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+            transition: 0.2s;
         }
         .btn-claim:hover {
             opacity: 0.9;
+            transform: scale(1.01);
         }
+
         .no-plans {
             text-align: center;
             font-size: 12px;
             color: #64748b;
-            padding: 15px;
+            padding: 20px;
             background: rgba(30, 41, 59, 0.2);
             border-radius: 10px;
+            border: 1px dashed rgba(255, 255, 255, 0.08);
         }
 
         /* Article Box */
@@ -413,10 +456,8 @@
         /* ==================== ANIMATED MINING MODAL ==================== */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             display: none;
@@ -443,8 +484,7 @@
         }
         .close-modal {
             position: absolute;
-            top: 12px;
-            right: 15px;
+            top: 12px; right: 15px;
             background: transparent;
             border: none;
             color: #94a3b8;
@@ -453,8 +493,7 @@
         }
         .crypto-anim-container {
             position: relative;
-            width: 100px;
-            height: 100px;
+            width: 100px; height: 100px;
             margin: 10px auto 20px auto;
             display: flex;
             justify-content: center;
@@ -462,15 +501,13 @@
         }
         .crypto-glow-ring {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             border-radius: 50%;
             border: 2px dashed #38bdf8;
             animation: spinRing 8s linear infinite;
         }
         .crypto-icon {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             background: linear-gradient(135deg, #1d4ed8, #3b82f6);
             border-radius: 50%;
             display: flex;
@@ -497,8 +534,8 @@
             margin-bottom: 4px;
         }
         .modal-sub {
-            font-size: 11px;
-            color: #f59e0b;
+            font-size: 12px;
+            color: #38bdf8;
             font-weight: 600;
             margin-bottom: 15px;
         }
@@ -517,13 +554,11 @@
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* ==================== PREMIUM SUCCESS POPUP ==================== */
+        /* ==================== PREMIUM SUCCESS / NOTIFICATION POPUP ANIMATION ==================== */
         .success-modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(6px);
             display: none;
@@ -536,8 +571,7 @@
             background: linear-gradient(145deg, #0f172a, #1e293b);
             border: 1px solid rgba(29, 78, 216, 0.4);
             border-radius: 20px;
-            width: 100%;
-            max-width: 330px;
+            width: 100%; max-width: 330px;
             padding: 30px 20px;
             text-align: center;
             box-shadow: 0 0 40px rgba(29, 78, 216, 0.3);
@@ -548,8 +582,7 @@
             100% { transform: scale(1); opacity: 1; }
         }
         .success-icon-circle {
-            width: 65px;
-            height: 65px;
+            width: 65px; height: 65px;
             background: rgba(29, 78, 216, 0.15);
             border: 2px solid #38bdf8;
             border-radius: 50%;
@@ -585,13 +618,17 @@
             cursor: pointer;
             width: 100%;
             box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);
+            transition: 0.2s;
+        }
+        .success-modal-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
-        /* Floating Live Chat Button */
+        /* ==================== FLOATING LIVE CHAT BUTTON ==================== */
         .floating-chat-btn {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 20px; right: 20px;
             background: linear-gradient(135deg, #0284c7, #38bdf8);
             color: #ffffff;
             border-radius: 30px;
@@ -615,43 +652,67 @@
 </head>
 <body>
 
-    <!-- DASHBOARD DATA LOADING SCREEN -->
+    <!-- =========================================================
+       DASHBOARD DATA LOADING SCREEN
+       ========================================================= -->
     <div id="dashboardLoader">
         <div class="loader-content">
             <div class="loader-spinner-wrap">
                 <div class="loader-ring"></div>
                 <div class="loader-inner"></div>
-                <div class="loader-logo">₿</div>
+                <div class="loader-logo">
+                    ₿
+                </div>
             </div>
-            <div class="loader-title">BDTMINER</div>
-            <div class="loader-text">Loading dashboard<span class="loader-dots"></span></div>
+            <div class="loader-title">
+                BDTMINER
+            </div>
+            <div class="loader-text">
+                Loading dashboard<span class="loader-dots"></span>
+            </div>
         </div>
     </div>
 
+    <!-- Dynamic Header Insertion Point (Full Width, No Gap) -->
     <div id="header-container"></div>
 
     <div class="dashboard-card">
-        <!-- Confirm Plan Box -->
+
+        <!-- Confirm Plan Box with Neon Border Animation -->
         <div id="planActivationBox" class="selected-plan-box">
-            <div id="planInfoText" class="plan-info">Selected Plan: -</div>
-            <button id="activateBtn" class="btn-activate" onclick="activatePlan()">Confirm & Activate Plan</button>
+            <div id="planInfoText" class="plan-info">
+                Selected Plan: -
+            </div>
+            <button id="activateBtn" class="btn-activate" onclick="activatePlan()">
+                Confirm & Activate Plan
+            </button>
         </div>
 
         <!-- Active Mining Plans Section -->
         <div class="section-title">
-            <span>⚡ Active Mining Rigs</span>
-            <span id="activePlanCount" style="font-size: 12px; color: #38bdf8;">(0)</span>
+            <span>
+                ⚡ Active Mining Rigs
+            </span>
+            <span id="activePlanCount" style="font-size: 12px; color: #38bdf8;">
+                (0)
+            </span>
         </div>
-        
+
         <div id="activePlansContainer" class="active-plans-container">
-            <div class="no-plans">No active mining plan right now.</div>
+            <div class="no-plans">
+                No active mining plan right now.
+            </div>
         </div>
 
         <!-- Trust & Security Article Box -->
         <div class="article-card">
             <div class="article-header">
-                <span class="article-title" id="artTitle">🛡️ Why BDTMINER is Trusted</span>
-                <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">BN</button>
+                <span class="article-title" id="artTitle">
+                    🛡️ Why BDTMINER is Trusted
+                </span>
+                <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">
+                    BN
+                </button>
             </div>
             <div id="artSummary">
                 BDTMINER utilizes high-efficiency cloud computing data centers to maximize cryptocurrency mining yields seamlessly for everyday users.
@@ -659,45 +720,76 @@
             <div class="article-more" id="artMore">
                 Our infrastructure is built with enterprise-grade SSL security, multi-signature cold wallets, and 24/7 automated node monitoring. This ensures instant daily payouts and full capital security for every mining rig deployment.
             </div>
-            <button class="read-more-btn" onclick="toggleReadMore()" id="readMoreBtn">Read More...</button>
+            <button class="read-more-btn" onclick="toggleReadMore()" id="readMoreBtn">
+                Read More...
+            </button>
         </div>
 
-        <a href="index.html" class="back-home">← Back to Home</a>
+        <a href="index.html" class="back-home">
+            ← Back to Home
+        </a>
     </div>
 
     <!-- Crypto Mining Live Animation Modal -->
     <div class="modal-overlay" id="miningModal">
         <div class="modal-card">
-            <button class="close-modal" onclick="closeMiningModal()">×</button>
+            <button class="close-modal" onclick="closeMiningModal()">
+                ×
+            </button>
             <div class="crypto-anim-container">
                 <div class="crypto-glow-ring"></div>
-                <div class="crypto-icon">₿</div>
+                <div class="crypto-icon">
+                    ₿
+                </div>
             </div>
-            <div class="modal-title" id="modalPlanTitle">Starter Plan ($10)</div>
-            <div class="modal-sub" id="modalStatusSub">● LIVE CLOUD MINING IN PROGRESS</div>
-            
-            <div class="modal-stat-box">
-                <span style="color: #94a3b8;">Hashrate Power:</span>
-                <span class="hashrate-text" id="modalHashrate">44.5 MH/s</span>
+            <div class="modal-title" id="modalPlanTitle">
+                Starter Plan ($10)
             </div>
-            <div class="modal-stat-box">
-                <span style="color: #94a3b8;">Total Mined:</span>
-                <span style="color: #38bdf8; font-weight: bold; font-family: 'Orbitron';" id="modalMined">+$0.00000</span>
+            <div class="modal-sub" id="modalStatusSub">
+                ● LIVE CLOUD MINING IN PROGRESS
             </div>
             <div class="modal-stat-box">
-                <span style="color: #94a3b8;">Progress:</span>
-                <span style="color: #38bdf8; font-weight: bold;" id="modalProgress">0%</span>
+                <span style="color: #94a3b8;">
+                    Hashrate Power:
+                </span>
+                <span class="hashrate-text" id="modalHashrate">
+                    24.5 MH/s
+                </span>
+            </div>
+            <div class="modal-stat-box">
+                <span style="color: #94a3b8;">
+                    Total Mined:
+                </span>
+                <span style="color: #38bdf8; font-weight: bold; font-family: 'Orbitron';" id="modalMined">
+                    +$0.00000
+                </span>
+            </div>
+            <div class="modal-stat-box">
+                <span style="color: #94a3b8;">
+                    Progress:
+                </span>
+                <span style="color: #38bdf8; font-weight: bold;" id="modalProgress">
+                    0%
+                </span>
             </div>
         </div>
     </div>
 
-    <!-- SUCCESS POPUP ANIMATION WINDOW -->
+    <!-- ==================== PREMIUM POPUP ANIMATION WINDOW ==================== -->
     <div class="success-modal-overlay" id="successModalOverlay">
         <div class="success-modal-card">
-            <div class="success-icon-circle">✓</div>
-            <div class="success-modal-title" id="successModalTitle">Success!</div>
-            <div class="success-modal-msg" id="successModalMsg">Your request has been processed successfully.</div>
-            <button class="success-modal-btn" onclick="closeSuccessModal()">OK</button>
+            <div class="success-icon-circle">
+                ✓
+            </div>
+            <div class="success-modal-title" id="successModalTitle">
+                Success!
+            </div>
+            <div class="success-modal-msg" id="successModalMsg">
+                Your request has been processed successfully.
+            </div>
+            <button class="success-modal-btn" onclick="closeSuccessModal()">
+                OK
+            </button>
         </div>
     </div>
 
@@ -710,6 +802,16 @@
     </a>
 
     <script>
+        // Toggle Sidebar Function for Mobile Menu
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+
         // Load header.html dynamically
         fetch('header.html')
             .then(response => response.text())
@@ -796,6 +898,9 @@
             '60 AirDrop': { daily_profit: 3.11, duration: 45, total_return: 140 }
         };
 
+        /* =========================================================
+           INITIALIZE DASHBOARD
+           ========================================================= */
         async function initDashboard() {
             try {
                 const { data: { user } } = await supabaseClient.auth.getUser();
@@ -815,6 +920,7 @@
                         invested_amount: amount,
                         ...(planConfigs[planName] || { daily_profit: amount * 0.1, duration: 15, total_return: amount * 1.5 })
                     };
+
                     const box = document.getElementById('planActivationBox');
                     const infoText = document.getElementById('planInfoText');
                     box.style.display = 'block';
@@ -859,7 +965,6 @@
         async function activatePlan() {
             if (!selectedPlanData || !currentUser) return;
             const planCost = selectedPlanData.invested_amount;
-
             if (currentBalance < planCost) {
                 showSuccessModal(
                     "Insufficient Balance!",
@@ -903,16 +1008,12 @@
 
                 if (planError) throw planError;
 
-                showSuccessModal(
-                    "Success!",
-                    "Your plan has been activated successfully.",
-                    async () => {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        document.getElementById('planActivationBox').style.display = 'none';
-                        await loadUserBalance();
-                        await loadActivePlans();
-                    }
-                );
+                showSuccessModal("Success!", "Your plan has been activated successfully.", async () => {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    document.getElementById('planActivationBox').style.display = 'none';
+                    await loadUserBalance();
+                    await loadActivePlans();
+                });
             } catch (error) {
                 showSuccessModal("Error!", "Failed to activate plan: " + error.message);
                 btn.innerText = "Confirm & Activate Plan";
@@ -952,28 +1053,45 @@
                 const endTime = new Date(plan.end_date).getTime();
                 const totalDurationSec = (endTime - startTime) / 1000;
                 const elapsedSec = Math.max(0, (now - startTime) / 1000);
-                
+
                 let progressPercent = ((elapsedSec / totalDurationSec) * 100).toFixed(2);
                 if (progressPercent >= 100) { progressPercent = 100; }
 
                 const isCompleted = now >= endTime || progressPercent >= 100;
                 const earnedProfit = isCompleted ? plan.total_return : ((plan.daily_profit / 86400) * elapsedSec).toFixed(5);
+                const randomHash = (12.5 + (plan.invested_amount * 0.8)).toFixed(1);
 
+                /* Updated Card HTML matching the Sci-Fi/Cyberpunk Design Image */
                 const cardHtml = `
                     <div class="mining-card" id="card-${index}" onclick="openMiningModal(${index})">
                         <div class="mining-card-header">
                             <span>${plan.plan_name} ($${plan.invested_amount})</span>
                             <span class="mining-status ${isCompleted ? 'completed' : ''}" id="status-badge-${index}">
-                                ${isCompleted ? 'Completed' : 'Mining'}
+                                ${isCompleted ? 'Completed' : 'Mining Active'}
                             </span>
                         </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill" id="progress-${index}" style="width: ${progressPercent}%;"></div>
+                        
+                        <div class="mining-stat-row">
+                            <span class="mining-stat-label">Hashrate Power:</span>
+                            <span class="mining-stat-value">${randomHash} MH/s</span>
                         </div>
-                        <div class="mining-stats">
-                            <span>Mined: <strong class="mining-profit" id="profit-${index}">+$${earnedProfit}</strong></span>
-                            <span>Progress: <strong id="percent-${index}">${progressPercent}%</strong></span>
+
+                        <div class="mining-stat-row">
+                            <span class="mining-stat-label">Total Mined:</span>
+                            <span class="mining-stat-value mining-profit" id="profit-${index}">+$${earnedProfit}</span>
                         </div>
+
+                        <div class="mining-stat-row">
+                            <span class="mining-stat-label">Progress:</span>
+                            <span class="mining-stat-value" id="percent-${index}">${progressPercent}%</span>
+                        </div>
+
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="progress-${index}" style="width: ${progressPercent}%;"></div>
+                            </div>
+                        </div>
+
                         ${isCompleted ? `
                             <button class="btn-claim" onclick="event.stopPropagation(); claimPlan('${plan.id}',${plan.total_return}, ${index})">                                 Claim Profit ($${plan.total_return})
                             </button>
@@ -996,7 +1114,7 @@
             document.getElementById('modalPlanTitle').innerText = `${plan.plan_name} ($${plan.invested_amount})`;
             document.getElementById('modalStatusSub').innerText = isCompleted ? '● MINING COMPLETED - READY TO CLAIM' : '● LIVE CLOUD MINING IN PROGRESS';
             
-            const randomHash = (44.5 + (plan.invested_amount * 0.1)).toFixed(1);
+            const randomHash = (12.5 + (plan.invested_amount * 0.8)).toFixed(1);
             document.getElementById('modalHashrate').innerText = `${randomHash} MH/s`;
             document.getElementById('miningModal').style.display = 'flex';
         }
@@ -1006,7 +1124,6 @@
             activeModalIndex = null;
         }
 
-        // Live Real-Time Progress Interval
         setInterval(() => {
             if (userActivePlans.length > 0) {
                 const now = new Date().getTime();
@@ -1064,27 +1181,26 @@
 
                 if (balanceError) throw balanceError;
 
-                const { error: planError } = await supabaseClient
+                const { error: planError } = awaitsupabaseClient
                     .from('user_plan')
                     .update({ status: 'claimed' })
                     .eq('id', planId);
 
                 if (planError) throw planError;
 
-                showSuccessModal(
-                    "Success!",
-                    `Successfully claimed profit of $${totalReturn}!`,
-                    async () => {
-                        closeMiningModal();
-                        await loadUserBalance();
-                        await loadActivePlans();
-                    }
-                );
+                showSuccessModal("Success!", `Successfully claimed profit of $${totalReturn}!`, async () => {
+                    closeMiningModal();
+                    await loadUserBalance();
+                    await loadActivePlans();
+                });
             } catch (error) {
                 showSuccessModal("Error!", "Failed to claim: " + error.message);
             }
         }
 
+        /* =========================================================
+           START DASHBOARD
+           ========================================================= */
         initDashboard();
     </script>
 </body>
