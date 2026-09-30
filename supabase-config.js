@@ -1,11 +1,67 @@
-// Supabase Credentials (আপনার প্রজেক্টের URL এবং Anon Key বসান)
+// Supabase Credentials
 const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
 
 // Initialize Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Fetch logged in user profile from 'user' table
+// 1. User Sign Up Function
+async function registerUser(fullName, email, phone, password, secretPin) {
+    try {
+        const { data, error } = await supabase
+            .from('user')
+            .insert([
+                {
+                    full_name: fullName,
+                    email: email,
+                    phone: phone,
+                    password: password,
+                    secret_pin: secretPin,
+                    created_at: new Date().toISOString()
+                }
+            ])
+            .select();
+
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            // Save user_id to LocalStorage for persistence
+            localStorage.setItem('user_id', data[0].id);
+            return { success: true, user: data[0] };
+        }
+        return { success: false, error: 'Registration failed' };
+    } catch (error) {
+        console.error("Sign up error:", error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+// 2. User Login Function
+async function loginUser(email, password) {
+    try {
+        const { data, error } = await supabase
+            .from('user')
+            .select('*')
+            .eq('email', email)
+            .eq('password', password)
+            .single();
+
+        if (error) throw error;
+
+        if (data) {
+            // Save user_id to LocalStorage
+            localStorage.setItem('user_id', data.id);
+            return { success: true, user: data };
+        } else {
+            return { success: false, error: 'Invalid email or password' };
+        }
+    } catch (error) {
+        console.error("Login error:", error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+// 3. Fetch logged in user profile
 async function fetchUserProfile(userId) {
     try {
         const { data, error } = await supabase
@@ -22,7 +78,7 @@ async function fetchUserProfile(userId) {
     }
 }
 
-// Update user password in 'user' table
+// 4. Update user password
 async function updateUserPassword(userId, newPassword) {
     try {
         const { data, error } = await supabase
