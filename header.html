@@ -1,7 +1,10 @@
-<!-- header.html -->
+<!-- ==================== BDTMINER HEADER ==================== -->
+
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-    /* ক্রিপ্টো টিকার বার */
+    /* ==================== CRYPTO TICKER ==================== */
     .crypto-ticker-bar {
         width: 100%;
         background: #0f172a;
@@ -17,7 +20,7 @@
         overflow-x: auto;
     }
 
-    /* টপ নেভবার */
+    /* ==================== TOP NAVBAR ==================== */
     .top-navbar-wrapper {
         width: 100%;
         background: rgba(15, 23, 42, 0.95);
@@ -38,6 +41,7 @@
         gap: 10px;
     }
 
+    /* ==================== MENU BUTTON ==================== */
     .menu-toggle-btn {
         background: #1e293b;
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -56,6 +60,7 @@
         color: #000;
     }
 
+    /* ==================== BRAND ==================== */
     .brand-logo {
         font-family: 'Orbitron', sans-serif;
         font-weight: 800;
@@ -71,7 +76,7 @@
         color: #ffff00;
     }
 
-    /* ব্যালেন্স বক্স */
+    /* ==================== BALANCE BOX ==================== */
     .top-balance-box {
         background: #1e293b;
         border: 1px solid rgba(30, 144, 238, 0.3);
@@ -94,6 +99,11 @@
         background: rgba(30, 144, 238, 0.1);
     }
 
+    /* Balance loading animation */
+    .top-balance-box.loading #topBalance {
+        opacity: 0.5;
+    }
+
     .deposit-symbol {
         background: #1E90EE;
         color: #0f172a;
@@ -107,17 +117,7 @@
         font-weight: bold;
     }
 
-    /* Balance update animation */
-    #topBalance {
-        transition: all 0.25s ease;
-    }
-
-    #topBalance.balance-updated {
-        color: #22c55e;
-        transform: scale(1.08);
-    }
-
-    /* সাইডবার মেনু ও ওভারলে */
+    /* ==================== SIDEBAR OVERLAY ==================== */
     .sidebar-overlay {
         position: fixed;
         top: 0;
@@ -137,6 +137,7 @@
         visibility: visible;
     }
 
+    /* ==================== SIDEBAR ==================== */
     .sidebar-menu {
         position: fixed;
         top: 0;
@@ -158,6 +159,7 @@
         left: 0;
     }
 
+    /* ==================== SIDEBAR HEADER ==================== */
     .sidebar-header {
         display: flex;
         justify-content: space-between;
@@ -180,6 +182,7 @@
         cursor: pointer;
     }
 
+    /* ==================== SIDEBAR LINKS ==================== */
     .sidebar-links {
         display: flex;
         flex-direction: column;
@@ -209,14 +212,14 @@
         color: #fff;
     }
 
-    /* Deposit & Withdraw */
+    /* ==================== DEPOSIT / WITHDRAW ==================== */
     .deposit-withdraw-nav {
         background: linear-gradient(135deg, #1e3a8a, #2563eb) !important;
         border: 1px solid rgba(30, 144, 238, 0.4) !important;
         font-weight: 600;
     }
 
-    /* Logout */
+    /* ==================== LOGOUT ==================== */
     .logout-item {
         background: #ef4444 !important;
         color: #fff !important;
@@ -236,7 +239,7 @@
 </style>
 
 
-<!-- ==================== CRYPTO TICKER ==================== -->
+<!-- ==================== CRYPTO TICKER BAR ==================== -->
 
 <div class="crypto-ticker-bar">
     <span style="color: #22c55e;">BTC: 64,250 +1.8%</span>
@@ -251,7 +254,11 @@
 
     <div class="nav-left">
 
-        <button class="menu-toggle-btn" onclick="toggleSidebar()">
+        <button
+            class="menu-toggle-btn"
+            type="button"
+            onclick="toggleSidebar()"
+        >
             <svg
                 width="20"
                 height="20"
@@ -277,14 +284,19 @@
 
     <div class="nav-right">
 
-        <!-- Real-Time Balance -->
+        <!--
+            BALANCE BOX
 
+            Dashboard-এর মতোই profiles.balance থেকে
+            balance load হবে।
+        -->
         <a
             href="deposit-withdraw.html?type=deposit"
             class="top-balance-box"
+            id="topBalanceBox"
             title="Deposit Money"
         >
-            <span id="topBalance">$0.00</span>
+            <span id="topBalance">$ 0.00</span>
             <span class="deposit-symbol">+</span>
         </a>
 
@@ -302,18 +314,25 @@
 ></div>
 
 
-<!-- ==================== SIDEBAR ==================== -->
+<!-- ==================== SIDEBAR MENU ==================== -->
 
-<div class="sidebar-menu" id="sidebarMenu">
+<div
+    class="sidebar-menu"
+    id="sidebarMenu"
+>
 
     <div class="sidebar-header">
 
-        <a href="dashboard.html" class="brand-logo">
+        <a
+            href="dashboard.html"
+            class="brand-logo"
+        >
             ⚡ <span>BDTMINER Menu</span>
         </a>
 
         <button
             class="sidebar-close-btn"
+            type="button"
             onclick="toggleSidebar()"
         >
             ✕
@@ -324,27 +343,45 @@
 
     <div class="sidebar-links">
 
-        <a href="index.html" class="nav-item">
+        <a
+            href="index.html"
+            class="nav-item"
+        >
             🏠 Home
         </a>
 
-        <a href="mining-plans.html" class="nav-item">
+        <a
+            href="mining-plans.html"
+            class="nav-item"
+        >
             💎 Mining Plans
         </a>
 
-        <a href="payout.html" class="nav-item">
+        <a
+            href="payout.html"
+            class="nav-item"
+        >
             💸 Live Payouts
         </a>
 
-        <a href="dashboard.html" class="nav-item">
+        <a
+            href="dashboard.html"
+            class="nav-item"
+        >
             📊 Dashboard
         </a>
 
-        <a href="verification-details.html" class="nav-item">
+        <a
+            href="verification-details.html"
+            class="nav-item"
+        >
             🛡️ NID Verification
         </a>
 
-        <a href="account-info.html" class="nav-item">
+        <a
+            href="account-info.html"
+            class="nav-item"
+        >
             👤 Account Info
         </a>
 
@@ -355,11 +392,17 @@
             💳 Deposit & Withdraw
         </a>
 
-        <a href="chat.html" class="nav-item">
+        <a
+            href="chat.html"
+            class="nav-item"
+        >
             🎧 Contact Support
         </a>
 
-        <a href="logout.php" class="logout-item">
+        <a
+            href="logout.php"
+            class="logout-item"
+        >
             LOGOUT
         </a>
 
@@ -368,318 +411,267 @@
 </div>
 
 
-<!-- ==================== SUPABASE REALTIME BALANCE SCRIPT ==================== -->
+<!-- ==================== HEADER BALANCE SCRIPT ==================== -->
 
 <script>
 (function () {
 
     /*
-     * ==========================================================
-     * BDTMINER REAL-TIME BALANCE SYSTEM
-     * ==========================================================
-     *
-     * Database:
-     * profiles
-     *
-     * Column:
-     * balance
-     *
-     * User identification:
-     * Supabase Auth user.id === profiles.id
-     *
-     * এই script:
-     *
-     * 1. Current logged-in user বের করবে
-     * 2. profiles থেকে প্রথম balance load করবে
-     * 3. Supabase Realtime দিয়ে balance পরিবর্তন শুনবে
-     * 4. অন্য page থেকে balance change হলেও header update করবে
-     * 5. একই page-এ balance update হলেও UI refresh করবে
-     * 6. Tab আবার active হলে balance refresh করবে
-     *
-     * ==========================================================
+     * =========================================================
+     * SUPABASE CONFIG
+     * Dashboard.html-এর একই Supabase project ব্যবহার করা হচ্ছে।
+     * =========================================================
      */
 
-    const SUPABASE_URL =
+    const HEADER_SUPABASE_URL =
         'https://pckocwvuxeseumynslwv.supabase.co';
 
-    const SUPABASE_KEY =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2IiwiaWF0IjoxNzkwNjQ3Nzk0LCJleHAiOjIxMDYyMjM3OTR9.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+    const HEADER_SUPABASE_KEY =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc';
+
 
     /*
-     * যদি parent page-এ Supabase ইতিমধ্যে load করা থাকে,
-     * তাহলে নতুন client না বানিয়ে existing client ব্যবহার করবে।
-     *
-     * না থাকলে CDN থেকে supabase-js load করা প্রয়োজন।
+     * =========================================================
+     * Supabase Client
+     * =========================================================
      */
 
-    let headerSupabase = null;
-    let headerRealtimeChannel = null;
-    let headerCurrentUserId = null;
+    let headerSupabaseClient = null;
 
+    try {
 
-    /* ==========================================================
-       SUPABASE CLIENT INITIALIZE
-       ========================================================== */
+        if (typeof supabase !== 'undefined') {
 
-    function initHeaderSupabase() {
-
-        try {
-
-            if (typeof supabase === 'undefined') {
-
-                console.error(
-                    '[Header] Supabase library পাওয়া যায়নি। ' +
-                    'Parent page-এ @supabase/supabase-js load করুন।'
-                );
-
-                return false;
-            }
-
-            headerSupabase = supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
+            headerSupabaseClient = supabase.createClient(
+                HEADER_SUPABASE_URL,
+                HEADER_SUPABASE_KEY
             );
 
-            return true;
-
-        } catch (error) {
-
-            console.error(
-                '[Header] Supabase initialization error:',
-                error
-            );
-
-            return false;
         }
+
+    } catch (error) {
+
+        console.error(
+            'Header Supabase initialization error:',
+            error
+        );
+
     }
 
 
-    /* ==========================================================
-       FORMAT BALANCE
-       ========================================================== */
+    /*
+     * =========================================================
+     * Current Balance
+     * =========================================================
+     */
 
-    function formatHeaderBalance(balance) {
-
-        const numericBalance = Number(balance);
-
-        if (!Number.isFinite(numericBalance)) {
-            return '$0.00';
-        }
-
-        return '$' + numericBalance.toFixed(2);
-    }
+    let headerCurrentBalance = 0;
 
 
-    /* ==========================================================
-       UPDATE BALANCE UI
-       ========================================================== */
+    /*
+     * =========================================================
+     * Update Balance UI
+     * =========================================================
+     */
 
-    function updateHeaderBalance(balance, animate = true) {
+    function updateHeaderBalance(balance) {
 
         const balanceElement =
             document.getElementById('topBalance');
 
-        if (!balanceElement) {
-            return;
+        const balanceBox =
+            document.getElementById('topBalanceBox');
+
+        if (!balanceElement) return;
+
+
+        let numericBalance =
+            parseFloat(balance);
+
+
+        if (isNaN(numericBalance)) {
+            numericBalance = 0;
         }
 
-        const formattedBalance =
-            formatHeaderBalance(balance);
 
-        balanceElement.textContent =
-            formattedBalance;
+        headerCurrentBalance = numericBalance;
+
 
         /*
-         * ছোট animation
+         * Dashboard-এর মতোই 2 decimal
          */
 
-        if (animate) {
+        balanceElement.innerText =
+            `$ ${numericBalance.toFixed(2)}`;
 
-            balanceElement.classList.remove(
-                'balance-updated'
-            );
 
-            /*
-             * Reflow force করা
-             */
+        if (balanceBox) {
 
-            void balanceElement.offsetWidth;
+            balanceBox.classList.remove('loading');
 
-            balanceElement.classList.add(
-                'balance-updated'
-            );
-
-            setTimeout(function () {
-
-                balanceElement.classList.remove(
-                    'balance-updated'
-                );
-
-            }, 500);
         }
 
-        /*
-         * অন্য JavaScript code চাইলে এই event
-         * ব্যবহার করে balance পরিবর্তন জানতে পারবে।
-         */
-
-        window.dispatchEvent(
-            new CustomEvent(
-                'bdtminerBalanceUpdated',
-                {
-                    detail: {
-                        balance: Number(balance)
-                    }
-                }
-            )
-        );
     }
 
 
-    /* ==========================================================
-       FETCH CURRENT BALANCE
-       ========================================================== */
+    /*
+     * =========================================================
+     * Load User Balance
+     *
+     * Dashboard-এর loadUserBalance() এর মতোই:
+     *
+     * profiles
+     *   -> balance
+     *   -> current user's id
+     * =========================================================
+     */
 
-    async function fetchHeaderBalance() {
+    async function loadHeaderBalance() {
 
-        if (!headerSupabase) {
+        if (!headerSupabaseClient) {
+            console.error(
+                'Supabase client not available.'
+            );
             return;
         }
 
+
+        const balanceBox =
+            document.getElementById('topBalanceBox');
+
+        if (balanceBox) {
+            balanceBox.classList.add('loading');
+        }
+
+
         try {
 
+            /*
+             * Logged-in user বের করা
+             */
+
             const {
-                data: {
-                    user
-                },
+                data: { user },
                 error: userError
-            } = await headerSupabase.auth.getUser();
+            } =
+                await headerSupabaseClient.auth.getUser();
 
 
             if (userError) {
 
                 console.error(
-                    '[Header] User fetch error:',
+                    'Header user fetch error:',
                     userError
                 );
 
+                updateHeaderBalance(0);
+
                 return;
             }
 
+
+            /*
+             * User না থাকলে balance 0
+             */
 
             if (!user) {
 
-                updateHeaderBalance(0, false);
+                updateHeaderBalance(0);
 
                 return;
             }
 
 
-            headerCurrentUserId =
-                user.id;
-
+            /*
+             * Dashboard-এর মতো profiles থেকে balance নেওয়া
+             */
 
             const {
                 data: profile,
                 error: profileError
-            } = await headerSupabase
-                .from('profiles')
-                .select('balance')
-                .eq('id', user.id)
-                .single();
+            } =
+                await headerSupabaseClient
+                    .from('profiles')
+                    .select('balance')
+                    .eq('id', user.id)
+                    .single();
 
 
             if (profileError) {
 
                 console.error(
-                    '[Header] Balance fetch error:',
+                    'Header balance fetch error:',
                     profileError
                 );
+
+                updateHeaderBalance(0);
 
                 return;
             }
 
 
+            /*
+             * Profile এবং balance থাকলে update
+             */
+
             if (
                 profile &&
-                profile.balance !== null &&
-                profile.balance !== undefined
+                profile.balance !== undefined &&
+                profile.balance !== null
             ) {
 
                 updateHeaderBalance(
-                    profile.balance,
-                    false
+                    profile.balance
                 );
 
             } else {
 
-                updateHeaderBalance(
-                    0,
-                    false
-                );
-            }
+                updateHeaderBalance(0);
 
+            }
 
         } catch (error) {
 
             console.error(
-                '[Header] Unexpected balance error:',
+                'Header balance error:',
                 error
             );
 
+            updateHeaderBalance(0);
+
         }
+
     }
 
 
-    /* ==========================================================
-       START REALTIME LISTENER
-       ========================================================== */
+    /*
+     * =========================================================
+     * SUPABASE REALTIME BALANCE UPDATE
+     *
+     * profiles.balance পরিবর্তন হলে Header নিজে থেকেই
+     * balance update করার চেষ্টা করবে।
+     * =========================================================
+     */
 
-    function startHeaderRealtime() {
+    async function subscribeToBalanceChanges() {
 
-        if (!headerSupabase) {
-            return;
-        }
-
-        if (!headerCurrentUserId) {
-            return;
-        }
-
-
-        /*
-         * পুরনো channel থাকলে remove করি
-         */
-
-        if (headerRealtimeChannel) {
-
-            try {
-
-                headerSupabase.removeChannel(
-                    headerRealtimeChannel
-                );
-
-            } catch (e) {
-
-                console.warn(
-                    '[Header] Old channel remove error:',
-                    e
-                );
-            }
-
-            headerRealtimeChannel = null;
-        }
+        if (!headerSupabaseClient) return;
 
 
-        /*
-         * profiles table-এর শুধুমাত্র
-         * current user's row listen করা হবে।
-         */
+        try {
 
-        headerRealtimeChannel =
-            headerSupabase
+            const {
+                data: { user }
+            } =
+                await headerSupabaseClient.auth.getUser();
+
+
+            if (!user) return;
+
+
+            headerSupabaseClient
                 .channel(
-                    'profile-balance-' +
-                    headerCurrentUserId
+                    'header-balance-' + user.id
                 )
                 .on(
                     'postgres_changes',
@@ -687,22 +679,15 @@
                         event: 'UPDATE',
                         schema: 'public',
                         table: 'profiles',
-                        filter:
-                            'id=eq.' +
-                            headerCurrentUserId
+                        filter: `id=eq.${user.id}`
                     },
                     function (payload) {
 
                         console.log(
-                            '[Header] Real-time profile update:',
-                            payload
+                            'Balance changed:',
+                            payload.new.balance
                         );
 
-
-                        /*
-                         * নতুন balance পাওয়া গেলে
-                         * সঙ্গে সঙ্গে UI update
-                         */
 
                         if (
                             payload.new &&
@@ -710,105 +695,73 @@
                         ) {
 
                             updateHeaderBalance(
-                                payload.new.balance,
-                                true
+                                payload.new.balance
                             );
+
                         }
 
                     }
                 )
-                .subscribe(
-                    function (status) {
+                .subscribe();
 
-                        console.log(
-                            '[Header] Realtime status:',
-                            status
-                        );
+        } catch (error) {
 
-                        /*
-                         * SUBSCRIBED হলে আবার current balance
-                         * fetch করে নিই।
-                         */
+            console.error(
+                'Balance realtime subscription error:',
+                error
+            );
 
-                        if (status === 'SUBSCRIBED') {
+        }
 
-                            fetchHeaderBalance();
-                        }
-
-                    }
-                );
     }
 
 
-    /* ==========================================================
-       AUTH STATE LISTENER
-       ========================================================== */
+    /*
+     * =========================================================
+     * AUTH STATE CHANGE
+     *
+     * Login / Logout হলে Header balance refresh হবে।
+     * =========================================================
+     */
 
-    function startHeaderAuthListener() {
+    function setupAuthListener() {
 
-        if (!headerSupabase) {
-            return;
-        }
+        if (!headerSupabaseClient) return;
 
 
-        headerSupabase.auth.onAuthStateChange(
-            async function (event, session) {
+        headerSupabaseClient.auth.onAuthStateChange(
+            function (event, session) {
 
                 console.log(
-                    '[Header] Auth event:',
+                    'Header auth event:',
                     event
                 );
 
 
                 if (session && session.user) {
 
-                    headerCurrentUserId =
-                        session.user.id;
-
-                    await fetchHeaderBalance();
-
-                    startHeaderRealtime();
+                    loadHeaderBalance();
 
                 } else {
 
-                    headerCurrentUserId = null;
+                    updateHeaderBalance(0);
 
-                    updateHeaderBalance(
-                        0,
-                        false
-                    );
-
-
-                    if (headerRealtimeChannel) {
-
-                        try {
-
-                            await headerSupabase
-                                .removeChannel(
-                                    headerRealtimeChannel
-                                );
-
-                        } catch (e) {
-
-                            console.warn(
-                                '[Header] Channel cleanup error:',
-                                e
-                            );
-                        }
-
-                        headerRealtimeChannel =
-                            null;
-                    }
                 }
 
             }
         );
+
     }
 
 
-    /* ==========================================================
-       TAB / PAGE VISIBILITY REFRESH
-       ========================================================== */
+    /*
+     * =========================================================
+     * PAGE VISIBILITY / FOCUS REFRESH
+     *
+     * অন্য page থেকে Deposit/Withdraw করে আবার এই page-এ
+     * ফিরলে balance refresh হবে।
+     * =========================================================
+     */
 
     document.addEventListener(
         'visibilitychange',
@@ -818,110 +771,135 @@
                 document.visibilityState === 'visible'
             ) {
 
-                fetchHeaderBalance();
+                loadHeaderBalance();
+
             }
 
         }
     );
 
-
-    /* ==========================================================
-       PAGE FOCUS REFRESH
-       ========================================================== */
 
     window.addEventListener(
         'focus',
         function () {
 
-            fetchHeaderBalance();
+            loadHeaderBalance();
 
         }
     );
 
 
-    /* ==========================================================
-       PUBLIC FUNCTION
-       ==========================================================
-       অন্য page/script চাইলে:
-
-       window.refreshHeaderBalance();
-
-       call করতে পারবে।
-       ========================================================== */
+    /*
+     * =========================================================
+     * GLOBAL FUNCTION
+     *
+     * অন্য page থেকেও চাইলে:
+     *
+     * refreshHeaderBalance();
+     *
+     * call করা যাবে।
+     * =========================================================
+     */
 
     window.refreshHeaderBalance =
-        function () {
-
-            return fetchHeaderBalance();
-
-        };
+        loadHeaderBalance;
 
 
-    /* ==========================================================
-       INITIALIZE HEADER BALANCE SYSTEM
-       ========================================================== */
+    /*
+     * =========================================================
+     * SIDEBAR TOGGLE
+     * =========================================================
+     */
 
-    async function initializeHeaderBalanceSystem() {
+    window.toggleSidebar = function () {
 
-        const initialized =
-            initHeaderSupabase();
+        const sidebar =
+            document.getElementById('sidebarMenu');
 
-
-        if (!initialized) {
-            return;
-        }
+        const overlay =
+            document.getElementById('sidebarOverlay');
 
 
-        /*
-         * প্রথমে current logged-in user বের করি
-         */
+        if (!sidebar || !overlay) return;
 
-        const {
-            data: {
-                user
+
+        sidebar.classList.toggle('active');
+
+        overlay.classList.toggle('active');
+
+    };
+
+
+    /*
+     * =========================================================
+     * CLOSE SIDEBAR WHEN ESC PRESSED
+     * =========================================================
+     */
+
+    document.addEventListener(
+        'keydown',
+        function (event) {
+
+            if (event.key === 'Escape') {
+
+                const sidebar =
+                    document.getElementById(
+                        'sidebarMenu'
+                    );
+
+                const overlay =
+                    document.getElementById(
+                        'sidebarOverlay'
+                    );
+
+
+                if (sidebar) {
+                    sidebar.classList.remove('active');
+                }
+
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+
             }
-        } = await headerSupabase.auth.getUser();
 
-
-        if (user) {
-
-            headerCurrentUserId =
-                user.id;
-
-
-            /*
-             * প্রথম balance load
-             */
-
-            await fetchHeaderBalance();
-
-
-            /*
-             * এরপর realtime listener
-             */
-
-            startHeaderRealtime();
-
-        } else {
-
-            updateHeaderBalance(
-                0,
-                false
-            );
         }
+    );
+
+
+    /*
+     * =========================================================
+     * INITIALIZE HEADER
+     * =========================================================
+     */
+
+    async function initializeHeader() {
+
+        /*
+         * প্রথমে balance load
+         */
+
+        await loadHeaderBalance();
 
 
         /*
-         * Auth state changes
+         * তারপর realtime listener
          */
 
-        startHeaderAuthListener();
+        await subscribeToBalanceChanges();
+
+
+        /*
+         * Auth listener
+         */
+
+        setupAuthListener();
 
     }
 
 
     /*
-     * DOM ready হওয়ার পর initialize
+     * DOM ready হলে শুরু হবে
      */
 
     if (
@@ -930,15 +908,16 @@
 
         document.addEventListener(
             'DOMContentLoaded',
-            initializeHeaderBalanceSystem
+            initializeHeader
         );
 
     } else {
 
-        initializeHeaderBalanceSystem();
+        initializeHeader();
 
     }
 
-
 })();
 </script>
+
+<!-- ==================== END BDTMINER HEADER ==================== -->
