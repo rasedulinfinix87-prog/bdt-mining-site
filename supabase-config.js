@@ -8,10 +8,14 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // 1. User Sign Up Function
 async function registerUser(fullName, email, phone, password, secretPin) {
     try {
+        // Generate UUID on the client side
+        const newUserId = crypto.randomUUID();
+
         const { data, error } = await supabase
             .from('user')
             .insert([
                 {
+                    id: newUserId, // UUID Explicitly sent
                     full_name: fullName,
                     email: email,
                     phone: phone,
@@ -23,9 +27,8 @@ async function registerUser(fullName, email, phone, password, secretPin) {
             .select();
 
         if (error) throw error;
-        
+
         if (data && data.length > 0) {
-            // Save user_id to LocalStorage for persistence
             localStorage.setItem('user_id', data[0].id);
             return { success: true, user: data[0] };
         }
@@ -49,7 +52,6 @@ async function loginUser(email, password) {
         if (error) throw error;
 
         if (data) {
-            // Save user_id to LocalStorage
             localStorage.setItem('user_id', data.id);
             return { success: true, user: data };
         } else {
@@ -73,7 +75,7 @@ async function fetchUserProfile(userId) {
         if (error) throw error;
         return { success: true, data };
     } catch (error) {
-        console.error("Error fetching user profile:", error.message);
+        console.error("Error fetching profile:", error.message);
         return { success: false, error: error.message };
     }
 }
