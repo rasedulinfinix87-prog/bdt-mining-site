@@ -39,14 +39,16 @@
             align-items: center;
             min-height: 100vh;
             min-height: -webkit-fill-available;
-            overflow: hidden; /* Prevent scroll while loading */
+            overflow: hidden; /* Prevent scrolling during splash animation */
         }
 
         html {
             height: -webkit-fill-available;
         }
 
-        /* Fullscreen Loading Overlay */
+        /* ---------------------------------------------------- */
+        /* PREMIUM LOADER OVERLAY STYLES                        */
+        /* ---------------------------------------------------- */
         #loader-overlay {
             position: fixed;
             top: 0;
@@ -54,13 +56,13 @@
             width: 100%;
             height: 100%;
             background-color: #030d0a;
-            background-image: radial-gradient(circle at 50% 40%, #061913 0%, #030d0a 80%);
+            background-image: radial-gradient(circle at 50% 45%, #061913 0%, #030d0a 85%);
             z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
         }
 
         #loader-overlay.fade-out {
@@ -68,73 +70,104 @@
             visibility: hidden;
         }
 
-        /* Monument Loader Styling */
-        .monument-container {
+        .loader-wrapper {
             position: relative;
-            width: 200px;
-            height: 220px;
+            width: 120px;
+            height: 120px;
             display: flex;
             justify-content: center;
-            align-items: flex-end;
+            align-items: center;
         }
 
-        .monument-svg {
-            width: 100%;
-            height: 100%;
+        /* Rotating Glowing Rings */
+        .ring-outer {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--gold-primary);
+            border-bottom-color: var(--accent-green);
+            animation: spinRing 2.5s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(245, 207, 102, 0.5));
         }
 
-        /* Smooth 2.5s Drawing & Glowing Animation */
-        .monument-path polygon, .monument-path path {
-            stroke-dasharray: 800;
-            stroke-dashoffset: 800;
-            animation: drawMonument 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+        .ring-inner {
+            position: absolute;
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-left-color: var(--gold-primary);
+            border-right-color: var(--accent-green);
+            animation: spinRingReverse 1.8s linear infinite;
+            opacity: 0.8;
         }
 
-        @keyframes drawMonument {
-            0% {
-                stroke-dashoffset: 800;
-                fill: rgba(245, 207, 102, 0.0);
-                stroke: rgba(245, 207, 102, 0.3);
-                filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.2));
-            }
-            50% {
-                fill: rgba(245, 207, 102, 0.15);
-                stroke: #f5cf66;
-                filter: drop-shadow(0 0 10px rgba(245, 207, 102, 0.5));
-            }
-            100% {
-                stroke-dashoffset: 0;
-                fill: rgba(245, 207, 102, 0.3);
-                stroke: #f5cf66;
-                filter: drop-shadow(0 0 20px rgba(245, 207, 102, 0.8));
-            }
+        /* Center Glowing Gold Icon */
+        .gold-icon-box {
+            width: 60px;
+            height: 60px;
+            background: rgba(12, 38, 29, 0.9);
+            border: 1px solid var(--gold-primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(245, 207, 102, 0.4), inset 0 0 10px rgba(245, 207, 102, 0.2);
+            animation: pulseIcon 1.5s ease-in-out infinite alternate;
         }
 
-        /* Glowing Loader Text */
+        /* Brand Typography Animation */
         .loader-brand {
             margin-top: 25px;
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 700;
             letter-spacing: 2px;
             color: var(--gold-primary);
             text-shadow: 0 0 12px rgba(245, 207, 102, 0.4);
-            animation: pulseText 2.5s infinite alternate;
+        }
+
+        .loader-brand span {
+            color: #ffffff;
+            font-weight: 400;
         }
 
         .loader-subtext {
             font-size: 0.72rem;
             color: var(--text-secondary);
             margin-top: 6px;
-            letter-spacing: 1.2px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
+            animation: pulseSubtext 1.2s ease-in-out infinite alternate;
         }
 
-        @keyframes pulseText {
-            0% { opacity: 0.4; }
+        /* Keyframes */
+        @keyframes spinRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes spinRingReverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        @keyframes pulseIcon {
+            0% { transform: scale(0.92); box-shadow: 0 0 12px rgba(245, 207, 102, 0.3); }
+            100% { transform: scale(1.05); box-shadow: 0 0 25px rgba(245, 207, 102, 0.7); }
+        }
+
+        @keyframes pulseSubtext {
+            0% { opacity: 0.5; }
             100% { opacity: 1; }
         }
 
-        /* Mobile Container Layout Fix */
+        /* ---------------------------------------------------- */
+        /* MOBILE CONTAINER STYLES                              */
+        /* ---------------------------------------------------- */
         .mobile-container {
             width: 100%;
             max-width: 410px;
@@ -327,36 +360,17 @@
 </head>
 <body>
 
-    <!-- Fullscreen National Monument Loading Overlay -->
+    <!-- Premium Fullscreen Loading Overlay -->
     <div id="loader-overlay">
-        <div class="monument-container">
-            <svg class="monument-svg" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- National Monument Structure Strips -->
-                <g class="monument-path" stroke="#f5cf66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- Base Foundation -->
-                    <path d="M 10 230 L 190 230" stroke="#2ed573" stroke-width="2.5" />
-                    <!-- Spire 1 (Center Highest) -->
-                    <polygon points="100,10 93,225 107,225" />
-                    <!-- Spire 2 Left & Right -->
-                    <polygon points="100,10 78,225 90,225" />
-                    <polygon points="100,10 110,225 122,225" />
-                    <!-- Spire 3 Left & Right -->
-                    <polygon points="100,10 62,225 75,225" />
-                    <polygon points="100,10 125,225 138,225" />
-                    <!-- Spire 4 Left & Right -->
-                    <polygon points="100,10 45,225 59,225" />
-                    <polygon points="100,10 141,225 155,225" />
-                    <!-- Spire 5 Left & Right -->
-                    <polygon points="100,10 30,225 42,225" />
-                    <polygon points="100,10 158,225 170,225" />
-                    <!-- Outer Base Flanks -->
-                    <polygon points="100,10 15,225 27,225" />
-                    <polygon points="100,10 173,225 185,225" />
-                </g>
-            </svg>
+        <div class="loader-wrapper">
+            <div class="ring-outer"></div>
+            <div class="ring-inner"></div>
+            <div class="gold-icon-box">
+                <i class="fa-solid fa-coins"></i>
+            </div>
         </div>
-        <div class="loader-brand">GOLDMINE DIGITAL</div>
-        <div class="loader-subtext">Securing Vault Assets...</div>
+        <div class="loader-brand">GOLDMINE <span>DIGITAL</span></div>
+        <div class="loader-subtext">Securing Asset Vault...</div>
     </div>
 
     <div class="mobile-container">
@@ -440,19 +454,19 @@
 
     <!-- JavaScript Logic -->
     <script>
-        // Set exact minimum animation duration to 2.5 Seconds (2500 ms)
-        const animationMinDuration = 2500; 
+        // Exact 2.5 Seconds (2500 ms) Minimum Display Duration for Splash Screen
+        const minAnimationDuration = 2500;
         const pageStartTime = Date.now();
 
         window.addEventListener('load', function() {
             const elapsedTime = Date.now() - pageStartTime;
-            const remainingTime = Math.max(0, animationMinDuration - elapsedTime);
+            const remainingTime = Math.max(0, minAnimationDuration - elapsedTime);
 
             setTimeout(function() {
                 const loader = document.getElementById('loader-overlay');
                 if (loader) {
                     loader.classList.add('fade-out');
-                    document.body.style.overflow = 'auto'; // Restore scroll
+                    document.body.style.overflow = 'auto'; // Restore normal scrolling
                 }
             }, remainingTime);
         });
