@@ -39,16 +39,14 @@
             align-items: center;
             min-height: 100vh;
             min-height: -webkit-fill-available;
-            overflow: hidden; /* Prevent scrolling during splash animation */
+            overflow: hidden;
         }
 
         html {
             height: -webkit-fill-available;
         }
 
-        /* ---------------------------------------------------- */
-        /* PREMIUM LOADER OVERLAY STYLES                        */
-        /* ---------------------------------------------------- */
+        /* Loader Overlay */
         #loader-overlay {
             position: fixed;
             top: 0;
@@ -79,7 +77,6 @@
             align-items: center;
         }
 
-        /* Rotating Glowing Rings */
         .ring-outer {
             position: absolute;
             width: 110px;
@@ -104,7 +101,6 @@
             opacity: 0.8;
         }
 
-        /* Center Glowing Gold Icon */
         .gold-icon-box {
             width: 60px;
             height: 60px;
@@ -120,7 +116,6 @@
             animation: pulseIcon 1.5s ease-in-out infinite alternate;
         }
 
-        /* Brand Typography Animation */
         .loader-brand {
             margin-top: 25px;
             font-size: 1.2rem;
@@ -144,7 +139,6 @@
             animation: pulseSubtext 1.2s ease-in-out infinite alternate;
         }
 
-        /* Keyframes */
         @keyframes spinRing {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -165,9 +159,7 @@
             100% { opacity: 1; }
         }
 
-        /* ---------------------------------------------------- */
-        /* MOBILE CONTAINER STYLES                              */
-        /* ---------------------------------------------------- */
+        /* Mobile Container */
         .mobile-container {
             width: 100%;
             max-width: 410px;
@@ -183,7 +175,6 @@
             border-right: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Header Safe Zone */
         header {
             padding: 25px 20px 10px 20px;
             text-align: center;
@@ -207,7 +198,6 @@
             font-weight: 400;
         }
 
-        /* Content Wrapper */
         .content {
             padding: 10px 16px 20px 16px;
             display: flex;
@@ -217,7 +207,6 @@
             justify-content: space-evenly;
         }
 
-        /* Premium Card Style */
         .dashboard-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -255,14 +244,12 @@
             margin-left: 5px;
         }
 
-        /* 15 Days Trend Graph Box */
         .chart-box {
             width: 100%;
             height: 100px;
             margin-top: 8px;
         }
 
-        /* Crypto Container */
         .crypto-container {
             display: flex;
             flex-direction: column;
@@ -297,7 +284,6 @@
             font-weight: 700;
         }
 
-        /* Start Investing CTA Button Spacing */
         .cta-wrapper {
             margin-top: 10px;
             padding: 0 4px;
@@ -322,13 +308,11 @@
             transform: scale(0.98);
         }
 
-        /* Bottom Nav Container Placeholder */
         #bottom-nav-container {
             width: 100%;
             flex-shrink: 0;
         }
 
-        /* Built-in Fallback Nav */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -391,7 +375,7 @@
                     <span style="font-size: 0.65rem; color: var(--gold-primary); font-weight: 600;">15 DAYS TREND</span>
                 </div>
                 <div class="price-badge">
-                    $<span id="gold-price">2,184.00</span>/oz 
+                    $<span id="gold-price">2,184.65</span>/oz 
                     <span class="badge-green">(UP +<span id="gold-change">1.4</span>%)</span>
                 </div>
                 <div class="chart-box">
@@ -412,7 +396,7 @@
                             <i class="fa-brands fa-bitcoin"></i>
                             <span>BTC / USD</span>
                         </div>
-                        <div class="crypto-val">$<span id="btc-price">65,432.03</span></div>
+                        <div class="crypto-val">$<span id="btc-price">65,411.58</span></div>
                     </div>
 
                     <!-- Crypto 15 Days Dynamic Graph Box -->
@@ -454,7 +438,6 @@
 
     <!-- JavaScript Logic -->
     <script>
-        // Exact 2.5 Seconds (2500 ms) Minimum Display Duration for Splash Screen
         const minAnimationDuration = 2500;
         const pageStartTime = Date.now();
 
@@ -466,12 +449,11 @@
                 const loader = document.getElementById('loader-overlay');
                 if (loader) {
                     loader.classList.add('fade-out');
-                    document.body.style.overflow = 'auto'; // Restore normal scrolling
+                    document.body.style.overflow = 'auto';
                 }
             }, remainingTime);
         });
 
-        // Dynamic bottom.html loader with cache bypass
         fetch('bottom.html?v=' + new Date().getTime())
             .then(response => {
                 if(response.ok) return response.text();
@@ -481,11 +463,11 @@
             })
             .catch(error => console.log('Using default bottom nav'));
 
-        // Highly Detailed Trend Data Points (Increased by 200% for realistic market volatility)
+        // রিয়েল মার্কেটের মতো ওঠানামা (Zig-Zag / Fluctuating) করার জন্য মিক্সড ডেটা পয়েন্ট
         const goldPoints = [
-            2110, 2125, 2118, 2130, 2122, 2140, 2132, 2148, 2138, 2155, 
-            2145, 2162, 2150, 2168, 2158, 2175, 2165, 2180, 2172, 2185,
-            2178, 2190, 2182, 2195, 2188, 2200, 2192, 2205, 2198, 2210
+            2160, 2175, 2150, 2182, 2170, 2195, 2180, 2210, 2190, 2205, 
+            2185, 2200, 2175, 2190, 2165, 2185, 2170, 2192, 2178, 2202,
+            2188, 2215, 2195, 2220, 2200, 2212, 2198, 2185, 2180, 2184
         ];
         const daysLabels = Array.from({length: goldPoints.length}, (_, i) => `Point ${i + 1}`);
 
@@ -517,11 +499,11 @@
             }
         });
 
-        // Crypto Chart Implementation (High density data points)
+        // Crypto Chart Implementation (Fluctuating market data)
         const cryptoPoints = [
-            60500, 61200, 60800, 61500, 61100, 62000, 61600, 62400, 61900, 62800, 
-            62300, 63200, 62700, 63600, 63100, 64000, 63500, 64500, 63900, 64800,
-            64300, 65200, 64700, 65600, 65000, 66000, 65400, 66300, 65800, 66500
+            64000, 65200, 63800, 65500, 64200, 66100, 64900, 66800, 65200, 66400, 
+            64800, 65900, 64300, 65600, 63900, 65100, 64400, 65800, 64700, 66200,
+            65100, 66700, 65300, 67000, 65500, 66300, 65000, 64800, 64200, 65400
         ];
         const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
         const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
@@ -553,7 +535,7 @@
         // Real-time market update simulation
         setInterval(() => {
             let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
-            let newGold = (currentGold + (Math.random() - 0.48) * 1.5).toFixed(2);
+            let newGold = (currentGold + (Math.random() - 0.49) * 2.0).toFixed(2);
             document.getElementById('gold-price').innerText = Number(newGold).toLocaleString('en-US', {minimumFractionDigits: 2});
             
             goldChart.data.datasets[0].data.shift();
@@ -561,7 +543,7 @@
             goldChart.update();
 
             let btcPrice = parseFloat(document.getElementById('btc-price').innerText.replace(',', ''));
-            let newBtc = (btcPrice + (Math.random() - 0.48) * 25).toFixed(2);
+            let newBtc = (btcPrice + (Math.random() - 0.49) * 45).toFixed(2);
             document.getElementById('btc-price').innerText = Number(newBtc).toLocaleString('en-US', {minimumFractionDigits: 2});
 
             cryptoChart.data.datasets[0].data.shift();
