@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goldmine Digital - Investment Plans</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #061913;
+      --topbar-bg: #030d0a;
+      --card-bg: rgba(12, 38, 29, 0.85);
+      --card-border: rgba(245, 207, 102, 0.25);
+      --gold-primary: #f5cf66;
+      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --card-gradient: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
+      --text-main: #ffffff;
+      --text-muted: #8da499;
+      --green-glow: #2ed573;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .mobile-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-dark);
+      padding-bottom: 80px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: rgba(3, 13, 10, 0.95);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .top-bar .back-btn {
+      color: var(--text-main);
+      font-size: 1.1rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .top-bar h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+
+    .section-header {
+      padding: 20px 20px 10px 20px;
+    }
+
+    .section-header h3 {
+      font-size: 1.1rem;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+    }
+
+    .section-header p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Duration Selector Switch */
+    .duration-selector {
+      display: flex;
+      background: rgba(3, 13, 10, 0.8);
+      padding: 5px;
+      border-radius: 12px;
+      margin: 15px 20px;
+      border: 1px solid rgba(245, 207, 102, 0.15);
+      gap: 5px;
+    }
+
+    .duration-btn {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .duration-btn.active {
+      background: var(--gold-gradient);
+      color: #030d0a;
+      box-shadow: 0 2px 10px rgba(245, 207, 102, 0.2);
+    }
+
+    /* Plan Cards List */
+    .plans-container {
+      padding: 10px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .plan-card {
+      background: var(--card-gradient);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .plan-card:hover {
+      border-color: var(--gold-primary);
+    }
+
+    .plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .plan-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .plan-title i {
+      color: var(--gold-primary);
+      font-size: 1.3rem;
+    }
+
+    .plan-title h4 {
+      font-size: 1.1rem;
+      color: var(--text-main);
+    }
+
+    .badge-karat {
+      background: rgba(245, 207, 102, 0.15);
+      color: var(--gold-primary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid rgba(245, 207, 102, 0.3);
+    }
+
+    .plan-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .detail-item {
+      background: rgba(6, 25, 19, 0.6);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .detail-item span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .detail-item strong {
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .detail-item strong.highlight {
+      color: var(--green-glow);
+    }
+
+    .btn-invest {
+      width: 100%;
+      padding: 12px;
+      background: var(--gold-gradient);
+      color: #030d0a;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(245, 207, 102, 0.2);
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-invest:active {
+      opacity: 0.85;
+    }
+
+    #bottom-nav-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="title-group">
+        <a href="javascript:history.back()" class="back-btn">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <h2>Gold Investment</h2>
+      </div>
+      <i class="fa-solid fa-coins" style="color: var(--gold-primary); font-size: 1.1rem;"></i>
+    </div>
+
+    <!-- Header Section -->
+    <div class="section-header">
+      <h3>Select Investment Plan</h3>
+      <p>Choose your gold purity karat and investment duration.</p>
+    </div>
+
+    <!-- Duration Selector (15, 30, 45 Days) -->
+    <div class="duration-selector">
+      <button class="duration-btn active" onclick="selectDuration(15, this)">15 DAYS</button>
+      <button class="duration-btn" onclick="selectDuration(30, this)">30 DAYS</button>
+      <button class="duration-btn" onclick="selectDuration(45, this)">45 DAYS</button>
+    </div>
+
+    <!-- 5 Investment Cards Container -->
+    <div class="plans-container" id="plans-list">
+      
+      <!-- Card 1: 3 Karat Gold -->
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-title">
+            <i class="fa-solid fa-gem"></i>
+            <h4>3 Karat Gold</h4>
+          </div>
+          <span class="badge-karat">Basic</span>
+        </div>
+        <div class="plan-details">
+          <div class="detail-item">
+            <span>Min Investment</span>
+            <strong>$10.00</strong>
+          </div>
+          <div class="detail-item">
+            <span>Daily Profit</span>
+            <strong class="highlight">1.2%</strong>
+          </div>
+          <div class="detail-item">
+            <span>Duration</span>
+            <strong class="selected-duration">15 Days</strong>
+          </div>
+          <div class="detail-item">
+            <span>Est. Total Return</span>
+            <strong class="total-return">$11.80</strong>
+          </div>
+        </div>
+        <button class="btn-invest" onclick="handleInvest('3 Karat Gold', 10, 1.2)">
+          Invest Now <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Card 2: 20 Karat Gold -->
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-title">
+            <i class="fa-solid fa-coins"></i>
+            <h4>20 Karat Gold</h4>
+          </div>
+          <span class="badge-karat">Standard</span>
+        </div>
+        <div class="plan-details">
+          <div class="detail-item">
+            <span>Min Investment</span>
+            <strong>$50.00</strong>
+          </div>
+          <div class="detail-item">
+            <span>Daily Profit</span>
+            <strong class="highlight">1.8%</strong>
+          </div>
+          <div class="detail-item">
+            <span>Duration</span>
+            <strong class="selected-duration">15 Days</strong>
+          </div>
+          <div class="detail-item">
+            <span>Est. Total Return</span>
+            <strong class="total-return">$63.50</strong>
+          </div>
+        </div>
+        <button class="btn-invest" onclick="handleInvest('20 Karat Gold', 50, 1.8)">
+          Invest Now <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Card 3: 21 Karat Gold -->
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-title">
+            <i class="fa-solid fa-vault"></i>
+            <h4>21 Karat Gold</h4>
+          </div>
+          <span class="badge-karat">Popular</span>
+        </div>
+        <div class="plan-details">
+          <div class="detail-item">
+            <span>Min Investment</span>
+            <strong>$100.00</strong>
+          </div>
+          <div class="detail-item">
+            <span>Daily Profit</span>
+            <strong class="highlight">2.2%</strong>
+          </div>
+          <div class="detail-item">
+            <span>Duration</span>
+            <strong class="selected-duration">15 Days</strong>
+          </div>
+          <div class="detail-item">
+            <span>Est. Total Return</span>
+            <strong class="total-return">$133.00</strong>
+          </div>
+        </div>
+        <button class="btn-invest" onclick="handleInvest('21 Karat Gold', 100, 2.2)">
+          Invest Now <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Card 4: 22 Karat Gold -->
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-title">
+            <i class="fa-solid fa-crown"></i>
+            <h4>22 Karat Gold</h4>
+          </div>
+          <span class="badge-karat">Premium</span>
+        </div>
+        <div class="plan-details">
+          <div class="detail-item">
+            <span>Min Investment</span>
+            <strong>$250.00</strong>
+          </div>
+          <div class="detail-item">
+            <span>Daily Profit</span>
+            <strong class="highlight">2.8%</strong>
+          </div>
+          <div class="detail-item">
+            <span>Duration</span>
+            <strong class="selected-duration">15 Days</strong>
+          </div>
+          <div class="detail-item">
+            <span>Est. Total Return</span>
+            <strong class="total-return">$355.00</strong>
+          </div>
+        </div>
+        <button class="btn-invest" onclick="handleInvest('22 Karat Gold', 250, 2.8)">
+          Invest Now <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Card 5: 23 Karat Gold -->
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-title">
+            <i class="fa-solid fa-layer-group"></i>
+            <h4>23 Karat Gold</h4>
+          </div>
+          <span class="badge-karat">VIP Gold</span>
+        </div>
+        <div class="plan-details">
+          <div class="detail-item">
+            <span>Min Investment</span>
+            <strong>$500.00</strong>
+          </div>
+          <div class="detail-item">
+            <span>Daily Profit</span>
+            <strong class="highlight">3.5%</strong>
+          </div>
+          <div class="detail-item">
+            <span>Duration</span>
+            <strong class="selected-duration">15 Days</strong>
+          </div>
+          <div class="detail-item">
+            <span>Est. Total Return</span>
+            <strong class="total-return">$762.50</strong>
+          </div>
+        </div>
+        <button class="btn-invest" onclick="handleInvest('23 Karat Gold', 500, 3.5)">
+          Invest Now <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Container for bottom navigation -->
+    <div id="bottom-nav-container"></div>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    let currentDuration = 15;
+
+    // সময়সীমা (15, 30, 45 Days) পরিবর্তন করার স্ক্রিপ্ট
+    function selectDuration(days, btnElement) {
+      currentDuration = days;
+      
+      // Active Button Style
+      document.querySelectorAll('.duration-btn').forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
+
+      // Update Duration Labels in Cards
+      document.querySelectorAll('.selected-duration').forEach(el => {
+        el.innerText = days + ' Days';
+      });
+
+      // Recalculate Returns Dynamically
+      updateCalculatedReturns();
+    }
+
+    function updateCalculatedReturns() {
+      const cards = document.querySelectorAll('.plan-card');
+      const baseValues = [
+        { min: 10, rate: 1.2 },
+        { min: 50, rate: 1.8 },
+        { min: 100, rate: 2.2 },
+        { min: 250, rate: 2.8 },
+        { min: 500, rate: 3.5 }
+      ];
+
+      cards.forEach((card, index) => {
+        const item = baseValues[index];
+        const profit = (item.min * (item.rate / 100)) * currentDuration;
+        const total = item.min + profit;
+        card.querySelector('.total-return').innerText = '$' + total.toFixed(2);
+      });
+    }
+
+    // Supabase Investment Handler
+    async function handleInvest(planName, amount, rate) {
+      const client = window._supabase || window.supabase;
+
+      if (!client) {
+        alert("Database connection error!");
+        return;
+      }
+
+      const { data: { user } } = await client.auth.getUser();
+
+      if (!user) {
+        alert("Please login first to invest!");
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (confirm(`Are you sure you want to invest $${amount} in ${planName} for ${currentDuration} Days?`)) {
+        
+        //১. ইউজারের ব্যালেন্স চেক
+        const { data: wallet } = await client
+          .from('wallets')
+          .select('balance')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!wallet || wallet.balance < amount) {
+          alert("Insufficient Balance! Please deposit first.");
+          return;
+        }
+
+        // ২. ব্যালেন্স কাটা এবং investments টেবিলে ইনসার্ট করা
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setDate(startDate.getDate() + currentDuration);
+
+        const profit = (amount * (rate / 100)) * currentDuration;
+        const totalReturn = amount + profit;
+
+        const { error: insertError } = await client
+          .from('investments')
+          .insert([
+            {
+              user_id: user.id,
+              plan_name: planName,
+              duration_days: currentDuration,
+              amount: amount,
+              daily_profit_percent: rate,
+              total_return: totalReturn,
+              status: 'active',
+              start_date: startDate.toISOString(),
+              end_date: endDate.toISOString()
+            }
+          ]);
+
+        if (insertError) {
+          alert("Investment failed: " + insertError.message);
+          return;
+        }
+
+        // ৩. ইউজারের ওয়ালেট ব্যালেন্স কমানো
+        const newBalance = wallet.balance - amount;
+        await client
+          .from('wallets')
+          .update({ balance: newBalance })
+          .eq('user_id', user.id);
+
+        alert("Investment Successful!");
+        window.location.href = "dashboard.html";
+      }
+    }
+
+    // Load Bottom Nav
+    fetch('bottom.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('bottom-nav-container').innerHTML = html;
+      })
+      .catch(err => console.log('Error loading bottom.html:', err));
+  </script>
+</body>
+</html>
