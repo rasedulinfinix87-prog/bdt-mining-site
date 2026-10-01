@@ -304,9 +304,8 @@
         </div>
     </div>
 
-    <!-- Self-Contained Supabase Authentication Script -->
+    <!-- Supabase Authentication Script -->
     <script>
-        // Direct Supabase Client Setup
         const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
 
@@ -345,7 +344,7 @@
 
             const client = getSupabaseClient();
             if(!client) {
-                alert('Supabase network connection loading... Please try again in 5 seconds.');
+                alert('Supabase connection loading... Please try again in 3 seconds.');
                 return;
             }
 
@@ -365,10 +364,7 @@
                     email: email,
                     password: password,
                     options: {
-                        data: {
-                            full_name: fullName,
-                            phone: phone
-                        }
+                        data: { full_name: fullName, phone: phone }
                     }
                 });
 
@@ -377,27 +373,35 @@
                     return;
                 }
 
-                // 2. Custom User Table Data Insert
-                const { data: tableData, error: tableError } = await client
+                if (!authData.user) {
+                    alert('User creation failed.');
+                    return;
+                }
+
+                const userId = authData.user.id;
+
+                // 2. Custom User Table Data Insert (সঠিক Auth ID সহ)
+                const { error: tableError } = await client
                     .from('user')
                     .insert([
                         { 
+                            id: userId, // Auth User ID ই কাস্টম টেবিলের ID হিসেবে সেট করা হলো
                             full_name: fullName, 
                             email: email, 
                             phone: phone, 
                             password: password, 
                             secret_pin: secretPin 
                         }
-                    ])
-                    .select();
+                    ]);
 
                 if (tableError) {
-                    console.warn("User table insert warning:", tableError.message);
+                    alert("Database Error: " + tableError.message);
+                    console.error("Table insert error:", tableError);
+                    return;
                 }
 
-                if (authData.user) {
-                    localStorage.setItem('user_id', authData.user.id);
-                }
+                // LocalStorage-এ ID সেভ
+                localStorage.setItem('user_id', userId);
 
                 alert('Account created successfully!');
                 window.location.href = 'home-index.html';
@@ -417,7 +421,7 @@
 
             const client = getSupabaseClient();
             if(!client) {
-                alert('Supabase network connection loading... Please try again in 5 seconds.');
+                alert('Supabase connection loading... Please try again in 3 seconds.');
                 return;
             }
 
@@ -429,7 +433,6 @@
             loginBtn.disabled = true;
 
             try {
-                // 1. Official Supabase Auth Session Sign In
                 const { data: authData, error: authError } = await client.auth.signInWithPassword({
                     email: email,
                     password: password
@@ -440,7 +443,7 @@
                     return;
                 }
 
-                if (authData && authData.session) {
+                if (authData && authData.user) {
                     // Save User ID to LocalStorage
                     localStorage.setItem('user_id', authData.user.id);
                     
