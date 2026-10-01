@@ -518,6 +518,16 @@
     </div>
   </div>
 
+  <!-- Logout Popup Modal (Added for Logout Animation) -->
+  <div class="modal-overlay" id="logout-modal">
+    <div class="modal-card-custom">
+      <i class="fa-solid fa-circle-check" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 12px;"></i>
+      <h4>Logged Out</h4>
+      <p>Logged out successfully!</p>
+      <button class="btn-modal btn-submit" onclick="confirmLogoutReload()" style="width: 100%;">OK</button>
+    </div>
+  </div>
+
   <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
@@ -714,14 +724,19 @@
       document.getElementById('invest-plans-modal').classList.remove('active');
     }
 
-    // Handle Logout
+    // Handle Logout with Custom Animated Popup
     async function handleLogout() {
       const client = await getSupabaseInstance();
       if (client) {
         await client.auth.signOut();
-        alert("Logged out successfully!");
-        window.location.reload();
+        // Show custom popup modal instead of alert
+        document.getElementById('logout-modal').classList.add('active');
       }
+    }
+
+    function confirmLogoutReload() {
+      document.getElementById('logout-modal').classList.remove('active');
+      window.location.reload();
     }
 
     // Rating Modal Logic
