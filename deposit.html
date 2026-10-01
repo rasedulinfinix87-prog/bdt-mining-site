@@ -10,10 +10,10 @@
       --bg-dark: #061913;
       --topbar-bg: rgba(6, 25, 19, 0.85);
       --card-bg: rgba(12, 38, 29, 0.85);
-      --card-border: rgba(245, 207, 102, 0.25);
+      --card-border: rgba(245, 207, 102, 0.3);
       --gold-primary: #f5cf66;
-      --gold-gradient: linear-gradient(135deg, #ffe28a 0%, #f5cf66 45%, #d4a328 75%, #99741d 100%);
-      --card-gradient: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
+      --gold-gradient: linear-gradient(135deg, #ffe082 0%, #f5cf66 35%, #b89332 70%, #e6a100 100%);
+      --card-gradient: linear-gradient(135deg, rgba(16, 48, 37, 0.9) 0%, rgba(3, 13, 10, 0.95) 100%);
       --text-main: #ffffff;
       --text-muted: #8da499;
       --green-glow: #2ed573;
@@ -57,7 +57,7 @@
       top: 0;
       z-index: 100;
       border-bottom: 1px solid var(--card-border);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     .top-bar .title-group {
@@ -78,12 +78,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(245, 207, 102, 0.2);
+      border: 1px solid rgba(245, 207, 102, 0.25);
       transition: all 0.3s ease;
     }
 
     .top-bar .back-btn:hover {
-      background: rgba(245, 207, 102, 0.2);
+      background: rgba(245, 207, 102, 0.25);
+      box-shadow: 0 0 10px rgba(245, 207, 102, 0.3);
     }
 
     .top-bar h2 {
@@ -105,7 +106,7 @@
       margin-bottom: 12px;
     }
 
-    /* Gateway Method Selector Grid (3 Cards Fixed) */
+    /* Gateway Method Selector Grid */
     .gateway-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -120,7 +121,7 @@
       padding: 15px 10px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -140,14 +141,13 @@
       font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-muted);
-      transition: all 0.3s ease;
     }
 
-    /* Active Gateway Card Style with Gold Glow */
+    /* Active Gateway Card Style with Glowing Animated Gradient Border */
     .gateway-card.active {
       background: var(--card-gradient);
       border-color: var(--gold-primary);
-      box-shadow: 0 0 18px rgba(245, 207, 102, 0.3), inset 0 0 10px rgba(245, 207, 102, 0.1);
+      box-shadow: 0 0 18px rgba(245, 207, 102, 0.3);
       transform: translateY(-2px);
     }
 
@@ -156,17 +156,26 @@
       text-shadow: 0 0 8px rgba(245, 207, 102, 0.4);
     }
 
-    /* Admin Info / Dynamic Address Display Card */
+    /* Shiny Gold Shimmer Animation */
+    @keyframes goldShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Admin Info Display Card - Fixed Height & Dimensions */
     .admin-info-card {
       background: var(--card-gradient);
       border: 1px dashed var(--gold-primary);
       border-radius: 16px;
-      padding: 18px;
+      padding: 16px;
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 12px rgba(245, 207, 102, 0.08);
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 125px; /* Ensures layout remains completely fixed across tabs */
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6), 0 0 15px rgba(245, 207, 102, 0.1);
       position: relative;
     }
 
@@ -177,7 +186,7 @@
     }
 
     .admin-info-title {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       font-weight: 600;
     }
@@ -188,19 +197,19 @@
       color: var(--gold-primary);
       padding: 5px 12px;
       border-radius: 8px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       transition: all 0.3s ease;
-      box-shadow: 0 0 10px rgba(245, 207, 102, 0.15);
     }
 
     .copy-btn:hover {
-      background: rgba(245, 207, 102, 0.3);
-      box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
+      background: var(--gold-primary);
+      color: #030d0a;
+      box-shadow: 0 0 10px rgba(245, 207, 102, 0.4);
     }
 
     .admin-address-text {
@@ -208,18 +217,16 @@
       font-weight: 700;
       color: var(--gold-primary);
       word-break: break-all;
-      line-height: 1.5;
-      text-shadow: 0 0 10px rgba(245, 207, 102, 0.25);
-      white-space: pre-line;
+      white-space: pre-line; /* Properly renders newlines for bank info */
     }
 
     .admin-instruction {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
-      line-height: 1.4;
+      line-height: 1.3;
     }
 
-    /* Form Inputs in Card Styles */
+    /* Form Inputs in Premium Card Styles */
     .input-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -227,12 +234,13 @@
       padding: 12px 16px;
       margin-bottom: 15px;
       transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
     }
 
     .input-card:focus-within {
       border-color: var(--gold-primary);
-      box-shadow: 0 0 15px rgba(245, 207, 102, 0.25);
-      background: rgba(12, 38, 29, 0.95);
+      box-shadow: 0 0 12px rgba(245, 207, 102, 0.25);
+      background: rgba(16, 48, 37, 0.95);
     }
 
     .input-card label {
@@ -242,6 +250,7 @@
       margin-bottom: 4px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      font-weight: 600;
     }
 
     .input-field {
@@ -255,55 +264,131 @@
     }
 
     .input-field::placeholder {
-      color: rgba(141, 164, 153, 0.5);
+      color: rgba(141, 164, 153, 0.4);
       font-weight: 400;
     }
 
-    /* Submit Button with Gold Shimmer Animation */
+    /* Animated Gold Submit Button */
     .btn-submit {
       width: 100%;
       padding: 16px;
       border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: var(--gold-gradient);
+      border: none;
+      background: linear-gradient(270deg, #ffe082, #f5cf66, #b89332, #ffe082);
+      background-size: 300% 300%;
+      animation: goldShimmer 4s ease infinite;
       color: #030d0a;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1rem;
       cursor: pointer;
       margin-top: 10px;
-      box-shadow: 0 4px 18px rgba(245, 207, 102, 0.4), 0 0 10px rgba(245, 207, 102, 0.2);
+      box-shadow: 0 4px 20px rgba(245, 207, 102, 0.35);
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-submit::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -60%;
-      width: 40%;
-      height: 200%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-      transform: rotate(30deg);
-      animation: goldShine 3s infinite;
-    }
-
-    @keyframes goldShine {
-      0% { left: -60%; }
-      20% { left: 140%; }
-      100% { left: 140%; }
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .btn-submit:hover {
-      box-shadow: 0 6px 25px rgba(245, 207, 102, 0.6), 0 0 15px rgba(245, 207, 102, 0.4);
       transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(245, 207, 102, 0.5);
     }
 
     .btn-submit:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      box-shadow: none;
+      animation: none;
+    }
+
+    /* Custom Popup Animation Modal */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 13, 10, 0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .popup-card {
+      background: linear-gradient(145deg, #0c261d 0%, #030d0a 100%);
+      border: 1px solid var(--gold-primary);
+      padding: 25px 20px;
+      border-radius: 20px;
+      width: 85%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 207, 102, 0.25);
+      transform: scale(0.7);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .popup-overlay.active .popup-card {
+      transform: scale(1);
+    }
+
+    .popup-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .popup-icon.success {
+      background: rgba(46, 213, 115, 0.15);
+      border: 1px solid var(--green-glow);
+      color: var(--green-glow);
+      box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
+    }
+
+    .popup-icon.error {
+      background: rgba(255, 71, 87, 0.15);
+      border: 1px solid #ff4757;
+      color: #ff4757;
+      box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
+    }
+
+    .popup-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .popup-msg {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    .popup-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: var(--gold-gradient);
+      color: #030d0a;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
     #bottom-nav-container {
@@ -386,6 +471,18 @@
     <div id="bottom-nav-container"></div>
   </div>
 
+  <!-- Animated Theme Popup Modal -->
+  <div class="popup-overlay" id="custom-popup">
+    <div class="popup-card">
+      <div class="popup-icon success" id="popup-icon">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <div class="popup-title" id="popup-title">Success!</div>
+      <div class="popup-msg" id="popup-msg">Your action was completed successfully.</div>
+      <button class="popup-btn" onclick="closePopup()">OK</button>
+    </div>
+  </div>
+
   <!-- Supabase CDN and Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
@@ -393,6 +490,7 @@
   <script>
     let selectedMethodKey = 'bkash';
     let gatewayDataList = {};
+    let redirectOnClose = false;
 
     // Load gateways from Supabase
     async function loadGatewaysFromSupabase() {
@@ -406,10 +504,6 @@
 
       if (data && data.length > 0) {
         data.forEach(item => {
-          // Format raw line breaks if present in database string
-          if (item.admin_address) {
-            item.admin_address = item.admin_address.replace(/\\n/g, '\n');
-          }
           gatewayDataList[item.method_key.toLowerCase()] = item;
         });
       } else {
@@ -450,7 +544,12 @@
       };
 
       document.getElementById('gateway-title-display').innerText = currentGateway.title || 'Deposit Info';
-      document.getElementById('admin-address-display').innerText = currentGateway.admin_address;
+      
+      // Clean display for admin address (replace literal '\n' string with real line breaks)
+      let rawAddress = currentGateway.admin_address || '';
+      let formattedAddress = rawAddress.replace(/\\n/g, '\n');
+      document.getElementById('admin-address-display').innerText = formattedAddress;
+
       document.getElementById('admin-instruction-display').innerText = currentGateway.instruction || '';
 
       // Update input labels dynamically based on gateway
@@ -474,18 +573,52 @@
       const address = document.getElementById('admin-address-display').innerText;
       if (address && address !== 'Loading...') {
         navigator.clipboard.writeText(address).then(() => {
-          alert('Address copied to clipboard!');
+          showPopup('Copied!', 'Address copied to clipboard successfully.', 'success');
         }).catch(err => {
           console.error('Copy failed', err);
         });
       }
     }
 
-    // Handle Form Submit
+    // Custom Popup Display Helper
+    function showPopup(title, message, status = 'success', isRedirect = false) {
+      const overlay = document.getElementById('custom-popup');
+      const icon = document.getElementById('popup-icon');
+      
+      document.getElementById('popup-title').innerText = title;
+      document.getElementById('popup-msg').innerText = message;
+      redirectOnClose = isRedirect;
+
+      if (status === 'success') {
+        icon.className = 'popup-icon success';
+        icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+      } else {
+        icon.className = 'popup-icon error';
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      }
+
+      overlay.classList.add('active');
+    }
+
+    function closePopup() {
+      document.getElementById('custom-popup').classList.remove('active');
+      if (redirectOnClose) {
+        window.location.href = "wallet-getway-method.html";
+      }
+    }
+
+    // Handle Form Submit with Unique TrxID Checking
     document.getElementById('deposit-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const client = window._supabase || window.supabase;
       const submitBtn = document.getElementById('btn-submit');
+
+      const trxIdInput = document.getElementById('trx_id').value.trim();
+
+      if (!trxIdInput) {
+        showPopup('Warning', 'Please enter a valid Transaction ID.', 'error');
+        return;
+      }
 
       submitBtn.innerText = "Processing...";
       submitBtn.disabled = true;
@@ -493,12 +626,27 @@
       const { data: { user } } = await client.auth.getUser();
 
       if (!user) {
-        alert("Please login first!");
+        showPopup('Authentication Error', 'Please login first!', 'error');
         submitBtn.innerText = "Confirm & Submit Request";
         submitBtn.disabled = false;
         return;
       }
 
+      // 1. Unique TrxID Check in Supabase
+      const { data: existingTrx, error: checkError } = await client
+        .from('transactions')
+        .select('trx_id')
+        .eq('trx_id', trxIdInput)
+        .maybeSingle();
+
+      if (existingTrx) {
+        showPopup('Duplicate TrxID', 'এই Transaction ID টি পূর্বে একবার ব্যবহার করা হয়েছে! অনুগ্রহ করে সঠিক Trx ID দিন।', 'error');
+        submitBtn.innerText = "Confirm & Submit Request";
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // 2. Submit Deposit Payload
       const currentGateway = gatewayDataList[selectedMethodKey];
       const methodName = currentGateway ? currentGateway.title : selectedMethodKey.toUpperCase();
 
@@ -508,17 +656,16 @@
         amount: parseFloat(document.getElementById('amount').value),
         method: methodName,
         account_number: document.getElementById('account_number').value,
-        trx_id: document.getElementById('trx_id').value,
+        trx_id: trxIdInput,
         status: 'pending'
       };
 
-      const { error } = await client.from('transactions').insert([payload]);
+      const { error: insertError } = await client.from('transactions').insert([payload]);
 
-      if (error) {
-        alert("Error: " + error.message);
+      if (insertError) {
+        showPopup('Submission Failed', insertError.message, 'error');
       } else {
-        alert("Deposit request submitted successfully!");
-        window.location.href = "wallet-getway-method.html";
+        showPopup('Success!', 'Deposit request submitted successfully!', 'success', true);
       }
 
       submitBtn.innerText = "Confirm & Submit Request";
