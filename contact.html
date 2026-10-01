@@ -152,6 +152,45 @@
       letter-spacing: 0.5px;
     }
 
+    /* Blinking Top Bar Live Chat Button */
+    .live-chat-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--gold-btn-gradient);
+      color: #030d0a;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 20px;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 10px rgba(245, 207, 102, 0.5);
+      animation: chatBlink 1.4s infinite alternate ease-in-out;
+      transition: transform 0.2s;
+    }
+
+    .live-chat-btn i {
+      font-size: 0.9rem;
+    }
+
+    .live-chat-btn:active {
+      transform: scale(0.95);
+    }
+
+    @keyframes chatBlink {
+      0% {
+        opacity: 0.7;
+        box-shadow: 0 0 5px rgba(245, 207, 102, 0.3);
+        transform: scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 16px rgba(245, 207, 102, 0.9), 0 0 25px rgba(245, 207, 102, 0.5);
+        transform: scale(1.04);
+      }
+    }
+
     /* Form Container */
     .form-container {
       padding: 24px 20px;
@@ -436,6 +475,10 @@
         </a>
         <h2>Support Center</h2>
       </div>
+      <!-- Blinking Live Chat Button -->
+      <a href="live-chat.html" class="live-chat-btn">
+        <i class="fa-solid fa-comments"></i> Live Chat
+      </a>
     </div>
 
     <!-- Contact Form Section -->
