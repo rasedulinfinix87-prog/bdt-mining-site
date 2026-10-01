@@ -152,42 +152,35 @@
       letter-spacing: 0.5px;
     }
 
-    /* Blinking Top Bar Live Chat Button */
-    .live-chat-btn {
-      display: inline-flex;
+    /* Blinking Live Chat Top Bar Button */
+    .topbar-live-chat-btn {
+      display: flex;
       align-items: center;
       gap: 6px;
-      padding: 7px 14px;
+      padding: 7px 12px;
       background: var(--gold-btn-gradient);
       color: #030d0a;
+      text-decoration: none;
       font-size: 0.82rem;
       font-weight: 700;
       border-radius: 20px;
-      text-decoration: none;
-      border: 1px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 0 10px rgba(245, 207, 102, 0.5);
-      animation: chatBlink 1.4s infinite alternate ease-in-out;
+      animation: chatBtnBlink 1.5s infinite alternate ease-in-out;
       transition: transform 0.2s;
     }
 
-    .live-chat-btn i {
-      font-size: 0.9rem;
-    }
-
-    .live-chat-btn:active {
+    .topbar-live-chat-btn:active {
       transform: scale(0.95);
     }
 
-    @keyframes chatBlink {
+    @keyframes chatBtnBlink {
       0% {
-        opacity: 0.7;
-        box-shadow: 0 0 5px rgba(245, 207, 102, 0.3);
-        transform: scale(0.98);
+        box-shadow: 0 0 5px rgba(245, 207, 102, 0.4);
+        opacity: 0.85;
       }
       100% {
+        box-shadow: 0 0 18px rgba(245, 207, 102, 1), 0 0 25px rgba(245, 207, 102, 0.6);
         opacity: 1;
-        box-shadow: 0 0 16px rgba(245, 207, 102, 0.9), 0 0 25px rgba(245, 207, 102, 0.5);
-        transform: scale(1.04);
       }
     }
 
@@ -475,9 +468,11 @@
         </a>
         <h2>Support Center</h2>
       </div>
+
       <!-- Blinking Live Chat Button -->
-      <a href="live-chat.html" class="live-chat-btn">
-        <i class="fa-solid fa-comments"></i> Live Chat
+      <a href="live-chat.html" class="topbar-live-chat-btn">
+        <i class="fa-solid fa-comments"></i>
+        <span>Live Chat</span>
       </a>
     </div>
 
@@ -485,7 +480,7 @@
     <div class="form-container">
       <div class="contact-card">
         <h3><i class="fa-solid fa-paper-plane"></i> Contact Us</h3>
-        <p>সাপোর্ট টিমের সাথে কথা বলতে নিচের ফরমটি পূরণ করুন। আমরা দ্রুত আপনার বিষয়টির সমাধান করার চেষ্টা করব।</p>
+        <p>Fill out the form below to contact our support team. We will resolve your issue as quickly as possible.</p>
 
         <form id="contactForm" onsubmit="handleFormSubmit(event)">
           <!-- Full Name -->
@@ -505,7 +500,7 @@
               <input type="text" id="accountNumber" class="form-control" placeholder="e.g. 30891234567890" maxlength="14" oninput="validateAccNumInput(this)" required>
             </div>
             <div class="error-msg" id="accErrorMsg">
-              <i class="fa-solid fa-circle-exclamation"></i> <span>১৪ অংকের সঠিক অ্যাকাউন্ট নম্বর দিন!</span>
+              <i class="fa-solid fa-circle-exclamation"></i> <span>Please enter a valid 14-digit account number!</span>
             </div>
           </div>
 
@@ -521,7 +516,7 @@
           <!-- Note -->
           <div class="input-group">
             <label for="noteMessage">Note / Reason</label>
-            <textarea id="noteMessage" class="form-control" placeholder="যোগাযোগ করার কারণ বা আপনার সমস্যাটি লিখুন..." required></textarea>
+            <textarea id="noteMessage" class="form-control" placeholder="Write the reason for contacting or describe your issue..." required></textarea>
           </div>
 
           <!-- Submit Button -->
@@ -549,7 +544,7 @@
         </svg>
       </div>
       <h4>Submitted Successfully!</h4>
-      <p>আপনার মেসেজটি সফলভাবে আমাদের টিমের কাছে পৌঁছেছে। অ্যাডমিন রিপ্লাই দেওয়ার সাথে সাথে আপনার অ্যাকাউন্টে নোটিফিকেশন চলে যাবে। অনুগ্রহ করে কিছুটা সময় অপেক্ষা করুন।</p>
+      <p>Your message has been delivered to our team. You will receive a notification as soon as the admin responds. Please wait a moment.</p>
       <button class="btn-modal-close" onclick="closeSuccessModal()">Got It</button>
     </div>
   </div>
@@ -561,7 +556,7 @@
   <script>
     let currentUserId = null;
 
-    // ১.২ সেকেন্ড পেজ লোডিং অ্যানিমেশন
+    // 1.2s page loading animation
     window.addEventListener('load', () => {
       setTimeout(() => {
         const loader = document.getElementById('pageLoader');
@@ -569,28 +564,28 @@
       }, 1200);
     });
 
-    // ১৪ ডিজিট রিয়েল-টাইম টাইপিং ভ্যালিডেশন
+    // 14 digits real-time typing validation
     function validateAccNumInput(input) {
-      input.value = input.value.replace(/[^0-9]/g, ''); // শুধু সংখ্যা ফিল্টার করবে
+      input.value = input.value.replace(/[^0-9]/g, ''); // Numeric filter only
       const errorMsg = document.getElementById('accErrorMsg');
       
       if (input.value.length > 0 && input.value.length < 14) {
         input.classList.add('invalid');
         errorMsg.style.display = 'flex';
-        errorMsg.querySelector('span').innerText = "অ্যাকাউন্ট নম্বর অবশ্যই ১৪ ডিজিট হতে হবে।";
+        errorMsg.querySelector('span').innerText = "Account number must be 14 digits.";
       } else {
         input.classList.remove('invalid');
         errorMsg.style.display = 'none';
       }
     }
 
-    // ফরম সাবমিশন ও ব্যাকএন্ড প্রসেস
+    // Form submission & backend process
     async function handleFormSubmit(e) {
       e.preventDefault();
 
       const client = window._supabase || window.supabase;
       if (!client) {
-        alert("Supabase client properly initialized পাওয়া যায়নি!");
+        alert("Supabase client properly initialized not found!");
         return;
       }
 
@@ -602,20 +597,20 @@
       const accInput = document.getElementById('accountNumber');
       const errorMsg = document.getElementById('accErrorMsg');
 
-      // ফ্রন্টএন্ড ১৪ ডিজিট ভ্যালিডেশন চেক
+      // Frontend 14-digit validation check
       if (accountNumber.length !== 14) {
         accInput.classList.add('invalid');
         errorMsg.style.display = 'flex';
-        errorMsg.querySelector('span').innerText = "১৪ অংকের ভুল অ্যাকাউন্ট নম্বর!";
+        errorMsg.querySelector('span').innerText = "Incorrect 14-digit account number!";
         return;
       }
 
-      // বাটন লোডিং স্টেট চালু
+      // Enable button loading state
       submitBtn.classList.add('loading');
       submitBtn.disabled = true;
 
       try {
-        // ১. ব্যাকএন্ড ভ্যালিডেশন: wallets টেবিলে অ্যাকাউন্ট নম্বরটি আছে কি না চেক করা
+        // 1. Backend validation: Check if account number exists in wallets table
         const { data: walletData, error: walletError } = await client
           .from('wallets')
           .select('user_id')
@@ -623,21 +618,21 @@
           .maybeSingle();
 
         if (walletError || !walletData) {
-          // ড্যাটাবেসে অ্যাকাউন্ট নম্বর না পাওয়া গেলে অ্যালার্ট শো করবে
+          // Show alert if account number is not found
           accInput.classList.add('invalid');
           errorMsg.style.display = 'flex';
-          errorMsg.querySelector('span').innerText = "ভুল অ্যাকাউন্ট নম্বর! এই নম্বরের কোনো অ্যাকাউন্ট পাওয়া যায়নি।";
+          errorMsg.querySelector('span').innerText = "Incorrect account number! No account found with this number.";
           
           submitBtn.classList.remove('loading');
           submitBtn.disabled = false;
           return;
         }
 
-        // বর্তমান লগইন ইউজারের ID নেওয়া (না থাকলেও wallets থেকে পাওয়া user_id বসিয়ে দিবে)
+        // Get logged in user ID (or fallback to wallet's user_id)
         const { data: { user } } = await client.auth.getUser();
         const targetUserId = user ? user.id : walletData.user_id;
 
-        // ২. support_messages টেবিলে ড্যাটা সেভ করা
+        // 2. Save data to support_messages table
         const { error: insertError } = await client
           .from('support_messages')
           .insert([
@@ -645,7 +640,7 @@
               user_id: targetUserId,
               full_name: fullName,
               account_number: accountNumber,
-              rejister_email: registerEmail, // আপনার টেবিল নাম অনুযায়ী কলাম
+              rejister_email: registerEmail,
               note: noteMessage,
               status: 'pending'
             }
@@ -655,7 +650,7 @@
           throw insertError;
         }
 
-        // ৩. ফরম রিসেট ও সাকসেস পপ-আপ মডাল ওপেন
+        // 3. Reset form & open success popup modal
         document.getElementById('contactForm').reset();
         accInput.classList.remove('invalid');
         errorMsg.style.display = 'none';
@@ -664,20 +659,20 @@
 
       } catch (err) {
         console.error("Submission error:", err.message);
-        alert("ত্রুটি ঘটেছে: " + err.message);
+        alert("An error occurred: " + err.message);
       } finally {
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
       }
     }
 
-    // সাকসেস মডাল বন্ধ করার ফাংশন
+    // Close success modal
     function closeSuccessModal() {
       document.getElementById('successModal').style.display = 'none';
-      window.location.href = 'wallet-getway-method.html'; // পূর্ববর্তী বা মেইন ওয়ালেট পেজে ফেরত নিয়ে যাবে
+      window.location.href = 'wallet-getway-method.html';
     }
 
-    // bottom.html লোড করা
+    // Load bottom navigation
     fetch('bottom.html')
       .then(res => res.text())
       .then(html => {
