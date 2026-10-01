@@ -48,18 +48,19 @@
       min-height: 100vh;
     }
 
-    /* Top Bar */
+    /* Top Bar - Color Updated */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 18px 20px;
-      background: rgba(3, 13, 10, 0.95);
+      background: var(--card-gradient);
       backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--card-border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     .top-bar .title-group {
@@ -264,6 +265,62 @@
       font-size: 0.9rem;
     }
 
+    /* SKELETON SCREEN ANIMATION STYLES */
+    .skeleton-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-box::after {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      transform: translateX(-100%);
+      background-image: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 215, 0, 0.08) 20%,
+        rgba(255, 255, 255, 0.15) 60%,
+        rgba(255, 255, 255, 0)
+      );
+      animation: shimmer 1.5s infinite;
+      content: '';
+    }
+
+    @keyframes shimmer {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    .skeleton-text {
+      height: 14px;
+      border-radius: 4px;
+    }
+
+    .skeleton-val {
+      height: 24px;
+      border-radius: 6px;
+      margin-top: 6px;
+    }
+
+    .skeleton-card {
+      background: var(--card-gradient);
+      border: 1px solid rgba(255, 215, 0, 0.1);
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .skeleton-timer {
+      height: 50px;
+      border-radius: 14px;
+      margin-top: 10px;
+    }
+
     #bottom-nav-container {
       position: fixed;
       bottom: 0;
@@ -294,19 +351,25 @@
         <div class="stat-label">
           <i class="fa-solid fa-wallet" style="color: var(--gold-primary);"></i> Main Wallet Balance
         </div>
-        <div class="stat-value" id="main-wallet-balance">$0.00</div>
+        <div class="stat-value" id="main-wallet-balance">
+          <div class="skeleton-box skeleton-val" style="width: 40%;"></div>
+        </div>
       </div>
 
       <!-- Total Investment Amount -->
       <div class="stat-card">
         <div class="stat-label">Active Invest</div>
-        <div class="stat-value" id="total-active-invest">$0.00</div>
+        <div class="stat-value" id="total-active-invest">
+          <div class="skeleton-box skeleton-val" style="width: 60%;"></div>
+        </div>
       </div>
 
       <!-- Total Profit Earned -->
       <div class="stat-card">
         <div class="stat-label">Total Profit</div>
-        <div class="stat-value green" id="total-profit-earned">$0.00</div>
+        <div class="stat-value green" id="total-profit-earned">
+          <div class="skeleton-box skeleton-val" style="width: 60%;"></div>
+        </div>
       </div>
     </div>
 
@@ -316,9 +379,35 @@
       <i class="fa-solid fa-clock-rotate-left"></i>
     </div>
 
-    <div class="plan-list" id="investment-list-container">
-      <div class="empty-msg">Loading active plans...</div>
+    <!-- Skeleton Loader List Container -->
+    <div class="plan-list" id="skeleton-list">
+      <div class="skeleton-card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+          <div class="skeleton-box skeleton-text" style="width: 50%;"></div>
+          <div class="skeleton-box skeleton-text" style="width: 20%;"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+          <div class="skeleton-box skeleton-val" style="height:40px;"></div>
+          <div class="skeleton-box skeleton-val" style="height:40px;"></div>
+        </div>
+        <div class="skeleton-box skeleton-timer"></div>
+      </div>
+
+      <div class="skeleton-card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+          <div class="skeleton-box skeleton-text" style="width: 55%;"></div>
+          <div class="skeleton-box skeleton-text" style="width: 20%;"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+          <div class="skeleton-box skeleton-val" style="height:40px;"></div>
+          <div class="skeleton-box skeleton-val" style="height:40px;"></div>
+        </div>
+        <div class="skeleton-box skeleton-timer"></div>
+      </div>
     </div>
+
+    <!-- Active Plans Real Data Container (Initially Hidden) -->
+    <div class="plan-list" id="investment-list-container" style="display: none;"></div>
 
     <div id="bottom-nav-container"></div>
   </div>
@@ -344,10 +433,14 @@
       const userId = user.id;
 
       // ২. 'wallets' টেবিল থেকে মেইন ব্যালেন্স আনা
-      fetchMainWallet(client, userId);
+      await fetchMainWallet(client, userId);
 
       // ৩. 'investments' টেবিল থেকে একটিভ ইনভেস্টমেন্ট তথ্য আনা
-      fetchInvestments(client, userId);
+      await fetchInvestments(client, userId);
+
+      // Skeleton Loader সরিয়ে আসল ডাটা কন্টেইনার প্রদর্শন করা
+      document.getElementById('skeleton-list').style.display = 'none';
+      document.getElementById('investment-list-container').style.display = 'flex';
 
       // ৪. Realtime Listener for Wallets Balance
       client
@@ -371,6 +464,8 @@
       if (data) {
         const symbol = data.currency === 'BDT' ? '৳' : '$';
         document.getElementById('main-wallet-balance').innerText = symbol + parseFloat(data.balance || 0).toFixed(2);
+      } else {
+        document.getElementById('main-wallet-balance').innerText = '$0.00';
       }
     }
 
@@ -504,7 +599,7 @@
       .catch(err => console.log(err));
 
     window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(loadDashboardData, 100);
+      setTimeout(loadDashboardData, 300);
     });
   </script>
 </body>
