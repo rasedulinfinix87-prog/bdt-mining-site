@@ -60,7 +60,7 @@
 
       <div class="form-group">
         <label>Amount ($)</label>
-        <input type="number" class="form-control" id="amount" placeholder="Enter Amount" required min="1">
+        <input type="number" class="form-control" id="amount" placeholder="Enter Amount" step="any" required min="1">
       </div>
 
       <div class="form-group">
@@ -85,48 +85,91 @@
       submitBtn.innerText = "Processing...";
       submitBtn.disabled = true;
 
-      const { data: { user } } = await client.auth.getUser();
+      try {
+        // ১. ইউজারের সেসন/লগইন আইডি নেওয়া (অথবা LocalStorage থেকে user_id নেওয়া)
+        let userId = localStorage.getItem('user_id');
+        
+        if (!userId) {
+          const { data: { user } } = await client.auth.getUser();
+          if (user) userId = user.id;
+        }
 
-      if (!user) {
-        alert("Please login first!");
-        return;
-      }
+        if (!userId) {
+          alert("Please login first!");
+          submitBtn.innerText = "Submit Withdraw Request";
+          submitBtn.disabled = false;
+          return;
+        }
 
-      // ১. ইউজারের ব্যালেন্স চেক করা
-      const { data: walletData } = await client
-        .from('wallets')
-        .select('balance')
-        .eq('user_id', user.id)
-        .single();
+        // ২. ইউজারের ওয়ালেট থেকে বর্তমান ব্যালেন্স চেক করা
+        const { data: walletData, error: walletError } = await client
+          .from('wallets')
+          .select('id, balance')
+          .eq('user_id', userId)
+          .single();
 
-      if (!walletData || walletData.balance < amountVal) {
-        alert("Insufficient Balance!");
-        submitBtn.innerText = "Submit Withdraw Request";
-        submitBtn.disabled = false;
-        return;
-      }
+        if (walletError || !walletData) {
+          alert("Wallet not found!");
+          submitBtn.innerText = "Submit Withdraw Request";
+          submitBtn.disabled = false;
+          return;
+        }
 
-      // ২. উইথড্র ট্রানজ্যাকশন এন্ট্রি
-      const payload = {
-        user_id: user.id,
-        type: 'withdraw',
-        amount: amountVal,
-        method: document.getElementById('method').value,
-        account_number: document.getElementById('account_number').value,
-        status: 'pending'
-      };
+        if (walletData.balance < amountVal) {
+          alert("Insufficient Balance!");
+          submitBtn.innerText = "Submit Withdraw Request";
+          submitBtn.disabled = false;
+          return;
+        }
 
-      const { error } = await client.from('transactions').insert([payload]);
+        // চার্জ হিসেব (প্রয়োজনমতো পরিবর্তন করতে পারেন, এখানে ০ ধরা হয়েছে)
+        const charge = 0; 
+        const netAmount = amountVal - charge;
+        const trxId = 'TRX' + Math.floor(10000000 + Math.random() * 90000000);
 
-      if (error) {
-        alert("Error: " + error.message);
-      } else {
+        // ৩. ট্রানজ্যাকশন এন্ট্রি
+        const payload = {
+          user_id: userId,
+          type: 'withdraw',
+          amount: amountVal,
+          charge: charge,
+          net_amount: netAmount,
+          method: document.getElementById('method').value,
+          account_number: document.getElementById('account_number').value,
+          trx_id: trxId,
+          status: 'pending'
+        };
+
+        const { error: trxError } = await client.from('transactions').insert([payload]);
+
+        if (trxError) {
+          throw trxError;
+        }
+
+        // ৪. ওয়ালেট থেকে ব্যালেন্স বিয়োগ/আপডেট করা
+        const newBalance = walletData.balance - amountVal;
+        const { error: updateError } = await client
+          .from('wallets')
+          .update({ 
+            balance: newBalance,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', walletData.id);
+
+        if (updateError) {
+          throw updateError;
+        }
+
         alert("Withdrawal request submitted successfully!");
         window.location.href = "wallet-getway-method.html";
-      }
 
-      submitBtn.innerText = "Submit Withdraw Request";
-      submitBtn.disabled = false;
+      } catch (err) {
+        console.error("Withdrawal Error:", err);
+        alert("Error: " + (err.message || "Failed to process withdrawal"));
+      } finally {
+        submitBtn.innerText = "Submit Withdraw Request";
+        submitBtn.disabled = false;
+      }
     });
   </script>
 </body>
