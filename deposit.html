@@ -12,7 +12,7 @@
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.25);
       --gold-primary: #f5cf66;
-      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --gold-gradient: linear-gradient(135deg, #ffe28a 0%, #f5cf66 45%, #d4a328 75%, #99741d 100%);
       --card-gradient: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
       --text-main: #ffffff;
       --text-muted: #8da499;
@@ -44,7 +44,7 @@
       min-height: 100vh;
     }
 
-    /* Top Bar - Same as Wallet Gateway */
+    /* Top Bar */
     .top-bar {
       display: flex;
       align-items: center;
@@ -105,7 +105,7 @@
       margin-bottom: 12px;
     }
 
-    /* Gateway Method Selector Grid (3 Cards) */
+    /* Gateway Method Selector Grid (3 Cards Fixed) */
     .gateway-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -120,12 +120,14 @@
       padding: 15px 10px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
     }
 
     .gateway-card i {
@@ -138,18 +140,20 @@
       font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-muted);
+      transition: all 0.3s ease;
     }
 
-    /* Active Gateway Card Style */
+    /* Active Gateway Card Style with Gold Glow */
     .gateway-card.active {
       background: var(--card-gradient);
       border-color: var(--gold-primary);
-      box-shadow: 0 0 15px rgba(245, 207, 102, 0.2);
+      box-shadow: 0 0 18px rgba(245, 207, 102, 0.3), inset 0 0 10px rgba(245, 207, 102, 0.1);
       transform: translateY(-2px);
     }
 
     .gateway-card.active i, .gateway-card.active span {
       color: var(--gold-primary);
+      text-shadow: 0 0 8px rgba(245, 207, 102, 0.4);
     }
 
     /* Admin Info / Dynamic Address Display Card */
@@ -157,12 +161,13 @@
       background: var(--card-gradient);
       border: 1px dashed var(--gold-primary);
       border-radius: 16px;
-      padding: 16px;
+      padding: 18px;
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 12px rgba(245, 207, 102, 0.08);
+      position: relative;
     }
 
     .admin-info-header {
@@ -172,21 +177,30 @@
     }
 
     .admin-info-title {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
+      font-weight: 600;
     }
 
     .copy-btn {
       background: rgba(245, 207, 102, 0.15);
       border: 1px solid var(--gold-primary);
       color: var(--gold-primary);
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 8px;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(245, 207, 102, 0.15);
+    }
+
+    .copy-btn:hover {
+      background: rgba(245, 207, 102, 0.3);
+      box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
     }
 
     .admin-address-text {
@@ -194,10 +208,13 @@
       font-weight: 700;
       color: var(--gold-primary);
       word-break: break-all;
+      line-height: 1.5;
+      text-shadow: 0 0 10px rgba(245, 207, 102, 0.25);
+      white-space: pre-line;
     }
 
     .admin-instruction {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       line-height: 1.4;
     }
@@ -214,7 +231,8 @@
 
     .input-card:focus-within {
       border-color: var(--gold-primary);
-      box-shadow: 0 0 10px rgba(245, 207, 102, 0.15);
+      box-shadow: 0 0 15px rgba(245, 207, 102, 0.25);
+      background: rgba(12, 38, 29, 0.95);
     }
 
     .input-card label {
@@ -241,25 +259,51 @@
       font-weight: 400;
     }
 
-    /* Submit Button */
+    /* Submit Button with Gold Shimmer Animation */
     .btn-submit {
       width: 100%;
       padding: 16px;
       border-radius: 14px;
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.3);
       background: var(--gold-gradient);
       color: #030d0a;
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
       margin-top: 10px;
-      box-shadow: 0 4px 15px rgba(245, 207, 102, 0.25);
+      box-shadow: 0 4px 18px rgba(245, 207, 102, 0.4), 0 0 10px rgba(245, 207, 102, 0.2);
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: rotate(30deg);
+      animation: goldShine 3s infinite;
+    }
+
+    @keyframes goldShine {
+      0% { left: -60%; }
+      20% { left: 140%; }
+      100% { left: 140%; }
+    }
+
+    .btn-submit:hover {
+      box-shadow: 0 6px 25px rgba(245, 207, 102, 0.6), 0 0 15px rgba(245, 207, 102, 0.4);
+      transform: translateY(-2px);
     }
 
     .btn-submit:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     #bottom-nav-container {
@@ -362,14 +406,18 @@
 
       if (data && data.length > 0) {
         data.forEach(item => {
+          // Format raw line breaks if present in database string
+          if (item.admin_address) {
+            item.admin_address = item.admin_address.replace(/\\n/g, '\n');
+          }
           gatewayDataList[item.method_key.toLowerCase()] = item;
         });
       } else {
         // Fallback default values if database table is empty
         gatewayDataList = {
-          bkash: { title: 'bKash Personal', admin_address: '01712345678', instruction: 'Send Money to this bKash Personal Number.' },
-          usdt: { title: 'USDT (TRC20)', admin_address: 'TXy9Z8aK2mLpQ3R4sT5uV6wX7yZ8aK2mLp', instruction: 'Send USDT via TRC20 network only.' },
-          bank: { title: 'Bank Transfer', admin_address: 'Bank: City Bank | A/C: 1234567890', instruction: 'Deposit cash or bank transfer to this account.' }
+          bkash: { title: 'bKash Personal', admin_address: '01712345678', instruction: 'bKash Personal নম্বরটিতে Send Money করুন।' },
+          usdt: { title: 'USDT (TRC20)', admin_address: 'TXy9Z8aK2mLpQ3R4sT5uV6wX7yZ8aK2mLp', instruction: 'কেবলমাত্র TRC20 নেটওয়ার্কে deposit পাঠান।' },
+          bank: { title: 'Bank Transfer', admin_address: 'Bank: City Bank\nAccount: 1234567890\nBranch: Dhaka Main', instruction: 'ব্যাংক ডিপোজিট করার পর Trx ID বা স্লিপ নম্বর দিন।' }
         };
       }
 
