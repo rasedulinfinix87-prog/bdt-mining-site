@@ -262,6 +262,22 @@
 
   <!-- 3. Logic Script -->
   <script>
+    let currentUserId = null;
+
+    async function fetchBalanceOnly(client, userId) {
+      const { data, error } = await client
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', userId)
+        .single();
+
+      if (data) {
+        document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance).toFixed(2);
+      } else if (error) {
+        console.error("Balance fetch error:", error.message);
+      }
+    }
+
     async function loadWalletData() {
       // supabase-config.js থেকে _supabase ক্লায়েন্ট চেক
       const client = window._supabase || window.supabase;
@@ -279,22 +295,53 @@
         return;
       }
 
+      currentUserId = user.id;
+
       // ২. ইউজারের নাম সেট
       const userName = user.user_metadata?.full_name || user.email.split('@')[0];
       document.getElementById('user-name-display').innerText = userName;
 
       // ৩. 'wallets' টেবিল থেকে আসল রিয়েল-টাইম ব্যালেন্স আনা
-      const { data, error } = await client
-        .from('wallets')
-        .select('balance')
-        .eq('user_id', user.id)
-        .single();
+      await fetchBalanceOnly(client, currentUserId);
 
-      if (data) {
-        document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance).toFixed(2);
-      } else if (error) {
-        console.error("Balance fetch error:", error.message);
-      }
+      // ৪. Realtime Listener (wallets টেবিল ট্র্যাকিং)
+      client
+        .channel('wallet-balance-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'wallets',
+            filter: `user_id=eq.${currentUserId}`
+          },
+          (payload) => {
+            if (payload.new && payload.new.balance !== undefined) {
+              document.getElementById('user-balance-display').innerText = '$' + parseFloat(payload.new.balance).toFixed(2);
+            }
+          }
+        )
+        .subscribe();
+
+      // ৫. Realtime Listener (transactions স্ট্যাটাস approved ট্র্যাকিং)
+      client
+        .channel('transactions-status-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'transactions',
+            filter: `user_id=eq.${currentUserId}`
+          },
+          (payload) => {
+            if (payload.new && payload.new.status === 'approved') {
+              // স্ট্যাটাস অ্যাপ্রুভ হলেই নতুন ব্যালেন্স রিলোড করবে
+              fetchBalanceOnly(client, currentUserId);
+            }
+          }
+        )
+        .subscribe();
     }
 
     // bottom.html লোড করা
