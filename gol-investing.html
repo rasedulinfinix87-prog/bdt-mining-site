@@ -275,6 +275,103 @@
       max-width: 480px;
       z-index: 1000;
     }
+
+    /* CUSTOM GOLD THEME POP-UP MODAL STYLES */
+    .custom-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .custom-modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .custom-modal {
+      width: 88%;
+      max-width: 360px;
+      background: var(--card-gradient);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--gold-glow);
+      transform: scale(0.7);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .custom-modal-overlay.active .custom-modal {
+      transform: scale(1);
+    }
+
+    .modal-icon-box {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(184, 147, 50, 0.1));
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 15px auto;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .modal-message {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 22px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .modal-btn-cancel {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-btn-confirm {
+      background: var(--gold-gradient);
+      color: #030d0a;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -548,12 +645,73 @@
     <div id="bottom-nav-container"></div>
   </div>
 
+  <!-- Custom Gold Pop-up Modal Structure -->
+  <div class="custom-modal-overlay" id="customModal">
+    <div class="custom-modal">
+      <div class="modal-icon-box" id="modalIcon">
+        <i class="fa-solid fa-circle-question"></i>
+      </div>
+      <h3 class="modal-title" id="modalTitle">Confirm Action</h3>
+      <p class="modal-message" id="modalMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions" id="modalActions">
+        <button class="modal-btn modal-btn-cancel" id="btnModalCancel">Cancel</button>
+        <button class="modal-btn modal-btn-confirm" id="btnModalConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
   <script>
     let currentDuration = 15;
+
+    // Custom Gold Popup Function
+    function showCustomModal({ title, message, icon, type = 'confirm' }) {
+      return new Promise((resolve) => {
+        const modalOverlay = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalIcon = document.getElementById('modalIcon');
+        const btnCancel = document.getElementById('btnModalCancel');
+        const btnConfirm = document.getElementById('btnModalConfirm');
+
+        modalTitle.innerText = title || 'Notice';
+        modalMessage.innerText = message || '';
+        modalIcon.innerHTML = `<i class="${icon || 'fa-solid fa-info-circle'}"></i>`;
+
+        if (type === 'alert') {
+          btnCancel.style.display = 'none';
+          btnConfirm.innerText = 'OK';
+        } else {
+          btnCancel.style.display = 'block';
+          btnCancel.innerText = 'Cancel';
+          btnConfirm.innerText = 'Confirm';
+        }
+
+        modalOverlay.classList.add('active');
+
+        const handleConfirm = () => {
+          cleanup();
+          resolve(true);
+        };
+
+        const handleCancel = () => {
+          cleanup();
+          resolve(false);
+        };
+
+        const cleanup = () => {
+          modalOverlay.classList.remove('active');
+          btnConfirm.removeEventListener('click', handleConfirm);
+          btnCancel.removeEventListener('click', handleCancel);
+        };
+
+        btnConfirm.addEventListener('click', handleConfirm);
+        btnCancel.addEventListener('click', handleCancel);
+      });
+    }
 
     // সময়সীমা (15, 30, 45 Days) পরিবর্তন করার স্ক্রিপ্ট
     function selectDuration(days, btnElement) {
@@ -595,19 +753,36 @@
       const client = window._supabase || window.supabase;
 
       if (!client) {
-        alert("Database connection error!");
+        await showCustomModal({
+          title: "Connection Error",
+          message: "Database connection error!",
+          icon: "fa-solid fa-triangle-exclamation",
+          type: "alert"
+        });
         return;
       }
 
       const { data: { user } } = await client.auth.getUser();
 
       if (!user) {
-        alert("Please login first to invest!");
+        await showCustomModal({
+          title: "Login Required",
+          message: "Please login first to invest!",
+          icon: "fa-solid fa-user-lock",
+          type: "alert"
+        });
         window.location.href = "login.html";
         return;
       }
 
-      if (confirm(`Are you sure you want to invest $${amount} in ${planName} for ${currentDuration} Days?`)) {
+      const confirmed = await showCustomModal({
+        title: "Confirm Investment",
+        message: `Are you sure you want to invest $${amount} in ${planName} for ${currentDuration} Days?`,
+        icon: "fa-solid fa-circle-question",
+        type: "confirm"
+      });
+
+      if (confirmed) {
         
         // ১. ইউজারের ব্যালেন্স চেক (wallets টেবিল থেকে)
         const { data: wallet, error: walletErr } = await client
@@ -617,7 +792,12 @@
           .single();
 
         if (walletErr || !wallet || parseFloat(wallet.balance) < amount) {
-          alert("Insufficient Balance! Please deposit first.");
+          await showCustomModal({
+            title: "Insufficient Balance",
+            message: "Insufficient Balance! Please deposit first.",
+            icon: "fa-solid fa-wallet",
+            type: "alert"
+          });
           return;
         }
 
@@ -647,7 +827,12 @@
           ]);
 
         if (insertError) {
-          alert("Investment failed: " + insertError.message);
+          await showCustomModal({
+            title: "Investment Failed",
+            message: "Investment failed: " + insertError.message,
+            icon: "fa-solid fa-circle-xmark",
+            type: "alert"
+          });
           return;
         }
 
@@ -658,7 +843,12 @@
           .update({ balance: newBalance, updated_at: new Date().toISOString() })
           .eq('user_id', user.id);
 
-        alert("Investment Successful!");
+        await showCustomModal({
+          title: "Success",
+          message: "Investment Successful!",
+          icon: "fa-solid fa-circle-check",
+          type: "alert"
+        });
         
         // ৫. সরাসরি gol-investing-dashborad.html পেজে পাঠাবে
         window.location.href = "gol-investing-dashborad.html";
