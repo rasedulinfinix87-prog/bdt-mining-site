@@ -151,6 +151,7 @@
       letter-spacing: 0.5px;
     }
 
+    /* Notification Icon Base & Blinking Animations */
     .top-bar .notification-icon {
       color: var(--gold-primary);
       font-size: 1.1rem;
@@ -163,6 +164,65 @@
       justify-content: center;
       border: 1px solid rgba(245, 207, 102, 0.2);
       cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .top-bar .notification-icon.has-unread {
+      animation: bellGlowPulse 1.2s infinite ease-in-out;
+      border-color: #ff4757;
+    }
+
+    .top-bar .notification-icon.has-unread i {
+      animation: bellRing 1.5s infinite ease-in-out;
+      color: #ffe082;
+    }
+
+    /* Red Badge Indicator */
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      background-color: #ff4757;
+      border-radius: 50%;
+      border: 2px solid var(--bg-dark);
+      box-shadow: 0 0 8px #ff4757;
+      display: none; /* ডিফল্টভাবে হাইড থাকবে */
+    }
+
+    .notification-badge.active {
+      display: block;
+      animation: badgePulse 1s infinite alternate;
+    }
+
+    @keyframes bellGlowPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.6);
+        background: rgba(255, 71, 87, 0.15);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+        background: rgba(245, 207, 102, 0.25);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+        background: rgba(255, 71, 87, 0.15);
+      }
+    }
+
+    @keyframes bellRing {
+      0%, 100% { transform: rotate(0deg); }
+      10%, 30%, 50% { transform: rotate(15deg); }
+      20%, 40% { transform: rotate(-15deg); }
+      60% { transform: rotate(0deg); }
+    }
+
+    @keyframes badgePulse {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      100% { transform: scale(1.3); opacity: 1; }
     }
 
     .card-section {
@@ -479,9 +539,11 @@
         </a>
         <h2>Wallet</h2>
       </div>
-      <div class="notification-icon">
+      <!-- Blinking Notification Bell Container -->
+      <a href="notification-center.html" class="notification-icon" id="notificationBtn">
         <i class="fa-regular fa-bell"></i>
-      </div>
+        <span class="notification-badge" id="notifBadge"></span>
+      </a>
     </div>
 
     <!-- Bank Card Section -->
@@ -577,7 +639,7 @@
 
     // ১৪ অংকের র্যান্ডম অ্যাকাউন্ট নম্বর জেনারেটর হেলপার
     function generate14DigitAccountNumber() {
-      const prefix = "3089"; // নির্দিষ্ট প্রিফিক্স (ইচ্ছা হলে পরিবর্তন করতে পারেন)
+      const prefix = "3089"; // নির্দিষ্ট প্রিফিক্স
       let randomDigits = "";
       for (let i = 0; i < 10; i++) {
         randomDigits += Math.floor(Math.random() * 10);
@@ -617,6 +679,29 @@
       }
     }
 
+    // --- নোটিফিকেশন চেক ও ব্লিংকিং লজিক ---
+    async function checkNotifications(client, userId) {
+      const notifBtn = document.getElementById('notificationBtn');
+      const notifBadge = document.getElementById('notifBadge');
+
+      if (!notifBtn || !notifBadge) return;
+
+      // is_red = false মানে আনরিড/অদেখা নোটিফিকেশন
+      const { count, error } = await client
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('is_red', false);
+
+      if (!error && count > 0) {
+        notifBtn.classList.add('has-unread');
+        notifBadge.classList.add('active');
+      } else {
+        notifBtn.classList.remove('has-unread');
+        notifBadge.classList.remove('active');
+      }
+    }
+
     async function loadWalletData() {
       const client = window._supabase || window.supabase;
 
@@ -653,7 +738,10 @@
       // ৩. প্রাথমিক ব্যালেন্স ও অ্যাকাউন্ট নম্বর ফেচ করা
       await fetchWalletDetails(client, currentUserId);
 
-      // ৪. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
+      // ৪. আনরিড নোটিফিকেশন চেক করা ও ব্লিংকিং চালু করা
+      await checkNotifications(client, currentUserId);
+
+      // ৫. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
       client
         .channel('wallet-balance-changes')
         .on(
@@ -677,7 +765,24 @@
         )
         .subscribe();
 
-      // ৫. Realtime Listener: 'transactions' টেবিল আপডেট হয়ে status = 'approved' হলেই ব্যালেন্স রিলোড হবে
+      // ৬. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
+      client
+        .channel('notifications-live-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${currentUserId}`
+          },
+          () => {
+            checkNotifications(client, currentUserId);
+          }
+        )
+        .subscribe();
+
+      // ৭. Realtime Listener: 'transactions' টেবিল আপডেট হয়ে status = 'approved' হলেই ব্যালেন্স রিলোড হবে
       client
         .channel('transactions-status-changes')
         .on(
