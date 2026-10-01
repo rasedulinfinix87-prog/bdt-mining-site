@@ -43,20 +43,6 @@
       padding-bottom: 90px;
       position: relative;
       min-height: 100vh;
-
-      /* Smooth Page Open Animation */
-      animation: fadeSlideIn 0.5s ease-out forwards;
-    }
-
-    @keyframes fadeSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
     /* Top Bar */
@@ -168,20 +154,51 @@
       align-items: center;
       justify-content: center;
       color: var(--gold-primary);
-      font-size: 1.5rem;
+      font-size: 1.4rem;
     }
 
     .profile-info h3 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--text-main);
-      text-transform: uppercase; /* Registration name will show in ALL CAPS */
+      text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .profile-info p {
       font-size: 0.85rem;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 4px;
+    }
+
+    /* Left-to-Right Dots Loading Animation */
+    .dots-loader {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dots-loader span {
+      width: 6px;
+      height: 6px;
+      background-color: var(--gold-primary);
+      border-radius: 50%;
+      display: inline-block;
+      animation: dotPulse 1.2s infinite ease-in-out;
+    }
+
+    .dots-loader span:nth-child(1) { animation-delay: 0s; }
+    .dots-loader span:nth-child(2) { animation-delay: 0.2s; }
+    .dots-loader span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotPulse {
+      0%, 80%, 100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+      }
+      40% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
     }
 
     /* Settings Group List */
@@ -374,12 +391,16 @@
     <!-- User Brief Section -->
     <div class="profile-header" id="user-profile-header">
       <div class="profile-avatar">
-        <!-- Replaced user icon with Bank icon inside profile card -->
+        <!-- Human icon replaced with Bank icon -->
         <i class="fa-solid fa-building-columns" id="user-avatar-icon"></i>
       </div>
       <div class="profile-info">
-        <h3 id="user-display-name">Checking Auth...</h3>
-        <p id="user-display-account">Please wait a moment</p>
+        <h3 id="user-display-name">
+          <span class="dots-loader"><span></span><span></span><span></span></span>
+        </h3>
+        <p id="user-display-account">
+          <span class="dots-loader"><span></span><span></span><span></span></span>
+        </p>
       </div>
     </div>
 
@@ -439,7 +460,6 @@
     // Safe Supabase Instance Retrieval Helper
     async function getSupabaseInstance() {
       let attempts = 0;
-      // Wait until _supabase is ready or timeout after 2 seconds
       while ((!window._supabase && !window.supabase) && attempts < 20) {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
@@ -477,12 +497,12 @@
       }
 
       if (user) {
-        // Fetch extra profile data from 'user' table & account_number from 'wallets' table
-        let registrationName = user.user_metadata?.full_name || "VALUED INVESTOR";
+        // Fetch User details and Wallet account_number
+        let fullName = user.user_metadata?.full_name || "";
         let accountNumber = "N/A";
 
         try {
-          // Fetch full_name from 'user' table
+          // 1. Fetch user full_name from 'user' table if available
           const { data: userData } = await client
             .from('user')
             .select('full_name')
@@ -490,10 +510,10 @@
             .single();
 
           if (userData && userData.full_name) {
-            registrationName = userData.full_name;
+            fullName = userData.full_name;
           }
 
-          // Fetch account_number from 'wallets' table
+          // 2. Fetch account_number from 'wallets' table
           const { data: walletData } = await client
             .from('wallets')
             .select('account_number')
@@ -503,13 +523,13 @@
           if (walletData && walletData.account_number) {
             accountNumber = walletData.account_number;
           }
-        } catch (err) {
-          console.error("Error fetching user or wallet details:", err);
+        } catch (e) {
+          console.error("Data fetching error:", e);
         }
 
-        // Display uppercase Registration Name and Account Number
-        profileName.innerText = registrationName.toUpperCase();
-        profileAccount.innerText = `A/C: ${accountNumber}`;
+        // Render Registration Name (In Uppercase) & Account Number
+        profileName.innerText = (fullName || "INVESTOR").toUpperCase();
+        profileAccount.innerText = "Acc: " + accountNumber;
 
         settingsContainer.innerHTML = `
           <a href="account-info.html" class="setting-item">
