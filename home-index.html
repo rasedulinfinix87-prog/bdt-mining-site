@@ -60,7 +60,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
 
         #loader-overlay.fade-out {
@@ -71,8 +71,8 @@
         /* Monument Loader Styling */
         .monument-container {
             position: relative;
-            width: 180px;
-            height: 200px;
+            width: 200px;
+            height: 220px;
             display: flex;
             justify-content: center;
             align-items: flex-end;
@@ -81,54 +81,57 @@
         .monument-svg {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 12px rgba(245, 207, 102, 0.3));
         }
 
-        /* Pulsing & Glowing Animation for Monument Structure */
-        .monument-path {
-            stroke-dasharray: 600;
-            stroke-dashoffset: 600;
-            animation: drawMonument 2.2s ease-in-out infinite alternate;
+        /* Smooth 2.5s Drawing & Glowing Animation */
+        .monument-path polygon, .monument-path path {
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+            animation: drawMonument 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
         }
 
         @keyframes drawMonument {
             0% {
-                stroke-dashoffset: 600;
-                fill: rgba(245, 207, 102, 0.02);
+                stroke-dashoffset: 800;
+                fill: rgba(245, 207, 102, 0.0);
+                stroke: rgba(245, 207, 102, 0.3);
                 filter: drop-shadow(0 0 2px rgba(46, 213, 115, 0.2));
             }
             50% {
-                fill: rgba(245, 207, 102, 0.12);
+                fill: rgba(245, 207, 102, 0.15);
+                stroke: #f5cf66;
+                filter: drop-shadow(0 0 10px rgba(245, 207, 102, 0.5));
             }
             100% {
                 stroke-dashoffset: 0;
-                fill: rgba(245, 207, 102, 0.22);
-                filter: drop-shadow(0 0 15px rgba(245, 207, 102, 0.6));
+                fill: rgba(245, 207, 102, 0.3);
+                stroke: #f5cf66;
+                filter: drop-shadow(0 0 20px rgba(245, 207, 102, 0.8));
             }
         }
 
         /* Glowing Loader Text */
         .loader-brand {
             margin-top: 25px;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             letter-spacing: 2px;
             color: var(--gold-primary);
-            text-shadow: 0 0 10px rgba(245, 207, 102, 0.4);
-            animation: pulseText 1.5s infinite alternate;
+            text-shadow: 0 0 12px rgba(245, 207, 102, 0.4);
+            animation: pulseText 2.5s infinite alternate;
         }
 
         .loader-subtext {
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             color: var(--text-secondary);
             margin-top: 6px;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
         }
 
         @keyframes pulseText {
-            from { opacity: 0.6; }
-            to { opacity: 1; }
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
         }
 
         /* Mobile Container Layout Fix */
@@ -136,7 +139,7 @@
             width: 100%;
             max-width: 410px;
             height: 100vh;
-            height: 100dvh; /* Dynamic Mobile Viewport Fix */
+            height: 100dvh;
             background: var(--bg-color);
             display: flex;
             flex-direction: column;
@@ -292,7 +295,7 @@
             flex-shrink: 0;
         }
 
-        /* Built-in Fallback Nav (If fetch fails or loads slow) */
+        /* Built-in Fallback Nav */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -328,27 +331,27 @@
     <div id="loader-overlay">
         <div class="monument-container">
             <svg class="monument-svg" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- National Monument Structure Strips (Translucent Gold & Green Accent) -->
+                <!-- National Monument Structure Strips -->
                 <g class="monument-path" stroke="#f5cf66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <!-- Base Foundation -->
-                    <path d="M 10 230 L 190 230" stroke="#2ed573" stroke-width="2" />
+                    <path d="M 10 230 L 190 230" stroke="#2ed573" stroke-width="2.5" />
                     <!-- Spire 1 (Center Highest) -->
-                    <polygon points="100,10 93,225 107,225" opacity="0.95" />
+                    <polygon points="100,10 93,225 107,225" />
                     <!-- Spire 2 Left & Right -->
-                    <polygon points="100,10 78,225 90,225" opacity="0.85" />
-                    <polygon points="100,10 110,225 122,225" opacity="0.85" />
+                    <polygon points="100,10 78,225 90,225" />
+                    <polygon points="100,10 110,225 122,225" />
                     <!-- Spire 3 Left & Right -->
-                    <polygon points="100,10 62,225 75,225" opacity="0.75" />
-                    <polygon points="100,10 125,225 138,225" opacity="0.75" />
+                    <polygon points="100,10 62,225 75,225" />
+                    <polygon points="100,10 125,225 138,225" />
                     <!-- Spire 4 Left & Right -->
-                    <polygon points="100,10 45,225 59,225" opacity="0.65" />
-                    <polygon points="100,10 141,225 155,225" opacity="0.65" />
+                    <polygon points="100,10 45,225 59,225" />
+                    <polygon points="100,10 141,225 155,225" />
                     <!-- Spire 5 Left & Right -->
-                    <polygon points="100,10 30,225 42,225" opacity="0.55" />
-                    <polygon points="100,10 158,225 170,225" opacity="0.55" />
+                    <polygon points="100,10 30,225 42,225" />
+                    <polygon points="100,10 158,225 170,225" />
                     <!-- Outer Base Flanks -->
-                    <polygon points="100,10 15,225 27,225" opacity="0.45" />
-                    <polygon points="100,10 173,225 185,225" opacity="0.45" />
+                    <polygon points="100,10 15,225 27,225" />
+                    <polygon points="100,10 173,225 185,225" />
                 </g>
             </svg>
         </div>
@@ -437,15 +440,21 @@
 
     <!-- JavaScript Logic -->
     <script>
-        // Hide Loader Once Everything is Completely Loaded
+        // Set exact minimum animation duration to 2.5 Seconds (2500 ms)
+        const animationMinDuration = 2500; 
+        const pageStartTime = Date.now();
+
         window.addEventListener('load', function() {
+            const elapsedTime = Date.now() - pageStartTime;
+            const remainingTime = Math.max(0, animationMinDuration - elapsedTime);
+
             setTimeout(function() {
                 const loader = document.getElementById('loader-overlay');
                 if (loader) {
                     loader.classList.add('fade-out');
                     document.body.style.overflow = 'auto'; // Restore scroll
                 }
-            }, 800); // 800ms Smooth Transition
+            }, remainingTime);
         });
 
         // Dynamic bottom.html loader with cache bypass
