@@ -277,6 +277,8 @@
             padding: 24px 20px 30px 20px;
             transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
         .modal-overlay.active .modal-card {
@@ -321,6 +323,30 @@
         .modal-row strong {
             color: var(--text-primary);
             font-weight: 600;
+        }
+
+        /* Feedback Box */
+        .feedback-box {
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.25);
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #ff6b81;
+            display: none;
+        }
+
+        .feedback-box.active {
+            display: block;
+        }
+
+        .feedback-title {
+            font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+            letter-spacing: 0.5px;
         }
 
         /* Bottom Navigation Holder */
@@ -380,8 +406,8 @@
         <!-- Transaction List -->
         <div class="transaction-list" id="trx-container">
             
-            <!-- Sample Card 1 -->
-            <div class="trx-card deposit" onclick="openModal('TRX98234102', 'Deposit', '$150.00', 'bKash', '01700000000', 'approved', '2026-09-28 10:30 AM')">
+            <!-- Sample Card 1: Deposit (Approved) -->
+            <div class="trx-card deposit" onclick="openModal('TRX98234102', 'Deposit', '$150.00', '$0.00', '$150.00', 'bKash', '01700000000', 'approved', '2026-09-28 10:30 AM', '')">
                 <div class="trx-left">
                     <div class="trx-icon deposit">
                         <i class="fa-solid fa-arrow-down-left"></i>
@@ -397,8 +423,8 @@
                 </div>
             </div>
 
-            <!-- Sample Card 2 -->
-            <div class="trx-card withdraw" onclick="openModal('TRX87239105', 'Withdraw', '$50.00', 'Binance (USDT)', '0x8d...a2f9', 'pending', '2026-09-29 02:15 PM')">
+            <!-- Sample Card 2: Withdraw (Pending with Charge) -->
+            <div class="trx-card withdraw" onclick="openModal('TRX87239105', 'Withdraw', '$50.00', '$1.50', '$48.50', 'Binance (USDT)', '0x8d...a2f9', 'pending', '2026-09-29 02:15 PM', '')">
                 <div class="trx-left">
                     <div class="trx-icon withdraw">
                         <i class="fa-solid fa-arrow-up-right"></i>
@@ -414,8 +440,8 @@
                 </div>
             </div>
 
-            <!-- Sample Card 3 -->
-            <div class="trx-card deposit" onclick="openModal('TRX54129033', 'Deposit', '$300.00', 'Nagad', '01800000000', 'rejected', '2026-09-27 08:45 PM')">
+            <!-- Sample Card 3: Deposit (Rejected with Admin Feedback) -->
+            <div class="trx-card deposit" onclick="openModal('TRX54129033', 'Deposit', '$300.00', '$0.00', '$300.00', 'Nagad', '01800000000', 'rejected', '2026-09-27 08:45 PM', 'Invalid TrxID provided. Please check your Nagad SMS.')">
                 <div class="trx-left">
                     <div class="trx-icon deposit">
                         <i class="fa-solid fa-arrow-down-left"></i>
@@ -461,12 +487,26 @@
                     <strong id="m-amount">-</strong>
                 </div>
                 <div class="modal-row">
+                    <span>Charge / Fee</span>
+                    <strong id="m-charge" style="color: var(--accent-red);">-</strong>
+                </div>
+                <div class="modal-row">
+                    <span>Net Amount</span>
+                    <strong id="m-net" style="color: var(--gold-primary);">-</strong>
+                </div>
+                <div class="modal-row">
                     <span>Status</span>
                     <strong id="m-status">-</strong>
                 </div>
                 <div class="modal-row">
                     <span>Date & Time</span>
                     <strong id="m-date">-</strong>
+                </div>
+
+                <!-- Admin Feedback Box -->
+                <div class="feedback-box" id="feedbackBox">
+                    <div class="feedback-title"><i class="fa-solid fa-circle-info"></i> Admin Remark</div>
+                    <div id="m-feedback"></div>
                 </div>
             </div>
         </div>
@@ -520,15 +560,26 @@
             });
         }
 
-        // Modal Logic
-        function openModal(trxId, type, amount, method, account, status, date) {
+        // Updated Modal Logic including charge, net_amount & admin_feedback
+        function openModal(trxId, type, amount, charge, netAmount, method, account, status, date, feedback) {
             document.getElementById('m-trxid').innerText = trxId;
             document.getElementById('m-type').innerText = type;
             document.getElementById('m-amount').innerText = amount;
+            document.getElementById('m-charge').innerText = charge;
+            document.getElementById('m-net').innerText = netAmount;
             document.getElementById('m-method').innerText = method;
             document.getElementById('m-account').innerText = account;
             document.getElementById('m-status').innerText = status.toUpperCase();
             document.getElementById('m-date').innerText = date;
+
+            // Admin Feedback Logic
+            const feedbackBox = document.getElementById('feedbackBox');
+            if (feedback && feedback.trim() !== '') {
+                document.getElementById('m-feedback').innerText = feedback;
+                feedbackBox.classList.add('active');
+            } else {
+                feedbackBox.classList.remove('active');
+            }
 
             document.getElementById('detailModal').classList.add('active');
         }
