@@ -403,7 +403,7 @@
                     </div>
 
                     <div class="forgot-password-link">
-                        <a href="#" onclick="handleForgotPassword(event)">Forgot Password?</a>
+                        <a href="reset-password.html">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="btn-gold" id="btn-login">ACCESS VAULT</button>
@@ -483,18 +483,6 @@
                 tabSignup.classList.remove('active');
                 tabLogin.classList.add('active');
             }
-        }
-
-        // Forgot Password Logic with Popup & Redirect
-        function handleForgotPassword(e) {
-            e.preventDefault();
-            showPopup(
-                'Our platform is secure. If you forgot your password, click here to retrieve or reset your password through support.',
-                'fa-solid fa-shield-halved',
-                () => {
-                    window.location.href = 'contact.html';
-                }
-            );
         }
 
         // Registration Handling
