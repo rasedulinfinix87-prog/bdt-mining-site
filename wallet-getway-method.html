@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Goldmine Digital - Deposit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goldmine Digital - Wallet Gateway</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --bg-dark: #061913;
-      --topbar-bg: rgba(6, 25, 19, 0.85);
+      --topbar-bg: rgba(6, 25, 19, 0.85); /* সাইটের প্রাইমারি থিম কালারের গ্লাস গ্রীন ইফেক্ট */
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.25);
       --gold-primary: #f5cf66;
@@ -26,39 +26,37 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    /* Fixed Layout setup (Non-scrollable) */
-    html, body {
-      height: 100vh;
-      overflow: hidden;
+    body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       display: flex;
       justify-content: center;
-      touch-action: none;
+      min-height: 100vh;
     }
 
     .mobile-container {
       width: 100%;
       max-width: 480px;
-      height: 100vh;
       background-color: var(--bg-dark);
-      display: flex;
-      flex-direction: column;
+      padding-bottom: 70px;
       position: relative;
+      min-height: 100vh;
     }
 
-    /* Top Bar - Glass Effect */
+    /* Top Bar - সাইটের কালার কম্বিনেশন ও গ্লাস গ্লো ইফেক্ট সহ */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 20px;
+      padding: 18px 20px;
       background: var(--topbar-bg);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
       border-bottom: 1px solid var(--card-border);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      z-index: 100;
     }
 
     .top-bar .title-group {
@@ -71,6 +69,7 @@
       color: var(--gold-primary);
       font-size: 1.1rem;
       text-decoration: none;
+      cursor: pointer;
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -79,139 +78,160 @@
       align-items: center;
       justify-content: center;
       border: 1px solid rgba(245, 207, 102, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .top-bar .back-btn:hover {
+      background: rgba(245, 207, 102, 0.2);
     }
 
     .top-bar h2 {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 600;
       color: var(--text-main);
+      letter-spacing: 0.5px;
     }
 
-    .main-content {
-      flex: 1;
-      padding: 15px 20px;
+    .top-bar .notification-icon {
+      color: var(--gold-primary);
+      font-size: 1.1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(245, 207, 102, 0.1);
       display: flex;
-      flex-direction: column;
-      gap: 15px;
-      overflow-y: auto; /* Internal scrolling if screen height is too small */
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(245, 207, 102, 0.2);
+      cursor: pointer;
     }
 
-    /* Gateway Method Selection Cards (3 Items Layout) */
-    .gateway-selector {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+    .card-section {
+      padding: 20px;
     }
 
-    .method-card {
-      background: var(--card-bg);
+    .bank-card {
+      background: var(--card-gradient);
       border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 12px 8px;
+      border-radius: 20px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 207, 102, 0.08);
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      min-height: 180px;
+    }
+
+    .bank-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(245, 207, 102, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .user-info .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .user-info .user-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+
+    .card-chip {
+      width: 36px;
+      height: 26px;
+      background: linear-gradient(135deg, #f5cf66, #b89332);
+      border-radius: 5px;
+      opacity: 0.85;
+      box-shadow: 0 2px 8px rgba(245, 207, 102, 0.3);
+    }
+
+    .card-bottom {
+      margin-top: 25px;
+    }
+
+    .balance-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .balance-label .live-dot {
+      width: 7px;
+      height: 7px;
+      background-color: var(--green-glow);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green-glow);
+    }
+
+    .balance-amount {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      text-shadow: 0 0 10px rgba(245, 207, 102, 0.3);
+    }
+
+    /* Action Buttons (Deposit & Withdraw) */
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      padding: 0 20px 20px 20px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       cursor: pointer;
+      text-decoration: none;
       transition: all 0.3s ease;
-      text-align: center;
     }
 
-    .method-card.active {
-      background: var(--card-gradient);
-      border-color: var(--gold-primary);
-      box-shadow: 0 0 15px rgba(245, 207, 102, 0.25);
-      transform: translateY(-2px);
-    }
-
-    .method-card i {
-      font-size: 1.4rem;
-      color: var(--gold-primary);
-    }
-
-    .method-card span {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    /* Info Box & Inputs (Empty Boxes / Cards) */
-    .details-card {
-      background: var(--card-gradient);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .details-title {
-      font-size: 0.85rem;
-      color: var(--gold-primary);
-      font-weight: 600;
-      border-bottom: 1px dashed rgba(245, 207, 102, 0.2);
-      padding-bottom: 6px;
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-    }
-
-    .info-label {
-      color: var(--text-muted);
-    }
-
-    .info-value {
-      color: var(--text-main);
-      font-weight: 600;
-      font-family: monospace;
-    }
-
-    /* Form Fields */
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .input-group label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .input-field {
-      width: 100%;
-      padding: 12px 14px;
-      background: rgba(3, 13, 10, 0.6);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      color: var(--text-main);
-      font-size: 0.9rem;
-      outline: none;
-    }
-
-    .input-field:focus {
-      border-color: var(--gold-primary);
-      box-shadow: 0 0 8px rgba(245, 207, 102, 0.2);
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 14px;
+    .btn-deposit {
       background: var(--gold-gradient);
       color: #030d0a;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 5px;
       box-shadow: 0 4px 15px rgba(245, 207, 102, 0.25);
+    }
+
+    .btn-withdraw {
+      background: rgba(12, 38, 29, 0.6);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(5px);
+    }
+
+    .btn-withdraw:hover {
+      background: rgba(12, 38, 29, 0.9);
+      border-color: var(--gold-primary);
     }
 
     #bottom-nav-container {
@@ -229,144 +249,161 @@
     <!-- Top Bar -->
     <div class="top-bar">
       <div class="title-group">
-        <a href="wallet-getway-method.html" class="back-btn">
+        <a href="javascript:history.back()" class="back-btn">
           <i class="fa-solid fa-chevron-left"></i>
         </a>
-        <h2>Deposit Gateway</h2>
+        <h2>Wallet</h2>
       </div>
-      <i class="fa-solid fa-shield-halved" style="color: var(--gold-primary); font-size: 1.1rem;"></i>
+      <div class="notification-icon">
+        <i class="fa-regular fa-bell"></i>
+      </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- 3 Gateway Selection Cards -->
-      <div class="gateway-selector">
-        <div class="method-card active" onclick="selectMethod('bkash')">
-          <i class="fa-solid fa-mobile-screen-button"></i>
-          <span>bKash</span>
+    <!-- Bank Card Section -->
+    <div class="card-section">
+      <div class="bank-card">
+        <div class="card-top">
+          <div class="user-info">
+            <div class="label">Account Holder</div>
+            <div class="user-name" id="user-name-display">Loading...</div>
+          </div>
+          <div class="card-chip"></div>
         </div>
-        <div class="method-card" onclick="selectMethod('usdt')">
-          <i class="fa-solid fa-coins"></i>
-          <span>USDT (TRC20)</span>
-        </div>
-        <div class="method-card" onclick="selectMethod('bank')">
-          <i class="fa-solid fa-building-columns"></i>
-          <span>Bank</span>
+
+        <div class="card-bottom">
+          <div class="balance-label">
+            <span class="live-dot"></span> Real Time Balance
+          </div>
+          <div class="balance-amount" id="user-balance-display">$0.00</div>
         </div>
       </div>
-
-      <!-- Payment Details Card (Dynamically Loaded from Supabase) -->
-      <div class="details-card">
-        <div class="details-title" id="gateway-title">Payment Info</div>
-        <div id="dynamic-info-container">
-          <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Loading details...</div>
-        </div>
-      </div>
-
-      <!-- Deposit Form -->
-      <form id="deposit-form" onsubmit="handleDeposit(event)">
-        <div class="details-card">
-          <div class="input-group">
-            <label>Amount ($)</label>
-            <input type="number" step="0.01" class="input-field" placeholder="Enter Deposit Amount" required>
-          </div>
-          <div class="input-group">
-            <label>Transaction ID / Account No.</label>
-            <input type="text" class="input-field" placeholder="Enter Trx ID or Sender No." required>
-          </div>
-          <button type="submit" class="submit-btn">Submit Deposit</button>
-        </div>
-      </form>
     </div>
 
-    <!-- Bottom Nav Container -->
+    <!-- Quick Action Buttons -->
+    <div class="action-buttons">
+      <a href="deposit.html" class="btn-action btn-deposit">
+        <i class="fa-solid fa-arrow-down-left"></i> Deposit
+      </a>
+      <a href="withdraw.html" class="btn-action btn-withdraw">
+        <i class="fa-solid fa-arrow-up-right"></i> Withdraw
+      </a>
+    </div>
+
+    <!-- Container where bottom.html will be loaded -->
     <div id="bottom-nav-container"></div>
   </div>
 
-  <!-- Supabase CDN -->
+  <!-- 1. Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- 2. Supabase Configuration File -->
   <script src="supabase-config.js"></script>
 
+  <!-- 3. Logic Script -->
   <script>
-    let activeMethod = 'bkash';
-    let methodsData = {};
+    let currentUserId = null;
 
-    // Supabase থেকে মেথডের তথ্য নিয়ে আসা
-    async function fetchGatewayDetails() {
-      const client = window._supabase || window.supabase;
-      if(!client) return;
+    // 'wallets' টেবিল থেকে শুধুই ব্যালেন্স আনার ফাংশন
+    async function fetchBalanceOnly(client, userId) {
+      const { data, error } = await client
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', userId)
+        .single();
 
-      const { data, error } = await client.from('payment_methods').select('*').eq('is_active', true);
-
-      if(data) {
-        data.forEach(item => {
-          methodsData[item.method_code] = item;
-        });
-        renderDetails('bkash');
+      if (data) {
+        document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance || 0).toFixed(2);
       } else {
-        console.error('Error loading gateway info:', error);
+        document.getElementById('user-balance-display').innerText = '$0.00';
+        if (error) console.log("Balance fetch error:", error.message);
       }
     }
 
-    // মেথড অনুযায়ী কার্ড রেন্ডার
-    function renderDetails(code) {
-      const infoContainer = document.getElementById('dynamic-info-container');
-      const titleElem = document.getElementById('gateway-title');
-      const data = methodsData[code];
+    async function loadWalletData() {
+      const client = window._supabase || window.supabase;
 
-      if (!data) {
-        infoContainer.innerHTML = '<div style="color:var(--text-muted);">Information unavailable</div>';
+      if (!client) {
+        console.error("Supabase client properly initialized পাওয়া যায়নি!");
         return;
       }
 
-      titleElem.innerText = data.method_name + ' Details';
-      let html = '';
+      // ১. বর্তমান সেশনের অথেন্টিকেটেড ইউজার নেওয়া
+      const { data: { user }, error: userError } = await client.auth.getUser();
 
-      const details = data.account_details;
-      if (code === 'bkash') {
-        html = `
-          <div class="info-row"><span class="info-label">Number:</span><span class="info-value">${details.number || 'N/A'}</span></div>
-          <div class="info-row"><span class="info-label">Type:</span><span class="info-value">${details.type || 'Personal'}</span></div>
-        `;
-      } else if (code === 'usdt') {
-        html = `
-          <div class="info-row"><span class="info-label">Address:</span><span class="info-value" style="font-size:0.75rem;">${details.wallet_address || 'N/A'}</span></div>
-          <div class="info-row"><span class="info-label">Network:</span><span class="info-value">${details.network || 'TRC20'}</span></div>
-        `;
-      } else if (code === 'bank') {
-        html = `
-          <div class="info-row"><span class="info-label">Bank:</span><span class="info-value">${details.bank_name || 'N/A'}</span></div>
-          <div class="info-row"><span class="info-label">Account No:</span><span class="info-value">${details.account_number || 'N/A'}</span></div>
-          <div class="info-row"><span class="info-label">Branch:</span><span class="info-value">${details.branch || 'N/A'}</span></div>
-        `;
+      if (userError || !user) {
+        document.getElementById('user-name-display').innerText = "Guest";
+        return;
       }
 
-      if(data.instructions) {
-        html += `<div style="margin-top:8px; font-size:0.75rem; color:var(--gold-primary);">${data.instructions}</div>`;
+      currentUserId = user.id;
+
+      // ২. কাস্টম 'user' টেবিল থেকে ইউজারের full_name লোড করা
+      const { data: userData, error: userDataError } = await client
+        .from('user')
+        .select('full_name')
+        .eq('id', currentUserId)
+        .single();
+
+      if (userData && userData.full_name) {
+        document.getElementById('user-name-display').innerText = userData.full_name;
+      } else {
+        document.getElementById('user-name-display').innerText = user.email ? user.email.split('@')[0] : "User";
       }
 
-      infoContainer.innerHTML = html;
-    }
+      // ৩. প্রাথমিক ব্যালেন্স ফেচ করা
+      await fetchBalanceOnly(client, currentUserId);
 
-    function selectMethod(code) {
-      activeMethod = code;
-      document.querySelectorAll('.method-card').forEach(card => card.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-      renderDetails(code);
-    }
+      // ৪. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
+      client
+        .channel('wallet-balance-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'wallets',
+            filter: `user_id=eq.${currentUserId}`
+          },
+          (payload) => {
+            if (payload.new && payload.new.balance !== undefined) {
+              document.getElementById('user-balance-display').innerText = '$' + parseFloat(payload.new.balance).toFixed(2);
+            }
+          }
+        )
+        .subscribe();
 
-    async function handleDeposit(e) {
-      e.preventDefault();
-      alert("Deposit request submitted successfully!");
+      // ৫. Realtime Listener: 'transactions' টেবিল আপডেট হয়ে status = 'approved' হলেই ব্যালেন্স রিলোড হবে
+      client
+        .channel('transactions-status-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'transactions',
+            filter: `user_id=eq.${currentUserId}`
+          },
+          (payload) => {
+            if (payload.new && payload.new.status === 'approved') {
+              fetchBalanceOnly(client, currentUserId);
+            }
+          }
+        )
+        .subscribe();
     }
 
     // bottom.html লোড করা
     fetch('bottom.html')
       .then(res => res.text())
-      .then(html => { document.getElementById('bottom-nav-container').innerHTML = html; })
+      .then(html => {
+        document.getElementById('bottom-nav-container').innerHTML = html;
+      })
       .catch(err => console.log('Error loading bottom.html:', err));
 
-    window.addEventListener('DOMContentLoaded', fetchGatewayDetails);
+    // পেজ লোড সম্পন্ন হলে ফায়ার করবে
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(loadWalletData, 100);
+    });
   </script>
 </body>
 </html>
