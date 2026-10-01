@@ -19,10 +19,27 @@
             --border-color: rgba(255, 255, 255, 0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-primary); display: flex; justify-content: center; min-height: 100vh; padding-bottom: 80px; }
-        .mobile-container { width: 100%; max-width: 410px; background: var(--card-bg); padding: 20px 16px; min-height: 100vh; position: relative; }
         
-        /* Header */
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-primary); 
+            display: flex; 
+            justify-content: center; 
+            min-height: 100vh; 
+            padding-bottom: 75px; /* bottom.html এর জন্য জায়গা */
+        }
+
+        /* Layout Fixes (No blank space on left/right) */
+        .mobile-container { 
+            width: 100%; 
+            max-width: 480px; 
+            background: var(--card-bg); 
+            padding: 20px 16px 90px; 
+            min-height: 100vh; 
+            position: relative; 
+        }
+        
+        /* Header Bar */
         .header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
         .back-btn { color: var(--gold-primary); font-size: 1.2rem; text-decoration: none; }
         .page-title { font-size: 1.1rem; font-weight: 700; color: var(--gold-primary); letter-spacing: 0.5px; }
@@ -44,7 +61,7 @@
         .input-box input:read-only { color: #d0d0d0; cursor: not-allowed; }
         .lock-icon { position: absolute; right: 14px; color: var(--text-secondary); font-size: 0.85rem; }
         
-        /* Password Section Special Styling */
+        /* Password Section Styling */
         .password-box { display: flex; gap: 8px; }
         .password-box .input-box { flex: 1; }
         .eye-icon { position: absolute; right: 14px; color: var(--gold-primary); cursor: pointer; font-size: 0.9rem; }
@@ -61,12 +78,38 @@
         }
         .change-btn:active { transform: scale(0.96); }
 
-        /* Modal & Popup Animation */
+        /* Skeleton Screen Animation CSS */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 10px;
+            height: 44px;
+            width: 100%;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Fixed Bottom Navigation Container */
+        #bottom-nav-container {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            z-index: 1000;
+        }
+
+        /* Modal & Popup Styling */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); 
             display: flex; justify-content: center; align-items: center; 
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000; 
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1100; 
         }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         .modal-card { 
@@ -90,7 +133,6 @@
         .btn-cancel { background: rgba(255,255,255,0.1); color: #fff; }
         .btn-save { background: var(--gold-gradient); color: #000; }
 
-        /* Animated Success Icon */
         .success-icon-box { 
             width: 60px; height: 60px; background: rgba(245, 207, 102, 0.1); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
@@ -110,54 +152,31 @@
             <div style="width: 20px;"></div>
         </div>
 
-        <!-- Full Name -->
-        <div class="form-group">
-            <label>FULL NAME</label>
-            <div class="input-box">
-                <input type="text" id="acc-fullname" value="Loading..." readonly>
+        <!-- Dynamic Form Body (Shows Skeleton Loader First) -->
+        <div id="account-form-body">
+            <div class="form-group">
+                <label>FULL NAME</label>
+                <div class="skeleton"></div>
+            </div>
+            <div class="form-group">
+                <label>EMAIL ADDRESS</label>
+                <div class="skeleton"></div>
+            </div>
+            <div class="form-group">
+                <label>MOBILE NUMBER</label>
+                <div class="skeleton"></div>
+            </div>
+            <div class="form-group">
+                <label>SECRET PIN</label>
+                <div class="skeleton"></div>
+            </div>
+            <div class="form-group">
+                <label>PASSWORD</label>
+                <div class="skeleton"></div>
             </div>
         </div>
 
-        <!-- Email Address -->
-        <div class="form-group">
-            <label>EMAIL ADDRESS</label>
-            <div class="input-box">
-                <input type="email" id="acc-email" value="Loading..." readonly>
-                <i class="fa-solid fa-lock lock-icon"></i>
-            </div>
-        </div>
-
-        <!-- Mobile Number -->
-        <div class="form-group">
-            <label>MOBILE NUMBER</label>
-            <div class="input-box">
-                <input type="text" id="acc-phone" value="Loading..." readonly>
-                <i class="fa-solid fa-lock lock-icon"></i>
-            </div>
-        </div>
-
-        <!-- Secret PIN -->
-        <div class="form-group">
-            <label>SECRET PIN</label>
-            <div class="input-box">
-                <input type="password" id="acc-pin" value="Loading..." readonly>
-                <i class="fa-solid fa-lock lock-icon"></i>
-            </div>
-        </div>
-
-        <!-- Password Field -->
-        <div class="form-group">
-            <label>PASSWORD</label>
-            <div class="password-box">
-                <div class="input-box">
-                    <input type="password" id="acc-password" value="******" readonly>
-                    <i class="fa-solid fa-eye eye-icon" id="toggle-pwd" onclick="togglePasswordVisibility()"></i>
-                </div>
-                <button class="change-btn" onclick="openPasswordModal()">Change</button>
-            </div>
-        </div>
-
-        <!-- Dynamic Container for Bottom Navigation -->
+        <!-- Dynamic Fixed Bottom Navigation Container -->
         <div id="bottom-nav-container"></div>
     </div>
 
@@ -213,7 +232,7 @@
             }
         }
 
-        // Fetch User Data from Supabase
+        // Fetch User Data from Supabase & Render Form
         async function fetchUserData() {
             const client = window._supabase || window.supabase;
             if (!client) {
@@ -245,14 +264,58 @@
                 if (error) {
                     console.error("Database Error:", error.message);
                 } else if (data) {
-                    document.getElementById('acc-fullname').value = data.full_name || 'N/A';
-                    document.getElementById('acc-email').value = maskEmail(data.email || '');
-                    document.getElementById('acc-phone').value = maskPhone(data.phone || '');
-                    document.getElementById('acc-pin').value = data.secret_pin ? '****' : 'N/A';
-                    
-                    // Store & Set Password
                     currentRawPassword = data.password || '******';
-                    document.getElementById('acc-password').value = currentRawPassword;
+
+                    // Replace Skeleton Loader with Real Data UI
+                    const formContainer = document.getElementById('account-form-body');
+                    formContainer.innerHTML = `
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label>FULL NAME</label>
+                            <div class="input-box">
+                                <input type="text" id="acc-fullname" value="${data.full_name || 'N/A'}" readonly>
+                            </div>
+                        </div>
+
+                        <!-- Email Address -->
+                        <div class="form-group">
+                            <label>EMAIL ADDRESS</label>
+                            <div class="input-box">
+                                <input type="email" id="acc-email" value="${maskEmail(data.email || '')}" readonly>
+                                <i class="fa-solid fa-lock lock-icon"></i>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Number -->
+                        <div class="form-group">
+                            <label>MOBILE NUMBER</label>
+                            <div class="input-box">
+                                <input type="text" id="acc-phone" value="${maskPhone(data.phone || '')}" readonly>
+                                <i class="fa-solid fa-lock lock-icon"></i>
+                            </div>
+                        </div>
+
+                        <!-- Secret PIN -->
+                        <div class="form-group">
+                            <label>SECRET PIN</label>
+                            <div class="input-box">
+                                <input type="password" id="acc-pin" value="${data.secret_pin ? '****' : 'N/A'}" readonly>
+                                <i class="fa-solid fa-lock lock-icon"></i>
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-group">
+                            <label>PASSWORD</label>
+                            <div class="password-box">
+                                <div class="input-box">
+                                    <input type="password" id="acc-password" value="${currentRawPassword}" readonly>
+                                    <i class="fa-solid fa-eye eye-icon" id="toggle-pwd" onclick="togglePasswordVisibility()"></i>
+                                </div>
+                                <button class="change-btn" onclick="openPasswordModal()">Change</button>
+                            </div>
+                        </div>
+                    `;
                 }
             } catch (err) {
                 console.error("Execution Error:", err);
@@ -268,7 +331,6 @@
 
         function closePasswordModal() {
             document.getElementById('pwd-modal').classList.remove('active');
-            // Reset modal layout after closing animation
             setTimeout(() => {
                 document.getElementById('modal-content').innerHTML = `
                     <h3>Change Password</h3>
@@ -282,7 +344,7 @@
             }, 300);
         }
 
-        // Update Password Logic & Popup Animation
+        // Update Password Logic & Popup
         async function updatePassword() {
             const newPwd = document.getElementById('new-password').value.trim();
             const confirmPwd = document.getElementById('confirm-password').value.trim();
@@ -310,11 +372,9 @@
                 if (error) {
                     alert("Error updating password: " + error.message);
                 } else {
-                    // Update Local State
                     currentRawPassword = newPwd;
                     document.getElementById('acc-password').value = newPwd;
 
-                    // Show Success Animation Window
                     const modalContent = document.getElementById('modal-content');
                     modalContent.innerHTML = `
                         <div class="success-icon-box">
