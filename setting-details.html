@@ -12,11 +12,10 @@
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.2);
       --gold-primary: #f5cf66;
-      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
-      --green-accent: #2ed573;
+      --green-glow: #2ed573;
       --text-main: #ffffff;
       --text-muted: #8da499;
-      --danger-color: #ff4757;
+      --red-color: #ff4757;
     }
 
     * {
@@ -77,187 +76,252 @@
       font-size: 1.25rem;
       font-weight: 600;
       color: var(--text-main);
-      letter-spacing: 0.5px;
     }
 
-    /* Profile Header (Logged in) */
-    .user-profile-card {
-      margin: 20px;
-      padding: 20px;
-      background: var(--card-bg);
+    .menu-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--gold-primary);
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .menu-toggle-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Top Right Hamburger Dropdown Menu */
+    .hamburger-dropdown {
+      position: absolute;
+      top: 65px;
+      right: 20px;
+      background: var(--topbar-bg);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
+      border-radius: 12px;
+      width: 180px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      z-index: 101;
+      overflow: hidden;
+    }
+
+    .hamburger-dropdown.active {
+      display: flex;
+    }
+
+    .hamburger-dropdown a {
+      padding: 12px 16px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
-      gap: 15px;
-      backdrop-filter: blur(10px);
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.2s;
     }
 
-    .avatar-box {
+    .hamburger-dropdown a:hover {
+      background: rgba(245, 207, 102, 0.1);
+      color: var(--gold-primary);
+    }
+
+    .hamburger-dropdown a:last-child {
+      border-bottom: none;
+    }
+
+    /* Header Profile Brief */
+    .profile-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--card-bg);
+      margin: 15px 20px;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+    }
+
+    .profile-avatar {
       width: 55px;
       height: 55px;
       border-radius: 50%;
-      background: linear-gradient(135deg, rgba(245, 207, 102, 0.2), rgba(46, 213, 115, 0.1));
+      background: rgba(245, 207, 102, 0.15);
       border: 2px solid var(--gold-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
       color: var(--gold-primary);
+      font-size: 1.5rem;
     }
 
-    .user-info h4 {
+    .profile-info h3 {
       font-size: 1.1rem;
       color: var(--text-main);
-      margin-bottom: 4px;
     }
 
-    .user-info p {
-      font-size: 0.82rem;
+    .profile-info p {
+      font-size: 0.85rem;
       color: var(--text-muted);
+      margin-top: 2px;
     }
 
-    /* Settings Menu List */
-    .menu-group {
-      margin: 0 20px 20px 20px;
+    /* Settings Group List */
+    .settings-list {
+      padding: 0 20px;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    .menu-title {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      margin: 10px 0 4px 5px;
-      font-weight: 600;
-    }
-
-    .menu-item {
+    .setting-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px 18px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 18px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      color: var(--text-main);
       text-decoration: none;
-      transition: all 0.3s ease;
+      color: var(--text-main);
       cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .menu-item:hover {
+    .setting-item:hover {
       border-color: var(--gold-primary);
-      transform: translateX(3px);
+      transform: translateY(-2px);
     }
 
-    .menu-item-left {
+    .setting-left {
       display: flex;
       align-items: center;
       gap: 14px;
     }
 
-    .menu-icon {
-      width: 36px;
-      height: 36px;
+    .setting-icon {
+      width: 38px;
+      height: 38px;
       border-radius: 10px;
       background: rgba(245, 207, 102, 0.1);
       color: var(--gold-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
 
-    .menu-text {
+    .setting-title {
       font-size: 0.95rem;
-      font-weight: 500;
+      font-weight: 600;
     }
 
-    .menu-item i.chevron {
+    .setting-right {
       color: var(--text-muted);
       font-size: 0.85rem;
     }
 
-    /* Rating Component Style */
-    .rating-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px 18px;
-      margin-top: 5px;
+    /* Red Action for Logout */
+    .setting-item.logout .setting-icon {
+      background: rgba(255, 71, 87, 0.1);
+      color: var(--red-color);
     }
 
-    .rating-header {
-      display: flex;
+    .setting-item.logout .setting-title {
+      color: var(--red-color);
+    }
+
+    /* Fake Rating Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: none;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 10px;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .rating-card {
+      background: var(--topbar-bg);
+      border: 1px solid var(--gold-primary);
+      width: 85%;
+      max-width: 360px;
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .rating-card h4 {
+      color: var(--gold-primary);
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .rating-card p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 18px;
     }
 
     .stars-container {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      padding: 8px 0;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     .stars-container i {
-      font-size: 1.4rem;
+      font-size: 1.8rem;
       color: var(--text-muted);
       cursor: pointer;
-      transition: color 0.2s ease, transform 0.2s ease;
+      transition: color 0.2s, transform 0.2s;
     }
 
-    .stars-container i:hover,
     .stars-container i.active {
       color: var(--gold-primary);
-      transform: scale(1.15);
+      transform: scale(1.1);
     }
 
-    .rating-feedback {
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--green-accent);
-      min-height: 18px;
-      margin-top: 5px;
-      font-weight: 500;
-    }
-
-    /* Action Buttons */
-    .btn-action {
-      width: calc(100% - 40px);
-      margin: 10px 20px;
-      padding: 14px;
-      border-radius: 14px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
+    .modal-btns {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.3s ease;
-      text-decoration: none;
+      gap: 10px;
     }
 
-    .btn-signin {
-      background: var(--gold-gradient);
-      color: #030d0a;
-      box-shadow: 0 4px 15px rgba(245, 207, 102, 0.25);
+    .btn-modal {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
     }
 
-    .btn-logout {
-      background: rgba(255, 71, 87, 0.12);
-      color: var(--danger-color);
-      border: 1px solid rgba(255, 71, 87, 0.3);
+    .btn-submit {
+      background: var(--gold-primary);
+      color: var(--topbar-bg);
     }
 
-    .btn-logout:hover {
-      background: rgba(255, 71, 87, 0.25);
+    .btn-cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
     }
 
     #bottom-nav-container {
@@ -266,10 +330,6 @@
       width: 100%;
       max-width: 480px;
       z-index: 1000;
-    }
-
-    .hidden {
-      display: none !important;
     }
   </style>
 </head>
@@ -284,192 +344,238 @@
         </a>
         <h2>Settings</h2>
       </div>
-      <i class="fa-solid fa-gear" style="color: var(--gold-primary); font-size: 1.2rem;"></i>
-    </div>
-
-    <!-- User Profile Card (Show when logged in) -->
-    <div id="user-profile" class="user-profile-card hidden">
-      <div class="avatar-box">
-        <i class="fa-solid fa-user"></i>
-      </div>
-      <div class="user-info">
-        <h4 id="user-name">Loading...</h4>
-        <p id="user-email">user@example.com</p>
-      </div>
-    </div>
-
-    <!-- Logged In Menu Group -->
-    <div id="logged-in-menu" class="menu-group hidden">
-      <div class="menu-title">Account & Services</div>
-
-      <a href="account-info.html" class="menu-item">
-        <div class="menu-item-left">
-          <div class="menu-icon"><i class="fa-solid fa-user-gear"></i></div>
-          <span class="menu-text">Account Holder Info</span>
-        </div>
-        <i class="fa-solid fa-chevron-right chevron"></i>
-      </a>
-
-      <a href="gol-investing.html" class="menu-item">
-        <div class="menu-item-left">
-          <div class="menu-icon"><i class="fa-solid fa-crown"></i></div>
-          <span class="menu-text">Subscription</span>
-        </div>
-        <i class="fa-solid fa-chevron-right chevron"></i>
-      </a>
-
-      <a href="transaction-history.html" class="menu-item">
-        <div class="menu-item-left">
-          <div class="menu-icon"><i class="fa-solid fa-receipt"></i></div>
-          <span class="menu-text">Transaction History</span>
-        </div>
-        <i class="fa-solid fa-chevron-right chevron"></i>
-      </a>
-
-      <!-- Rating Us (Animated Visual) -->
-      <div class="rating-card">
-        <div class="rating-header">
-          <div class="menu-icon"><i class="fa-solid fa-star"></i></div>
-          <span class="menu-text">Rating Us</span>
-        </div>
-        <div class="stars-container" id="stars-group">
-          <i class="fa-solid fa-star" data-rating="1"></i>
-          <i class="fa-solid fa-star" data-rating="2"></i>
-          <i class="fa-solid fa-star" data-rating="3"></i>
-          <i class="fa-solid fa-star" data-rating="4"></i>
-          <i class="fa-solid fa-star" data-rating="5"></i>
-        </div>
-        <div class="rating-feedback" id="rating-feedback"></div>
-      </div>
-    </div>
-
-    <!-- General Menu Group (Visible for all) -->
-    <div class="menu-group">
-      <div class="menu-title">Support & Legal</div>
-
-      <a href="contact-us.html" class="menu-item">
-        <div class="menu-item-left">
-          <div class="menu-icon"><i class="fa-solid fa-headset"></i></div>
-          <span class="menu-text">Contact Us</span>
-        </div>
-        <i class="fa-solid fa-chevron-right chevron"></i>
-      </a>
-
-      <a href="privacy-policy.html" class="menu-item">
-        <div class="menu-item-left">
-          <div class="menu-icon"><i class="fa-solid fa-shield-halved"></i></div>
-          <span class="menu-text">Privacy Policy</span>
-        </div>
-        <i class="fa-solid fa-chevron-right chevron"></i>
-      </a>
-    </div>
-
-    <!-- Auth Actions -->
-    <div id="auth-actions">
-      <!-- Sign In Button (Logged out state) -->
-      <a href="login.html" id="btn-signin" class="btn-action btn-signin hidden">
-        <i class="fa-solid fa-right-to-bracket"></i> Sign In
-      </a>
-
-      <!-- Log Out Button (Logged in state) -->
-      <button id="btn-logout" class="btn-action btn-logout hidden" onclick="handleLogout()">
-        <i class="fa-solid fa-right-from-bracket"></i> Log Out
+      <button class="menu-toggle-btn" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
       </button>
+
+      <!-- Right Corner Hamburger Menu -->
+      <div class="hamburger-dropdown" id="hamburger-menu">
+        <a href="contact-us.html"><i class="fa-solid fa-headset"></i> Contact Us</a>
+        <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
+      </div>
     </div>
 
-    <!-- Bottom Navigation Container -->
+    <!-- User Brief Section -->
+    <div class="profile-header" id="user-profile-header">
+      <div class="profile-avatar">
+        <i class="fa-solid fa-user" id="user-avatar-icon"></i>
+      </div>
+      <div class="profile-info">
+        <h3 id="user-display-name">Checking Auth...</h3>
+        <p id="user-display-email">Please wait a moment</p>
+      </div>
+    </div>
+
+    <!-- Dynamic Settings List -->
+    <div class="settings-list" id="settings-options">
+      <!-- JavaScript populated buttons will appear here -->
+    </div>
+
+    <!-- Bottom Nav Container -->
     <div id="bottom-nav-container"></div>
   </div>
 
-  <!-- Supabase CDN -->
+  <!-- Rating Visual Modal -->
+  <div class="modal-overlay" id="rating-modal">
+    <div class="rating-card">
+      <i class="fa-solid fa-award" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 10px;"></i>
+      <h4>Rate Goldmine Digital</h4>
+      <p>How was your experience using our investment platform?</p>
+      
+      <div class="stars-container">
+        <i class="fa-solid fa-star" onclick="setRating(1)"></i>
+        <i class="fa-solid fa-star" onclick="setRating(2)"></i>
+        <i class="fa-solid fa-star" onclick="setRating(3)"></i>
+        <i class="fa-solid fa-star" onclick="setRating(4)"></i>
+        <i class="fa-solid fa-star" onclick="setRating(5)"></i>
+      </div>
+
+      <div class="modal-btns">
+        <button class="btn-modal btn-cancel" onclick="closeRatingModal()">Cancel</button>
+        <button class="btn-modal btn-submit" onclick="submitRating()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase JS & Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      checkAuthState();
-      setupRatingSystem();
-      loadBottomNav();
+    // Toggle Hamburger Menu
+    function toggleMenu() {
+      const menu = document.getElementById('hamburger-menu');
+      menu.classList.toggle('active');
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('hamburger-menu');
+      const btn = document.querySelector('.menu-toggle-btn');
+      if (menu && !menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('active');
+      }
     });
 
-    // Check Supabase Auth State
-    async function checkAuthState() {
+    // Check Auth Status & Render Options
+    async function initSettings() {
       const client = window._supabase || window.supabase;
+      const settingsContainer = document.getElementById('settings-options');
+      const profileName = document.getElementById('user-display-name');
+      const profileEmail = document.getElementById('user-display-email');
 
-      if (!client) {
-        showLoggedOutUI();
-        return;
+      let user = null;
+      if (client) {
+        const { data } = await client.auth.getUser();
+        user = data?.user || null;
       }
-
-      const { data: { user } } = await client.auth.getUser();
 
       if (user) {
-        // User is Logged In
-        document.getElementById('user-profile').classList.remove('hidden');
-        document.getElementById('logged-in-menu').classList.remove('hidden');
-        document.getElementById('btn-logout').classList.remove('hidden');
+        // Logged IN View
+        profileName.innerText = user.user_metadata?.full_name || "Valued Investor";
+        profileEmail.innerText = user.email;
 
-        document.getElementById('user-email').innerText = user.email || 'N/A';
-        document.getElementById('user-name').innerText = user.user_metadata?.full_name || user.email.split('@')[0];
+        settingsContainer.innerHTML = `
+          <a href="account-info.html" class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-user-gear"></i></div>
+              <span class="setting-title">Account Holder Info</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </a>
+
+          <a href="gol-investing.html" class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-gem"></i></div>
+              <span class="setting-title">Subscription</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </a>
+
+          <a href="transaction-history.html" class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-receipt"></i></div>
+              <span class="setting-title">Transaction History</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </a>
+
+          <div class="setting-item" onclick="openRatingModal()">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-star"></i></div>
+              <span class="setting-title">Rating Us</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+
+          <a href="contact-us.html" class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-headset"></i></div>
+              <span class="setting-title">Contact Us</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </a>
+
+          <a href="privacy-policy.html" class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <span class="setting-title">Privacy Policy</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </a>
+
+          <div class="setting-item logout" onclick="handleLogout()">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
+              <span class="setting-title">Log Out</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+        `;
       } else {
-        // User is Logged Out
-        showLoggedOutUI();
+        // Logged OUT View
+        profileName.innerText = "Guest User";
+        profileEmail.innerText = "Please sign in to manage account";
+
+        settingsContainer.innerHTML = `
+          <a href="contact-us.html" class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-headset"></i></div>
+              <span class="setting-title">Contact Us</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </a>
+
+          <a href="privacy-policy.html" class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <span class="setting-title">Privacy Policy</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </a>
+
+          <a href="login.html" class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon" style="color: var(--green-glow); background: rgba(46, 213, 115, 0.1);">
+                <i class="fa-solid fa-right-to-bracket"></i>
+              </div>
+              <span class="setting-title" style="color: var(--green-glow);">Sign In</span>
+            </div>
+            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
+          </a>
+        `;
       }
-    }
-
-    function showLoggedOutUI() {
-      document.getElementById('user-profile').classList.add('hidden');
-      document.getElementById('logged-in-menu').classList.add('hidden');
-      document.getElementById('btn-logout').classList.add('hidden');
-      document.getElementById('btn-signin').classList.remove('hidden');
-    }
-
-    // Interactive Rating System (Fake Animated Rating)
-    function setupRatingSystem() {
-      const stars = document.querySelectorAll('#stars-group i');
-      const feedback = document.getElementById('rating-feedback');
-
-      stars.forEach((star, index) => {
-        star.addEventListener('click', () => {
-          const rating = index + 1;
-          
-          stars.forEach((s, idx) => {
-            if (idx < rating) {
-              s.classList.add('active');
-            } else {
-              s.classList.remove('active');
-            }
-          });
-
-          if (rating === 5) {
-            feedback.innerText = "Thank you! We appreciate your 5-star rating! ⭐";
-          } else {
-            feedback.innerText = `Thanks for giving us ${rating} star${rating > 1 ? 's' : ''}!`;
-          }
-        });
-      });
     }
 
     // Handle Logout
     async function handleLogout() {
       const client = window._supabase || window.supabase;
-      if (confirm("Are you sure you want to log out?")) {
-        if (client) {
-          await client.auth.signOut();
-        }
-        window.location.href = "login.html";
+      if (client) {
+        await client.auth.signOut();
+        alert("Logged out successfully!");
+        window.location.reload();
       }
     }
 
-    // Load Bottom Navigation
-    function loadBottomNav() {
-      fetch('bottom.html')
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById('bottom-nav-container').innerHTML = html;
-        })
-        .catch(err => console.log('Error loading bottom.html:', err));
+    // Rating Modal Logic
+    let selectedRating = 5;
+
+    function openRatingModal() {
+      document.getElementById('rating-modal').classList.add('active');
+      setRating(5);
     }
+
+    function closeRatingModal() {
+      document.getElementById('rating-modal').classList.remove('active');
+    }
+
+    function setRating(stars) {
+      selectedRating = stars;
+      const allStars = document.querySelectorAll('.stars-container i');
+      allStars.forEach((star, idx) => {
+        if (idx < stars) {
+          star.classList.add('active');
+        } else {
+          star.classList.remove('active');
+        }
+      });
+    }
+
+    function submitRating() {
+      alert(`Thank you for rating us ${selectedRating} stars!`);
+      closeRatingModal();
+    }
+
+    // Load Bottom Nav
+    fetch('bottom.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('bottom-nav-container').innerHTML = html;
+      })
+      .catch(err => console.log('Error loading bottom.html:', err));
+
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', initSettings);
   </script>
 </body>
 </html>
