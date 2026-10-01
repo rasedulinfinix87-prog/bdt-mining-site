@@ -264,6 +264,7 @@
   <script>
     let currentUserId = null;
 
+    // 'wallets' টেবিল থেকে শুধুই ব্যালেন্স আনার ফাংশন
     async function fetchBalanceOnly(client, userId) {
       const { data, error } = await client
         .from('wallets')
@@ -272,22 +273,22 @@
         .single();
 
       if (data) {
-        document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance).toFixed(2);
-      } else if (error) {
-        console.error("Balance fetch error:", error.message);
+        document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance || 0).toFixed(2);
+      } else {
+        document.getElementById('user-balance-display').innerText = '$0.00';
+        if (error) console.log("Balance fetch error:", error.message);
       }
     }
 
     async function loadWalletData() {
-      // supabase-config.js থেকে _supabase ক্লায়েন্ট চেক
       const client = window._supabase || window.supabase;
 
       if (!client) {
-        console.error("Supabase client properly initialized পাওয়া যায়নি!");
+        console.error("Supabase client properly initialized পাওয়া যায়নি!");
         return;
       }
 
-      // ১. লগইন ইউজার ফেচ করা
+      // ১. বর্তমান সেশনের অথেন্টিকেটেড ইউজার নেওয়া
       const { data: { user }, error: userError } = await client.auth.getUser();
 
       if (userError || !user) {
@@ -297,14 +298,23 @@
 
       currentUserId = user.id;
 
-      // ২. ইউজারের নাম সেট
-      const userName = user.user_metadata?.full_name || user.email.split('@')[0];
-      document.getElementById('user-name-display').innerText = userName;
+      // ২. আপনার কাস্টম 'user' টেবিল থেকে ইউজারের full_name লোড করা
+      const { data: userData, error: userDataError } = await client
+        .from('user')
+        .select('full_name')
+        .eq('id', currentUserId)
+        .single();
 
-      // ৩. 'wallets' টেবিল থেকে আসল রিয়েল-টাইম ব্যালেন্স আনা
+      if (userData && userData.full_name) {
+        document.getElementById('user-name-display').innerText = userData.full_name;
+      } else {
+        document.getElementById('user-name-display').innerText = user.email ? user.email.split('@')[0] : "User";
+      }
+
+      // ৩. প্রাথমিক ব্যালেন্স ফেচ করা
       await fetchBalanceOnly(client, currentUserId);
 
-      // ৪. Realtime Listener (wallets টেবিল ট্র্যাকিং)
+      // ৪. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
       client
         .channel('wallet-balance-changes')
         .on(
@@ -323,7 +333,7 @@
         )
         .subscribe();
 
-      // ৫. Realtime Listener (transactions স্ট্যাটাস approved ট্র্যাকিং)
+      // ৫. Realtime Listener: 'transactions' টেবিল আপডেট হয়ে status = 'approved' হলেই ব্যালেন্স রিলোড হবে
       client
         .channel('transactions-status-changes')
         .on(
@@ -336,7 +346,6 @@
           },
           (payload) => {
             if (payload.new && payload.new.status === 'approved') {
-              // স্ট্যাটাস অ্যাপ্রুভ হলেই নতুন ব্যালেন্স রিলোড করবে
               fetchBalanceOnly(client, currentUserId);
             }
           }
@@ -352,7 +361,7 @@
       })
       .catch(err => console.log('Error loading bottom.html:', err));
 
-    // পেজ লোড হলে কল হবে
+    // পেজ লোড সম্পন্ন হলে ফায়ার করবে
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(loadWalletData, 100);
     });
