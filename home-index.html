@@ -481,8 +481,12 @@
             })
             .catch(error => console.log('Using default bottom nav'));
 
-        // 15 Days Dynamic Curves Data
-        const daysLabels = Array.from({length: 15}, (_, i) => `Day ${i + 1}`);
+        // Expanded Trend Data Points for Professional Market Look
+        const goldPoints = [
+            2125, 2132, 2128, 2140, 2135, 2145, 2152, 2148, 2158, 2154, 
+            2165, 2160, 2172, 2168, 2175, 2170, 2178, 2174, 2182, 2184
+        ];
+        const daysLabels = Array.from({length: goldPoints.length}, (_, i) => `Point ${i + 1}`);
 
         // Gold Chart Implementation
         const goldCtx = document.getElementById('goldChart').getContext('2d');
@@ -495,12 +499,12 @@
             data: {
                 labels: daysLabels,
                 datasets: [{
-                    data: [2140, 2145, 2138, 2150, 2158, 2152, 2165, 2160, 2172, 2168, 2175, 2170, 2178, 2181, 2184],
+                    data: goldPoints,
                     borderColor: '#f5cf66',
-                    borderWidth: 2.5,
+                    borderWidth: 2,
                     fill: true,
                     backgroundColor: goldGradient,
-                    tension: 0.45,
+                    tension: 0.3,
                     pointRadius: 0
                 }]
             },
@@ -513,6 +517,10 @@
         });
 
         // Crypto Chart Implementation
+        const cryptoPoints = [
+            61500, 61800, 61650, 62200, 62000, 62500, 62300, 63000, 62800, 63400, 
+            63200, 63900, 63700, 64200, 64000, 64600, 64400, 65000, 64800, 65432
+        ];
         const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
         const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
         cryptoGradient.addColorStop(0, 'rgba(46, 213, 115, 0.35)');
@@ -523,12 +531,12 @@
             data: {
                 labels: daysLabels,
                 datasets: [{
-                    data: [62000, 62400, 62100, 63000, 62800, 63500, 63200, 64000, 64500, 64200, 64800, 65000, 64900, 65200, 65432],
+                    data: cryptoPoints,
                     borderColor: '#2ed573',
                     borderWidth: 2,
                     fill: true,
                     backgroundColor: cryptoGradient,
-                    tension: 0.45,
+                    tension: 0.3,
                     pointRadius: 0
                 }]
             },
