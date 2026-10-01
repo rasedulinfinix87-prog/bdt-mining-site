@@ -6,7 +6,6 @@
   <title>Goldmine Digital - Wallet Gateway</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Global Styles & Variables */
     :root {
       --bg-dark: #040d08;
       --card-bg: rgba(14, 34, 25, 0.85);
@@ -34,17 +33,15 @@
       min-height: 100vh;
     }
 
-    /* Mobile Container Wrapper */
     .mobile-container {
       width: 100%;
       max-width: 480px;
       background-color: var(--bg-dark);
-      padding-bottom: 70px; /* Space for fixed bottom menu */
+      padding-bottom: 70px;
       position: relative;
       min-height: 100vh;
     }
 
-    /* Top Bar */
     .top-bar {
       display: flex;
       align-items: center;
@@ -78,7 +75,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Bank Card Container */
     .card-section {
       padding: 15px 20px;
     }
@@ -97,7 +93,6 @@
       min-height: 180px;
     }
 
-    /* Decorative Card Elements */
     .bank-card::before {
       content: '';
       position: absolute;
@@ -166,18 +161,41 @@
       text-shadow: 0 0 10px rgba(245, 197, 24, 0.3);
     }
 
-    /* Placeholder for Page Content */
-    .content-area {
-      padding: 10px 20px;
+    /* Action Buttons (Deposit & Withdraw) */
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      padding: 10px 20px 20px 20px;
     }
 
-    .section-title {
-      font-size: 1rem;
-      margin-bottom: 15px;
-      color: var(--text-muted);
+    .btn-action {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
     }
 
-    /* Bottom Navigation Placeholder/Container */
+    .btn-deposit {
+      background: var(--gold-gradient);
+      color: #000000;
+      box-shadow: 0 4px 15px rgba(245, 197, 24, 0.25);
+    }
+
+    .btn-withdraw {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
     #bottom-nav-container {
       position: fixed;
       bottom: 0;
@@ -204,7 +222,6 @@
     <!-- Bank Card Section -->
     <div class="card-section">
       <div class="bank-card">
-        <!-- Card Top: User Name -->
         <div class="card-top">
           <div class="user-info">
             <div class="label">Account Holder</div>
@@ -213,7 +230,6 @@
           <div class="card-chip"></div>
         </div>
 
-        <!-- Card Bottom: Real-Time Balance -->
         <div class="card-bottom">
           <div class="balance-label">
             <span class="live-dot"></span> Real Time Balance
@@ -223,48 +239,51 @@
       </div>
     </div>
 
-    <!-- Payment Gateways Content Section -->
-    <div class="content-area">
-      <div class="section-title">Select Payment Gateway</div>
-      <!-- গেটওয়ে মেথডগুলো এখানে থাকবে -->
+    <!-- Quick Action Buttons -->
+    <div class="action-buttons">
+      <a href="deposit.html" class="btn-action btn-deposit">
+        <i class="fa-solid fa-arrow-down-left"></i> Deposit
+      </a>
+      <a href="withdraw.html" class="btn-action btn-withdraw">
+        <i class="fa-solid fa-arrow-up-right"></i> Withdraw
+      </a>
     </div>
 
     <!-- Container where bottom.html will be loaded -->
     <div id="bottom-nav-container"></div>
   </div>
 
-  <!-- 1. Supabase CDN Library -->
+  <!-- 1. Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- 2. Your Supabase Config File -->
+  <!-- 2. Supabase Configuration File -->
   <script src="supabase-config.js"></script>
 
-  <!-- 3. Logic Execution Script -->
+  <!-- 3. Logic Script -->
   <script>
-    // supabase-config.js ফাইল থেকে supabase বা client ইনস্ট্যান্স নিবে
-    const supabaseClient = window.supabaseClient || window.supabase;
-
     async function loadWalletData() {
-      if (!supabaseClient) {
-        console.error("Supabase client is not initialized in supabase-config.js");
+      // supabase-config.js থেকে _supabase ক্লায়েন্ট চেক
+      const client = window._supabase || window.supabase;
+
+      if (!client) {
+        console.error("Supabase client properly initialized পাওয়া যায়নি!");
         return;
       }
 
-      // 1. Get Logged in User
-      const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+      // ১. লগইন ইউজার ফেচ করা
+      const { data: { user }, error: userError } = await client.auth.getUser();
 
       if (userError || !user) {
-        console.warn("User not logged in or error:", userError);
-        document.getElementById('user-name-display').innerText = "Guest User";
+        document.getElementById('user-name-display').innerText = "Guest";
         return;
       }
 
-      // 2. Display User Name (Metadata or Email Prefix)
+      // ২. ইউজারের নাম সেট
       const userName = user.user_metadata?.full_name || user.email.split('@')[0];
       document.getElementById('user-name-display').innerText = userName;
 
-      // 3. Fetch Balance from 'wallets' table
-      const { data, error } = await supabaseClient
+      // ৩. 'wallets' টেবিল থেকে আসল রিয়েল-টাইম ব্যালেন্স আনা
+      const { data, error } = await client
         .from('wallets')
         .select('balance')
         .eq('user_id', user.id)
@@ -273,20 +292,23 @@
       if (data) {
         document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance).toFixed(2);
       } else if (error) {
-        console.error("Error fetching balance:", error.message);
+        console.error("Balance fetch error:", error.message);
       }
     }
 
-    // Include bottom.html file dynamically
+    // bottom.html লোড করা
     fetch('bottom.html')
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('bottom-nav-container').innerHTML = data;
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('bottom-nav-container').innerHTML = html;
       })
       .catch(err => console.log('Error loading bottom.html:', err));
 
-    // Page Load Action
-    window.addEventListener('DOMContentLoaded', loadWalletData);
+    // পেজ লোড হলে কল হবে
+    window.addEventListener('DOMContentLoaded', () => {
+      // Supabase Init হওয়ার জন্য সামান্য ৫-১০ মিলিসেকেন্ড ডিলে দেওয়া ভালো
+      setTimeout(loadWalletData, 100);
+    });
   </script>
 </body>
 </html>
