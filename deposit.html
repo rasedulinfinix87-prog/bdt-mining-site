@@ -2,84 +2,438 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Deposit - Goldmine Digital</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --bg-dark: #040d08;
-      --card-bg: #0e2219;
-      --gold-primary: #f5c518;
-      --gold-gradient: linear-gradient(135deg, #f5c518 0%, #a67c1e 100%);
+      --bg-dark: #061913;
+      --topbar-bg: rgba(6, 25, 19, 0.85);
+      --card-bg: rgba(12, 38, 29, 0.85);
+      --card-border: rgba(245, 207, 102, 0.25);
+      --gold-primary: #f5cf66;
+      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --card-gradient: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
       --text-main: #ffffff;
-      --text-muted: #8ca398;
+      --text-muted: #8da499;
+      --green-glow: #2ed573;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    html, body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
     .mobile-container {
-      width: 100%; max-width: 480px; padding: 20px; padding-bottom: 80px; min-height: 100vh;
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-dark);
+      padding-bottom: 90px;
+      position: relative;
+      min-height: 100vh;
     }
 
-    .top-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-    .top-bar a { color: #fff; text-decoration: none; font-size: 1.2rem; }
-
-    .form-group { margin-bottom: 18px; }
-    .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
-    .form-control {
-      width: 100%; padding: 14px; border-radius: 10px; background: var(--card-bg);
-      border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-size: 1rem; outline: none;
+    /* Top Bar - Same as Wallet Gateway */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--card-border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
-    .form-control:focus { border-color: var(--gold-primary); }
 
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .top-bar .back-btn {
+      color: var(--gold-primary);
+      font-size: 1.1rem;
+      text-decoration: none;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(245, 207, 102, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(245, 207, 102, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .top-bar .back-btn:hover {
+      background: rgba(245, 207, 102, 0.2);
+    }
+
+    .top-bar h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+
+    .content-section {
+      padding: 20px;
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    /* Gateway Method Selector Grid (3 Cards) */
+    .gateway-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .gateway-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 15px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .gateway-card i {
+      font-size: 1.6rem;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .gateway-card span {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Active Gateway Card Style */
+    .gateway-card.active {
+      background: var(--card-gradient);
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 15px rgba(245, 207, 102, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .gateway-card.active i, .gateway-card.active span {
+      color: var(--gold-primary);
+    }
+
+    /* Admin Info / Dynamic Address Display Card */
+    .admin-info-card {
+      background: var(--card-gradient);
+      border: 1px dashed var(--gold-primary);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .admin-info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-info-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      background: rgba(245, 207, 102, 0.15);
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-primary);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .admin-address-text {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      word-break: break-all;
+    }
+
+    .admin-instruction {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Form Inputs in Card Styles */
+    .input-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .input-card:focus-within {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 10px rgba(245, 207, 102, 0.15);
+    }
+
+    .input-card label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .input-field::placeholder {
+      color: rgba(141, 164, 153, 0.5);
+      font-weight: 400;
+    }
+
+    /* Submit Button */
     .btn-submit {
-      width: 100%; padding: 15px; border-radius: 10px; border: none;
-      background: var(--gold-gradient); color: #000; font-weight: bold; font-size: 1rem;
-      cursor: pointer; margin-top: 10px;
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      border: none;
+      background: var(--gold-gradient);
+      color: #030d0a;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(245, 207, 102, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #bottom-nav-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      z-index: 1000;
     }
   </style>
 </head>
 <body>
 
   <div class="mobile-container">
+    <!-- Top Bar -->
     <div class="top-bar">
-      <a href="wallet-getway-method.html"><i class="fa-solid fa-chevron-left"></i></a>
-      <h2>Deposit Money</h2>
+      <div class="title-group">
+        <a href="wallet-getway-method.html" class="back-btn">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <h2>Deposit Money</h2>
+      </div>
+      <i class="fa-solid fa-shield-halved" style="color: var(--gold-primary); font-size: 1.1rem;"></i>
     </div>
 
-    <form id="deposit-form">
-      <div class="form-group">
-        <label>Payment Method</label>
-        <select class="form-control" id="method" required>
-          <option value="bKash">bKash Personal</option>
-          <option value="Nagad">Nagad Personal</option>
-          <option value="USDT">USDT (TRC20)</option>
-        </select>
+    <div class="content-section">
+      <!-- Payment Gateway Method Cards (3 items) -->
+      <div class="section-title">Select Payment Gateway</div>
+      <div class="gateway-grid">
+        <div class="gateway-card active" data-method="bkash" onclick="selectGateway('bkash')">
+          <i class="fa-solid fa-mobile-screen-button"></i>
+          <span>bKash</span>
+        </div>
+        <div class="gateway-card" data-method="usdt" onclick="selectGateway('usdt')">
+          <i class="fa-solid fa-coins"></i>
+          <span>USDT</span>
+        </div>
+        <div class="gateway-card" data-method="bank" onclick="selectGateway('bank')">
+          <i class="fa-solid fa-building-columns"></i>
+          <span>Bank</span>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>Amount ($)</label>
-        <input type="number" class="form-control" id="amount" placeholder="Enter Amount" required min="1">
+      <!-- Supabase Dynamic Deposit Address Card -->
+      <div class="admin-info-card" id="admin-info-box">
+        <div class="admin-info-header">
+          <span class="admin-info-title" id="gateway-title-display">Deposit Info</span>
+          <button type="button" class="copy-btn" onclick="copyAddress()">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+        </div>
+        <div class="admin-address-text" id="admin-address-display">Loading...</div>
+        <div class="admin-instruction" id="admin-instruction-display">Please send payment to the address above.</div>
       </div>
 
-      <div class="form-group">
-        <label>Your Account / Sender Number</label>
-        <input type="text" class="form-control" id="account_number" placeholder="017xxxxxxxx / Wallet address" required>
-      </div>
+      <!-- Deposit Form -->
+      <form id="deposit-form">
+        <div class="input-card">
+          <label for="amount">Deposit Amount ($)</label>
+          <input type="number" id="amount" class="input-field" placeholder="0.00" min="1" step="any" required>
+        </div>
 
-      <div class="form-group">
-        <label>Transaction ID (TrxID)</label>
-        <input type="text" class="form-control" id="trx_id" placeholder="Transaction ID" required>
-      </div>
+        <div class="input-card">
+          <label for="account_number" id="sender-label">Your Sender Number / Wallet</label>
+          <input type="text" id="account_number" class="input-field" placeholder="Enter your number or wallet address" required>
+        </div>
 
-      <button type="submit" class="btn-submit" id="btn-submit">Submit Deposit Request</button>
-    </form>
+        <div class="input-card">
+          <label for="trx_id">Transaction ID (TrxID)</label>
+          <input type="text" id="trx_id" class="input-field" placeholder="Enter transaction reference ID" required>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-submit">
+          Confirm & Submit Request
+        </button>
+      </form>
+    </div>
+
+    <!-- Container for bottom.html navigation -->
+    <div id="bottom-nav-container"></div>
   </div>
 
+  <!-- Supabase CDN and Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+
   <script>
+    let selectedMethodKey = 'bkash';
+    let gatewayDataList = {};
+
+    // Load gateways from Supabase
+    async function loadGatewaysFromSupabase() {
+      const client = window._supabase || window.supabase;
+      if (!client) return;
+
+      const { data, error } = await client
+        .from('payment_gateways')
+        .select('*')
+        .eq('is_active', true);
+
+      if (data && data.length > 0) {
+        data.forEach(item => {
+          gatewayDataList[item.method_key.toLowerCase()] = item;
+        });
+      } else {
+        // Fallback default values if database table is empty
+        gatewayDataList = {
+          bkash: { title: 'bKash Personal', admin_address: '01712345678', instruction: 'Send Money to this bKash Personal Number.' },
+          usdt: { title: 'USDT (TRC20)', admin_address: 'TXy9Z8aK2mLpQ3R4sT5uV6wX7yZ8aK2mLp', instruction: 'Send USDT via TRC20 network only.' },
+          bank: { title: 'Bank Transfer', admin_address: 'Bank: City Bank | A/C: 1234567890', instruction: 'Deposit cash or bank transfer to this account.' }
+        };
+      }
+
+      // Update UI with current active gateway
+      updateGatewayDisplay();
+    }
+
+    // Switch active gateway card
+    function selectGateway(methodKey) {
+      selectedMethodKey = methodKey;
+
+      // Update card UI active state
+      document.querySelectorAll('.gateway-card').forEach(card => {
+        if (card.dataset.method === methodKey) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+
+      updateGatewayDisplay();
+    }
+
+    // Update Admin Address Card & Input Placeholders
+    function updateGatewayDisplay() {
+      const currentGateway = gatewayDataList[selectedMethodKey] || {
+        title: selectedMethodKey.toUpperCase(),
+        admin_address: 'Not available',
+        instruction: 'Contact support for payment details.'
+      };
+
+      document.getElementById('gateway-title-display').innerText = currentGateway.title || 'Deposit Info';
+      document.getElementById('admin-address-display').innerText = currentGateway.admin_address;
+      document.getElementById('admin-instruction-display').innerText = currentGateway.instruction || '';
+
+      // Update input labels dynamically based on gateway
+      const senderLabel = document.getElementById('sender-label');
+      const senderInput = document.getElementById('account_number');
+
+      if (selectedMethodKey === 'bkash') {
+        senderLabel.innerText = 'Your bKash Number';
+        senderInput.placeholder = 'e.g. 01700000000';
+      } else if (selectedMethodKey === 'usdt') {
+        senderLabel.innerText = 'Your USDT Sender Address';
+        senderInput.placeholder = 'e.g. T... (TRC20 Address)';
+      } else {
+        senderLabel.innerText = 'Sender Account Title / No';
+        senderInput.placeholder = 'e.g. Account Name / Number';
+      }
+    }
+
+    // Copy Address Button Functionality
+    function copyAddress() {
+      const address = document.getElementById('admin-address-display').innerText;
+      if (address && address !== 'Loading...') {
+        navigator.clipboard.writeText(address).then(() => {
+          alert('Address copied to clipboard!');
+        }).catch(err => {
+          console.error('Copy failed', err);
+        });
+      }
+    }
+
+    // Handle Form Submit
     document.getElementById('deposit-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const client = window._supabase || window.supabase;
@@ -92,14 +446,19 @@
 
       if (!user) {
         alert("Please login first!");
+        submitBtn.innerText = "Confirm & Submit Request";
+        submitBtn.disabled = false;
         return;
       }
+
+      const currentGateway = gatewayDataList[selectedMethodKey];
+      const methodName = currentGateway ? currentGateway.title : selectedMethodKey.toUpperCase();
 
       const payload = {
         user_id: user.id,
         type: 'deposit',
         amount: parseFloat(document.getElementById('amount').value),
-        method: document.getElementById('method').value,
+        method: methodName,
         account_number: document.getElementById('account_number').value,
         trx_id: document.getElementById('trx_id').value,
         status: 'pending'
@@ -114,8 +473,21 @@
         window.location.href = "wallet-getway-method.html";
       }
 
-      submitBtn.innerText = "Submit Deposit Request";
+      submitBtn.innerText = "Confirm & Submit Request";
       submitBtn.disabled = false;
+    });
+
+    // Load bottom navigation bar if available
+    fetch('bottom.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('bottom-nav-container').innerHTML = html;
+      })
+      .catch(err => console.log('Error loading bottom.html:', err));
+
+    // Page Load Initializer
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(loadGatewaysFromSupabase, 100);
     });
   </script>
 </body>
