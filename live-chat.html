@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Live Chat Support - Goldmine Digital</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --bg-dark: #061913;
-      --topbar-bg: #030d0a;
+      --topbar-bg: rgba(6, 25, 19, 0.92);
       --card-bg: rgba(12, 38, 29, 0.85);
-      --card-border: rgba(245, 207, 102, 0.2);
+      --card-border: rgba(245, 207, 102, 0.25);
       --gold-primary: #f5cf66;
+      --gold-bright: #ffe699;
       --green-glow: #2ed573;
-      --telegram-blue: #0088cc;
       --text-main: #ffffff;
       --text-muted: #8da499;
     }
@@ -23,116 +23,172 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
     }
 
     body {
-      background-color: var(--bg-dark);
       background-image: 
-        radial-gradient(circle at 10% 20%, rgba(245, 207, 102, 0.05) 0%, transparent 20%),
-        radial-gradient(circle at 90% 80%, rgba(46, 213, 115, 0.03) 0%, transparent 20%);
+        radial-gradient(circle at 50% 10%, rgba(245, 207, 102, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(46, 213, 115, 0.04) 0%, transparent 30%);
       color: var(--text-main);
       display: flex;
       justify-content: center;
-      min-height: 100vh;
+      align-items: center;
     }
 
     .mobile-container {
       width: 100%;
       max-width: 480px;
+      height: 100vh;
       background-color: var(--bg-dark);
-      padding-bottom: 90px;
       position: relative;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
-    /* Top Bar */
+    /* Top Bar - Color Updated */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 20px;
+      padding: 16px 20px;
       background: var(--topbar-bg);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--card-border);
     }
 
     .top-bar .title-group {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .top-bar .back-btn {
-      color: var(--text-main);
+      color: var(--gold-primary);
       font-size: 1.1rem;
       text-decoration: none;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .top-bar h2 {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 600;
       color: var(--text-main);
+      letter-spacing: 0.3px;
+    }
+
+    /* Main Content Area */
+    .chat-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 20px 85px 20px;
+      overflow-y: auto;
     }
 
     /* Hero Section */
     .chat-hero {
       text-align: center;
-      padding: 40px 20px 20px 20px;
+      margin-top: 10px;
     }
 
+    /* Golden Radiant Animated Icon Wrapper */
     .chat-icon-wrapper {
-      width: 90px;
-      height: 90px;
+      width: 100px;
+      height: 100px;
       margin: 0 auto 20px;
-      background: rgba(0, 136, 204, 0.15);
-      border: 2px solid var(--telegram-blue);
+      background: linear-gradient(135deg, rgba(245, 207, 102, 0.2) 0%, rgba(12, 38, 29, 0.9) 100%);
+      border: 2px solid var(--gold-primary);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--telegram-blue);
+      color: var(--gold-primary);
       font-size: 2.8rem;
-      box-shadow: 0 0 25px rgba(0, 136, 204, 0.3);
-      animation: pulseGlow 2s infinite alternate;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(245, 207, 102, 0.25);
+      animation: goldPulse 2.5s infinite alternate ease-in-out;
     }
 
-    @keyframes pulseGlow {
-      from { box-shadow: 0 0 15px rgba(0, 136, 204, 0.2); }
-      to { box-shadow: 0 0 30px rgba(0, 136, 204, 0.6); }
+    /* Shimmering Golden Light Sweep Animation */
+    .chat-icon-wrapper::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 230, 153, 0.6) 50%,
+        transparent 70%
+      );
+      transform: rotate(30deg);
+      animation: goldShimmer 3s infinite;
+    }
+
+    @keyframes goldShimmer {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+
+    @keyframes goldPulse {
+      0% {
+        box-shadow: 0 0 15px rgba(245, 207, 102, 0.2), inset 0 0 10px rgba(245, 207, 102, 0.1);
+        border-color: var(--gold-primary);
+      }
+      100% {
+        box-shadow: 0 0 35px rgba(245, 207, 102, 0.5), inset 0 0 20px rgba(245, 207, 102, 0.3);
+        border-color: var(--gold-bright);
+      }
     }
 
     .chat-hero h3 {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       color: var(--text-main);
       margin-bottom: 8px;
+      font-weight: 600;
     }
 
     .chat-hero p {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
-      line-height: 1.5;
+      line-height: 1.45;
+      padding: 0 10px;
     }
 
     /* Info Card */
     .info-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      margin: 20px;
-      padding: 20px;
+      padding: 18px;
       border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      margin: 15px 0;
     }
 
     .info-item {
       display: flex;
       align-items: center;
-      gap: 15px;
-      margin-bottom: 15px;
+      gap: 14px;
+      margin-bottom: 14px;
     }
 
     .info-item:last-child {
@@ -140,53 +196,57 @@
     }
 
     .info-icon {
-      width: 40px;
-      height: 40px;
-      background: rgba(245, 207, 102, 0.1);
-      border-radius: 10px;
+      width: 42px;
+      height: 42px;
+      background: rgba(245, 207, 102, 0.12);
+      border: 1px solid rgba(245, 207, 102, 0.2);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--gold-primary);
-      font-size: 1.1rem;
+      font-size: 1.15rem;
+      flex-shrink: 0;
     }
 
     .info-text h4 {
       font-size: 0.95rem;
       color: var(--text-main);
+      font-weight: 600;
     }
 
     .info-text p {
       font-size: 0.8rem;
       color: var(--text-muted);
+      margin-top: 2px;
     }
 
-    /* Action Area */
-    .action-container {
-      padding: 10px 20px;
-      margin-top: auto;
-    }
-
+    /* Gold Live Chat Action Button */
     .btn-live-chat {
       width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #0088cc 0%, #005580 100%);
+      padding: 15px;
+      background: linear-gradient(135deg, #f5cf66 0%, #b8860b 100%);
       border: none;
       border-radius: 14px;
-      color: #ffffff;
-      font-size: 1rem;
-      font-weight: 600;
+      color: #030d0a;
+      font-size: 1.05rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0, 136, 204, 0.3);
-      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(245, 207, 102, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-live-chat i {
+      font-size: 1.25rem;
     }
 
     .btn-live-chat:active {
       transform: scale(0.98);
+      box-shadow: 0 2px 10px rgba(245, 207, 102, 0.2);
     }
 
     /* Popup Modal Animation */
@@ -196,7 +256,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(3, 13, 10, 0.85);
       backdrop-filter: blur(8px);
       display: none;
       align-items: center;
@@ -210,34 +270,34 @@
     }
 
     .waiting-popup {
-      background: var(--topbar-bg);
+      background: var(--bg-dark);
       border: 1px solid var(--gold-primary);
       width: 100%;
       max-width: 360px;
       border-radius: 20px;
-      padding: 30px 24px;
+      padding: 28px 22px;
       text-align: center;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-      animation: popupAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative;
+      animation: popupAnim 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     @keyframes popupAnim {
-      from { transform: scale(0.7); opacity: 0; }
+      from { transform: scale(0.8); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
 
     .animated-agent-icon {
-      width: 70px;
-      height: 70px;
-      margin: 0 auto 20px;
-      background: rgba(245, 207, 102, 0.1);
+      width: 65px;
+      height: 65px;
+      margin: 0 auto 18px;
+      background: rgba(245, 207, 102, 0.12);
+      border: 1px solid var(--gold-primary);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--gold-primary);
-      font-size: 2rem;
+      font-size: 1.8rem;
       position: relative;
     }
 
@@ -259,31 +319,31 @@
 
     .waiting-popup h4 {
       color: var(--gold-primary);
-      font-size: 1.2rem;
-      margin-bottom: 10px;
+      font-size: 1.15rem;
+      margin-bottom: 8px;
     }
 
     .waiting-popup p {
       color: var(--text-muted);
-      font-size: 0.88rem;
-      line-height: 1.5;
-      margin-bottom: 22px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      margin-bottom: 20px;
     }
 
     .btn-close-modal {
       width: 100%;
       padding: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(245, 207, 102, 0.12);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
-      color: var(--text-main);
+      color: var(--gold-primary);
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
     }
 
     .btn-close-modal:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(245, 207, 102, 0.2);
     }
 
     #bottom-nav-container {
@@ -291,7 +351,7 @@
       bottom: 0;
       width: 100%;
       max-width: 480px;
-      z-index: 1000;
+      z-index: 999;
     }
   </style>
 </head>
@@ -308,44 +368,47 @@
       </div>
     </div>
 
-    <!-- Hero Header -->
-    <div class="chat-hero">
-      <div class="chat-icon-wrapper">
-        <i class="fa-paper-plane fa-telegram"></i>
-      </div>
-      <h3>24/7 Live Assistance</h3>
-      <p>Connect directly with our customer support team for instant help and queries.</p>
-    </div>
-
-    <!-- Support Details -->
-    <div class="info-card">
-      <div class="info-item">
-        <div class="info-icon">
-          <i class="fa-solid fa-bolt"></i>
+    <!-- Main Content Container -->
+    <div class="chat-content">
+      <!-- Hero Header -->
+      <div class="chat-hero">
+        <div class="chat-icon-wrapper">
+          <i class="fa-paper-plane fa-telegram" style="position: relative; z-index: 2;"></i>
         </div>
-        <div class="info-text">
-          <h4>Fast Response</h4>
-          <p>Average response time is under 5 minutes.</p>
-        </div>
+        <h3>24/7 Live Assistance</h3>
+        <p>Connect directly with our customer support team for instant help and queries.</p>
       </div>
 
-      <div class="info-item">
-        <div class="info-icon">
-          <i class="fa-solid fa-shield-halved"></i>
+      <!-- Support Details -->
+      <div class="info-card">
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div class="info-text">
+            <h4>Fast Response</h4>
+            <p>Average response time is under 5 minutes.</p>
+          </div>
         </div>
-        <div class="info-text">
-          <h4>End-to-End Encryption</h4>
-          <p>Your conversations are secure and private.</p>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div class="info-text">
+            <h4>End-to-End Encryption</h4>
+            <p>Your conversations are secure and private.</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Action Button -->
-    <div class="action-container">
-      <button class="btn-live-chat" onclick="handleLiveChatClick()">
-        <i class="fa-paper-plane fa-telegram" style="font-size: 1.2rem;"></i>
-        <span>Start Live Chat</span>
-      </button>
+      <!-- Action Button -->
+      <div class="action-container">
+        <button class="btn-live-chat" onclick="handleLiveChatClick()">
+          <i class="fa-paper-plane fa-telegram"></i>
+          <span>Start Live Chat</span>
+        </button>
+      </div>
     </div>
 
     <!-- Bottom Navigation -->
@@ -395,7 +458,6 @@
       if (!client) return;
 
       try {
-        // 'settings' টেবিলের 'telegram_number' বা 'telegram' কলাম থেকে ডাটা রিড করা হবে
         const { data, error } = await client
           .from('settings')
           .select('value')
@@ -413,20 +475,17 @@
     // Handle Live Chat Button Click
     function handleLiveChatClick() {
       if (telegramTarget) {
-        // If Telegram Username or Number exists in Supabase
         let url = "";
         if (telegramTarget.startsWith("http://") || telegramTarget.startsWith("https://")) {
           url = telegramTarget;
         } else if (telegramTarget.startsWith("+") || !isNaN(telegramTarget)) {
           url = `https://t.me/${telegramTarget}`;
         } else {
-          // If username without @ or with @
           const cleanUsername = telegramTarget.replace('@', '');
           url = `https://t.me/${cleanUsername}`;
         }
         window.open(url, '_blank');
       } else {
-        // If Telegram Target is null or empty, show waiting popup
         document.getElementById('waiting-modal').classList.add('active');
       }
     }
