@@ -397,9 +397,11 @@
     </div>
   </div>
 
-  <!-- Supabase JS & Config -->
+  <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
+  
+  <!-- Supabase Config Script -->
+  <script src="./supabase-config.js"></script>
 
   <script>
     // Toggle Hamburger Menu
@@ -417,22 +419,49 @@
       }
     });
 
+    // Safe Supabase Instance Retrieval Helper
+    async function getSupabaseInstance() {
+      let attempts = 0;
+      // Wait until _supabase is ready or timeout after 2 seconds
+      while ((!window._supabase && !window.supabase) && attempts < 20) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+
+      if (window._supabase) {
+        return window._supabase;
+      }
+      
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
+        return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+      
+      return null;
+    }
+
     // Check Auth Status & Render Options
     async function initSettings() {
-      const client = window._supabase || window.supabase;
       const settingsContainer = document.getElementById('settings-options');
       const profileName = document.getElementById('user-display-name');
       const profileEmail = document.getElementById('user-display-email');
 
+      const client = await getSupabaseInstance();
+
       let user = null;
       if (client) {
-        const { data } = await client.auth.getUser();
-        user = data?.user || null;
+        try {
+          const { data } = await client.auth.getUser();
+          user = data?.user || null;
+        } catch (err) {
+          console.error("Auth check error:", err);
+        }
       }
 
       if (user) {
         // Logged IN View
-        profileName.innerText = user.user_metadata?.full_name || "Valued Investor";
+        profileName.innerText = user.user_metadata?.full_name || user.email.split('@')[0] || "Valued Investor";
         profileEmail.innerText = user.email;
 
         settingsContainer.innerHTML = `
@@ -529,7 +558,7 @@
 
     // Handle Logout
     async function handleLogout() {
-      const client = window._supabase || window.supabase;
+      const client = await getSupabaseInstance();
       if (client) {
         await client.auth.signOut();
         alert("Logged out successfully!");
