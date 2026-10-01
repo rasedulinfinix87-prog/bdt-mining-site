@@ -8,7 +8,7 @@
   <style>
     :root {
       --bg-dark: #061913;
-      --topbar-bg: rgba(6, 25, 19, 0.92);
+      --topbar-bg: rgba(6, 25, 19, 0.95);
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.25);
       --gold-primary: #f5cf66;
@@ -54,7 +54,7 @@
       overflow: hidden;
     }
 
-    /* Top Bar - Color Updated */
+    /* Top Bar */
     .top-bar {
       display: flex;
       align-items: center;
@@ -62,10 +62,10 @@
       padding: 16px 20px;
       background: var(--topbar-bg);
       backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
+      position: relative;
       z-index: 100;
       border-bottom: 1px solid var(--card-border);
+      flex-shrink: 0;
     }
 
     .top-bar .title-group {
@@ -96,82 +96,9 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 20px 20px 85px 20px;
+      padding: 15px 20px 80px 20px;
       overflow-y: auto;
-    }
-
-    /* Hero Section */
-    .chat-hero {
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    /* Golden Radiant Animated Icon Wrapper */
-    .chat-icon-wrapper {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 20px;
-      background: linear-gradient(135deg, rgba(245, 207, 102, 0.2) 0%, rgba(12, 38, 29, 0.9) 100%);
-      border: 2px solid var(--gold-primary);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gold-primary);
-      font-size: 2.8rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 25px rgba(245, 207, 102, 0.25);
-      animation: goldPulse 2.5s infinite alternate ease-in-out;
-    }
-
-    /* Shimmering Golden Light Sweep Animation */
-    .chat-icon-wrapper::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(
-        45deg,
-        transparent 30%,
-        rgba(255, 230, 153, 0.6) 50%,
-        transparent 70%
-      );
-      transform: rotate(30deg);
-      animation: goldShimmer 3s infinite;
-    }
-
-    @keyframes goldShimmer {
-      0% { transform: translateX(-100%) rotate(30deg); }
-      100% { transform: translateX(100%) rotate(30deg); }
-    }
-
-    @keyframes goldPulse {
-      0% {
-        box-shadow: 0 0 15px rgba(245, 207, 102, 0.2), inset 0 0 10px rgba(245, 207, 102, 0.1);
-        border-color: var(--gold-primary);
-      }
-      100% {
-        box-shadow: 0 0 35px rgba(245, 207, 102, 0.5), inset 0 0 20px rgba(245, 207, 102, 0.3);
-        border-color: var(--gold-bright);
-      }
-    }
-
-    .chat-hero h3 {
-      font-size: 1.35rem;
-      color: var(--text-main);
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .chat-hero p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.45;
-      padding: 0 10px;
+      gap: 15px;
     }
 
     /* Info Card */
@@ -181,7 +108,7 @@
       padding: 18px;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      margin: 15px 0;
+      margin-top: 5px;
     }
 
     .info-item {
@@ -221,7 +148,12 @@
       margin-top: 2px;
     }
 
-    /* Gold Live Chat Action Button */
+    /* Action Container */
+    .action-container {
+      margin-top: 5px;
+    }
+
+    /* Gold Live Chat Action Button with Vector Icon */
     .btn-live-chat {
       width: 100%;
       padding: 15px;
@@ -241,7 +173,7 @@
     }
 
     .btn-live-chat i {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
     }
 
     .btn-live-chat:active {
@@ -301,7 +233,6 @@
       position: relative;
     }
 
-    /* Radar Ping Animation */
     .animated-agent-icon::after {
       content: '';
       position: absolute;
@@ -370,16 +301,7 @@
 
     <!-- Main Content Container -->
     <div class="chat-content">
-      <!-- Hero Header -->
-      <div class="chat-hero">
-        <div class="chat-icon-wrapper">
-          <i class="fa-paper-plane fa-telegram" style="position: relative; z-index: 2;"></i>
-        </div>
-        <h3>24/7 Live Assistance</h3>
-        <p>Connect directly with our customer support team for instant help and queries.</p>
-      </div>
-
-      <!-- Support Details -->
+      <!-- Support Details Card -->
       <div class="info-card">
         <div class="info-item">
           <div class="info-icon">
@@ -405,7 +327,7 @@
       <!-- Action Button -->
       <div class="action-container">
         <button class="btn-live-chat" onclick="handleLiveChatClick()">
-          <i class="fa-paper-plane fa-telegram"></i>
+          <i class="fa-solid fa-comments"></i>
           <span>Start Live Chat</span>
         </button>
       </div>
@@ -433,9 +355,8 @@
   <script src="./supabase-config.js"></script>
 
   <script>
-    let telegramTarget = null; // Stores Telegram username or phone number
+    let telegramTarget = null;
 
-    // Helper to initialize Supabase
     async function getSupabaseInstance() {
       let attempts = 0;
       while ((!window._supabase && !window.supabase) && attempts < 20) {
@@ -452,7 +373,6 @@
       return null;
     }
 
-    // Fetch Telegram Number/Username from Supabase
     async function fetchTelegramConfig() {
       const client = await getSupabaseInstance();
       if (!client) return;
@@ -472,7 +392,6 @@
       }
     }
 
-    // Handle Live Chat Button Click
     function handleLiveChatClick() {
       if (telegramTarget) {
         let url = "";
@@ -490,12 +409,10 @@
       }
     }
 
-    // Close Modal Function
     function closeModal() {
       document.getElementById('waiting-modal').classList.remove('active');
     }
 
-    // Load Bottom Navigation
     fetch('bottom.html')
       .then(res => res.text())
       .then(html => {
@@ -503,7 +420,6 @@
       })
       .catch(err => console.log('Error loading bottom.html:', err));
 
-    // Page Load Setup
     document.addEventListener('DOMContentLoaded', () => {
       fetchTelegramConfig();
     });
