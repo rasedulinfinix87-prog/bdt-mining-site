@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Goldmine Digital</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #061913;
+      --topbar-bg: rgba(6, 25, 19, 0.85);
+      --card-bg: rgba(12, 38, 29, 0.85);
+      --card-border: rgba(245, 207, 102, 0.2);
+      --gold-primary: #f5cf66;
+      --gold-gradient: linear-gradient(135deg, #ffe082 0%, #f5cf66 40%, #b89332 100%);
+      --text-main: #ffffff;
+      --text-muted: #8da499;
+      --green-glow: #2ed573;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(245, 207, 102, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba(46, 213, 115, 0.03) 0%, transparent 25%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .mobile-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-dark);
+      padding-bottom: 90px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--card-border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .top-bar .back-btn {
+      color: var(--gold-primary);
+      font-size: 1.1rem;
+      text-decoration: none;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(245, 207, 102, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(245, 207, 102, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .top-bar .back-btn:hover {
+      background: rgba(245, 207, 102, 0.2);
+    }
+
+    .top-bar h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Hero Banner */
+    .policy-hero {
+      padding: 25px 20px 15px;
+      text-align: center;
+    }
+
+    .policy-hero .shield-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      background: rgba(245, 207, 102, 0.1);
+      border: 1px solid var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-primary);
+      font-size: 1.8rem;
+      box-shadow: 0 0 25px rgba(245, 207, 102, 0.2);
+    }
+
+    .policy-hero h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin-bottom: 6px;
+    }
+
+    .policy-hero p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Content Area */
+    .policy-content {
+      padding: 15px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .policy-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .policy-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(245, 207, 102, 0.15);
+      padding-bottom: 8px;
+    }
+
+    .policy-card h3 i {
+      font-size: 1.1rem;
+    }
+
+    .policy-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .policy-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .policy-card ul {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 8px;
+    }
+
+    .policy-card ul li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .policy-card ul li i {
+      color: var(--green-glow);
+      font-size: 0.8rem;
+      margin-top: 3px;
+    }
+
+    .highlight-box {
+      background: rgba(245, 207, 102, 0.08);
+      border-left: 3px solid var(--gold-primary);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    /* Footer Meta */
+    .policy-footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    #bottom-nav-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="title-group">
+        <a href="javascript:history.back()" class="back-btn">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <h2>Privacy Policy</h2>
+      </div>
+    </div>
+
+    <!-- Hero Header -->
+    <div class="policy-hero">
+      <div class="shield-icon">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <h1>Extreme Privacy & Protection</h1>
+      <p>Last Updated: October 2026 • Goldmine Digital Standard</p>
+    </div>
+
+    <!-- Main Content Sections -->
+    <div class="policy-content">
+
+      <!-- Section 1: Overview -->
+      <div class="policy-card">
+        <h3><i class="fa-solid fa-building-shield"></i> 1. Commitment to Security</h3>
+        <p> At <strong>Goldmine Digital</strong>, we prioritize the absolute confidentiality, integrity, and security of your financial digital assets and personal credentials. This Privacy Policy outlines how your information is gathered, encrypted, stored, and protected when using our platform.</p>
+        <div class="highlight-box">
+          By accessing or utilizing Goldmine Digital investment services, you acknowledge and agree to the terms described in this extreme data protection policy.
+        </div>
+      </div>
+
+      <!-- Section 2: Information We Collect -->
+      <div class="policy-card">
+        <h3><i class="fa-solid fa-database"></i> 2. Information We Collect</h3>
+        <p>To facilitate secure investment processing and ensure Regulatory Compliance (KYC/AML), we collect the following datasets:</p>
+        <ul>
+          <li><i class="fa-solid fa-circle-check"></i> <strong>Identity Details:</strong> Full name, verified email address, phone number, and optional profile data.</li>
+          <li><i class="fa-solid fa-circle-check"></i> <strong>Financial Records:</strong> Transaction IDs, deposit/withdrawal logs, subscription history, and digital gold asset holdings.</li>
+          <li><i class="fa-solid fa-circle-check"></i> <strong>Technical Logs:</strong> IP addresses, browser specs, device identifiers, and login timestamp logs via Supabase Auth.</li>
+        </ul>
+      </div>
+
+      <!-- Section 3: Data Encryption & Vault Infrastructure -->
+      <div class="policy-card">
+        <h3><i class="fa-solid fa-lock"></i> 3. Bank-Grade Encryption</h3>
+        <p>Your privacy is fortified through military-grade multi-layer architecture:</p>
+        <ul>
+          <li><i class="fa-solid fa-shield-halved"></i> <strong>In-Transit Protection:</strong> End-to-end SSL/TLS 256-bit encryption for all server transactions.</li>
+          <li><i class="fa-solid fa-shield-halved"></i> <strong>Rest Data Encryption:</strong> Financial records & authentication tokens are stored with AES-256 standards.</li>
+          <li><i class="fa-solid fa-shield-halved"></i> <strong>Zero Password Exposure:</strong> Account passwords are hashed and unreadable even by internal administrators.</li>
+        </ul>
+      </div>
+
+      <!-- Section 4: Use of Information -->
+      <div class="policy-card">
+        <h3><i class="fa-solid fa-chart-line"></i> 4. How We Use Your Data</h3>
+        <p>We process data exclusively for core platform operations:</p>
+        <ul>
+          <li><i class="fa-solid fa-check"></i> Executing gold purchases, subscriptions, and withdrawal payouts.</li>
+          <li><i class="fa-solid fa-check"></i> Preventing fraud, unauthorized access, and suspicious transactions.</li>
+          <li><i class="fa-solid fa-check"></i> Sending automated account receipts, profit notifications, and system updates.</li>
+        </ul>
+      </div>
+
+      <!-- Section 5: Third-Party Disclosure -->
+      <div class="policy-card">
+        <h3><i class="fa-solid fa-handshake-slash"></i> 5. Zero Third-Party Selling</h3>
+        <p><strong>Goldmine Digital never sells, rents, or trades user data</strong> to third-party advertisers or marketers. Data is shared strictly with essential partners under non-disclosure obligations, such as:</p>
+        <ul>
+          <li><i class="fa-solid fa-caret-right"></i> Payment gateway partners for processing transactions securely.</li>
+          <li><i class="fa-solid fa-caret-right"></i> Law enforcement agencies, solely upon official, valid legal mandates or court warrants.</li>
+        </ul>
+      </div>
+
+      <!-- Section 6: Financial Risk Disclaimer -->
+      <div class="policy-card">
+        <h3><i class="fa-solid fa-triangle-exclamation"></i> 6. Investment Disclosure</h3>
+        <p>Gold and digital assets carry market dynamics. While Goldmine Digital maintains strict internal controls and secure ledger tracking, users are advised to invest responsibly within their financial parameters.</p>
+      </div>
+
+      <!-- Section 7: User Rights & Account Control -->
+      <div class="policy-card">
+        <h3><i class="fa-solid fa-user-gear"></i> 7. User Data Rights</h3>
+        <p>You retain absolute authority over your stored personal information:</p>
+        <ul>
+          <li><i class="fa-solid fa-key"></i> Request full copies of your account records or transaction history logs.</li>
+          <li><i class="fa-solid fa-key"></i> Update or request correction of account holder details.</li>
+          <li><i class="fa-solid fa-key"></i> Request complete account termination and data purge (subject to legal financial auditing retention rules).</li>
+        </ul>
+      </div>
+
+      <!-- Section 8: Support Contact -->
+      <div class="policy-card">
+        <h3><i class="fa-solid fa-headset"></i> 8. Privacy Queries</h3>
+        <p>For questions regarding this policy or data safety inquiries, reach our dedicated compliance officer via <a href="contact-us.html" style="color: var(--gold-primary); text-decoration: underline;">Contact Us</a> page.</p>
+      </div>
+
+    </div>
+
+    <!-- Footer Note -->
+    <div class="policy-footer">
+      <p>&copy; 2026 Goldmine Digital Inc. All Rights Reserved.</p>
+    </div>
+
+    <!-- Bottom Nav Container -->
+    <div id="bottom-nav-container"></div>
+  </div>
+
+  <script>
+    // Load Bottom Navigation Dynamically
+    fetch('bottom.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('bottom-nav-container').innerHTML = html;
+      })
+      .catch(err => console.log('Error loading bottom.html:', err));
+  </script>
+
+</body>
+</html>
