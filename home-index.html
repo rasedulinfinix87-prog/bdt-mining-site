@@ -368,11 +368,11 @@
         <!-- Main Dashboard Content -->
         <div class="content">
             
-            <!-- Box 1: Gold Price & 15-Day Trend Graph -->
+            <!-- Box 1: Gold Price & 1000+ Points Trend Graph -->
             <div class="dashboard-card">
                 <div class="card-header">
                     <div class="card-title">CURRENT GOLD PRICE</div>
-                    <span style="font-size: 0.65rem; color: var(--gold-primary); font-weight: 600;">15 DAYS TREND</span>
+                    <span style="font-size: 0.65rem; color: var(--gold-primary); font-weight: 600;">1000+ DATA POINTS</span>
                 </div>
                 <div class="price-badge">
                     $<span id="gold-price">2,184.65</span>/oz 
@@ -383,7 +383,7 @@
                 </div>
             </div>
 
-            <!-- Box 2: Crypto Rates & 15-Day Trend Graph -->
+            <!-- Box 2: Crypto Rates & 1000+ Points Trend Graph -->
             <div class="dashboard-card">
                 <div class="card-header">
                     <div class="card-title">MARKET RATES (CRYPTO)</div>
@@ -399,7 +399,7 @@
                         <div class="crypto-val">$<span id="btc-price">65,411.58</span></div>
                     </div>
 
-                    <!-- Crypto 15 Days Dynamic Graph Box -->
+                    <!-- Crypto 1000+ Points Dynamic Graph Box -->
                     <div class="chart-box" style="height: 75px;">
                         <canvas id="cryptoChart"></canvas>
                     </div>
@@ -463,13 +463,22 @@
             })
             .catch(error => console.log('Using default bottom nav'));
 
-        // রিয়েল মার্কেটের মতো ওঠানামা (Zig-Zag / Fluctuating) করার জন্য মিক্সড ডেটা পয়েন্ট
-        const goldPoints = [
-            2160, 2175, 2150, 2182, 2170, 2195, 2180, 2210, 2190, 2205, 
-            2185, 2200, 2175, 2190, 2165, 2185, 2170, 2192, 2178, 2202,
-            2188, 2215, 2195, 2220, 2200, 2212, 2198, 2185, 2180, 2184
-        ];
-        const daysLabels = Array.from({length: goldPoints.length}, (_, i) => `Point ${i + 1}`);
+        // ১০০০+ ডেটা পয়েন্ট জেনারেট করার ফাংশন (Realistic Market Simulation)
+        function generateDataPoints(startVal, count, volatility) {
+            let points = [startVal];
+            let current = startVal;
+            for (let i = 1; i < count; i++) {
+                let change = (Math.random() - 0.485) * volatility;
+                current += change;
+                points.push(parseFloat(current.toFixed(2)));
+            }
+            return points;
+        }
+
+        const totalPoints = 1000;
+        const goldPoints = generateDataPoints(2150, totalPoints, 1.8);
+        const cryptoPoints = generateDataPoints(64000, totalPoints, 35);
+        const labels = Array.from({length: totalPoints}, (_, i) => i + 1);
 
         // Gold Chart Implementation
         const goldCtx = document.getElementById('goldChart').getContext('2d');
@@ -480,31 +489,30 @@
         const goldChart = new Chart(goldCtx, {
             type: 'line',
             data: {
-                labels: daysLabels,
+                labels: labels,
                 datasets: [{
                     data: goldPoints,
                     borderColor: '#f5cf66',
-                    borderWidth: 2,
+                    borderWidth: 1.5,
                     fill: true,
                     backgroundColor: goldGradient,
-                    tension: 0.25,
+                    tension: 0.3,
                     pointRadius: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: false,
                 plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false } }
+                scales: { 
+                    x: { display: false }, 
+                    y: { display: false } 
+                }
             }
         });
 
-        // Crypto Chart Implementation (Fluctuating market data)
-        const cryptoPoints = [
-            64000, 65200, 63800, 65500, 64200, 66100, 64900, 66800, 65200, 66400, 
-            64800, 65900, 64300, 65600, 63900, 65100, 64400, 65800, 64700, 66200,
-            65100, 66700, 65300, 67000, 65500, 66300, 65000, 64800, 64200, 65400
-        ];
+        // Crypto Chart Implementation
         const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
         const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
         cryptoGradient.addColorStop(0, 'rgba(46, 213, 115, 0.35)');
@@ -513,42 +521,50 @@
         const cryptoChart = new Chart(cryptoCtx, {
             type: 'line',
             data: {
-                labels: daysLabels,
+                labels: labels,
                 datasets: [{
                     data: cryptoPoints,
                     borderColor: '#2ed573',
-                    borderWidth: 2,
+                    borderWidth: 1.5,
                     fill: true,
                     backgroundColor: cryptoGradient,
-                    tension: 0.25,
+                    tension: 0.3,
                     pointRadius: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: false,
                 plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false } }
+                scales: { 
+                    x: { display: false }, 
+                    y: { display: false } 
+                }
             }
         });
 
-        // Real-time market update simulation
+        // Real-time market update simulation (শিফটিং লজিক)
         setInterval(() => {
             let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
-            let newGold = (currentGold + (Math.random() - 0.49) * 2.0).toFixed(2);
-            document.getElementById('gold-price').innerText = Number(newGold).toLocaleString('en-US', {minimumFractionDigits: 2});
+            let newGold = parseFloat((currentGold + (Math.random() - 0.49) * 2.0).toFixed(2));
+            document.getElementById('gold-price').innerText = newGold.toLocaleString('en-US', {minimumFractionDigits: 2});
             
-            goldChart.data.datasets[0].data.shift();
+            goldChart.data.labels.push(goldChart.data.labels.length + 1);
+            goldChart.data.labels.shift();
             goldChart.data.datasets[0].data.push(newGold);
-            goldChart.update();
+            goldChart.data.datasets[0].data.shift();
+            goldChart.update('none');
 
             let btcPrice = parseFloat(document.getElementById('btc-price').innerText.replace(',', ''));
-            let newBtc = (btcPrice + (Math.random() - 0.49) * 45).toFixed(2);
-            document.getElementById('btc-price').innerText = Number(newBtc).toLocaleString('en-US', {minimumFractionDigits: 2});
+            let newBtc = parseFloat((btcPrice + (Math.random() - 0.49) * 45).toFixed(2));
+            document.getElementById('btc-price').innerText = newBtc.toLocaleString('en-US', {minimumFractionDigits: 2});
 
-            cryptoChart.data.datasets[0].data.shift();
+            cryptoChart.data.labels.push(cryptoChart.data.labels.length + 1);
+            cryptoChart.data.labels.shift();
             cryptoChart.data.datasets[0].data.push(newBtc);
-            cryptoChart.update();
+            cryptoChart.data.datasets[0].data.shift();
+            cryptoChart.update('none');
         }, 3000);
     </script>
 </body>
