@@ -34,8 +34,10 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
+      overflow-x: hidden; /* Slide animation smoothly handling */
     }
 
+    /* Page Slide Animation */
     .mobile-container {
       width: 100%;
       max-width: 480px;
@@ -43,6 +45,18 @@
       padding-bottom: 90px;
       position: relative;
       min-height: 100vh;
+      animation: slideInRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
 
     /* Top Bar */
@@ -213,9 +227,21 @@
       font-size: 1.1rem;
     }
 
+    .setting-title-container {
+      display: flex;
+      flex-direction: column;
+    }
+
     .setting-title {
       font-size: 0.95rem;
       font-weight: 600;
+    }
+
+    .setting-subtext {
+      font-size: 0.8rem;
+      color: var(--gold-primary);
+      margin-top: 2px;
+      font-weight: 500;
     }
 
     .setting-right {
@@ -358,7 +384,7 @@
     <!-- User Brief Section -->
     <div class="profile-header" id="user-profile-header">
       <div class="profile-avatar">
-        <i class="fa-solid fa-user" id="user-avatar-icon"></i>
+        <i class="fa-solid fa-id-card" id="user-avatar-icon"></i>
       </div>
       <div class="profile-info">
         <h3 id="user-display-name">Checking Auth...</h3>
@@ -422,7 +448,6 @@
     // Safe Supabase Instance Retrieval Helper
     async function getSupabaseInstance() {
       let attempts = 0;
-      // Wait until _supabase is ready or timeout after 2 seconds
       while ((!window._supabase && !window.supabase) && attempts < 20) {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
@@ -450,28 +475,56 @@
       const client = await getSupabaseInstance();
 
       let user = null;
+      let accountNumber = "N/A";
+
       if (client) {
         try {
           const { data } = await client.auth.getUser();
           user = data?.user || null;
+
+          if (user) {
+            // Fetch account number from wallets table
+            const { data: walletData } = await client
+              .from('wallets')
+              .select('account_number')
+              .eq('user_id', user.id)
+              .single();
+            
+            if (walletData && walletData.account_number) {
+              accountNumber = walletData.account_number;
+            }
+          }
         } catch (err) {
-          console.error("Auth check error:", err);
+          console.error("Auth / Wallet fetch error:", err);
         }
       }
 
       if (user) {
         // Logged IN View
-        profileName.innerText = user.user_metadata?.full_name || user.email.split('@')[0] || "Valued Investor";
+        const regName = (user.user_metadata?.full_name || user.email.split('@')[0] || "VALUED INVESTOR").toUpperCase();
+        profileName.innerText = regName;
         profileEmail.innerText = user.email;
 
         settingsContainer.innerHTML = `
-          <a href="account-info.html" class="setting-item">
+          <div class="setting-item">
             <div class="setting-left">
-              <div class="setting-icon"><i class="fa-solid fa-user-gear"></i></div>
-              <span class="setting-title">Account Holder Info</span>
+              <div class="setting-icon"><i class="fa-solid fa-id-card"></i></div>
+              <div class="setting-title-container">
+                <span class="setting-title">REGISTRATION NAME</span>
+                <span class="setting-subtext">${regName}</span>
+              </div>
             </div>
-            <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
-          </a>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-left">
+              <div class="setting-icon"><i class="fa-solid fa-building-columns"></i></div>
+              <div class="setting-title-container">
+                <span class="setting-title">ACCOUNT NUMBER</span>
+                <span class="setting-subtext">${accountNumber}</span>
+              </div>
+            </div>
+          </div>
 
           <a href="gol-investing-dashborad.html" class="setting-item">
             <div class="setting-left">
@@ -523,7 +576,7 @@
         `;
       } else {
         // Logged OUT View
-        profileName.innerText = "Guest User";
+        profileName.innerText = "GUEST USER";
         profileEmail.innerText = "Please sign in to manage account";
 
         settingsContainer.innerHTML = `
