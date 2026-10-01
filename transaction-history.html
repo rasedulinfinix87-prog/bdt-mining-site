@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Your Supabase Config -->
+    <script src="supabase-config.js"></script>
 
     <style>
         :root {
@@ -349,6 +354,13 @@
             letter-spacing: 0.5px;
         }
 
+        .empty-msg {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            padding: 40px 10px;
+        }
+
         /* Bottom Navigation Holder */
         #bottom-nav-container {
             width: 100%;
@@ -393,7 +405,7 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div class="page-title">Transaction History</div>
-            <div style="width: 36px;"></div> <!-- Spacer for symmetry -->
+            <div style="width: 36px;"></div>
         </header>
 
         <!-- Filter Tabs -->
@@ -405,58 +417,7 @@
 
         <!-- Transaction List -->
         <div class="transaction-list" id="trx-container">
-            
-            <!-- Sample Card 1: Deposit (Approved) -->
-            <div class="trx-card deposit" onclick="openModal('TRX98234102', 'Deposit', '$150.00', '$0.00', '$150.00', 'bKash', '01700000000', 'approved', '2026-09-28 10:30 AM', '')">
-                <div class="trx-left">
-                    <div class="trx-icon deposit">
-                        <i class="fa-solid fa-arrow-down-left"></i>
-                    </div>
-                    <div class="trx-details">
-                        <h4>Deposit (bKash)</h4>
-                        <p>2026-09-28 • 10:30 AM</p>
-                    </div>
-                </div>
-                <div class="trx-right">
-                    <div class="trx-amount deposit">+$150.00</div>
-                    <span class="status-badge approved">Approved</span>
-                </div>
-            </div>
-
-            <!-- Sample Card 2: Withdraw (Pending with Charge) -->
-            <div class="trx-card withdraw" onclick="openModal('TRX87239105', 'Withdraw', '$50.00', '$1.50', '$48.50', 'Binance (USDT)', '0x8d...a2f9', 'pending', '2026-09-29 02:15 PM', '')">
-                <div class="trx-left">
-                    <div class="trx-icon withdraw">
-                        <i class="fa-solid fa-arrow-up-right"></i>
-                    </div>
-                    <div class="trx-details">
-                        <h4>Withdraw (USDT)</h4>
-                        <p>2026-09-29 • 02:15 PM</p>
-                    </div>
-                </div>
-                <div class="trx-right">
-                    <div class="trx-amount withdraw">-$50.00</div>
-                    <span class="status-badge pending">Pending</span>
-                </div>
-            </div>
-
-            <!-- Sample Card 3: Deposit (Rejected with Admin Feedback) -->
-            <div class="trx-card deposit" onclick="openModal('TRX54129033', 'Deposit', '$300.00', '$0.00', '$300.00', 'Nagad', '01800000000', 'rejected', '2026-09-27 08:45 PM', 'Invalid TrxID provided. Please check your Nagad SMS.')">
-                <div class="trx-left">
-                    <div class="trx-icon deposit">
-                        <i class="fa-solid fa-arrow-down-left"></i>
-                    </div>
-                    <div class="trx-details">
-                        <h4>Deposit (Nagad)</h4>
-                        <p>2026-09-27 • 08:45 PM</p>
-                    </div>
-                </div>
-                <div class="trx-right">
-                    <div class="trx-amount deposit">+$300.00</div>
-                    <span class="status-badge rejected">Rejected</span>
-                </div>
-            </div>
-
+            <div class="empty-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading transactions...</div>
         </div>
 
         <!-- Detail Modal Popup -->
@@ -541,41 +502,118 @@
             .then(data => { if(data) document.getElementById('bottom-nav-container').innerHTML = data; })
             .catch(error => console.log('Using fallback nav'));
 
-        // Filter Logic
-        function filterTrx(type, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+        let allTransactions = [];
 
-            const cards = document.querySelectorAll('.trx-card');
-            cards.forEach(card => {
-                if (type === 'all') {
-                    card.style.display = 'flex';
-                } else {
-                    if (card.classList.contains(type)) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
+        // Supabase Data Fetch Logic
+        async function fetchTransactions() {
+            const container = document.getElementById('trx-container');
+
+            // Wait until Supabase is ready
+            if (!window._supabase) {
+                setTimeout(fetchTransactions, 300);
+                return;
+            }
+
+            try {
+                // Get current user id from localStorage or Session
+                const userId = localStorage.getItem('user_id');
+
+                let query = window._supabase
+                    .from('transactions')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                // If user_id is saved in localStorage, filter by user
+                if (userId) {
+                    query = query.eq('user_id', userId);
                 }
+
+                const { data, error } = await query;
+
+                if (error) {
+                    console.error("Supabase Error:", error);
+                    container.innerHTML = `<div class="empty-msg" style="color: var(--accent-red);">Error loading transactions!</div>`;
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div class="empty-msg">No transactions found.</div>`;
+                    return;
+                }
+
+                allTransactions = data;
+                renderTransactions(allTransactions);
+
+            } catch (err) {
+                console.error("Fetch Error:", err);
+                container.innerHTML = `<div class="empty-msg" style="color: var(--accent-red);">Failed to fetch data.</div>`;
+            }
+        }
+
+        // Render Cards into UI
+        function renderTransactions(transactions) {
+            const container = document.getElementById('trx-container');
+            container.innerHTML = '';
+
+            if(transactions.length === 0) {
+                container.innerHTML = `<div class="empty-msg">No transactions found for this filter.</div>`;
+                return;
+            }
+
+            transactions.forEach(item => {
+                const isDeposit = (item.type || '').toLowerCase() === 'deposit';
+                const typeClass = isDeposit ? 'deposit' : 'withdraw';
+                const iconClass = isDeposit ? 'fa-arrow-down-left' : 'fa-arrow-up-right';
+                const sign = isDeposit ? '+' : '-';
+                const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A';
+                
+                const amountVal = parseFloat(item.amount || 0).toFixed(2);
+                const chargeVal = parseFloat(item.charge || 0).toFixed(2);
+                const netVal = parseFloat(item.net_amount || (amountVal - chargeVal)).toFixed(2);
+
+                const cardHtml = `
+                    <div class="trx-card ${typeClass}" onclick="showDetails('${item.id}')">
+                        <div class="trx-left">
+                            <div class="trx-icon ${typeClass}">
+                                <i class="fa-solid ${iconClass}"></i>
+                            </div>
+                            <div class="trx-details">
+                                <h4>${item.type || 'Transaction'} (${item.method || 'N/A'})</h4>
+                                <p>${formattedDate}</p>
+                            </div>
+                        </div>
+                        <div class="trx-right">
+                            <div class="trx-amount ${typeClass}">${sign}$${amountVal}</div>
+                            <span class="status-badge ${(item.status || 'pending').toLowerCase()}">${item.status || 'Pending'}</span>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
             });
         }
 
-        // Updated Modal Logic including charge, net_amount & admin_feedback
-        function openModal(trxId, type, amount, charge, netAmount, method, account, status, date, feedback) {
-            document.getElementById('m-trxid').innerText = trxId;
-            document.getElementById('m-type').innerText = type;
-            document.getElementById('m-amount').innerText = amount;
-            document.getElementById('m-charge').innerText = charge;
-            document.getElementById('m-net').innerText = netAmount;
-            document.getElementById('m-method').innerText = method;
-            document.getElementById('m-account').innerText = account;
-            document.getElementById('m-status').innerText = status.toUpperCase();
-            document.getElementById('m-date').innerText = date;
+        // Open Modal with selected item details
+        function showDetails(trxId) {
+            const item = allTransactions.find(t => t.id === trxId);
+            if (!item) return;
 
-            // Admin Feedback Logic
+            const isDeposit = (item.type || '').toLowerCase() === 'deposit';
+            const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A';
+
+            document.getElementById('m-trxid').innerText = item.trx_id || item.id;
+            document.getElementById('m-type').innerText = (item.type || '-').toUpperCase();
+            document.getElementById('m-amount').innerText = `$${parseFloat(item.amount || 0).toFixed(2)}`;
+            document.getElementById('m-charge').innerText = `$${parseFloat(item.charge || 0).toFixed(2)}`;
+            document.getElementById('m-net').innerText = `$${parseFloat(item.net_amount || 0).toFixed(2)}`;
+            document.getElementById('m-method').innerText = item.method || 'N/A';
+            document.getElementById('m-account').innerText = item.account_number || 'N/A';
+            document.getElementById('m-status').innerText = (item.status || 'pending').toUpperCase();
+            document.getElementById('m-date').innerText = formattedDate;
+
+            // Admin Feedback
             const feedbackBox = document.getElementById('feedbackBox');
-            if (feedback && feedback.trim() !== '') {
-                document.getElementById('m-feedback').innerText = feedback;
+            if (item.admin_feedback && item.admin_feedback.trim() !== '') {
+                document.getElementById('m-feedback').innerText = item.admin_feedback;
                 feedbackBox.classList.add('active');
             } else {
                 feedbackBox.classList.remove('active');
@@ -587,6 +625,22 @@
         function closeModal() {
             document.getElementById('detailModal').classList.remove('active');
         }
+
+        // Filter Buttons Function
+        function filterTrx(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (type === 'all') {
+                renderTransactions(allTransactions);
+            } else {
+                const filtered = allTransactions.filter(t => (t.type || '').toLowerCase() === type);
+                renderTransactions(filtered);
+            }
+        }
+
+        // Execute Fetch on Page Load
+        window.addEventListener('DOMContentLoaded', fetchTransactions);
     </script>
 </body>
 </html>
