@@ -344,13 +344,13 @@
         </a>
         <h2>Settings</h2>
       </div>
-      <button class="menu-toggle-btn" onclick="toggleMenu(event)">
+      <button class="menu-toggle-btn" onclick="toggleMenu()">
         <i class="fa-solid fa-bars"></i>
       </button>
 
       <!-- Right Corner Hamburger Menu -->
       <div class="hamburger-dropdown" id="hamburger-menu">
-        <a href="contact-us.html"><i class="fa-solid fa-headset"></i> Contact Us</a>
+        <a href="contact.html"><i class="fa-solid fa-headset"></i> Contact Us</a>
         <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
       </div>
     </div>
@@ -405,8 +405,7 @@
 
   <script>
     // Toggle Hamburger Menu
-    function toggleMenu(event) {
-      if (event) event.stopPropagation();
+    function toggleMenu() {
       const menu = document.getElementById('hamburger-menu');
       menu.classList.toggle('active');
     }
@@ -498,7 +497,7 @@
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
 
-          <a href="contact-us.html" class="setting-item">
+          <a href="contact.html" class="setting-item">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-headset"></i></div>
               <span class="setting-title">Contact Us</span>
@@ -528,7 +527,7 @@
         profileEmail.innerText = "Please sign in to manage account";
 
         settingsContainer.innerHTML = `
-          <a href="contact-us.html" class="setting-item">
+          <a href="contact.html" class="setting-item">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-headset"></i></div>
               <span class="setting-title">Contact Us</span>
