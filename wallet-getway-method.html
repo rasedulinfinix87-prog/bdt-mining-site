@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goldmine Digital - Wallet Gateway</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Global Styles & Variables */
+    :root {
+      --bg-dark: #040d08;
+      --card-bg: rgba(14, 34, 25, 0.85);
+      --card-border: rgba(212, 175, 55, 0.25);
+      --gold-primary: #f5c518;
+      --gold-gradient: linear-gradient(135deg, #f5c518 0%, #a67c1e 100%);
+      --card-gradient: linear-gradient(135deg, #112a1f 0%, #08150f 100%);
+      --text-main: #ffffff;
+      --text-muted: #8ca398;
+      --green-glow: rgba(0, 255, 136, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* Mobile Container Wrapper */
+    .mobile-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-dark);
+      padding-bottom: 70px; /* Space for fixed bottom menu */
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: rgba(4, 13, 8, 0.95);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .top-bar .back-btn {
+      color: var(--text-main);
+      font-size: 1.1rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .top-bar h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+
+    /* Bank Card Container */
+    .card-section {
+      padding: 15px 20px;
+    }
+
+    .bank-card {
+      background: var(--card-gradient);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 197, 24, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 180px;
+    }
+
+    /* Decorative Card Elements */
+    .bank-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(245, 197, 24, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .user-info .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .user-info .user-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+
+    .card-chip {
+      width: 36px;
+      height: 26px;
+      background: linear-gradient(135deg, #ffd700, #b8860b);
+      border-radius: 5px;
+      opacity: 0.85;
+    }
+
+    .card-bottom {
+      margin-top: 25px;
+    }
+
+    .balance-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .balance-label .live-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #00ff88;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ff88;
+    }
+
+    .balance-amount {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      text-shadow: 0 0 10px rgba(245, 197, 24, 0.3);
+    }
+
+    /* Placeholder for Page Content */
+    .content-area {
+      padding: 10px 20px;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      margin-bottom: 15px;
+      color: var(--text-muted);
+    }
+
+    /* Bottom Navigation Placeholder/Container */
+    #bottom-nav-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="title-group">
+        <a href="javascript:history.back()" class="back-btn">
+          <i class="fa-solid => fa-chevron-left"></i>
+        </a>
+        <h2>Wallet</h2>
+      </div>
+      <i class="fa-regular fa-bell" style="color: var(--text-muted); font-size: 1.1rem;"></i>
+    </div>
+
+    <!-- Bank Card Section -->
+    <div class="card-section">
+      <div class="bank-card">
+        <!-- Card Top: User Name -->
+        <div class="card-top">
+          <div class="user-info">
+            <div class="label">Account Holder</div>
+            <div class="user-name" id="user-name-display">Loading...</div>
+          </div>
+          <div class="card-chip"></div>
+        </div>
+
+        <!-- Card Bottom: Real-Time Balance -->
+        <div class="card-bottom">
+          <div class="balance-label">
+            <span class="live-dot"></span> Real Time Balance
+          </div>
+          <div class="balance-amount" id="user-balance-display">$0.00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Gateways Content Section (Next Work) -->
+    <div class="content-area">
+      <div class="section-title">Select Payment Gateway</div>
+      <!-- গেটওয়ে আইকন বা মেথডগুলোর তালিকা এখানে যুক্ত হবে -->
+    </div>
+
+    <!-- Container where bottom.html will be loaded -->
+    <div id="bottom-nav-container"></div>
+  </div>
+
+  <!-- Supabase CDN & Custom Logic Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // 1. Supabase Initialization (আপনার Project URL & Anon Key বসাবেন)
+    const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // 2. Fetch User Profile and Balance
+    async function loadWalletData() {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        // Display User Name / Metadata
+        const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+        document.getElementById('user-name-display').innerText = userName;
+
+        // Fetch Balance from 'wallets' table
+        const { data, error } = await supabase
+          .from('wallets')
+          .select('balance')
+          .eq('user_id', user.id)
+          .single();
+
+        if (data) {
+          document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance).toFixed(2);
+        } else if (error) {
+          console.error("Error fetching balance:", error);
+        }
+      }
+    }
+
+    // 3. Include bottom.html file dynamically
+    fetch('bottom.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('bottom-nav-container').innerHTML = data;
+      })
+      .catch(err => console.log('Error loading bottom.html:', err));
+
+    // Call on page load
+    window.onload = loadWalletData;
+  </script>
+</body>
+</html>
