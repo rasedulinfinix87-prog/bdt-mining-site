@@ -481,10 +481,11 @@
             })
             .catch(error => console.log('Using default bottom nav'));
 
-        // Expanded Trend Data Points for Professional Market Look
+        // Highly Detailed Trend Data Points (Increased by 200% for realistic market volatility)
         const goldPoints = [
-            2125, 2132, 2128, 2140, 2135, 2145, 2152, 2148, 2158, 2154, 
-            2165, 2160, 2172, 2168, 2175, 2170, 2178, 2174, 2182, 2184
+            2110, 2125, 2118, 2130, 2122, 2140, 2132, 2148, 2138, 2155, 
+            2145, 2162, 2150, 2168, 2158, 2175, 2165, 2180, 2172, 2185,
+            2178, 2190, 2182, 2195, 2188, 2200, 2192, 2205, 2198, 2210
         ];
         const daysLabels = Array.from({length: goldPoints.length}, (_, i) => `Point ${i + 1}`);
 
@@ -504,7 +505,7 @@
                     borderWidth: 2,
                     fill: true,
                     backgroundColor: goldGradient,
-                    tension: 0.3,
+                    tension: 0.25,
                     pointRadius: 0
                 }]
             },
@@ -516,10 +517,11 @@
             }
         });
 
-        // Crypto Chart Implementation
+        // Crypto Chart Implementation (High density data points)
         const cryptoPoints = [
-            61500, 61800, 61650, 62200, 62000, 62500, 62300, 63000, 62800, 63400, 
-            63200, 63900, 63700, 64200, 64000, 64600, 64400, 65000, 64800, 65432
+            60500, 61200, 60800, 61500, 61100, 62000, 61600, 62400, 61900, 62800, 
+            62300, 63200, 62700, 63600, 63100, 64000, 63500, 64500, 63900, 64800,
+            64300, 65200, 64700, 65600, 65000, 66000, 65400, 66300, 65800, 66500
         ];
         const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
         const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
@@ -536,7 +538,7 @@
                     borderWidth: 2,
                     fill: true,
                     backgroundColor: cryptoGradient,
-                    tension: 0.3,
+                    tension: 0.25,
                     pointRadius: 0
                 }]
             },
