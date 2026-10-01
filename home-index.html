@@ -389,7 +389,7 @@
         <!-- Main Dashboard Content -->
         <div class="content">
             
-            <!-- Box 1: Gold Price & 500 Data Points Trend Graph -->
+            <!-- Box 1: Gold Price & 100 Data Points Trend Graph -->
             <div class="dashboard-card">
                 <div class="card-header">
                     <div class="card-title">CURRENT GOLD PRICE</div>
@@ -404,7 +404,7 @@
                 </div>
             </div>
 
-            <!-- Box 2: Crypto Rates & 500 Data Points Trend Graph -->
+            <!-- Box 2: Crypto Rates & 100 Data Points Trend Graph -->
             <div class="dashboard-card">
                 <div class="card-header">
                     <div class="card-title">MARKET RATES (CRYPTO)</div>
@@ -420,7 +420,7 @@
                         <div class="crypto-val">$<span id="btc-price">65,411.58</span></div>
                     </div>
 
-                    <!-- Crypto 500 Points Dynamic Graph Box -->
+                    <!-- Crypto 100 Points Dynamic Graph Box -->
                     <div class="chart-box" style="height: 75px;">
                         <canvas id="cryptoChart"></canvas>
                     </div>
@@ -484,11 +484,11 @@
             })
             .catch(error => console.log('Using default bottom nav'));
 
-        // Helper function to generate exactly 500 fluctuating market points
+        // Helper function to generate exactly 100 fluctuating market points for smooth performance
         function generateMarketPoints(startVal, volatility) {
             let points = [startVal];
             let current = startVal;
-            for (let i = 1; i < 500; i++) {
+            for (let i = 1; i < 100; i++) {
                 let change = (Math.random() - 0.49) * volatility;
                 current += change;
                 points.push(parseFloat(current.toFixed(2)));
@@ -498,7 +498,7 @@
 
         const goldPoints = generateMarketPoints(2150, 3.5);
         const cryptoPoints = generateMarketPoints(64000, 75);
-        const labels500 = Array.from({length: 500}, (_, i) => `Pt ${i + 1}`);
+        const labels100 = Array.from({length: 100}, (_, i) => `Pt ${i + 1}`);
 
         // Gold Chart Implementation
         const goldCtx = document.getElementById('goldChart').getContext('2d');
@@ -509,14 +509,14 @@
         const goldChart = new Chart(goldCtx, {
             type: 'line',
             data: {
-                labels: labels500,
+                labels: labels100,
                 datasets: [{
                     data: goldPoints,
                     borderColor: '#f5cf66',
                     borderWidth: 1.5,
                     fill: true,
                     backgroundColor: goldGradient,
-                    tension: 0.2,
+                    tension: 0.3,
                     pointRadius: 0
                 }]
             },
@@ -537,14 +537,14 @@
         const cryptoChart = new Chart(cryptoCtx, {
             type: 'line',
             data: {
-                labels: labels500,
+                labels: labels100,
                 datasets: [{
                     data: cryptoPoints,
                     borderColor: '#2ed573',
                     borderWidth: 1.5,
                     fill: true,
                     backgroundColor: cryptoGradient,
-                    tension: 0.2,
+                    tension: 0.3,
                     pointRadius: 0
                 }]
             },
@@ -556,7 +556,7 @@
             }
         });
 
-        // Real-time market update simulation
+        // Real-time market update simulation (Smooth & Lag-free)
         setInterval(() => {
             let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
             let newGold = (currentGold + (Math.random() - 0.49) * 2.0).toFixed(2);
@@ -564,7 +564,7 @@
             
             goldChart.data.datasets[0].data.shift();
             goldChart.data.datasets[0].data.push(parseFloat(newGold));
-            goldChart.update('none'); // 'none' ensures smooth high-performance updates without heavy re-render lag
+            goldChart.update('none'); // 'none' ensures high-performance updates without lag
 
             let btcPrice = parseFloat(document.getElementById('btc-price').innerText.replace(',', ''));
             let newBtc = (btcPrice + (Math.random() - 0.49) * 45).toFixed(2);
