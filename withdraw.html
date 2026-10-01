@@ -2,100 +2,327 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Withdraw - Goldmine Digital</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --bg-dark: #040d08;
-      --card-bg: #0e2219;
-      --gold-primary: #f5c518;
-      --gold-gradient: linear-gradient(135deg, #f5c518 0%, #a67c1e 100%);
+      --card-bg: rgba(14, 34, 25, 0.85);
+      --card-border: rgba(245, 207, 102, 0.3);
+      --gold-primary: #f5cf66;
+      --gold-gradient: linear-gradient(135deg, #ffe082 0%, #f5cf66 35%, #b89332 70%, #e6a100 100%);
+      --card-gradient: linear-gradient(135deg, rgba(16, 48, 37, 0.9) 0%, rgba(3, 13, 10, 0.95) 100%);
       --text-main: #ffffff;
       --text-muted: #8ca398;
+      --green-glow: #2ed573;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    html, body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
 
     .mobile-container {
-      width: 100%; max-width: 480px; padding: 20px; padding-bottom: 80px; min-height: 100vh;
+      width: 100%; max-width: 480px; background-color: var(--bg-dark); padding: 20px; padding-bottom: 90px; position: relative; min-height: 100vh;
     }
 
-    .top-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-    .top-bar a { color: #fff; text-decoration: none; font-size: 1.2rem; }
+    /* Top Bar */
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--card-border);
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 15px; }
+    .top-bar a { color: var(--gold-primary); text-decoration: none; font-size: 1.2rem; width: 36px; height: 36px; border-radius: 50%; background: rgba(245, 207, 102, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 207, 102, 0.25); }
 
-    .form-group { margin-bottom: 18px; }
-    .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+    .section-title { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 12px; }
+
+    /* Method Selector Grid */
+    .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .method-card {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .method-card i { font-size: 1.5rem; color: var(--text-muted); }
+    .method-card span { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+
+    .method-card.active {
+      background: var(--card-gradient); border-color: var(--gold-primary); box-shadow: 0 0 15px rgba(245, 207, 102, 0.3); transform: translateY(-2px);
+    }
+    .method-card.active i, .method-card.active span { color: var(--gold-primary); }
+
+    /* Form Fields */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; font-weight: 600; }
+    
+    .input-wrapper { position: relative; display: flex; align-items: center; }
     .form-control {
-      width: 100%; padding: 14px; border-radius: 10px; background: var(--card-bg);
-      border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-size: 1rem; outline: none;
+      width: 100%; padding: 14px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--card-border); color: #fff; font-size: 0.98rem; outline: none; transition: all 0.3s ease;
     }
-    .form-control:focus { border-color: var(--gold-primary); }
+    .form-control:focus { border-color: var(--gold-primary); box-shadow: 0 0 10px rgba(245, 207, 102, 0.2); }
 
-    .btn-submit {
-      width: 100%; padding: 15px; border-radius: 10px; border: none;
-      background: var(--gold-gradient); color: #000; font-weight: bold; font-size: 1rem;
-      cursor: pointer; margin-top: 10px;
+    /* Amount conversion badge inside/below input */
+    .rate-badge {
+      position: absolute; right: 12px; font-size: 0.82rem; color: var(--gold-primary); font-weight: 700; background: rgba(245, 207, 102, 0.15); padding: 4px 8px; border-radius: 6px; pointer-events: none; border: 1px solid rgba(245, 207, 102, 0.3);
     }
+
+    .limit-info { font-size: 0.75rem; color: #ff6b6b; margin-top: 4px; display: block; }
+
+    /* Shimmer Gold Submit Button */
+    @keyframes goldShimmer { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .btn-submit {
+      width: 100%; padding: 16px; border-radius: 14px; border: none; background: linear-gradient(270deg, #ffe082, #f5cf66, #b89332, #ffe082); background-size: 300% 300%; animation: goldShimmer 4s ease infinite; color: #000; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 20px rgba(245, 207, 102, 0.35); transition: all 0.3s ease; text-transform: uppercase;
+    }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; animation: none; }
+
+    /* Custom Animated Popup Modal */
+    .popup-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 13, 10, 0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+    }
+    .popup-overlay.active { opacity: 1; visibility: visible; }
+    .popup-card {
+      background: linear-gradient(145deg, #0c261d 0%, #030d0a 100%); border: 1px solid var(--gold-primary); padding: 25px 20px; border-radius: 20px; width: 85%; max-width: 360px; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 207, 102, 0.25); transform: scale(0.7); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .popup-overlay.active .popup-card { transform: scale(1); }
+    .popup-icon { width: 60px; height: 60px; margin: 0 auto 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+    .popup-icon.success { background: rgba(46, 213, 115, 0.15); border: 1px solid var(--green-glow); color: var(--green-glow); }
+    .popup-icon.error { background: rgba(255, 71, 87, 0.15); border: 1px solid #ff4757; color: #ff4757; }
+    .popup-title { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .popup-msg { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; }
+    .popup-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--gold-gradient); color: #000; font-weight: 700; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <div class="mobile-container">
     <div class="top-bar">
-      <a href="wallet-getway-method.html"><i class="fa-solid fa-chevron-left"></i></a>
-      <h2>Withdraw Money</h2>
+      <div class="top-bar-left">
+        <a href="wallet-getway-method.html"><i class="fa-solid fa-chevron-left"></i></a>
+        <h2>Withdraw Money</h2>
+      </div>
+      <i class="fa-solid fa-shield-halved" style="color: var(--gold-primary); font-size: 1.2rem;"></i>
+    </div>
+
+    <!-- Select Withdraw Method -->
+    <div class="section-title">Select Withdraw Method</div>
+    <div class="method-grid">
+      <div class="method-card active" data-method="bkash" onclick="switchMethod('bkash')">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+        <span>bKash</span>
+      </div>
+      <div class="method-card" data-method="usd" onclick="switchMethod('usd')">
+        <i class="fa-solid fa-coins"></i>
+        <span>USD (Bep20)</span>
+      </div>
+      <div class="method-card" data-method="bank" onclick="switchMethod('bank')">
+        <i class="fa-solid fa-building-columns"></i>
+        <span>Bank</span>
+      </div>
     </div>
 
     <form id="withdraw-form">
-      <div class="form-group">
-        <label>Withdraw Method</label>
-        <select class="form-control" id="method" required>
-          <option value="bKash">bKash Personal</option>
-          <option value="Nagad">Nagad Personal</option>
-          <option value="USDT">USDT (TRC20)</option>
-        </select>
-      </div>
-
+      <!-- Amount Input (Common) -->
       <div class="form-group">
         <label>Amount ($)</label>
-        <input type="number" class="form-control" id="amount" placeholder="Enter Amount" step="any" required min="1">
+        <div class="input-wrapper">
+          <input type="number" class="form-control" id="amount" placeholder="Enter Amount" step="any" required min="10" oninput="calculateBdt()">
+          <span class="rate-badge" id="bdt-rate-badge">≈ ৳ 0.00</span>
+        </div>
+        <span class="limit-info" id="limit-info">* Minimum withdrawal amount: $10</span>
       </div>
 
+      <!-- Dynamic Method Fields Area -->
+      <div id="dynamic-fields">
+        <!-- Default: bKash Fields -->
+        <div class="form-group">
+          <label>bKash Number</label>
+          <input type="text" class="form-control" id="bkash_number" placeholder="e.g. 01700000000" required>
+        </div>
+      </div>
+
+      <!-- Secret PIN Input (Common) -->
       <div class="form-group">
-        <label>Receiver Number / Address</label>
-        <input type="text" class="form-control" id="account_number" placeholder="017xxxxxxxx / TRC20 Address" required>
+        <label>Secret PIN</label>
+        <input type="password" class="form-control" id="secret_pin" placeholder="Enter your secret PIN" required maxlength="10">
       </div>
 
       <button type="submit" class="btn-submit" id="btn-submit">Submit Withdraw Request</button>
     </form>
   </div>
 
+  <!-- Custom Popup Modal -->
+  <div class="popup-overlay" id="custom-popup">
+    <div class="popup-card">
+      <div class="popup-icon success" id="popup-icon"><i class="fa-solid fa-check"></i></div>
+      <div class="popup-title" id="popup-title">Notification</div>
+      <div class="popup-msg" id="popup-msg">Message text here...</div>
+      <button class="popup-btn" onclick="closePopup()">OK</button>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script>
+    let currentMethod = 'bkash';
+    let usdToBdtRate = 120; // ডিফল্ট রেট (Supabase থেকে আপডেট হবে)
+    let isRedirecting = false;
+
+    // ১. Supabase থেকে ১ ডলারের BDT রেট ফেচ করা
+    async function fetchUsdRate() {
+      const client = window._supabase || window.supabase;
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from('settings')
+          .select('value')
+          .eq('key', 'usd_to_bdt')
+          .single();
+
+        if (data && data.value) {
+          usdToBdtRate = parseFloat(data.value);
+        }
+      } catch (err) {
+        console.log("Settings table query fallback, using default rate:", usdToBdtRate);
+      }
+      calculateBdt();
+    }
+
+    // ২. BDT লাইভ রেট হিসাব করা
+    function calculateBdt() {
+      const amount = parseFloat(document.getElementById('amount').value) || 0;
+      const totalBdt = amount * usdToBdtRate;
+      document.getElementById('bdt-rate-badge').innerText = `≈ ৳ ${totalBdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+
+    // ৩. মেথড স্যুইচ করা (bKash, USD, Bank)
+    function switchMethod(method) {
+      currentMethod = method;
+
+      // বাটন একটিভ ক্লাস দেওয়া
+      document.querySelectorAll('.method-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.method === method);
+      });
+
+      const fieldsContainer = document.getElementById('dynamic-fields');
+      const amountInput = document.getElementById('amount');
+      const limitInfo = document.getElementById('limit-info');
+
+      if (method === 'bkash') {
+        amountInput.min = "10";
+        limitInfo.innerText = "* Minimum withdrawal amount: $10";
+        fieldsContainer.innerHTML = `
+          <div class="form-group">
+            <label>bKash Number</label>
+            <input type="text" class="form-control" id="bkash_number" placeholder="e.g. 01700000000" required>
+          </div>
+        `;
+      } else if (method === 'usd') {
+        amountInput.min = "10";
+        limitInfo.innerText = "* Minimum withdrawal amount: $10";
+        fieldsContainer.innerHTML = `
+          <div class="form-group">
+            <label>Your BSC BEP20 Wallet Address</label>
+            <input type="text" class="form-control" id="bsc_address" placeholder="0x..." required>
+          </div>
+        `;
+      } else if (method === 'bank') {
+        amountInput.min = "500";
+        limitInfo.innerText = "* Minimum withdrawal amount: $500 for Bank Transfer";
+        fieldsContainer.innerHTML = `
+          <div class="form-group">
+            <label>Bank Name</label>
+            <input type="text" class="form-control" id="bank_name" placeholder="e.g. Dutch Bangla Bank" required>
+          </div>
+          <div class="form-group">
+            <label>Account Name</label>
+            <input type="text" class="form-control" id="account_name" placeholder="Account Holder Name" required>
+          </div>
+          <div class="form-group">
+            <label>Account Number</label>
+            <input type="text" class="form-control" id="account_number_bank" placeholder="Bank Account Number" required>
+          </div>
+          <div class="form-group">
+            <label>Branch Name</label>
+            <input type="text" class="form-control" id="branch_name" placeholder="Branch Name" required>
+          </div>
+          <div class="form-group">
+            <label>Routing Number</label>
+            <input type="text" class="form-control" id="router_number" placeholder="Routing Number" required>
+          </div>
+        `;
+      }
+    }
+
+    // ৪. কাস্টম পপআপ
+    function showPopup(title, msg, type = 'success', redirect = false) {
+      const popup = document.getElementById('custom-popup');
+      const icon = document.getElementById('popup-icon');
+      document.getElementById('popup-title').innerText = title;
+      document.getElementById('popup-msg').innerText = msg;
+      isRedirecting = redirect;
+
+      if (type === 'success') {
+        icon.className = "popup-icon success";
+        icon.innerHTML = `<i class="fa-solid fa-check"></i>`;
+      } else {
+        icon.className = "popup-icon error";
+        icon.innerHTML = `<i class="fa-solid fa-exclamation"></i>`;
+      }
+      popup.classList.add('active');
+    }
+
+    function closePopup() {
+      document.getElementById('custom-popup').classList.remove('active');
+      if (isRedirecting) {
+        window.location.href = "wallet-getway-method.html";
+      }
+    }
+
+    // ৫. ফর্ম সাবমিশন ও ভ্যালিডেশন
     document.getElementById('withdraw-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const client = window._supabase || window.supabase;
       const submitBtn = document.getElementById('btn-submit');
-
       const amountVal = parseFloat(document.getElementById('amount').value);
+      const inputPin = document.getElementById('secret_pin').value.trim();
+
+      // মিনিমাম অ্যামাউন্ট লিমিট চেক
+      if ((currentMethod === 'bkash' || currentMethod === 'usd') && amountVal < 10) {
+        showPopup("Minimum Limit Error", "Minimum withdrawal amount for bKash/USD is $10.", "error");
+        return;
+      }
+      if (currentMethod === 'bank' && amountVal < 500) {
+        showPopup("Minimum Limit Error", "Minimum withdrawal amount for Bank is $500.", "error");
+        return;
+      }
 
       submitBtn.innerText = "Processing...";
       submitBtn.disabled = true;
 
       try {
-        // ১. ইউজারের সেসন থেকে সঠিক user_id নেওয়া
         const { data: { user } } = await client.auth.getUser();
         let userId = user ? user.id : localStorage.getItem('user_id');
 
         if (!userId) {
-          alert("Please login first!");
+          showPopup("Error", "Please login first!", "error");
           return;
         }
 
-        // ২. ওয়ালেট থেকে বর্তমান ব্যালেন্স চেক করা
+        // Secret PIN চেক করা (user টেবিল থেকে)
+        const { data: userData, error: userErr } = await client
+          .from('user')
+          .select('secret_pin')
+          .eq('id', userId)
+          .single();
+
+        if (userErr || !userData) {
+          showPopup("Error", "User record not found!", "error");
+          return;
+        }
+
+        if (userData.secret_pin !== inputPin) {
+          showPopup("Security Alert", "Incorrect Secret PIN! Please try again.", "error");
+          return;
+        }
+
+        // ওয়ালেট ব্যালেন্স চেক
         const { data: walletData, error: walletError } = await client
           .from('wallets')
           .select('id, balance')
@@ -103,35 +330,53 @@
           .single();
 
         if (walletError || !walletData) {
-          alert("Wallet record not found!");
+          showPopup("Error", "Wallet record not found!", "error");
           return;
         }
 
         const currentBalance = parseFloat(walletData.balance || 0);
 
         if (currentBalance < amountVal) {
-          alert("Insufficient Balance!");
+          showPopup("Insufficient Balance", "You do not have enough balance to withdraw.", "error");
           return;
         }
 
-        // ৩. ওয়ালেট থেকে ব্যালেন্স আগে কেটে নেওয়া (Deduct Balance)
+        // একাউন্ট ও মেথড ডিটেইলস তৈরি করা
+        let accountDetails = '';
+        let methodNameDisplay = '';
+
+        if (currentMethod === 'bkash') {
+          accountDetails = document.getElementById('bkash_number').value;
+          methodNameDisplay = 'bKash Personal';
+        } else if (currentMethod === 'usd') {
+          accountDetails = document.getElementById('bsc_address').value;
+          methodNameDisplay = 'USD (BSC BEP20)';
+        } else if (currentMethod === 'bank') {
+          const bankName = document.getElementById('bank_name').value;
+          const accName = document.getElementById('account_name').value;
+          const accNum = document.getElementById('account_number_bank').value;
+          const branch = document.getElementById('branch_name').value;
+          const router = document.getElementById('router_number').value;
+          
+          accountDetails = `Bank: ${bankName} | Acc Name: ${accName} | Acc No: ${accNum} | Branch: ${branch} | Routing: ${router}`;
+          methodNameDisplay = 'Bank Transfer';
+        }
+
+        // ব্যালেন্স ডিডাক্ট (Deduct)
         const newBalance = currentBalance - amountVal;
         const { error: updateError } = await client
           .from('wallets')
-          .update({ 
-            balance: newBalance,
-            updated_at: new Date().toISOString()
-          })
+          .update({ balance: newBalance, updated_at: new Date().toISOString() })
           .eq('user_id', userId);
 
         if (updateError) {
           throw new Error("Balance Update Failed: " + updateError.message);
         }
 
-        // ৪. ট্রানজ্যাকশন এন্ট্রি তৈরি করা
+        // ট্রানজ্যাকশন টেবিল ইনসার্ট
         const charge = 0; 
         const netAmount = amountVal - charge;
-        const trxId = 'TRX' + Math.floor(10000000 + Math.random() * 90000000);
+        const trxId = 'WD' + Math.floor(10000000 + Math.random() * 90000000);
 
         const payload = {
           user_id: userId,
@@ -139,8 +384,8 @@
           amount: amountVal,
           charge: charge,
           net_amount: netAmount,
-          method: document.getElementById('method').value,
-          account_number: document.getElementById('account_number').value,
+          method: methodNameDisplay,
+          account_number: accountDetails,
           trx_id: trxId,
           status: 'pending'
         };
@@ -148,21 +393,25 @@
         const { error: trxError } = await client.from('transactions').insert([payload]);
 
         if (trxError) {
-          // ট্রানজ্যাকশন ফেইল করলে ব্যালেন্স রোলব্যাক করা
+          // ট্রানজ্যাকশন ব্যর্থ হলে ব্যালেন্স রোলব্যাক
           await client.from('wallets').update({ balance: currentBalance }).eq('user_id', userId);
-          throw new Error("Transaction Request Failed: " + trxError.message);
+          throw new Error("Transaction Failed: " + trxError.message);
         }
 
-        alert("Withdrawal request submitted successfully!");
-        window.location.href = "wallet-getway-method.html";
+        showPopup("Success!", "Withdrawal request submitted successfully!", "success", true);
 
       } catch (err) {
         console.error("Withdrawal Error:", err);
-        alert(err.message || "Something went wrong!");
+        showPopup("Error", err.message || "Something went wrong!", "error");
       } finally {
         submitBtn.innerText = "Submit Withdraw Request";
         submitBtn.disabled = false;
       }
+    });
+
+    // পেজ লোড হলে ফেচ করা
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchUsdRate();
     });
   </script>
 </body>
