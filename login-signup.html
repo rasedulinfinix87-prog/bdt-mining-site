@@ -169,6 +169,24 @@
             margin-top: 4px;
         }
 
+        .forgot-password-link {
+            text-align: right;
+            margin-top: -6px;
+            margin-bottom: 12px;
+        }
+
+        .forgot-password-link a {
+            font-size: 0.75rem;
+            color: var(--gold-primary);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .forgot-password-link a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
         .btn-gold {
             width: 100%;
             padding: 13px;
@@ -206,6 +224,90 @@
 
         .hidden {
             display: none;
+        }
+
+        /* --- Custom Popup Modal Overlay with Animation --- */
+        .auth-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 13, 10, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .auth-modal-card {
+            background: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
+            border: 1px solid var(--gold-primary);
+            border-radius: 20px;
+            padding: 28px 22px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(245, 207, 102, 0.2);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .auth-modal-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(245, 207, 102, 0.15);
+            border: 1px solid var(--gold-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px auto;
+            color: var(--gold-primary);
+            font-size: 1.6rem;
+            box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
+        }
+
+        .auth-modal-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 22px;
+            font-weight: 400;
+        }
+
+        .btn-modal-action {
+            display: inline-block;
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--gold-gradient);
+            color: #030d0a;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(245, 207, 102, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-modal-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 207, 102, 0.4);
         }
     </style>
 </head>
@@ -255,18 +357,26 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Password</label>
+                        <label>Password (Min 8 Characters)</label>
                         <div class="input-box">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="signup-password" placeholder="••••••••" required>
+                            <input type="password" id="signup-password" placeholder="••••••••" minlength="8" required>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Secret Security PIN (4-6 Digits)</label>
+                        <label>Confirm Password</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="signup-confirm-password" placeholder="••••••••" minlength="8" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Secret Security PIN (4 Digits)</label>
                         <div class="input-box">
                             <i class="fa-solid fa-shield-halved"></i>
-                            <input type="password" id="signup-pin" maxlength="6" placeholder="1234" required>
+                            <input type="password" id="signup-pin" maxlength="4" minlength="4" placeholder="1234" required>
                         </div>
                         <div class="pin-hint"><i class="fa-solid fa-circle-check"></i> Required for Vault Withdrawals & Actions</div>
                     </div>
@@ -292,6 +402,10 @@
                         </div>
                     </div>
 
+                    <div class="forgot-password-link">
+                        <a href="#" onclick="handleForgotPassword(event)">Forgot Password?</a>
+                    </div>
+
                     <button type="submit" class="btn-gold" id="btn-login">ACCESS VAULT</button>
                 </form>
 
@@ -304,18 +418,51 @@
         </div>
     </div>
 
+    <!-- Custom Popup Modal -->
+    <div class="auth-modal-overlay" id="customModal">
+        <div class="auth-modal-card">
+            <div class="auth-modal-icon" id="modalIcon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <p class="auth-modal-text" id="modalMessage">Message goes here</p>
+            <button class="btn-modal-action" id="modalActionBtn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
     <!-- Supabase Authentication Script -->
     <script>
         const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
 
         let supabaseClient = null;
+        let modalCallback = null;
 
         function getSupabaseClient() {
             if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
             return supabaseClient;
+        }
+
+        // Custom Popup Modal Control
+        function showPopup(message, iconClass = 'fa-solid fa-circle-check', callback = null) {
+            const modal = document.getElementById('customModal');
+            const msgEl = document.getElementById('modalMessage');
+            const iconEl = document.getElementById('modalIcon');
+            
+            msgEl.innerText = message;
+            iconEl.innerHTML = `<i class="${iconClass}"></i>`;
+            modal.style.display = 'flex';
+            modalCallback = callback;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            modal.style.display = 'none';
+            if (typeof modalCallback === 'function') {
+                modalCallback();
+                modalCallback = null;
+            }
         }
 
         // Tab Switch Logic
@@ -338,13 +485,25 @@
             }
         }
 
+        // Forgot Password Logic with Popup & Redirect
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            showPopup(
+                'Our platform is secure. If you forgot your password, click here to retrieve or reset your password through support.',
+                'fa-solid fa-shield-halved',
+                () => {
+                    window.location.href = 'contact.html';
+                }
+            );
+        }
+
         // Registration Handling
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const client = getSupabaseClient();
             if(!client) {
-                alert('Supabase connection loading... Please try again in 3 seconds.');
+                showPopup('Supabase connection loading... Please try again in 3 seconds.', 'fa-solid fa-triangle-exclamation');
                 return;
             }
 
@@ -352,7 +511,26 @@
             const email = document.getElementById('signup-email').value.trim();
             const phone = document.getElementById('signup-phone').value.trim();
             const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
             const secretPin = document.getElementById('signup-pin').value.trim();
+
+            // Password length validation (Min 8 digits)
+            if (password.length < 8) {
+                showPopup('Password must be at least 8 characters long.', 'fa-solid fa-triangle-exclamation');
+                return;
+            }
+
+            // Confirm password match validation
+            if (password !== confirmPassword) {
+                showPopup('Password and Confirm Password do not match!', 'fa-solid fa-triangle-exclamation');
+                return;
+            }
+
+            // Secret Pin 4 digit validation
+            if (secretPin.length !== 4 || isNaN(secretPin)) {
+                showPopup('Secret Security PIN must be exactly 4 digits.', 'fa-solid fa-triangle-exclamation');
+                return;
+            }
 
             const signupBtn = document.getElementById('btn-signup');
             signupBtn.innerText = 'CREATING ACCOUNT...';
@@ -366,12 +544,12 @@
                 });
 
                 if (authError) {
-                    alert('Registration Failed: ' + authError.message);
+                    showPopup('Registration Failed: ' + authError.message, 'fa-solid fa-triangle-exclamation');
                     return;
                 }
 
                 if (!authData.user) {
-                    alert('User creation failed.');
+                    showPopup('User creation failed.', 'fa-solid fa-triangle-exclamation');
                     return;
                 }
 
@@ -398,12 +576,14 @@
                 // LocalStorage-এ ID সেভ
                 localStorage.setItem('user_id', userId);
 
-                alert('Account created successfully!');
-                window.location.href = 'home-index.html';
+                // Account Created Successful Popup Animation
+                showPopup('Account created successfully!', 'fa-solid fa-circle-check', () => {
+                    window.location.href = 'home-index.html';
+                });
 
             } catch (err) {
                 console.error(err);
-                alert('Error: ' + err.message);
+                showPopup('Error: ' + err.message, 'fa-solid fa-triangle-exclamation');
             } finally {
                 signupBtn.innerText = 'REGISTER VAULT ACCOUNT';
                 signupBtn.disabled = false;
@@ -416,7 +596,7 @@
 
             const client = getSupabaseClient();
             if(!client) {
-                alert('Supabase connection loading... Please try again in 3 seconds.');
+                showPopup('Supabase connection loading... Please try again in 3 seconds.', 'fa-solid fa-triangle-exclamation');
                 return;
             }
 
@@ -434,21 +614,23 @@
                 });
 
                 if (authError) {
-                    alert('Login Failed: ' + authError.message);
+                    showPopup('Login Failed: ' + authError.message, 'fa-solid fa-triangle-exclamation');
                     return;
                 }
 
                 if (authData && authData.user) {
                     localStorage.setItem('user_id', authData.user.id);
-                    alert('Login successful! Welcome back.');
-                    window.location.href = 'home-index.html';
+                    // Login Successful Popup Animation
+                    showPopup('Login successful! Welcome back.', 'fa-solid fa-circle-check', () => {
+                        window.location.href = 'home-index.html';
+                    });
                 } else {
-                    alert('Login failed. Please check your credentials.');
+                    showPopup('Login failed. Please check your credentials.', 'fa-solid fa-triangle-exclamation');
                 }
 
             } catch (err) {
                 console.error(err);
-                alert('Error: ' + err.message);
+                showPopup('Error: ' + err.message, 'fa-solid fa-triangle-exclamation');
             } finally {
                 loginBtn.innerText = 'ACCESS VAULT';
                 loginBtn.disabled = false;
