@@ -344,7 +344,7 @@
         </a>
         <h2>Settings</h2>
       </div>
-      <button class="menu-toggle-btn" onclick="toggleMenu()">
+      <button class="menu-toggle-btn" onclick="toggleMenu(event)">
         <i class="fa-solid fa-bars"></i>
       </button>
 
@@ -405,7 +405,8 @@
 
   <script>
     // Toggle Hamburger Menu
-    function toggleMenu() {
+    function toggleMenu(event) {
+      if (event) event.stopPropagation();
       const menu = document.getElementById('hamburger-menu');
       menu.classList.toggle('active');
     }
