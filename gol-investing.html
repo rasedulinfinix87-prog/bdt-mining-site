@@ -9,14 +9,16 @@
     :root {
       --bg-dark: #061913;
       --topbar-bg: #030d0a;
-      --card-bg: rgba(12, 38, 29, 0.85);
+      --card-bg: rgba(12, 38, 29, 0.75);
       --card-border: rgba(245, 207, 102, 0.25);
-      --gold-primary: #f5cf66;
-      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
-      --card-gradient: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
+      --gold-primary: #ffd700;
+      --gold-secondary: #b89332;
+      --gold-gradient: linear-gradient(135deg, #ffd700 0%, #b89332 100%);
+      --gold-glow: rgba(255, 215, 0, 0.15);
+      --card-gradient: linear-gradient(135deg, rgba(18, 48, 36, 0.85) 0%, rgba(3, 13, 10, 0.95) 100%);
       --text-main: #ffffff;
       --text-muted: #8da499;
-      --green-glow: #2ed573;
+      --green-glow: #10b981;
     }
 
     * {
@@ -28,6 +30,9 @@
 
     body {
       background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 20%);
       color: var(--text-main);
       display: flex;
       justify-content: center;
@@ -38,7 +43,7 @@
       width: 100%;
       max-width: 480px;
       background-color: var(--bg-dark);
-      padding-bottom: 80px;
+      padding-bottom: 90px;
       position: relative;
       min-height: 100vh;
     }
@@ -50,7 +55,7 @@
       justify-content: space-between;
       padding: 18px 20px;
       background: rgba(3, 13, 10, 0.95);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -82,13 +87,13 @@
     }
 
     .section-header h3 {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: var(--gold-primary);
       margin-bottom: 4px;
     }
 
     .section-header p {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
     }
 
@@ -97,9 +102,9 @@
       display: flex;
       background: rgba(3, 13, 10, 0.8);
       padding: 5px;
-      border-radius: 12px;
+      border-radius: 14px;
       margin: 15px 20px;
-      border: 1px solid rgba(245, 207, 102, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.18);
       gap: 5px;
     }
 
@@ -111,7 +116,7 @@
       color: var(--text-muted);
       font-weight: 600;
       font-size: 0.85rem;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.3s ease;
     }
@@ -119,7 +124,7 @@
     .duration-btn.active {
       background: var(--gold-gradient);
       color: #030d0a;
-      box-shadow: 0 2px 10px rgba(245, 207, 102, 0.2);
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
     }
 
     /* Plan Cards List */
@@ -127,57 +132,83 @@
       padding: 10px 20px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 22px;
     }
 
     .plan-card {
       background: var(--card-gradient);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      border-radius: 22px;
+      padding: 22px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .plan-card:hover {
-      border-color: var(--gold-primary);
+      border-color: rgba(255, 215, 0, 0.5);
+      box-shadow: 0 15px 35px var(--gold-glow), 0 0 15px rgba(255, 215, 0, 0.2);
+      transform: translateY(-4px);
     }
 
     .plan-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .plan-title {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .plan-title i {
+    .plan-title .icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(184, 147, 50, 0.1));
       color: var(--gold-primary);
-      font-size: 1.3rem;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
     }
 
     .plan-title h4 {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
+      font-weight: 700;
       color: var(--text-main);
     }
 
     .badge-karat {
-      background: rgba(245, 207, 102, 0.15);
+      background: rgba(255, 215, 0, 0.1);
       color: var(--gold-primary);
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 20px;
       font-size: 0.75rem;
       font-weight: 600;
-      border: 1px solid rgba(245, 207, 102, 0.3);
+      border: 1px solid rgba(255, 215, 0, 0.25);
+    }
+
+    /* Live Profit Graph inside Card */
+    .graph-container {
+      width: 100%;
+      height: 75px;
+      margin: 10px 0 16px 0;
+      position: relative;
+    }
+
+    .graph-container svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
     }
 
     .plan-details {
@@ -188,10 +219,10 @@
     }
 
     .detail-item {
-      background: rgba(6, 25, 19, 0.6);
+      background: rgba(3, 13, 10, 0.5);
       padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .detail-item span {
@@ -202,7 +233,7 @@
     }
 
     .detail-item strong {
-      font-size: 0.95rem;
+      font-size: 0.98rem;
       color: var(--text-main);
     }
 
@@ -212,11 +243,11 @@
 
     .btn-invest {
       width: 100%;
-      padding: 12px;
+      padding: 13px;
       background: var(--gold-gradient);
       color: #030d0a;
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       font-weight: 700;
       font-size: 0.95rem;
       cursor: pointer;
@@ -224,12 +255,17 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 15px rgba(245, 207, 102, 0.2);
-      transition: opacity 0.2s ease;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .btn-invest:hover {
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+      transform: scale(1.02);
     }
 
     .btn-invest:active {
-      opacity: 0.85;
+      transform: scale(0.98);
     }
 
     #bottom-nav-container {
@@ -252,12 +288,12 @@
         </a>
         <h2>Gold Investment</h2>
       </div>
-      <i class="fa-solid fa-coins" style="color: var(--gold-primary); font-size: 1.1rem;"></i>
+      <i class="fa-solid fa-coins" style="color: var(--gold-primary); font-size: 1.2rem;"></i>
     </div>
 
     <!-- Header Section -->
     <div class="section-header">
-      <h3>Select Investment Plan</h3>
+      <h3>Select Gold Plan</h3>
       <p>Choose your gold purity karat and investment duration.</p>
     </div>
 
@@ -275,11 +311,26 @@
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
-            <i class="fa-solid fa-gem"></i>
+            <div class="icon-box"><i class="fa-solid fa-gem"></i></div>
             <h4>3 Karat Gold</h4>
           </div>
           <span class="badge-karat">Basic</span>
         </div>
+
+        <!-- Live Gold Graph SVG -->
+        <div class="graph-container">
+          <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="goldGradient1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffd700" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,60 Q50,30 100,45 T200,20 T300,10 L300,80 L0,80 Z" fill="url(#goldGradient1)" />
+            <path d="M0,60 Q50,30 100,45 T200,20 T300,10" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+        </div>
+
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
@@ -307,11 +358,26 @@
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
-            <i class="fa-solid fa-coins"></i>
+            <div class="icon-box"><i class="fa-solid fa-coins"></i></div>
             <h4>20 Karat Gold</h4>
           </div>
           <span class="badge-karat">Standard</span>
         </div>
+
+        <!-- Live Gold Graph SVG -->
+        <div class="graph-container">
+          <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="goldGradient2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffd700" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,65 Q60,25 120,50 T220,15 T300,5 L300,80 L0,80 Z" fill="url(#goldGradient2)" />
+            <path d="M0,65 Q60,25 120,50 T220,15 T300,5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+        </div>
+
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
@@ -339,11 +405,26 @@
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
-            <i class="fa-solid fa-vault"></i>
+            <div class="icon-box"><i class="fa-solid fa-vault"></i></div>
             <h4>21 Karat Gold</h4>
           </div>
           <span class="badge-karat">Popular</span>
         </div>
+
+        <!-- Live Gold Graph SVG -->
+        <div class="graph-container">
+          <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="goldGradient3" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffd700" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,70 Q40,40 110,30 T210,25 T300,5 L300,80 L0,80 Z" fill="url(#goldGradient3)" />
+            <path d="M0,70 Q40,40 110,30 T210,25 T300,5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+        </div>
+
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
@@ -371,11 +452,26 @@
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
-            <i class="fa-solid fa-crown"></i>
+            <div class="icon-box"><i class="fa-solid fa-crown"></i></div>
             <h4>22 Karat Gold</h4>
           </div>
           <span class="badge-karat">Premium</span>
         </div>
+
+        <!-- Live Gold Graph SVG -->
+        <div class="graph-container">
+          <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="goldGradient4" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffd700" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,55 Q70,15 140,40 T240,10 T300,2 L300,80 L0,80 Z" fill="url(#goldGradient4)" />
+            <path d="M0,55 Q70,15 140,40 T240,10 T300,2" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+        </div>
+
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
@@ -403,11 +499,26 @@
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
-            <i class="fa-solid fa-layer-group"></i>
+            <div class="icon-box"><i class="fa-solid fa-layer-group"></i></div>
             <h4>23 Karat Gold</h4>
           </div>
           <span class="badge-karat">VIP Gold</span>
         </div>
+
+        <!-- Live Gold Graph SVG -->
+        <div class="graph-container">
+          <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="goldGradient5" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffd700" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,75 Q50,20 120,35 T230,8 T300,0 L300,80 L0,80 Z" fill="url(#goldGradient5)" />
+            <path d="M0,75 Q50,20 120,35 T230,8 T300,0" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+        </div>
+
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
