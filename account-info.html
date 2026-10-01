@@ -41,7 +41,7 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding-bottom: 75px; /* Bottom Nav Bar Space */
+            padding-bottom: 75px;
         }
 
         .mobile-container {
@@ -53,7 +53,6 @@
             position: relative;
         }
 
-        /* Top Bar Header */
         .header-bar {
             display: flex;
             align-items: center;
@@ -76,7 +75,6 @@
             letter-spacing: 1px;
         }
 
-        /* Form Controls */
         .form-group {
             margin-bottom: 16px;
         }
@@ -139,7 +137,6 @@
             margin-top: 10px;
         }
 
-        /* FIXED BOTTOM NAVIGATION BAR */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -175,7 +172,6 @@
             color: var(--gold-primary);
         }
 
-        /* POPUP / MODAL STYLING */
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -272,14 +268,12 @@
 <body>
 
     <div class="mobile-container">
-        <!-- Top Header Bar -->
         <div class="header-bar">
             <a href="home-index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
             <div class="page-title">ACCOUNT INFORMATION</div>
             <div style="width: 20px;"></div>
         </div>
 
-        <!-- Account Form -->
         <div class="form-group">
             <label>Full Name</label>
             <div class="input-box">
@@ -312,7 +306,6 @@
             </div>
         </div>
 
-        <!-- Password Change Section -->
         <div class="section-divider">Change Password</div>
 
         <div class="form-group">
@@ -325,7 +318,6 @@
         <button class="btn-gold" id="btn-update-pass" onclick="updatePassword()">UPDATE PASSWORD</button>
     </div>
 
-    <!-- FIXED BOTTOM NAVIGATION BAR -->
     <div class="bottom-nav">
         <a href="home-index.html" class="nav-item">
             <i class="fa-solid fa-arrow-left"></i>
@@ -345,7 +337,6 @@
         </a>
     </div>
 
-    <!-- POP-UP MODAL FOR USER INFORMATION -->
     <div class="popup-overlay" id="user-popup">
         <div class="popup-card">
             <i class="fa-solid fa-shield-halved main-icon"></i>
@@ -374,63 +365,56 @@
         </div>
     </div>
 
-    <!-- SUPABASE FUNCTIONALITY -->
+    <script src="supabase-config.js"></script>
     <script>
-        const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
-
-        let client = null;
+        let client = window._supabase || window.supabase;
         let actualPin = "";
+        let currentUserId = null;
 
-        function getClient() {
-            if(!client && window.supabase && typeof window.supabase.createClient === 'function') {
-                client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
-            return client;
-        }
-
-        // Fetch User Information on Page Load
         async function fetchUserData() {
-            const userId = localStorage.getItem('user_id');
+            if (!client) {
+                client = window._supabase || window.supabase;
+            }
 
-            if (!userId) {
+            // ১. Supabase Auth থেকে ইউজার সেশন চেক
+            const { data: { user } } = await client.auth.getUser();
+            
+            if (user) {
+                currentUserId = user.id;
+            } else {
+                currentUserId = localStorage.getItem('user_id');
+            }
+
+            if (!currentUserId) {
                 alert('Session expired. Please login again.');
                 window.location.href = 'login-signup.html';
                 return;
             }
 
-            const supabase = getClient();
-            if(!supabase) {
-                setTimeout(fetchUserData, 1000);
-                return;
-            }
-
             try {
-                const { data, error } = await supabase
+                // ২. user টেবিল থেকে ডাটা ফেচ করা
+                const { data, error } = await client
                     .from('user')
-                    .select('*')
-                    .eq('id', userId)
+                    .select('id, full_name, email, phone, secret_pin')
+                    .eq('id', currentUserId)
                     .maybeSingle();
 
                 if (error) {
                     alert('Error fetching user data: ' + error.message);
                 } else if (data) {
-                    // Fill Form Inputs
                     document.getElementById('acc-fullname').value = data.full_name || 'N/A';
                     document.getElementById('acc-email').value = data.email || 'N/A';
                     document.getElementById('acc-phone').value = data.phone || 'N/A';
                     actualPin = data.secret_pin || 'N/A';
 
-                    // Fill Pop-up Details
                     document.getElementById('pop-name').innerText = data.full_name || 'N/A';
                     document.getElementById('pop-email').innerText = data.email || 'N/A';
                     document.getElementById('pop-phone').innerText = data.phone || 'N/A';
                     document.getElementById('pop-pin').innerText = actualPin;
 
-                    // Show Pop-up
                     showPopup();
                 } else {
-                    alert('User record not found in database.');
+                    alert('User record not found in database. Please login again.');
                 }
             } catch (err) {
                 console.error(err);
@@ -438,7 +422,6 @@
             }
         }
 
-        // Pop-up Control
         function showPopup() {
             document.getElementById('user-popup').classList.add('show');
         }
@@ -447,7 +430,6 @@
             document.getElementById('user-popup').classList.remove('show');
         }
 
-        // PIN Visibility Toggle
         function togglePinVisibility() {
             const pinInput = document.getElementById('acc-pin');
             if (pinInput.type === 'password') {
@@ -459,32 +441,33 @@
             }
         }
 
-        // Password Visibility Toggle
         function togglePasswordVisibility() {
             const passInput = document.getElementById('new-password');
             passInput.type = passInput.type === 'password' ? 'text' : 'password';
         }
 
-        // Update Password Logic
         async function updatePassword() {
             const newPassword = document.getElementById('new-password').value.trim();
-            const userId = localStorage.getItem('user_id');
 
             if (!newPassword) {
                 alert('Please enter a new password!');
                 return;
             }
 
-            const supabase = getClient();
+            if (!currentUserId) {
+                alert('Session expired. Please login again.');
+                return;
+            }
+
             const btn = document.getElementById('btn-update-pass');
             btn.innerText = 'UPDATING...';
             btn.disabled = true;
 
             try {
-                const { error } = await supabase
+                const { error } = await client
                     .from('user')
-                    .update({ password: newPassword })
-                    .eq('id', userId);
+                    .update({ password: newPassword, updated_at: new Date().toISOString() })
+                    .eq('id', currentUserId);
 
                 if (error) {
                     alert('Password Update Failed: ' + error.message);
@@ -501,7 +484,6 @@
             }
         }
 
-        // Execute on load
         window.addEventListener('DOMContentLoaded', fetchUserData);
     </script>
 </body>
