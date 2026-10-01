@@ -498,40 +498,40 @@
 
       if (confirm(`Are you sure you want to invest $${amount} in ${planName} for ${currentDuration} Days?`)) {
         
-        // ১. ইউজারের ওয়ালেট থেকে ব্যালেন্স চেক
+        // ১. ইউজারের ব্যালেন্স চেক (wallets টেবিল থেকে)
         const { data: wallet, error: walletErr } = await client
           .from('wallets')
           .select('balance')
           .eq('user_id', user.id)
           .single();
 
-        if (walletErr || !wallet || wallet.balance < amount) {
+        if (walletErr || !wallet || parseFloat(wallet.balance) < amount) {
           alert("Insufficient Balance! Please deposit first.");
           return;
         }
 
-        // ২. শুরু এবং শেষ হওয়ার সময় হিসাব
+        // ২. ডেট ও প্রফিট হিসাব
         const startDate = new Date();
         const endDate = new Date();
         endDate.setDate(startDate.getDate() + currentDuration);
 
-        const totalExpectedProfit = (amount * (rate / 100)) * currentDuration;
+        const profit = (amount * (rate / 100)) * currentDuration;
+        const totalReturn = amount + profit;
 
-        // ৩. user_investments টেবিলে ইনভেস্টমেন্ট তথ্য ইনসার্ট করা
+        // ৩. 'investments' টেবিলে ডাটা ইনসার্ট করা
         const { error: insertError } = await client
-          .from('user_investments')
+          .from('investments')
           .insert([
             {
               user_id: user.id,
               plan_name: planName,
-              invested_amount: amount,
-              daily_profit_percent: rate,
-              total_expected_profit: totalExpectedProfit,
-              earned_profit: 0,
               duration_days: currentDuration,
+              amount: amount,
+              daily_profit_percent: rate,
+              total_return: totalReturn,
+              status: 'active',
               start_date: startDate.toISOString(),
-              end_date: endDate.toISOString(),
-              status: 'active'
+              end_date: endDate.toISOString()
             }
           ]);
 
@@ -540,8 +540,8 @@
           return;
         }
 
-        // ৪. ইউজারের ওয়ালেট ব্যালেন্স থেকে ইনভেস্ট করা টাকা কেটে নেওয়া
-        const newBalance = wallet.balance - amount;
+        // ৪. ইউজারের ওয়ালেট থেকে টাকা কেটে নেওয়া
+        const newBalance = parseFloat(wallet.balance) - amount;
         await client
           .from('wallets')
           .update({ balance: newBalance, updated_at: new Date().toISOString() })
@@ -549,7 +549,7 @@
 
         alert("Investment Successful!");
         
-        // ৫. সরাসরি gol-investing-dashborad.html পেজে রিডাইরেক্ট করা
+        // ৫. সরাসরি gol-investing-dashborad.html পেজে পাঠাবে
         window.location.href = "gol-investing-dashborad.html";
       }
     }
