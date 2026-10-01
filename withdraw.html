@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Withdraw - Goldmine Digital</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #040d08;
+      --card-bg: #0e2219;
+      --gold-primary: #f5c518;
+      --gold-gradient: linear-gradient(135deg, #f5c518 0%, #a67c1e 100%);
+      --text-main: #ffffff;
+      --text-muted: #8ca398;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; }
+
+    .mobile-container {
+      width: 100%; max-width: 480px; padding: 20px; padding-bottom: 80px; min-height: 100vh;
+    }
+
+    .top-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+    .top-bar a { color: #fff; text-decoration: none; font-size: 1.2rem; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+    .form-control {
+      width: 100%; padding: 14px; border-radius: 10px; background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-size: 1rem; outline: none;
+    }
+    .form-control:focus { border-color: var(--gold-primary); }
+
+    .btn-submit {
+      width: 100%; padding: 15px; border-radius: 10px; border: none;
+      background: var(--gold-gradient); color: #000; font-weight: bold; font-size: 1rem;
+      cursor: pointer; margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-container">
+    <div class="top-bar">
+      <a href="wallet-getway-method.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <h2>Withdraw Money</h2>
+    </div>
+
+    <form id="withdraw-form">
+      <div class="form-group">
+        <label>Withdraw Method</label>
+        <select class="form-control" id="method" required>
+          <option value="bKash">bKash Personal</option>
+          <option value="Nagad">Nagad Personal</option>
+          <option value="USDT">USDT (TRC20)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Amount ($)</label>
+        <input type="number" class="form-control" id="amount" placeholder="Enter Amount" required min="1">
+      </div>
+
+      <div class="form-group">
+        <label>Receiver Number / Address</label>
+        <input type="text" class="form-control" id="account_number" placeholder="017xxxxxxxx / TRC20 Address" required>
+      </div>
+
+      <button type="submit" class="btn-submit" id="btn-submit">Submit Withdraw Request</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    document.getElementById('withdraw-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const client = window._supabase || window.supabase;
+      const submitBtn = document.getElementById('btn-submit');
+
+      const amountVal = parseFloat(document.getElementById('amount').value);
+
+      submitBtn.innerText = "Processing...";
+      submitBtn.disabled = true;
+
+      const { data: { user } } = await client.auth.getUser();
+
+      if (!user) {
+        alert("Please login first!");
+        return;
+      }
+
+      // ১. ইউজারের ব্যালেন্স চেক করা
+      const { data: walletData } = await client
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!walletData || walletData.balance < amountVal) {
+        alert("Insufficient Balance!");
+        submitBtn.innerText = "Submit Withdraw Request";
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // ২. উইথড্র ট্রানজ্যাকশন এন্ট্রি
+      const payload = {
+        user_id: user.id,
+        type: 'withdraw',
+        amount: amountVal,
+        method: document.getElementById('method').value,
+        account_number: document.getElementById('account_number').value,
+        status: 'pending'
+      };
+
+      const { error } = await client.from('transactions').insert([payload]);
+
+      if (error) {
+        alert("Error: " + error.message);
+      } else {
+        alert("Withdrawal request submitted successfully!");
+        window.location.href = "wallet-getway-method.html";
+      }
+
+      submitBtn.innerText = "Submit Withdraw Request";
+      submitBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>
