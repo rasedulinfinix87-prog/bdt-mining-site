@@ -304,7 +304,7 @@
       // ২. 'wallets' টেবিল থেকে মেইন ব্যালেন্স আনা
       fetchMainWallet(client, userId);
 
-      // ৩. 'user_investments' টেবিল থেকে একটিভ ইনভেস্টমেন্ট তথ্য আনা
+      // ৩. 'investments' টেবিল থেকে একটিভ ইনভেস্টমেন্ট তথ্য আনা
       fetchInvestments(client, userId);
 
       // ৪. Realtime Listener for Wallets Balance
@@ -335,7 +335,7 @@
     // ইনভেস্টমেন্ট তালিকা ও সামারি হিসাব
     async function fetchInvestments(client, userId) {
       const { data: investments, error } = await client
-        .from('user_investments')
+        .from('investments')
         .select('*')
         .eq('user_id', userId)
         .eq('status', 'active')
@@ -351,32 +351,47 @@
       }
 
       let totalInvest = 0;
-      let totalProfit = 0;
+      let totalAccumulatedProfit = 0;
       container.innerHTML = '';
 
       // আগের টাইমারগুলো ক্লিয়ার করা
       activeIntervals.forEach(clearInterval);
       activeIntervals = [];
 
+      const now = new Date().getTime();
+
       investments.forEach((plan, index) => {
-        totalInvest += parseFloat(plan.invested_amount || 0);
-        totalProfit += parseFloat(plan.earned_profit || 0);
+        const investedAmount = parseFloat(plan.amount || 0);
+        totalInvest += investedAmount;
+
+        // সময় এবং প্রফিট হিসাব
+        const start = new Date(plan.start_date).getTime();
+        const end = new Date(plan.end_date).getTime();
+        const totalDuration = end - start;
+        const elapsedTime = Math.max(0, Math.min(totalDuration, now - start));
+
+        // মোট কত মুনাফা পাওয়ার কথা (Total Return - Amount)
+        const totalExpectedProfit = parseFloat(plan.total_return || 0) - investedAmount;
+        
+        // বর্তমান সময় পর্যন্ত আনুমানিক অর্জিত প্রফিট
+        const currentProfit = totalDuration > 0 ? (totalExpectedProfit * (elapsedTime / totalDuration)) : 0;
+        totalAccumulatedProfit += currentProfit;
 
         const cardHtml = `
           <div class="plan-card">
             <div class="plan-header">
-              <div class="plan-name">${plan.plan_name}</div>
+              <div class="plan-name">${plan.plan_name} (${plan.duration_days} Days)</div>
               <span class="badge-active">Active</span>
             </div>
             
             <div class="plan-body">
               <div class="plan-body-item">
                 <div class="stat-label">Invested</div>
-                <div class="val">$${parseFloat(plan.invested_amount).toFixed(2)}</div>
+                <div class="val">$${investedAmount.toFixed(2)}</div>
               </div>
               <div class="plan-body-item">
-                <div class="stat-label">Earned Profit</div>
-                <div class="val" style="color: var(--green-glow);">$${parseFloat(plan.earned_profit || 0).toFixed(2)}</div>
+                <div class="stat-label">Est. Profit So Far</div>
+                <div class="val" style="color: var(--green-glow);">$${currentProfit.toFixed(2)}</div>
               </div>
             </div>
 
@@ -397,7 +412,7 @@
 
       // সামারি আপডেট
       document.getElementById('total-active-invest').innerText = '$' + totalInvest.toFixed(2);
-      document.getElementById('total-profit-earned').innerText = '$' + totalProfit.toFixed(2);
+      document.getElementById('total-profit-earned').innerText = '$' + totalAccumulatedProfit.toFixed(2);
     }
 
     // লাইভ কাউন্টডাউন টাইমার ও প্রোগ্রেস বার লজিক
