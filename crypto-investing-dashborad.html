@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Investment Dashboard - Goldmine Digital</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #061913;
+      --card-bg: rgba(12, 38, 29, 0.85);
+      --card-border: rgba(245, 207, 102, 0.25);
+      --gold-primary: #f5cf66;
+      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --card-gradient: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
+      --text-main: #ffffff;
+      --text-muted: #8da499;
+      --green-glow: #2ed573;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .mobile-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-dark);
+      padding-bottom: 90px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: rgba(3, 13, 10, 0.95);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .top-bar .back-btn {
+      color: var(--text-main);
+      font-size: 1.1rem;
+      text-decoration: none;
+    }
+
+    .top-bar h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    /* Stats Overview Cards */
+    .overview-section {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: var(--card-gradient);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-card.full-width {
+      grid-column: span 2;
+      background: linear-gradient(135deg, rgba(245, 207, 102, 0.15) 0%, rgba(12, 38, 29, 0.95) 100%);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+    }
+
+    .stat-value.green {
+      color: var(--green-glow);
+    }
+
+    /* Active Investments List */
+    .section-title {
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .plan-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .plan-card {
+      background: var(--card-gradient);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      position: relative;
+    }
+
+    .plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .plan-name {
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+
+    .badge-active {
+      background: rgba(46, 213, 115, 0.15);
+      color: var(--green-glow);
+      border: 1px solid var(--green-glow);
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .plan-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+      font-size: 0.85rem;
+    }
+
+    .plan-body-item .val {
+      font-weight: 600;
+      color: var(--gold-primary);
+      margin-top: 2px;
+    }
+
+    /* Progress & Timer */
+    .timer-box {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .timer-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .countdown-timer {
+      font-family: monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      letter-spacing: 1px;
+    }
+
+    .progress-container {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      height: 6px;
+      border-radius: 10px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--gold-gradient);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 30px 20px;
+      font-size: 0.9rem;
+    }
+
+    #bottom-nav-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="title-group">
+        <a href="javascript:history.back()" class="back-btn">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <h2>Crypto Dashboard</h2>
+      </div>
+      <i class="fa-brands fa-bitcoin" style="color: var(--gold-primary); font-size: 1.2rem;"></i>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="overview-section">
+      <!-- Main Balance from wallets table -->
+      <div class="stat-card full-width">
+        <div class="stat-label">
+          <i class="fa-solid fa-wallet"></i> Main Wallet Balance
+        </div>
+        <div class="stat-value" id="main-wallet-balance">$0.00</div>
+      </div>
+
+      <!-- Total Active Invest Amount -->
+      <div class="stat-card">
+        <div class="stat-label">Active Invest</div>
+        <div class="stat-value" id="total-active-invest">$0.00</div>
+      </div>
+
+      <!-- Expected Total Profit -->
+      <div class="stat-card">
+        <div class="stat-label">Est. Profit</div>
+        <div class="stat-value green" id="total-profit-earned">$0.00</div>
+      </div>
+    </div>
+
+    <!-- Active Plans Section -->
+    <div class="section-title">
+      <span>Active Crypto Plans</span>
+      <i class="fa-solid fa-clock-rotate-left"></i>
+    </div>
+
+    <div class="plan-list" id="crypto-investment-list">
+      <div class="empty-msg">Loading active plans...</div>
+    </div>
+
+    <div id="bottom-nav-container"></div>
+  </div>
+
+  <!-- Supabase & Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    let activeIntervals = [];
+
+    async function loadCryptoDashboard() {
+      const client = window._supabase || window.supabase;
+      if (!client) return console.error("Supabase client initialized হয়নি!");
+
+      // ১. ইউজারের সেশন চেক
+      const { data: { user }, error: authErr } = await client.auth.getUser();
+      if (authErr || !user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const userId = user.id;
+
+      // ২. 'wallets' টেবিল থেকে মেইন ব্যালেন্স আনা
+      fetchWalletBalance(client, userId);
+
+      // ৩. 'crypto_investment' টেবিল থেকে একটিভ ইনভেস্টমেন্ট তথ্য আনা
+      fetchCryptoInvestments(client, userId);
+
+      // ৪. Realtime Listener for Wallets Balance Update
+      client
+        .channel('crypto-wallet-sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets', filter: `user_id=eq.${userId}` }, (payload) => {
+          if (payload.new && payload.new.balance !== undefined) {
+            const currencySymbol = payload.new.currency === 'BDT' ? '৳' : '$';
+            document.getElementById('main-wallet-balance').innerText = currencySymbol + parseFloat(payload.new.balance).toFixed(2);
+          }
+        })
+        .subscribe();
+    }
+
+    // ওয়ালেট ব্যালেন্স ডাটা লোড
+    async function fetchWalletBalance(client, userId) {
+      const { data, error } = await client
+        .from('wallets')
+        .select('balance, currency')
+        .eq('user_id', userId)
+        .single();
+
+      if (data && !error) {
+        const symbol = data.currency === 'BDT' ? '৳' : '$';
+        document.getElementById('main-wallet-balance').innerText = symbol + parseFloat(data.balance || 0).toFixed(2);
+      }
+    }
+
+    // ক্রিপ্টো ইনভেস্টমেন্ট ডাটা লোড
+    async function fetchCryptoInvestments(client, userId) {
+      const { data: investments, error } = await client
+        .from('crypto_investment')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      const container = document.getElementById('crypto-investment-list');
+      
+      if (error || !investments || investments.length === 0) {
+        container.innerHTML = '<div class="empty-msg">No active crypto investment plans found.</div>';
+        document.getElementById('total-active-invest').innerText = '$0.00';
+        document.getElementById('total-profit-earned').innerText = '$0.00';
+        return;
+      }
+
+      let totalInvestSum = 0;
+      let totalProfitSum = 0;
+      container.innerHTML = '';
+
+      // পুরনো টাইমার ক্লিয়ার করা
+      activeIntervals.forEach(clearInterval);
+      activeIntervals = [];
+
+      const now = new Date().getTime();
+
+      investments.forEach((plan, index) => {
+        const investAmt = parseFloat(plan.invested_amount || 0);
+        const expectedProfit = parseFloat(plan.total_expected_profit || 0);
+
+        totalInvestSum += investAmt;
+
+        // সময় ও চলমান প্রফিট হিসেব
+        const start = new Date(plan.start_date).getTime();
+        const end = new Date(plan.end_date).getTime();
+        const totalDuration = end - start;
+        const elapsedTime = Math.max(0, Math.min(totalDuration, now - start));
+
+        // বর্তমান সময় অনুযায়ী প্রফিট
+        const currentEarnedProfit = totalDuration > 0 ? (expectedProfit * (elapsedTime / totalDuration)) : 0;
+        totalProfitSum += currentEarnedProfit;
+
+        const cardHtml = `
+          <div class="plan-card">
+            <div class="plan-header">
+              <div class="plan-name">${plan.plan_name} (${plan.duration_days} Days)</div>
+              <span class="badge-active">Active</span>
+            </div>
+            
+            <div class="plan-body">
+              <div class="plan-body-item">
+                <div class="stat-label">Invested</div>
+                <div class="val">$${investAmt.toFixed(2)}</div>
+              </div>
+              <div class="plan-body-item">
+                <div class="stat-label">Daily Profit Rate</div>
+                <div class="val" style="color: var(--green-glow);">${plan.daily_profit_percent}%</div>
+              </div>
+              <div class="plan-body-item">
+                <div class="stat-label">Current Profit</div>
+                <div class="val" style="color: var(--green-glow);">$${currentEarnedProfit.toFixed(2)}</div>
+              </div>
+              <div class="plan-body-item">
+                <div class="stat-label">Expected Profit</div>
+                <div class="val">$${expectedProfit.toFixed(2)}</div>
+              </div>
+            </div>
+
+            <div class="timer-box">
+              <div class="timer-label">REMAINING TIME</div>
+              <div class="countdown-timer" id="crypto-timer-${index}">00d 00h 00m 00s</div>
+              <div class="progress-container">
+                <div class="progress-bar" id="crypto-progress-${index}"></div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHtml);
+
+        // লাইভ টাইমার রান করা
+        startTimer(plan.start_date, plan.end_date, `crypto-timer-${index}`, `crypto-progress-${index}`);
+      });
+
+      // সামারি ড্যাশবোর্ড আপডেট
+      document.getElementById('total-active-invest').innerText = '$' + totalInvestSum.toFixed(2);
+      document.getElementById('total-profit-earned').innerText = '$' + totalProfitSum.toFixed(2);
+    }
+
+    // টাইম কাউন্টডাউন ও প্রোগ্রেস বার লজিক
+    function startTimer(startDate, endDate, timerId, progressId) {
+      const start = new Date(startDate).getTime();
+      const end = new Date(endDate).getTime();
+      const totalDuration = end - start;
+
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = end - now;
+
+        if (distance <= 0) {
+          clearInterval(interval);
+          document.getElementById(timerId).innerText = "COMPLETED";
+          document.getElementById(timerId).style.color = "#2ed573";
+          document.getElementById(progressId).style.width = "100%";
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById(timerId).innerText = 
+          `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+
+        const elapsedTime = now - start;
+        const progressPercent = Math.min(100, Math.max(0, (elapsedTime / totalDuration) * 100));
+        document.getElementById(progressId).style.width = progressPercent + "%";
+
+      }, 1000);
+
+      activeIntervals.push(interval);
+    }
+
+    // Dynamic Bottom Navigation Load
+    fetch('bottom.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('bottom-nav-container').innerHTML = html; })
+      .catch(err => console.log(err));
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(loadCryptoDashboard, 100);
+    });
+  </script>
+</body>
+</html>
