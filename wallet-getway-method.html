@@ -194,7 +194,7 @@
     <div class="top-bar">
       <div class="title-group">
         <a href="javascript:history.back()" class="back-btn">
-          <i class="fa-solid => fa-chevron-left"></i>
+          <i class="fa-solid fa-chevron-left"></i>
         </a>
         <h2>Wallet</h2>
       </div>
@@ -223,49 +223,61 @@
       </div>
     </div>
 
-    <!-- Payment Gateways Content Section (Next Work) -->
+    <!-- Payment Gateways Content Section -->
     <div class="content-area">
       <div class="section-title">Select Payment Gateway</div>
-      <!-- গেটওয়ে আইকন বা মেথডগুলোর তালিকা এখানে যুক্ত হবে -->
+      <!-- গেটওয়ে মেথডগুলো এখানে থাকবে -->
     </div>
 
     <!-- Container where bottom.html will be loaded -->
     <div id="bottom-nav-container"></div>
   </div>
 
-  <!-- Supabase CDN & Custom Logic Script -->
+  <!-- 1. Supabase CDN Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- 2. Your Supabase Config File -->
+  <script src="supabase-config.js"></script>
+
+  <!-- 3. Logic Execution Script -->
   <script>
-    // 1. Supabase Initialization (আপনার Project URL & Anon Key বসাবেন)
-    const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
-    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // supabase-config.js ফাইল থেকে supabase বা client ইনস্ট্যান্স নিবে
+    const supabaseClient = window.supabaseClient || window.supabase;
 
-    // 2. Fetch User Profile and Balance
     async function loadWalletData() {
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!supabaseClient) {
+        console.error("Supabase client is not initialized in supabase-config.js");
+        return;
+      }
 
-      if (user) {
-        // Display User Name / Metadata
-        const userName = user.user_metadata?.full_name || user.email.split('@')[0];
-        document.getElementById('user-name-display').innerText = userName;
+      // 1. Get Logged in User
+      const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
 
-        // Fetch Balance from 'wallets' table
-        const { data, error } = await supabase
-          .from('wallets')
-          .select('balance')
-          .eq('user_id', user.id)
-          .single();
+      if (userError || !user) {
+        console.warn("User not logged in or error:", userError);
+        document.getElementById('user-name-display').innerText = "Guest User";
+        return;
+      }
 
-        if (data) {
-          document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance).toFixed(2);
-        } else if (error) {
-          console.error("Error fetching balance:", error);
-        }
+      // 2. Display User Name (Metadata or Email Prefix)
+      const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+      document.getElementById('user-name-display').innerText = userName;
+
+      // 3. Fetch Balance from 'wallets' table
+      const { data, error } = await supabaseClient
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', user.id)
+        .single();
+
+      if (data) {
+        document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance).toFixed(2);
+      } else if (error) {
+        console.error("Error fetching balance:", error.message);
       }
     }
 
-    // 3. Include bottom.html file dynamically
+    // Include bottom.html file dynamically
     fetch('bottom.html')
       .then(response => response.text())
       .then(data => {
@@ -273,8 +285,8 @@
       })
       .catch(err => console.log('Error loading bottom.html:', err));
 
-    // Call on page load
-    window.onload = loadWalletData;
+    // Page Load Action
+    window.addEventListener('DOMContentLoaded', loadWalletData);
   </script>
 </body>
 </html>
