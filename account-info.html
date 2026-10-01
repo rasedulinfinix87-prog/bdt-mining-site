@@ -4,265 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Information - Goldmine Digital</title>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         :root {
             --bg-color: #030d0a;
-            --card-bg: rgba(12, 38, 29, 0.85);
-            --card-border: rgba(46, 213, 115, 0.2);
             --text-primary: #ffffff;
             --text-secondary: #8da499;
             --gold-primary: #f5cf66;
             --gold-gradient: linear-gradient(135deg, #e5ba41 0%, #fbe89d 50%, #b88a1a 100%);
-            --accent-green: #2ed573;
             --input-bg: rgba(255, 255, 255, 0.05);
-            --danger-red: #ff4757;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding-bottom: 75px;
-        }
-
-        .mobile-container {
-            width: 100%;
-            max-width: 410px;
-            min-height: 100vh;
-            background: #061913;
-            padding: 20px 16px;
-            position: relative;
-        }
-
-        .header-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-top: 10px;
-        }
-
-        .back-btn {
-            color: var(--gold-primary);
-            font-size: 1.2rem;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .page-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--gold-primary);
-            letter-spacing: 1px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.72rem;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .input-box {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-box input {
-            width: 100%;
-            padding: 12px 38px 12px 14px;
-            background: var(--input-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        .input-box .lock-icon, .input-box .eye-icon {
-            position: absolute;
-            right: 14px;
-            color: var(--gold-primary);
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        .section-divider {
-            margin: 25px 0 15px 0;
-            font-size: 0.78rem;
-            color: var(--gold-primary);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .btn-gold {
-            width: 100%;
-            padding: 14px;
-            background: var(--gold-gradient);
-            border: none;
-            border-radius: 25px;
-            color: #030d0a;
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
-            margin-top: 10px;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 410px;
-            height: 65px;
-            background: rgba(6, 25, 19, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.75rem;
-            gap: 4px;
-        }
-
-        .nav-item i {
-            font-size: 1.1rem;
-        }
-
-        .nav-item.active {
-            color: var(--gold-primary);
-        }
-
-        .popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(6px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .popup-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .popup-card {
-            width: 90%;
-            max-width: 360px;
-            background: #0c261d;
-            border: 1px solid var(--gold-primary);
-            border-radius: 20px;
-            padding: 22px;
-            box-shadow: 0 0 25px rgba(245, 207, 102, 0.25);
-            text-align: center;
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
-        }
-
-        .popup-overlay.show .popup-card {
-            transform: scale(1);
-        }
-
-        .popup-card i.main-icon {
-            font-size: 2.2rem;
-            color: var(--gold-primary);
-            margin-bottom: 10px;
-        }
-
-        .popup-card h3 {
-            color: var(--gold-primary);
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .info-list {
-            text-align: left;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .info-item {
-            margin-bottom: 8px;
-            font-size: 0.82rem;
-        }
-
-        .info-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .info-item span.label {
-            color: var(--text-secondary);
-            display: inline-block;
-            width: 90px;
-        }
-
-        .info-item span.value {
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .btn-close-popup {
-            width: 100%;
-            padding: 10px;
-            background: var(--gold-gradient);
-            border: none;
-            border-radius: 20px;
-            color: #030d0a;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-primary); display: flex; justify-content: center; min-height: 100vh; padding-bottom: 75px; }
+        .mobile-container { width: 100%; max-width: 410px; background: #061913; padding: 20px 16px; }
+        .header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .back-btn { color: var(--gold-primary); font-size: 1.2rem; text-decoration: none; }
+        .page-title { font-size: 1.1rem; font-weight: 700; color: var(--gold-primary); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 6px; }
+        .input-box { position: relative; }
+        .input-box input { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; outline: none; }
     </style>
 </head>
 <body>
@@ -271,216 +34,79 @@
         <div class="header-bar">
             <a href="home-index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
             <div class="page-title">ACCOUNT INFORMATION</div>
-            <div style="width: 20px;"></div>
+            <div></div>
         </div>
 
         <div class="form-group">
             <label>Full Name</label>
-            <div class="input-box">
-                <input type="text" id="acc-fullname" value="Loading..." readonly>
-                <i class="fa-solid fa-lock lock-icon"></i>
-            </div>
+            <div class="input-box"><input type="text" id="acc-fullname" value="Loading..." readonly></div>
         </div>
 
         <div class="form-group">
             <label>Email Address</label>
-            <div class="input-box">
-                <input type="email" id="acc-email" value="Loading..." readonly>
-                <i class="fa-solid fa-lock lock-icon"></i>
-            </div>
+            <div class="input-box"><input type="email" id="acc-email" value="Loading..." readonly></div>
         </div>
 
         <div class="form-group">
             <label>Phone Number</label>
-            <div class="input-box">
-                <input type="text" id="acc-phone" value="Loading..." readonly>
-                <i class="fa-solid fa-lock lock-icon"></i>
-            </div>
+            <div class="input-box"><input type="text" id="acc-phone" value="Loading..." readonly></div>
         </div>
 
         <div class="form-group">
             <label>Secret PIN</label>
-            <div class="input-box">
-                <input type="password" id="acc-pin" value="••••" readonly>
-                <i class="fa-solid fa-eye eye-icon" onclick="togglePinVisibility()"></i>
-            </div>
-        </div>
-
-        <div class="section-divider">Change Password</div>
-
-        <div class="form-group">
-            <div class="input-box">
-                <input type="password" id="new-password" placeholder="Enter new password">
-                <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility()"></i>
-            </div>
-        </div>
-
-        <button class="btn-gold" id="btn-update-pass" onclick="updatePassword()">UPDATE PASSWORD</button>
-    </div>
-
-    <div class="bottom-nav">
-        <a href="home-index.html" class="nav-item">
-            <i class="fa-solid fa-arrow-left"></i>
-            <span>Back</span>
-        </a>
-        <a href="dashboard.html" class="nav-item">
-            <i class="fa-solid fa-chart-pie"></i>
-            <span>Dashboard</span>
-        </a>
-        <a href="wallet.html" class="nav-item">
-            <i class="fa-solid fa-wallet"></i>
-            <span>Wallet</span>
-        </a>
-        <a href="account-info.html" class="nav-item active">
-            <i class="fa-solid fa-gear"></i>
-            <span>Settings</span>
-        </a>
-    </div>
-
-    <div class="popup-overlay" id="user-popup">
-        <div class="popup-card">
-            <i class="fa-solid fa-shield-halved main-icon"></i>
-            <h3>Account Summary</h3>
-            
-            <div class="info-list">
-                <div class="info-item">
-                    <span class="label">Name:</span>
-                    <span class="value" id="pop-name">Loading...</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">Email:</span>
-                    <span class="value" id="pop-email">Loading...</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">Phone:</span>
-                    <span class="value" id="pop-phone">Loading...</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">Secret PIN:</span>
-                    <span class="value" id="pop-pin">••••</span>
-                </div>
-            </div>
-
-            <button class="btn-close-popup" onclick="closePopup()">GOT IT</button>
+            <div class="input-box"><input type="text" id="acc-pin" value="Loading..." readonly></div>
         </div>
     </div>
 
     <script src="supabase-config.js"></script>
     <script>
-        let client = window._supabase || window.supabase;
-        let actualPin = "";
-        let currentUserId = null;
-
         async function fetchUserData() {
-            if (!client) {
-                client = window._supabase || window.supabase;
-            }
-
-            // ১. Supabase Auth থেকে ইউজার সেশন চেক
-            const { data: { user } } = await client.auth.getUser();
+            const client = window._supabase || window.supabase;
             
-            if (user) {
-                currentUserId = user.id;
-            } else {
-                currentUserId = localStorage.getItem('user_id');
+            if (!client) {
+                alert("Supabase client not initialized! check supabase-config.js");
+                return;
             }
 
-            if (!currentUserId) {
-                alert('Session expired. Please login again.');
+            // ১. আইডি আইডি চ্যাকিং
+            let userId = localStorage.getItem('user_id');
+            
+            // যদি LocalStorage এ না পায়, তবে সেশন চেক করবে
+            if (!userId) {
+                const { data: { user } } = await client.auth.getUser();
+                if (user) userId = user.id;
+            }
+
+            // মোবাইল স্ক্রিনে আইডি দেখাবে
+            alert("Current User ID: " + userId);
+
+            if (!userId) {
+                alert("No User ID found! Please Login again.");
                 window.location.href = 'login-signup.html';
                 return;
             }
 
             try {
-                // ২. user টেবিল থেকে ডাটা ফেচ করা
+                // ২. ডাটাবেজ থেকে ডাটা খোঁজা (Double quotes দিয়ে 'user' রেসপন্স নিশ্চিত করা)
                 const { data, error } = await client
                     .from('user')
-                    .select('id, full_name, email, phone, secret_pin')
-                    .eq('id', currentUserId)
+                    .select('*')
+                    .eq('id', userId)
                     .maybeSingle();
 
                 if (error) {
-                    alert('Error fetching user data: ' + error.message);
+                    alert("Database Error: " + error.message);
+                    console.error(error);
                 } else if (data) {
                     document.getElementById('acc-fullname').value = data.full_name || 'N/A';
                     document.getElementById('acc-email').value = data.email || 'N/A';
                     document.getElementById('acc-phone').value = data.phone || 'N/A';
-                    actualPin = data.secret_pin || 'N/A';
-
-                    document.getElementById('pop-name').innerText = data.full_name || 'N/A';
-                    document.getElementById('pop-email').innerText = data.email || 'N/A';
-                    document.getElementById('pop-phone').innerText = data.phone || 'N/A';
-                    document.getElementById('pop-pin').innerText = actualPin;
-
-                    showPopup();
+                    document.getElementById('acc-pin').value = data.secret_pin || 'N/A';
                 } else {
-                    alert('User record not found in database. Please login again.');
+                    alert("ID: (" + userId + ") দিয়ে 'user' টেবিলে কোনো রো (Row) খুঁজে পাওয়া যায়নি!");
                 }
             } catch (err) {
-                console.error(err);
-                alert('Connection error while fetching details.');
-            }
-        }
-
-        function showPopup() {
-            document.getElementById('user-popup').classList.add('show');
-        }
-
-        function closePopup() {
-            document.getElementById('user-popup').classList.remove('show');
-        }
-
-        function togglePinVisibility() {
-            const pinInput = document.getElementById('acc-pin');
-            if (pinInput.type === 'password') {
-                pinInput.type = 'text';
-                pinInput.value = actualPin;
-            } else {
-                pinInput.type = 'password';
-                pinInput.value = '••••';
-            }
-        }
-
-        function togglePasswordVisibility() {
-            const passInput = document.getElementById('new-password');
-            passInput.type = passInput.type === 'password' ? 'text' : 'password';
-        }
-
-        async function updatePassword() {
-            const newPassword = document.getElementById('new-password').value.trim();
-
-            if (!newPassword) {
-                alert('Please enter a new password!');
-                return;
-            }
-
-            if (!currentUserId) {
-                alert('Session expired. Please login again.');
-                return;
-            }
-
-            const btn = document.getElementById('btn-update-pass');
-            btn.innerText = 'UPDATING...';
-            btn.disabled = true;
-
-            try {
-                const { error } = await client
-                    .from('user')
-                    .update({ password: newPassword, updated_at: new Date().toISOString() })
-                    .eq('id', currentUserId);
-
-                if (error) {
-                    alert('Password Update Failed: ' + error.message);
-                } else {
-                    alert('Password updated successfully!');
-                    document.getElementById('new-password').value = '';
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Failed to update password.');
-            } finally {
-                btn.innerText = 'UPDATE PASSWORD';
-                btn.disabled = false;
+                alert("Execution Error: " + err.message);
             }
         }
 
