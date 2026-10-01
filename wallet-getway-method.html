@@ -215,6 +215,18 @@
       letter-spacing: 0.5px;
     }
 
+    /* ১৪ ডিজিটের ব্যাংক অ্যাকাউন্ট নম্বরের জন্য নতুন স্টাইল */
+    .user-info .account-number {
+      font-size: 0.85rem;
+      color: var(--gold-primary);
+      font-family: 'Courier New', Courier, monospace;
+      letter-spacing: 1px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .card-chip {
       width: 36px;
       height: 26px;
@@ -479,6 +491,11 @@
           <div class="user-info">
             <div class="label">Account Holder</div>
             <div class="user-name" id="user-name-display">Loading...</div>
+            <!-- ১৪ ডিজিটের অনন্য অ্যাকাউন্ট নম্বর পাওয়ার ট্যাগ -->
+            <div class="account-number" id="account-number-display">
+              <i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i>
+              <span>---- ---- ---- --</span>
+            </div>
           </div>
           <div class="card-chip"></div>
         </div>
@@ -558,19 +575,45 @@
       }, 600); // 600ms স্পিনিং দেখিয়ে পেজ ট্রানজিশন হবে
     }
 
-    // 'wallets' টেবিল থেকে শুধুই ব্যালেন্স আনার ফাংশন
-    async function fetchBalanceOnly(client, userId) {
+    // ১৪ অংকের র্যান্ডম অ্যাকাউন্ট নম্বর জেনারেটর হেলপার
+    function generate14DigitAccountNumber() {
+      const prefix = "3089"; // নির্দিষ্ট প্রিফিক্স (ইচ্ছা হলে পরিবর্তন করতে পারেন)
+      let randomDigits = "";
+      for (let i = 0; i < 10; i++) {
+        randomDigits += Math.floor(Math.random() * 10);
+      }
+      return prefix + randomDigits;
+    }
+
+    // 'wallets' টেবিল থেকে ব্যালেন্স এবং ১৪ ডিজিটের অ্যাকাউন্ট নম্বর পাওয়ার ফাংশন
+    async function fetchWalletDetails(client, userId) {
       const { data, error } = await client
         .from('wallets')
-        .select('balance')
+        .select('balance, account_number')
         .eq('user_id', userId)
         .single();
 
       if (data) {
+        // ব্যালেন্স সেট করা
         document.getElementById('user-balance-display').innerText = '$' + parseFloat(data.balance || 0).toFixed(2);
+        
+        // অ্যাকাউন্ট নম্বর থাকলে প্রদর্শন করা, না থাকলে নতুন একটা বানিয়ে সেভ করা
+        if (data.account_number) {
+          document.getElementById('account-number-display').querySelector('span').innerText = data.account_number;
+        } else {
+          const newAccNum = generate14DigitAccountNumber();
+          const { error: updateError } = await client
+            .from('wallets')
+            .update({ account_number: newAccNum })
+            .eq('user_id', userId);
+
+          if (!updateError) {
+            document.getElementById('account-number-display').querySelector('span').innerText = newAccNum;
+          }
+        }
       } else {
         document.getElementById('user-balance-display').innerText = '$0.00';
-        if (error) console.log("Balance fetch error:", error.message);
+        if (error) console.log("Wallet details fetch error:", error.message);
       }
     }
 
@@ -607,8 +650,8 @@
         document.getElementById('user-name-display').innerText = user.email ? user.email.split('@')[0] : "User";
       }
 
-      // ৩. প্রাথমিক ব্যালেন্স ফেচ করা
-      await fetchBalanceOnly(client, currentUserId);
+      // ৩. প্রাথমিক ব্যালেন্স ও অ্যাকাউন্ট নম্বর ফেচ করা
+      await fetchWalletDetails(client, currentUserId);
 
       // ৪. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
       client
@@ -622,8 +665,13 @@
             filter: `user_id=eq.${currentUserId}`
           },
           (payload) => {
-            if (payload.new && payload.new.balance !== undefined) {
-              document.getElementById('user-balance-display').innerText = '$' + parseFloat(payload.new.balance).toFixed(2);
+            if (payload.new) {
+              if (payload.new.balance !== undefined) {
+                document.getElementById('user-balance-display').innerText = '$' + parseFloat(payload.new.balance).toFixed(2);
+              }
+              if (payload.new.account_number) {
+                document.getElementById('account-number-display').querySelector('span').innerText = payload.new.account_number;
+              }
             }
           }
         )
@@ -642,7 +690,7 @@
           },
           (payload) => {
             if (payload.new && payload.new.status === 'approved') {
-              fetchBalanceOnly(client, currentUserId);
+              fetchWalletDetails(client, currentUserId);
             }
           }
         )
