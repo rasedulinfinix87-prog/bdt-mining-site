@@ -8,7 +8,7 @@
   <style>
     :root {
       --bg-dark: #061913;
-      --topbar-bg: #030d0a;
+      --topbar-bg: rgba(6, 25, 19, 0.85); /* সাইটের প্রাইমারি থিম কালারের গ্লাস গ্রীন ইফেক্ট */
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.25);
       --gold-primary: #f5cf66;
@@ -43,17 +43,20 @@
       min-height: 100vh;
     }
 
+    /* Top Bar - সাইটের কালার কম্বিনেশন ও গ্লাস গ্লো ইফেক্ট সহ */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 18px 20px;
-      background: rgba(3, 13, 10, 0.95);
-      backdrop-filter: blur(10px);
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--card-border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     .top-bar .title-group {
@@ -63,10 +66,23 @@
     }
 
     .top-bar .back-btn {
-      color: var(--text-main);
+      color: var(--gold-primary);
       font-size: 1.1rem;
       text-decoration: none;
       cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(245, 207, 102, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(245, 207, 102, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .top-bar .back-btn:hover {
+      background: rgba(245, 207, 102, 0.2);
     }
 
     .top-bar h2 {
@@ -76,8 +92,22 @@
       letter-spacing: 0.5px;
     }
 
+    .top-bar .notification-icon {
+      color: var(--gold-primary);
+      font-size: 1.1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(245, 207, 102, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(245, 207, 102, 0.2);
+      cursor: pointer;
+    }
+
     .card-section {
-      padding: 15px 20px;
+      padding: 20px;
     }
 
     .bank-card {
@@ -132,6 +162,7 @@
       background: linear-gradient(135deg, #f5cf66, #b89332);
       border-radius: 5px;
       opacity: 0.85;
+      box-shadow: 0 2px 8px rgba(245, 207, 102, 0.3);
     }
 
     .card-bottom {
@@ -166,7 +197,7 @@
     .action-buttons {
       display: flex;
       gap: 15px;
-      padding: 10px 20px 20px 20px;
+      padding: 0 20px 20px 20px;
     }
 
     .btn-action {
@@ -192,9 +223,15 @@
     }
 
     .btn-withdraw {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(12, 38, 29, 0.6);
       color: var(--text-main);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(5px);
+    }
+
+    .btn-withdraw:hover {
+      background: rgba(12, 38, 29, 0.9);
+      border-color: var(--gold-primary);
     }
 
     #bottom-nav-container {
@@ -217,7 +254,9 @@
         </a>
         <h2>Wallet</h2>
       </div>
-      <i class="fa-regular fa-bell" style="color: var(--text-muted); font-size: 1.1rem;"></i>
+      <div class="notification-icon">
+        <i class="fa-regular fa-bell"></i>
+      </div>
     </div>
 
     <!-- Bank Card Section -->
@@ -298,7 +337,7 @@
 
       currentUserId = user.id;
 
-      // ২. আপনার কাস্টম 'user' টেবিল থেকে ইউজারের full_name লোড করা
+      // ২. কাস্টম 'user' টেবিল থেকে ইউজারের full_name লোড করা
       const { data: userData, error: userDataError } = await client
         .from('user')
         .select('full_name')
