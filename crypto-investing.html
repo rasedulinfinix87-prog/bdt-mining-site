@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Investment - Goldmine Digital</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #061913;
+      --card-bg: rgba(12, 38, 29, 0.85);
+      --card-border: rgba(245, 207, 102, 0.25);
+      --gold-primary: #f5cf66;
+      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --card-gradient: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
+      --text-main: #ffffff;
+      --text-muted: #8da499;
+      --green-glow: #2ed573;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .mobile-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-dark);
+      padding-bottom: 90px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: rgba(3, 13, 10, 0.95);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .top-bar .back-btn {
+      color: var(--text-main);
+      font-size: 1.1rem;
+      text-decoration: none;
+    }
+
+    .top-bar h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .section-header {
+      padding: 20px 20px 10px;
+      text-align: center;
+    }
+
+    .section-header h3 {
+      color: var(--gold-primary);
+      font-size: 1.3rem;
+      margin-bottom: 5px;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Plan Cards Area */
+    .plans-container {
+      padding: 15px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .plan-card {
+      background: var(--card-gradient);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      position: relative;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease;
+    }
+
+    .plan-card.popular {
+      border: 1px solid var(--gold-primary);
+      box-shadow: 0 0 15px rgba(245, 207, 102, 0.2);
+    }
+
+    .popular-tag {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--gold-gradient);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .plan-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .plan-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      background: rgba(245, 207, 102, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: var(--gold-primary);
+      border: 1px solid rgba(245, 207, 102, 0.2);
+    }
+
+    .plan-title h4 {
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .plan-title span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .plan-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .detail-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .detail-value.highlight {
+      color: var(--green-glow);
+    }
+
+    .invest-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--gold-gradient);
+      border: none;
+      border-radius: 12px;
+      color: #061913;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .invest-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    #bottom-nav-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="title-group">
+        <a href="javascript:history.back()" class="back-btn">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <h2>Crypto Investment</h2>
+      </div>
+      <i class="fa-brands fa-bitcoin" style="color: var(--gold-primary); font-size: 1.3rem;"></i>
+    </div>
+
+    <div class="section-header">
+      <h3>Crypto Yield Plans</h3>
+      <p>Choose your plan and start earning daily profit</p>
+    </div>
+
+    <!-- 3 Investment Cards -->
+    <div class="plans-container">
+      
+      <!-- Card 1: Starter USDT Plan -->
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-icon"><i class="fa-solid fa-coins"></i></div>
+          <div class="plan-title">
+            <h4>USDT Starter Pool</h4>
+            <span>Low Risk • Daily Payout</span>
+          </div>
+        </div>
+        <div class="plan-details">
+          <div class="detail-item">
+            <span class="detail-label">Invest Amount</span>
+            <span class="detail-value">$50.00</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Daily Profit</span>
+            <span class="detail-value highlight">2.5%</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Duration</span>
+            <span class="detail-value">7 Days</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Expected Profit</span>
+            <span class="detail-value">$8.75</span>
+          </div>
+        </div>
+        <button class="invest-btn" onclick="subscribeCryptoPlan('USDT Starter Pool', '50.00', 2.5, 8.75, 7)">
+          Invest Now <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Card 2: Ethereum Vault (Popular) -->
+      <div class="plan-card popular">
+        <span class="popular-tag">Most Popular</span>
+        <div class="plan-header">
+          <div class="plan-icon"><i class="fa-brands fa-ethereum"></i></div>
+          <div class="plan-title">
+            <h4>Ethereum Pro Vault</h4>
+            <span>Medium Risk • High Profit</span>
+          </div>
+        </div>
+        <div class="plan-details">
+          <div class="detail-item">
+            <span class="detail-label">Invest Amount</span>
+            <span class="detail-value">$200.00</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Daily Profit</span>
+            <span class="detail-value highlight">4.0%</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Duration</span>
+            <span class="detail-value">15 Days</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Expected Profit</span>
+            <span class="detail-value">$120.00</span>
+          </div>
+        </div>
+        <button class="invest-btn" onclick="subscribeCryptoPlan('Ethereum Pro Vault', '200.00', 4.0, 120.00, 15)">
+          Invest Now <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Card 3: Bitcoin VIP Plan -->
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-icon"><i class="fa-brands fa-bitcoin"></i></div>
+          <div class="plan-title">
+            <h4>Bitcoin VIP Pool</h4>
+            <span>Maximum Yield</span>
+          </div>
+        </div>
+        <div class="plan-details">
+          <div class="detail-item">
+            <span class="detail-label">Invest Amount</span>
+            <span class="detail-value">$500.00</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Daily Profit</span>
+            <span class="detail-value highlight">6.0%</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Duration</span>
+            <span class="detail-value">30 Days</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Expected Profit</span>
+            <span class="detail-value">$900.00</span>
+          </div>
+        </div>
+        <button class="invest-btn" onclick="subscribeCryptoPlan('Bitcoin VIP Pool', '500.00', 6.0, 900.00, 30)">
+          Invest Now <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div id="bottom-nav-container"></div>
+  </div>
+
+  <!-- Supabase & Configuration Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    async function subscribeCryptoPlan(planName, investedAmountStr, dailyProfitPercent, totalExpectedProfit, durationDays) {
+      const client = window._supabase || window.supabase;
+      if (!client) return alert("Supabase সঠিকভাবে কনফিগার করা হয়নি!");
+
+      // ১. ইউজারের সেশন চেক করা
+      const { data: { user }, error: authErr } = await client.auth.getUser();
+      if (authErr || !user) {
+        alert("অনুগ্রহ করে ইনভেস্ট করার আগে লগইন করুন!");
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const userId = user.id;
+      const amountNum = parseFloat(investedAmountStr);
+
+      // ২. ওয়ালেট ব্যালেন্স চেক
+      const { data: wallet, error: walletErr } = await client
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', userId)
+        .single();
+
+      if (walletErr || !wallet || parseFloat(wallet.balance) < amountNum) {
+        alert("আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ওয়ালেটে ফান্ড যুক্ত করুন।");
+        return;
+      }
+
+      if (!confirm(`আপনি কি $${investedAmountStr} দিয়ে "${planName}" প্ল্যানে ইনভেস্ট করতে নিশ্চিত?`)) {
+        return;
+      }
+
+      // মেয়াদের সময় হিসেব করা
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(startDate.getDate() + durationDays);
+
+      try {
+        // ৩.১ ওয়ালেট থেকে টাকা কেটে নেওয়া
+        const updatedBalance = parseFloat(wallet.balance) - amountNum;
+        const { error: updateWalletErr } = await client
+          .from('wallets')
+          .update({ balance: updatedBalance })
+          .eq('user_id', userId);
+
+        if (updateWalletErr) throw updateWalletErr;
+
+        // ৩.২ `crypto_investment` টেবিলে নির্দিষ্ট ফিল্ড অনুযায়ী ডাটা ইনসার্ট করা
+        const { error: investErr } = await client
+          .from('crypto_investment')
+          .insert([
+            {
+              user_id: userId,
+              plan_name: planName,
+              invested_amount: investedAmountStr, // TEXT কলাম
+              daily_profit_percent: dailyProfitPercent,
+              total_expected_profit: totalExpectedProfit,
+              earned_profit: 0.00, // নতুন প্ল্যান চালুতে ০ ডিফোল্ট
+              duration_days: durationDays,
+              start_date: startDate.toISOString(),
+              end_date: endDate.toISOString(),
+              status: 'active',
+              last_profit_calculated_at: startDate.toISOString()
+            }
+          ]);
+
+        if (investErr) throw investErr;
+
+        alert("আপনার ক্রিপ্টো ইনভেস্টমেন্ট সফলভাবে সম্পন্ন হয়েছে!");
+        window.location.href = 'gol-investing-dashborad.html';
+
+      } catch (err) {
+        console.error(err);
+        alert("ইনভেস্টমেন্ট ব্যর্থ হয়েছে: " + err.message);
+      }
+    }
+
+    // Dynamic Bottom Nav Component
+    fetch('bottom.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('bottom-nav-container').innerHTML = html; })
+      .catch(err => console.log(err));
+  </script>
+</body>
+</html>
