@@ -86,22 +86,16 @@
       submitBtn.disabled = true;
 
       try {
-        // ১. ইউজারের সেসন/লগইন আইডি নেওয়া (অথবা LocalStorage থেকে user_id নেওয়া)
-        let userId = localStorage.getItem('user_id');
-        
-        if (!userId) {
-          const { data: { user } } = await client.auth.getUser();
-          if (user) userId = user.id;
-        }
+        // ১. ইউজারের সেসন থেকে সঠিক user_id নেওয়া
+        const { data: { user } } = await client.auth.getUser();
+        let userId = user ? user.id : localStorage.getItem('user_id');
 
         if (!userId) {
           alert("Please login first!");
-          submitBtn.innerText = "Submit Withdraw Request";
-          submitBtn.disabled = false;
           return;
         }
 
-        // ২. ইউজারের ওয়ালেট থেকে বর্তমান ব্যালেন্স চেক করা
+        // ২. ওয়ালেট থেকে বর্তমান ব্যালেন্স চেক করা
         const { data: walletData, error: walletError } = await client
           .from('wallets')
           .select('id, balance')
@@ -109,25 +103,36 @@
           .single();
 
         if (walletError || !walletData) {
-          alert("Wallet not found!");
-          submitBtn.innerText = "Submit Withdraw Request";
-          submitBtn.disabled = false;
+          alert("Wallet record not found!");
           return;
         }
 
-        if (walletData.balance < amountVal) {
+        const currentBalance = parseFloat(walletData.balance || 0);
+
+        if (currentBalance < amountVal) {
           alert("Insufficient Balance!");
-          submitBtn.innerText = "Submit Withdraw Request";
-          submitBtn.disabled = false;
           return;
         }
 
-        // চার্জ হিসেব (প্রয়োজনমতো পরিবর্তন করতে পারেন, এখানে ০ ধরা হয়েছে)
+        // ৩. ওয়ালেট থেকে ব্যালেন্স আগে কেটে নেওয়া (Deduct Balance)
+        const newBalance = currentBalance - amountVal;
+        const { error: updateError } = await client
+          .from('wallets')
+          .update({ 
+            balance: newBalance,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', userId);
+
+        if (updateError) {
+          throw new Error("Balance Update Failed: " + updateError.message);
+        }
+
+        // ৪. ট্রানজ্যাকশন এন্ট্রি তৈরি করা
         const charge = 0; 
         const netAmount = amountVal - charge;
         const trxId = 'TRX' + Math.floor(10000000 + Math.random() * 90000000);
 
-        // ৩. ট্রানজ্যাকশন এন্ট্রি
         const payload = {
           user_id: userId,
           type: 'withdraw',
@@ -143,21 +148,9 @@
         const { error: trxError } = await client.from('transactions').insert([payload]);
 
         if (trxError) {
-          throw trxError;
-        }
-
-        // ৪. ওয়ালেট থেকে ব্যালেন্স বিয়োগ/আপডেট করা
-        const newBalance = walletData.balance - amountVal;
-        const { error: updateError } = await client
-          .from('wallets')
-          .update({ 
-            balance: newBalance,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', walletData.id);
-
-        if (updateError) {
-          throw updateError;
+          // ট্রানজ্যাকশন ফেইল করলে ব্যালেন্স রোলব্যাক করা
+          await client.from('wallets').update({ balance: currentBalance }).eq('user_id', userId);
+          throw new Error("Transaction Request Failed: " + trxError.message);
         }
 
         alert("Withdrawal request submitted successfully!");
@@ -165,7 +158,7 @@
 
       } catch (err) {
         console.error("Withdrawal Error:", err);
-        alert("Error: " + (err.message || "Failed to process withdrawal"));
+        alert(err.message || "Something went wrong!");
       } finally {
         submitBtn.innerText = "Submit Withdraw Request";
         submitBtn.disabled = false;
