@@ -12,7 +12,8 @@
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.25);
       --gold-primary: #f5cf66;
-      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --gold-gradient: linear-gradient(135deg, #ffe082 0%, #f5cf66 40%, #b89332 100%);
+      --gold-btn-gradient: linear-gradient(135deg, #ffe28a 0%, #f5cf66 45%, #d4a328 75%, #99741d 100%);
       --card-gradient: linear-gradient(135deg, rgba(12, 38, 29, 0.95) 0%, #030d0a 100%);
       --text-main: #ffffff;
       --text-muted: #8da499;
@@ -32,6 +33,64 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Page Loader Screen (1.2 sec) */
+    .page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-dark);
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .page-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-icon-wrapper {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loader-icon-wrapper i {
+      font-size: 2.2rem;
+      color: var(--gold-primary);
+      filter: drop-shadow(0 0 12px rgba(245, 207, 102, 0.8));
+      animation: pulseGlow 1.2s infinite alternate;
+    }
+
+    .loader-spinner {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 3px solid rgba(245, 207, 102, 0.15);
+      border-top: 3px solid var(--gold-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      100% { transform: scale(1.08); opacity: 1; }
     }
 
     .mobile-container {
@@ -193,7 +252,7 @@
       text-shadow: 0 0 10px rgba(245, 207, 102, 0.3);
     }
 
-    /* Action Buttons (Deposit & Withdraw) */
+    /* Action Buttons (Deposit & Withdraw) - Gold Glowing Upgrade */
     .action-buttons {
       display: flex;
       gap: 15px;
@@ -205,7 +264,7 @@
       padding: 14px;
       border-radius: 12px;
       border: none;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.95rem;
       display: flex;
       align-items: center;
@@ -213,25 +272,89 @@
       gap: 8px;
       cursor: pointer;
       text-decoration: none;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
     }
 
+    /* Gold Glowing Gradient Effect */
     .btn-deposit {
-      background: var(--gold-gradient);
+      background: var(--gold-btn-gradient);
       color: #030d0a;
-      box-shadow: 0 4px 15px rgba(245, 207, 102, 0.25);
+      box-shadow: 0 4px 18px rgba(245, 207, 102, 0.4), 0 0 10px rgba(245, 207, 102, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-deposit::after, .btn-withdraw::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: rotate(30deg);
+      transition: all 0.6s ease;
+      animation: goldShine 3s infinite;
+    }
+
+    @keyframes goldShine {
+      0% { left: -60%; }
+      20% { left: 140%; }
+      100% { left: 140%; }
+    }
+
+    .btn-deposit:hover {
+      box-shadow: 0 6px 25px rgba(245, 207, 102, 0.6), 0 0 15px rgba(245, 207, 102, 0.4);
+      transform: translateY(-2px);
     }
 
     .btn-withdraw {
-      background: rgba(12, 38, 29, 0.6);
-      color: var(--text-main);
-      border: 1px solid var(--card-border);
+      background: rgba(12, 38, 29, 0.8);
+      color: var(--gold-primary);
+      border: 1px solid var(--gold-primary);
       backdrop-filter: blur(5px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(245, 207, 102, 0.05);
     }
 
     .btn-withdraw:hover {
-      background: rgba(12, 38, 29, 0.9);
-      border-color: var(--gold-primary);
+      background: rgba(245, 207, 102, 0.15);
+      border-color: #ffe082;
+      box-shadow: 0 6px 20px rgba(245, 207, 102, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Dot Spinning Loader inside Buttons */
+    .dot-loader {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .dot-loader span {
+      width: 6px;
+      height: 6px;
+      background-color: currentColor;
+      border-radius: 50%;
+      display: inline-block;
+      animation: dotBounce 1.4s infinite ease-in-out both;
+    }
+
+    .dot-loader span:nth-child(1) { animation-delay: -0.32s; }
+    .dot-loader span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes dotBounce {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    .btn-action.loading .btn-content {
+      display: none;
+    }
+
+    .btn-action.loading .dot-loader {
+      display: flex;
     }
 
     #bottom-nav-container {
@@ -327,6 +450,14 @@
 </head>
 <body>
 
+  <!-- 1.2s Page Loading Overlay -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-icon-wrapper">
+      <div class="loader-spinner"></div>
+      <i class="fa-solid fa-wallet"></i>
+    </div>
+  </div>
+
   <div class="mobile-container">
     <!-- Top Bar -->
     <div class="top-bar">
@@ -363,11 +494,21 @@
 
     <!-- Quick Action Buttons -->
     <div class="action-buttons">
-      <a href="deposit.html" class="btn-action btn-deposit">
-        <i class="fa-solid fa-arrow-down-left"></i> Deposit
+      <a href="deposit.html" class="btn-action btn-deposit" onclick="handleButtonClick(event, 'deposit.html', this)">
+        <span class="btn-content">
+          <i class="fa-solid fa-circle-arrow-down"></i> Deposit
+        </span>
+        <span class="dot-loader">
+          <span></span><span></span><span></span>
+        </span>
       </a>
-      <a href="withdraw.html" class="btn-action btn-withdraw">
-        <i class="fa-solid fa-arrow-up-right"></i> Withdraw
+      <a href="withdraw.html" class="btn-action btn-withdraw" onclick="handleButtonClick(event, 'withdraw.html', this)">
+        <span class="btn-content">
+          <i class="fa-solid fa-circle-arrow-up"></i> Withdraw
+        </span>
+        <span class="dot-loader">
+          <span></span><span></span><span></span>
+        </span>
       </a>
     </div>
 
@@ -397,6 +538,25 @@
   <!-- 3. Logic Script -->
   <script>
     let currentUserId = null;
+
+    // ১.২ সেকেন্ড পেজ লোডিং অ্যানিমেশন নিয়ন্ত্রণ
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('pageLoader');
+        if (loader) {
+          loader.classList.add('hidden');
+        }
+      }, 1200); // ১.২ সেকেন্ড (1200ms)
+    });
+
+    // ডট স্পিনিং অ্যানিমেশন সহ নেভিগেশন
+    function handleButtonClick(e, targetUrl, btnElement) {
+      e.preventDefault();
+      btnElement.classList.add('loading');
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 600); // 600ms স্পিনিং দেখিয়ে পেজ ট্রানজিশন হবে
+    }
 
     // 'wallets' টেবিল থেকে শুধুই ব্যালেন্স আনার ফাংশন
     async function fetchBalanceOnly(client, userId) {
