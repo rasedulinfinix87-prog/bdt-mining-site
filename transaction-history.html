@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Transaction History - Goldmine Digital</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #061913;
+            --dark-bg: #030d0a;
+            --card-bg: rgba(12, 38, 29, 0.85);
+            --card-border: rgba(46, 213, 115, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #8da499;
+            --gold-primary: #f5cf66;
+            --gold-gradient: linear-gradient(135deg, #e5ba41 0%, #fbe89d 50%, #b88a1a 100%);
+            --accent-green: #2ed573;
+            --accent-red: #ff4757;
+            --accent-yellow: #ffa502;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 410px;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        /* Top Header */
+        header {
+            padding: 20px 18px 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(3, 13, 10, 0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        .back-btn {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            text-decoration: none;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gold-primary);
+            letter-spacing: 0.5px;
+        }
+
+        /* Filter Tabs */
+        .filter-container {
+            display: flex;
+            gap: 8px;
+            padding: 14px 16px;
+            background: var(--dark-bg);
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 8px 0;
+            background: rgba(12, 38, 29, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--gold-gradient);
+            color: #030d0a;
+            border-color: var(--gold-primary);
+            font-weight: 700;
+            box-shadow: 0 0 12px rgba(245, 207, 102, 0.3);
+        }
+
+        /* Transaction List Wrapper */
+        .transaction-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 16px 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .transaction-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .transaction-list::-webkit-scrollbar-thumb {
+            background: rgba(245, 207, 102, 0.2);
+            border-radius: 4px;
+        }
+
+        /* Transaction Item Card */
+        .trx-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+
+        .trx-card:active {
+            transform: scale(0.98);
+            border-color: var(--gold-primary);
+        }
+
+        .trx-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .trx-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .trx-icon.deposit {
+            background: rgba(46, 213, 115, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .trx-icon.withdraw {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .trx-details h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: capitalize;
+        }
+
+        .trx-details p {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .trx-right {
+            text-align: right;
+        }
+
+        .trx-amount {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .trx-amount.deposit {
+            color: var(--accent-green);
+        }
+
+        .trx-amount.withdraw {
+            color: var(--accent-red);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 4px;
+            text-transform: capitalize;
+        }
+
+        .status-badge.approved {
+            background: rgba(46, 213, 115, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 165, 2, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(255, 165, 2, 0.3);
+        }
+
+        .status-badge.rejected {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        /* Detail Modal Popup */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 13, 10, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            width: 100%;
+            background: #08221a;
+            border-top: 1px solid var(--gold-primary);
+            border-radius: 24px 24px 0 0;
+            padding: 24px 20px 30px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .modal-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: var(--text-primary);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .modal-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.82rem;
+        }
+
+        .modal-row span {
+            color: var(--text-secondary);
+        }
+
+        .modal-row strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Bottom Navigation Holder */
+        #bottom-nav-container {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0 18px 0;
+            background: #061913;
+            border-top: 1px solid rgba(46, 213, 115, 0.25);
+            width: 100%;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #8da499;
+            font-size: 0.72rem;
+            text-decoration: none;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #f5cf66;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <!-- Top Header -->
+        <header>
+            <a href="javascript:history.back()" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div class="page-title">Transaction History</div>
+            <div style="width: 36px;"></div> <!-- Spacer for symmetry -->
+        </header>
+
+        <!-- Filter Tabs -->
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="filterTrx('all', this)">All</button>
+            <button class="filter-btn" onclick="filterTrx('deposit', this)">Deposit</button>
+            <button class="filter-btn" onclick="filterTrx('withdraw', this)">Withdraw</button>
+        </div>
+
+        <!-- Transaction List -->
+        <div class="transaction-list" id="trx-container">
+            
+            <!-- Sample Card 1 -->
+            <div class="trx-card deposit" onclick="openModal('TRX98234102', 'Deposit', '$150.00', 'bKash', '01700000000', 'approved', '2026-09-28 10:30 AM')">
+                <div class="trx-left">
+                    <div class="trx-icon deposit">
+                        <i class="fa-solid fa-arrow-down-left"></i>
+                    </div>
+                    <div class="trx-details">
+                        <h4>Deposit (bKash)</h4>
+                        <p>2026-09-28 • 10:30 AM</p>
+                    </div>
+                </div>
+                <div class="trx-right">
+                    <div class="trx-amount deposit">+$150.00</div>
+                    <span class="status-badge approved">Approved</span>
+                </div>
+            </div>
+
+            <!-- Sample Card 2 -->
+            <div class="trx-card withdraw" onclick="openModal('TRX87239105', 'Withdraw', '$50.00', 'Binance (USDT)', '0x8d...a2f9', 'pending', '2026-09-29 02:15 PM')">
+                <div class="trx-left">
+                    <div class="trx-icon withdraw">
+                        <i class="fa-solid fa-arrow-up-right"></i>
+                    </div>
+                    <div class="trx-details">
+                        <h4>Withdraw (USDT)</h4>
+                        <p>2026-09-29 • 02:15 PM</p>
+                    </div>
+                </div>
+                <div class="trx-right">
+                    <div class="trx-amount withdraw">-$50.00</div>
+                    <span class="status-badge pending">Pending</span>
+                </div>
+            </div>
+
+            <!-- Sample Card 3 -->
+            <div class="trx-card deposit" onclick="openModal('TRX54129033', 'Deposit', '$300.00', 'Nagad', '01800000000', 'rejected', '2026-09-27 08:45 PM')">
+                <div class="trx-left">
+                    <div class="trx-icon deposit">
+                        <i class="fa-solid fa-arrow-down-left"></i>
+                    </div>
+                    <div class="trx-details">
+                        <h4>Deposit (Nagad)</h4>
+                        <p>2026-09-27 • 08:45 PM</p>
+                    </div>
+                </div>
+                <div class="trx-right">
+                    <div class="trx-amount deposit">+$300.00</div>
+                    <span class="status-badge rejected">Rejected</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Detail Modal Popup -->
+        <div class="modal-overlay" id="detailModal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div class="modal-title">Transaction Details</div>
+                    <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-row">
+                    <span>Transaction ID</span>
+                    <strong id="m-trxid">-</strong>
+                </div>
+                <div class="modal-row">
+                    <span>Type</span>
+                    <strong id="m-type">-</strong>
+                </div>
+                <div class="modal-row">
+                    <span>Method</span>
+                    <strong id="m-method">-</strong>
+                </div>
+                <div class="modal-row">
+                    <span>Account / Wallet</span>
+                    <strong id="m-account">-</strong>
+                </div>
+                <div class="modal-row">
+                    <span>Amount</span>
+                    <strong id="m-amount">-</strong>
+                </div>
+                <div class="modal-row">
+                    <span>Status</span>
+                    <strong id="m-status">-</strong>
+                </div>
+                <div class="modal-row">
+                    <span>Date & Time</span>
+                    <strong id="m-date">-</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Nav Container Placeholder -->
+        <div id="bottom-nav-container">
+            <nav class="bottom-nav">
+                <a href="home-index.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+                <a href="portfolio.html" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Portfolio</span>
+                </a>
+                <a href="wallet.html" class="nav-item">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Wallet</span>
+                </a>
+                <a href="transaction-history.html" class="nav-item active">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>History</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        // Bottom Nav Dynamic Loader
+        fetch('bottom.html?v=' + new Date().getTime())
+            .then(response => { if(response.ok) return response.text(); })
+            .then(data => { if(data) document.getElementById('bottom-nav-container').innerHTML = data; })
+            .catch(error => console.log('Using fallback nav'));
+
+        // Filter Logic
+        function filterTrx(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const cards = document.querySelectorAll('.trx-card');
+            cards.forEach(card => {
+                if (type === 'all') {
+                    card.style.display = 'flex';
+                } else {
+                    if (card.classList.contains(type)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Modal Logic
+        function openModal(trxId, type, amount, method, account, status, date) {
+            document.getElementById('m-trxid').innerText = trxId;
+            document.getElementById('m-type').innerText = type;
+            document.getElementById('m-amount').innerText = amount;
+            document.getElementById('m-method').innerText = method;
+            document.getElementById('m-account').innerText = account;
+            document.getElementById('m-status').innerText = status.toUpperCase();
+            document.getElementById('m-date').innerText = date;
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
