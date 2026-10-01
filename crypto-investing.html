@@ -42,17 +42,18 @@
       min-height: 100vh;
     }
 
+    /* Top Bar with Matching Site Color */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 18px 20px;
-      background: rgba(3, 13, 10, 0.95);
+      background: rgba(6, 25, 19, 0.92);
       backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--card-border);
     }
 
     .top-bar .title-group {
@@ -208,6 +209,166 @@
       opacity: 0.9;
     }
 
+    /* Skeleton Loader Styles */
+    .skeleton-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 15px 20px;
+    }
+
+    .skeleton-card {
+      background: rgba(12, 38, 29, 0.6);
+      border: 1px solid rgba(245, 207, 102, 0.1);
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.05) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+      border-radius: 6px;
+    }
+
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .skeleton-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+    }
+
+    .skeleton-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .skeleton-title {
+      height: 16px;
+      width: 60%;
+    }
+
+    .skeleton-subtitle {
+      height: 12px;
+      width: 40%;
+    }
+
+    .skeleton-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .skeleton-box {
+      height: 38px;
+    }
+
+    .skeleton-btn {
+      height: 42px;
+      border-radius: 12px;
+    }
+
+    /* Custom Animated Pop-up Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      width: 88%;
+      max-width: 380px;
+      background: #0c261d;
+      border: 1px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      transform: scale(0.7) translateY(20px);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-icon {
+      font-size: 2.2rem;
+      color: var(--gold-primary);
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .modal-body {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .modal-btn-confirm {
+      background: var(--gold-gradient);
+      color: #061913;
+    }
+
+    .modal-btn-cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
     #bottom-nav-container {
       position: fixed;
       bottom: 0;
@@ -236,8 +397,54 @@
       <p>Choose your plan and start earning daily profit</p>
     </div>
 
-    <!-- 3 Investment Cards -->
-    <div class="plans-container">
+    <!-- Skeleton Loader (Data Loading) -->
+    <div id="skeleton-loader" class="skeleton-container">
+      <div class="skeleton-card">
+        <div class="skeleton-header">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="skeleton-text-group">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-subtitle"></div>
+          </div>
+        </div>
+        <div class="skeleton-grid">
+          <div class="skeleton skeleton-box"></div>
+          <div class="skeleton skeleton-box"></div>
+        </div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-header">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="skeleton-text-group">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-subtitle"></div>
+          </div>
+        </div>
+        <div class="skeleton-grid">
+          <div class="skeleton skeleton-box"></div>
+          <div class="skeleton skeleton-box"></div>
+        </div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-header">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="skeleton-text-group">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-subtitle"></div>
+          </div>
+        </div>
+        <div class="skeleton-grid">
+          <div class="skeleton skeleton-box"></div>
+          <div class="skeleton skeleton-box"></div>
+        </div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+    </div>
+
+    <!-- Real Content (Initially Hidden) -->
+    <div id="plans-content" class="plans-container" style="display: none;">
       
       <!-- Card 1: Starter USDT Plan -->
       <div class="plan-card">
@@ -341,19 +548,91 @@
     <div id="bottom-nav-container"></div>
   </div>
 
+  <!-- Custom Animated Pop-up Modal -->
+  <div id="custom-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-icon" id="modal-icon"><i class="fa-solid fa-circle-question"></i></div>
+      <div class="modal-title" id="modal-title">নিশ্চিতকরণ</div>
+      <div class="modal-body" id="modal-message">আপনি কি নিশ্চিত?</div>
+      <div class="modal-actions" id="modal-actions">
+        <button class="modal-btn modal-btn-cancel" id="modal-cancel-btn">বাতিল</button>
+        <button class="modal-btn modal-btn-confirm" id="modal-confirm-btn">হ্যাঁ, নিশ্চিত</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Supabase & Configuration Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
   <script>
+    // Skeleton Hide Handler (Simulating Data Load)
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.getElementById('skeleton-loader').style.display = 'none';
+        document.getElementById('plans-content').style.display = 'flex';
+      }, 700); // স্মুথ পেজ লোডিং ফিল দেওয়ার জন্য ৭০০ms ডিলে
+    });
+
+    // Custom Pop-Up Helper Function
+    function showCustomModal({ icon, title, message, isConfirm = false, onConfirm = () => {} }) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('custom-modal');
+        const iconEl = document.getElementById('modal-icon');
+        const titleEl = document.getElementById('modal-title');
+        const msgEl = document.getElementById('modal-message');
+        const confirmBtn = document.getElementById('modal-confirm-btn');
+        const cancelBtn = document.getElementById('modal-cancel-btn');
+
+        iconEl.innerHTML = icon || '<i class="fa-solid fa-circle-info"></i>';
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+
+        if (isConfirm) {
+          cancelBtn.style.display = 'inline-block';
+          confirmBtn.textContent = 'হ্যাঁ, নিশ্চিত';
+        } else {
+          cancelBtn.style.display = 'none';
+          confirmBtn.textContent = 'ঠিক আছে';
+        }
+
+        modal.classList.add('active');
+
+        const close = (result) => {
+          modal.classList.remove('active');
+          confirmBtn.onclick = null;
+          cancelBtn.onclick = null;
+          resolve(result);
+        };
+
+        confirmBtn.onclick = () => {
+          close(true);
+          onConfirm();
+        };
+
+        cancelBtn.onclick = () => close(false);
+      });
+    }
+
     async function subscribeCryptoPlan(planName, investedAmountStr, dailyProfitPercent, totalExpectedProfit, durationDays) {
       const client = window._supabase || window.supabase;
-      if (!client) return alert("Supabase সঠিকভাবে কনফিগার করা হয়নি!");
+      if (!client) {
+        showCustomModal({
+          icon: '<i class="fa-solid fa-triangle-exclamation" style="color: #ff4757;"></i>',
+          title: 'ত্রুটি',
+          message: 'Supabase সঠিকভাবে কনফিগার করা হয়নি!'
+        });
+        return;
+      }
 
       // ১. ইউজারের সেশন চেক করা
       const { data: { user }, error: authErr } = await client.auth.getUser();
       if (authErr || !user) {
-        alert("অনুগ্রহ করে ইনভেস্ট করার আগে লগইন করুন!");
+        await showCustomModal({
+          icon: '<i class="fa-solid fa-user-lock" style="color: #f5cf66;"></i>',
+          title: 'লগইন আবশ্যক',
+          message: 'অনুগ্রহ করে ইনভেস্ট করার আগে লগইন করুন!'
+        });
         window.location.href = 'login.html';
         return;
       }
@@ -369,13 +648,23 @@
         .single();
 
       if (walletErr || !wallet || parseFloat(wallet.balance) < amountNum) {
-        alert("আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ওয়ালেটে ফান্ড যুক্ত করুন।");
+        showCustomModal({
+          icon: '<i class="fa-solid fa-wallet" style="color: #ff4757;"></i>',
+          title: 'পর্যাপ্ত ব্যালেন্স নেই',
+          message: 'আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ওয়ালেটে ফান্ড যুক্ত করুন।'
+        });
         return;
       }
 
-      if (!confirm(`আপনি কি $${investedAmountStr} দিয়ে "${planName}" প্ল্যানে ইনভেস্ট করতে নিশ্চিত?`)) {
-        return;
-      }
+      // কাস্টম কনফার্মেশন পপ-আপ
+      const confirmed = await showCustomModal({
+        icon: '<i class="fa-solid fa-circle-question" style="color: #f5cf66;"></i>',
+        title: 'ইনভেস্টমেন্ট নিশ্চিতকরণ',
+        message: `আপনি কি $${investedAmountStr} দিয়ে "${planName}" প্ল্যানে ইনভেস্ট করতে নিশ্চিত?`,
+        isConfirm: true
+      });
+
+      if (!confirmed) return;
 
       // মেয়াদের সময় হিসেব করা
       const startDate = new Date();
@@ -413,12 +702,22 @@
 
         if (investErr) throw investErr;
 
-        alert("আপনার ক্রিপ্টো ইনভেস্টমেন্ট সফলভাবে সম্পন্ন হয়েছে!");
-        window.location.href = 'gol-investing-dashborad.html';
+        await showCustomModal({
+          icon: '<i class="fa-solid fa-circle-check" style="color: #2ed573;"></i>',
+          title: 'সফল হয়েছে!',
+          message: 'আপনার ক্রিপ্টো ইনভেস্টমেন্ট সফলভাবে সম্পন্ন হয়েছে!'
+        });
+
+        // আপডেট করা ড্যাশবোর্ড রিডাইরেক্ট URL
+        window.location.href = 'crypto-investing-dashborad.html';
 
       } catch (err) {
         console.error(err);
-        alert("ইনভেস্টমেন্ট ব্যর্থ হয়েছে: " + err.message);
+        showCustomModal({
+          icon: '<i class="fa-solid fa-circle-xmark" style="color: #ff4757;"></i>',
+          title: 'ইনভেস্টমেন্ট ব্যর্থ',
+          message: 'ইনভেস্টমেন্ট ব্যর্থ হয়েছে: ' + err.message
+        });
       }
     }
 
