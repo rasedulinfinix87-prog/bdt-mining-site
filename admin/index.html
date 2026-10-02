@@ -25,51 +25,61 @@
         <div id="admin-email" class="text-sm text-gray-600 font-medium"></div>
     </header>
 
-    <!-- Sidebar / Drawer (Hidden by default, toggled via Hamburger) -->
+    <!-- Sidebar / Drawer -->
     <div id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out bg-white w-64 shadow-xl z-50 pt-16">
         <div class="p-4">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">মেনু</h2>
+            <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">মেনুসমূহ</h2>
             <ul class="space-y-2">
                 <li>
-                    <a href="#" onclick="loadUserList()" class="block px-4 py-2 rounded-lg bg-blue-50 text-blue-600 font-medium">ইউজার লিস্ট</a>
+                    <a href="#" onclick="switchTab('transactions')" class="nav-link block px-4 py-2 rounded-lg bg-blue-50 text-blue-600 font-medium">ট্রানজ্যাকশন (ডিপোজিট/উইথড্র)</a>
                 </li>
-                <!-- ভবিষ্যতে অন্যান্য মেনু এখানে যোগ করা যাবে -->
+                <li>
+                    <a href="#" onclick="switchTab('users')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ইউজার লিস্ট</a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('wallets')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ওয়ালেট লিস্ট</a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('investments')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ইনভেস্টমেন্টস</a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('crypto')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ক্রিপ্টো ইনভেস্টমেন্ট</a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('support')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">সাপোর্ট মেসেজ</a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('notifications')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">নোটিফিকেশন</a>
+                </li>
             </ul>
         </div>
     </div>
 
     <!-- Main Content Area -->
-    <main class="pt-20 px-4 md:px-8 max-w-7xl mx-auto">
+    <main class="pt-20 px-4 md:px-8 max-w-7xl mx-auto pb-10">
         <div class="bg-white rounded-lg shadow p-6 mt-4">
-            <h1 class="text-2xl font-bold text-gray-800 mb-4">টোটাল ইউজার লিস্ট</h1>
+            <h1 id="page-title" class="text-2xl font-bold text-gray-800 mb-4">ট্রানজ্যাকশন ম্যানেজমেন্ট</h1>
             
             <!-- Loading State -->
             <div id="loading" class="text-center py-6 text-gray-500">লোড হচ্ছে...</div>
 
-            <!-- User Table -->
+            <!-- Dynamic Table Container -->
             <div class="overflow-x-auto hidden" id="table-container">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">নাম</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ইমেইল</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ফোন</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">রোল</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">যোগদানের সময়</th>
-                        </tr>
+                    <thead id="table-head" class="bg-gray-50">
+                        <!-- হেডার ডাইনামিকালি লোড হবে -->
                     </thead>
-                    <tbody id="user-table-body" class="bg-white divide-y divide-gray-200">
-                        <!-- JavaScript দিয়ে ডেটা এখানে বসবে -->
+                    <tbody id="table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- বডি ডেটা ডাইনামিকালি লোড হবে -->
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <!-- Supabase Config File Load (Root থেকে) -->
+    <!-- Supabase Config File Load -->
     <script src="../supabase-config.js"></script>
     <script>
-        // হ্যামবার্গার মেনু টগল করার স্ক্রিপ্ট
         const menuBtn = document.getElementById('menu-btn');
         const sidebar = document.getElementById('sidebar');
 
@@ -77,28 +87,25 @@
             sidebar.classList.toggle('-translate-x-full');
         });
 
-        // পেজ লোড হওয়ার পর অথেন্টিকেশন ও অ্যাডমিন চেক
+        // পেজ লোড ও অথেন্টিকেশন চেক
         window.addEventListener('DOMContentLoaded', async () => {
-            // একটু সময় দেওয়া যাতে Supabase ইনিশিয়ালাইজ হতে পারে
             setTimeout(async () => {
                 if (!window._supabase) {
                     alert('Supabase কানেক্ট হয়নি!');
                     return;
                 }
 
-                // ১. বর্তমান লগইন করা ইউজারের সেশন চেক করা
                 const { data: { session }, error: sessionError } = await window._supabase.auth.getSession();
                 
                 if (sessionError || !session) {
                     alert('দয়া করে প্রথমে লগইন করুন!');
-                    window.location.href = '../login-signup.html'; // আপনার লগইন পেজের পাথ অনুযায়ী ঠিক করে নিতে পারেন
+                    window.location.href = '../login-signup.html';
                     return;
                 }
 
                 const userEmail = session.user.email;
                 document.getElementById('admin-email').innerText = userEmail;
 
-                // ২. টেবিল থেকে চেক করা এই ইউজারের role 'admin' কি না
                 const { data: userData, error: userError } = await window._supabase
                     .from('user')
                     .select('role')
@@ -106,57 +113,322 @@
                     .single();
 
                 if (userError || !userData || userData.role !== 'admin') {
-                    alert('আপনার এই পেজে ঢোকার অনুমতি নেই! আপনি অ্যাডমিন নন।');
-                    window.location.href = '../home-index.html'; // সাধারণ হোম পেজে পাঠিয়ে দেওয়া
+                    alert('আপনার এই পেজে ঢোকার অনুমতি নেই!');
+                    window.location.href = '../home-index.html';
                     return;
                 }
 
-                // যদি অ্যাডমিন হয়, তবে ইউজার লিস্ট লোড করো
-                loadUserList();
+                // ডিফল্টভাবে ট্রানজ্যাকশন ট্যাব লোড হবে
+                loadTransactions();
 
             }, 500);
         });
 
-        // ইউজার লিস্ট ফেচ করার ফাংশন
-        async function loadUserList() {
-            const loadingEl = document.getElementById('loading');
-            const tableContainer = document.getElementById('table-container');
-            const tbody = document.getElementById('user-table-body');
+        // মেনু পরিবর্তনের ফাংশন
+        function switchTab(tabName) {
+            sidebar.classList.add('-translate-x-full');
+            
+            // একটিভ ক্লাসের স্টাইল পরিবর্তন
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('bg-blue-50', 'text-blue-600');
+                el.classList.add('text-gray-700', 'hover:bg-gray-100');
+            });
+            event.target.classList.remove('text-gray-700', 'hover:bg-gray-100');
+            event.target.classList.add('bg-blue-50', 'text-blue-600');
 
-            loadingEl.style.display = 'block';
-            tableContainer.classList.add('hidden');
+            if (tabName === 'transactions') loadTransactions();
+            else if (tabName === 'users') loadUsers();
+            else if (tabName === 'wallets') loadWallets();
+            else if (tabName === 'investments') loadInvestments();
+            else if (tabName === 'crypto') loadCryptoInvestments();
+            else if (tabName === 'support') loadSupportMessages();
+            else if (tabName === 'notifications') loadNotifications();
+        }
 
-            const { data: users, error } = await window._supabase
-                .from('user')
+        // ১. ট্রানজ্যাকশন লিস্ট ও স্ট্যাটাস আপডেট
+        async function loadTransactions() {
+            document.getElementById('page-title').innerText = 'ট্রানজ্যাকশন ম্যানেজমেন্ট (ডিপোজিট/উইথড্র)';
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('table-container');
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+
+            loading.style.display = 'block';
+            container.classList.add('hidden');
+
+            const { data, error } = await window._supabase
+                .from('transactions')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            loadingEl.style.display = 'none';
+            loading.style.display = 'none';
+            if (error) { alert('ডেটা আনতে সমস্যা হয়েছে'); return; }
 
-            if (error) {
-                console.error('ইউজার ডেটা আনতে সমস্যা হয়েছে:', error.message);
-                loadingEl.innerText = 'ডেটা লোড করতে সমস্যা হয়েছে!';
-                return;
-            }
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">টাইপ</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">পরিমাণ</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">মেথড / অ্যাকাউন্ট</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ট্রানজ্যাকশন আইডি</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">স্ট্যাটাস</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">অ্যাকশন</th>
+                </tr>
+            `;
 
             tbody.innerHTML = '';
-            users.forEach(user => {
+            data.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.full_name || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.phone || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}">
-                            ${user.role}
+                    <td class="px-4 py-4 text-sm font-semibold uppercase text-gray-700">${item.type}</td>
+                    <td class="px-4 py-4 text-sm text-gray-900">${item.amount}</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">${item.method || ''} <br><span class="text-xs">${item.account_number || ''}</span></td>
+                    <td class="px-4 py-4 text-sm text-gray-500">${item.trx_id || 'N/A'}</td>
+                    <td class="px-4 py-4 text-sm">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${item.status === 'approved' ? 'bg-green-100 text-green-800' : item.status === 'cancel' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
+                            ${item.status}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(user.created_at).toLocaleString()}</td>
+                    <td class="px-4 py-4 text-sm space-x-1">
+                        <button onclick="updateTxStatus('${item.id}', 'approved')" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600">Approve</button>
+                        <button onclick="updateTxStatus('${item.id}', 'cancel')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Cancel</button>
+                        <button onclick="updateTxStatus('${item.id}', 'pending')" class="bg-yellow-500 text-white px-2 py-1 rounded text-xs hover:bg-yellow-600">Pending</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
+            container.classList.remove('hidden');
+        }
 
-            tableContainer.classList.remove('hidden');
+        async function updateTxStatus(id, newStatus) {
+            const { error } = await window._supabase
+                .from('transactions')
+                .update({ status: newStatus, updated_at: new Date() })
+                .eq('id', id);
+
+            if (error) {
+                alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ' + error.message);
+            } else {
+                alert('স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে!');
+                loadTransactions();
+            }
+        }
+
+        // ২. ইউজার লিস্ট
+        async function loadUsers() {
+            document.getElementById('page-title').innerText = 'ইউজার লিস্ট';
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('table-container');
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+
+            loading.style.display = 'block';
+            container.classList.add('hidden');
+
+            const { data, error } = await window._supabase.from('user').select('*').order('created_at', { ascending: false });
+            loading.style.display = 'none';
+            if (error) return;
+
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">নাম</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ইমেইল</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ফোন</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">রোল</th>
+                </tr>
+            `;
+            tbody.innerHTML = '';
+            data.forEach(user => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-4 text-sm font-medium text-gray-900">${user.full_name || 'N/A'}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${user.email}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${user.phone || 'N/A'}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${user.role}</td>
+                    </tr>
+                `;
+            });
+            container.classList.remove('hidden');
+        }
+
+        // ৩. ওয়ালেট লিস্ট
+        async function loadWallets() {
+            document.getElementById('page-title').innerText = 'ওয়ালেট লিস্ট';
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('table-container');
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+
+            loading.style.display = 'block';
+            container.classList.add('hidden');
+
+            const { data, error } = await window._supabase.from('wallets').select('*');
+            loading.style.display = 'none';
+            if (error) return;
+
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">অ্যাকাউন্ট নম্বর</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ব্যালেন্স</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">কারেন্সি</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">অ্যাক্টিভ স্ট্যাটাস</th>
+                </tr>
+            `;
+            tbody.innerHTML = '';
+            data.forEach(w => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-4 text-sm text-gray-900">${w.account_number || 'N/A'}</td>
+                        <td class="px-4 py-4 text-sm font-bold text-gray-900">${w.balance}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${w.currency || 'BDT'}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${w.is_active ? 'Active' : 'Inactive'}</td>
+                    </tr>
+                `;
+            });
+            container.classList.remove('hidden');
+        }
+
+        // ৪. ইনভেস্টমেন্টস
+        async function loadInvestments() {
+            document.getElementById('page-title').innerText = 'ইনভেস্টমেন্টস লিস্ট';
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('table-container');
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+
+            loading.style.display = 'block';
+            container.classList.add('hidden');
+
+            const { data, error } = await window._supabase.from('investments').select('*');
+            loading.style.display = 'none';
+            if (error) return;
+
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">প্ল্যান নাম</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">পরিমাণ</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">মোট রিটার্ন</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">স্ট্যাটাস</th>
+                </tr>
+            `;
+            tbody.innerHTML = '';
+            data.forEach(inv => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-4 text-sm font-medium text-gray-900">${inv.plan_name}</td>
+                        <td class="px-4 py-4 text-sm text-gray-900">${inv.amount}</td>
+                        <td class="px-4 py-4 text-sm text-gray-900">${inv.total_return}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${inv.status}</td>
+                    </tr>
+                `;
+            });
+            container.classList.remove('hidden');
+        }
+
+        // ৫. ক্রিপ্টো ইনভেস্টমেন্ট
+        async function loadCryptoInvestments() {
+            document.getElementById('page-title').innerText = 'ক্রিপ্টো ইনভেস্টমেন্ট লিস্ট';
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('table-container');
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+
+            loading.style.display = 'block';
+            container.classList.add('hidden');
+
+            const { data, error } = await window._supabase.from('crypto_investment').select('*');
+            loading.style.display = 'none';
+            if (error) return;
+
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">প্ল্যান নাম</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ইনভেস্টেড অ্যামাউন্ট</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">অর্জিত প্রফিট</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">স্ট্যাটাস</th>
+                </tr>
+            `;
+            tbody.innerHTML = '';
+            data.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-4 text-sm font-medium text-gray-900">${c.plan_name}</td>
+                        <td class="px-4 py-4 text-sm text-gray-900">${c.invested_amount}</td>
+                        <td class="px-4 py-4 text-sm text-gray-900">${c.earned_profit || 0}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${c.status}</td>
+                    </tr>
+                `;
+            });
+            container.classList.remove('hidden');
+        }
+
+        // ৬. সাপোর্ট মেসেজ
+        async function loadSupportMessages() {
+            document.getElementById('page-title').innerText = 'সাপোর্ট মেসেজ লিস্ট';
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('table-container');
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+
+            loading.style.display = 'block';
+            container.classList.add('hidden');
+
+            const { data, error } = await window._supabase.from('support_messages').select('*');
+            loading.style.display = 'none';
+            if (error) return;
+
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">নাম</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">নোট</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">স্ট্যাটাস</th>
+                </tr>
+            `;
+            tbody.innerHTML = '';
+            data.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-4 text-sm font-medium text-gray-900">${s.full_name || 'N/A'}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${s.note || ''}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${s.status || 'Pending'}</td>
+                    </tr>
+                `;
+            });
+            container.classList.remove('hidden');
+        }
+
+        // ৭. নোটিফিকেশন
+        async function loadNotifications() {
+            document.getElementById('page-title').innerText = 'নোটিফিকেশন লিস্ট';
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('table-container');
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+
+            loading.style.display = 'block';
+            container.classList.add('hidden');
+
+            const { data, error } = await window._supabase.from('notifications').select('*');
+            loading.style.display = 'none';
+            if (error) return;
+
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">টাইটেল</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">মেসেজ</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">পঠিত (Read)</th>
+                </tr>
+            `;
+            tbody.innerHTML = '';
+            data.forEach(n => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-4 text-sm font-medium text-gray-900">${n.title}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${n.message}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${n.is_red ? 'Yes' : 'No'}</td>
+                    </tr>
+                `;
+            });
+            container.classList.remove('hidden');
         }
     </script>
 </body>
