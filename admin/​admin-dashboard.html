@@ -277,7 +277,7 @@
 
   <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Supabase Config Script -->
+  <!-- Supabase Config Script (যদি config ফাইলটি root ফোল্ডারে থাকে তবে "../supabase-config.js", আর admin ফোল্ডারে থাকলে "./supabase-config.js") -->
   <script src="../supabase-config.js"></script>
 
   <script>
@@ -296,23 +296,15 @@
       }
     });
 
-    async function getSupabaseInstance() {
+    // Check Admin Authorization on Load
+    async function checkAdminAuth() {
       let attempts = 0;
-      while ((!window._supabase && !window.supabase) && attempts < 20) {
+      while (!window._supabase && attempts < 20) {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
       }
-      if (window._supabase) return window._supabase;
-      if (window.supabase && typeof window.supabase.createClient === 'function') {
-        const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2In0...";
-        return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      }
-      return null;
-    }
 
-    async function checkAdminAuth() {
-      const client = await getSupabaseInstance();
+      const client = window._supabase;
       if (!client) {
         window.location.href = 'admin-login.html';
         return;
@@ -389,7 +381,7 @@
     }
 
     async function processTrx(trxId, userId, type, amount, newStatus) {
-      const client = await getSupabaseInstance();
+      const client = window._supabase;
       if (!client) return;
 
       if (!confirm(`Are you sure you want to mark this transaction as ${newStatus}?`)) return;
@@ -433,7 +425,7 @@
     }
 
     async function adminLogout() {
-      const client = await getSupabaseInstance();
+      const client = window._supabase;
       if (client) {
         await client.auth.signOut();
       }
