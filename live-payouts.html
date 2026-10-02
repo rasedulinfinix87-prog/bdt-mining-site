@@ -10,7 +10,7 @@
       --bg-dark: #061913;
       --bg-darker: #030d0a;
       --card-bg: rgba(12, 38, 29, 0.85);
-      --card-border: rgba(245, 207, 102, 0.3);
+      --card-border: rgba(245, 207, 102, 0.2);
       --gold-primary: #f5cf66;
       --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 50%, #f5cf66 100%);
       --green-glow: #2ed573;
@@ -44,7 +44,7 @@
       flex-direction: column;
     }
 
-    /* Top Bar - সাইটের মূল ব্যাকগ্রাউন্ড কালার দিয়ে আপডেট করা */
+    /* Top Bar */
     .top-bar {
       display: flex;
       align-items: center;
@@ -67,14 +67,15 @@
       color: var(--gold-primary);
       font-size: 1.1rem;
       text-decoration: none;
-      background: rgba(245, 207, 102, 0.15);
+      background: rgba(245, 207, 102, 0.1);
       border: 1px solid var(--card-border);
       width: 36px;
       height: 36px;
-      border-radius: 8px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
     .top-bar h2 {
@@ -92,18 +93,18 @@
       }
     }
 
-    /* Total Counter Banner - সোনার উজ্জ্বল গ্রাডিয়েন্ট বর্ডার অ্যানিমেশন সহ */
+    /* Total Counter Banner (ডার্ক গ্রিন কার্ড ও পাতলা গোল্ডেন বর্ডার স্টাইল) */
     .counter-card {
       margin: 20px;
       background: var(--card-bg);
-      border: 2px solid transparent;
-      border-image: var(--gold-gradient) 1;
+      border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 20px;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       position: relative;
       overflow: hidden;
+      backdrop-filter: blur(10px);
     }
 
     .counter-card::before {
@@ -111,7 +112,7 @@
       position: absolute;
       top: 0; left: -100%;
       width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(245,207,102,0.1), transparent);
+      background: linear-gradient(90deg, transparent, rgba(245,207,102,0.06), transparent);
       animation: shimmer 3s infinite;
     }
 
@@ -183,7 +184,7 @@
       background: var(--bg-darker);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);
+      box-shadow: inset 0 5px 15px rgba(0,0,0,0.6);
     }
 
     .payout-list {
@@ -197,18 +198,23 @@
       transition: transform 0.5s ease-out;
     }
 
-    /* Payout Item Card - সোনার উজ্জ্বল গ্রাডিয়েন্ট বর্ডার সহ */
+    /* Payout Item Card (স্ক্রিনশটের সাথে হুবহু মিল রেখে চিকন গোল্ডেন বর্ডার ও গ্লাসমোরফিজম স্টাইল) */
     .payout-item {
       background: var(--card-bg);
-      border: 1px solid;
-      border-image: var(--gold-gradient) 1;
-      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
       padding: 12px 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       animation: fadeIn 0.4s ease-out;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(8px);
+      transition: transform 0.2s ease;
+    }
+
+    .payout-item:hover {
+      border-color: rgba(245, 207, 102, 0.4);
     }
 
     @keyframes fadeIn {
@@ -225,20 +231,22 @@
     .user-avatar {
       width: 38px;
       height: 38px;
-      background: rgba(245, 207, 102, 0.1);
+      background: var(--bg-darker);
       border: 1px solid var(--card-border);
-      border-radius: 50%;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--gold-primary);
       font-size: 0.9rem;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
     }
 
     .user-details h4 {
       font-size: 0.9rem;
       color: var(--text-main);
       margin-bottom: 2px;
+      font-weight: 600;
     }
 
     .user-details p {
@@ -251,9 +259,9 @@
       font-weight: 700;
       color: var(--green-glow);
       background: rgba(46, 213, 115, 0.1);
-      padding: 5px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(46, 213, 115, 0.2);
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(46, 213, 115, 0.25);
     }
   </style>
 </head>
