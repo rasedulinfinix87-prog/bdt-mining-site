@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Total User List - Goldmine Digital</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #061913;
+      --topbar-bg: rgba(6, 25, 19, 0.92);
+      --card-bg: rgba(12, 38, 29, 0.85);
+      --card-border: rgba(245, 207, 102, 0.2);
+      --gold-primary: #f5cf66;
+      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --green-glow: #2ed573;
+      --red-color: #ff4757;
+      --text-main: #ffffff;
+      --text-muted: #8da499;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .admin-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-dark);
+      padding-bottom: 50px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .top-bar .back-btn {
+      color: var(--text-main);
+      font-size: 1.1rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .top-bar h2 {
+      font-size: 1.2rem;
+      color: var(--gold-primary);
+    }
+
+    /* User List Section */
+    .user-list-container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .user-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .user-header-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+    }
+
+    .user-role-badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(46, 213, 115, 0.15);
+      color: var(--green-glow);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .user-role-badge.admin {
+      background: rgba(245, 207, 102, 0.15);
+      color: var(--gold-primary);
+    }
+
+    .user-details {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .user-details span {
+      color: var(--text-main);
+    }
+
+    .no-data {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 40px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="title-group">
+        <a href="admin-dashboard.html" class="back-btn">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <h2>Total User List</h2>
+      </div>
+    </div>
+
+    <!-- User List Container -->
+    <div class="user-list-container" id="user-list-box">
+      <div class="no-data">Loading users...</div>
+    </div>
+  </div>
+
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase Config Script -->
+  <script src="./supabase-config.js"></script>
+
+  <script>
+    async function getSupabaseInstance() {
+      let attempts = 0;
+      while ((!window._supabase && !window.supabase) && attempts < 20) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      if (window._supabase) return window._supabase;
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
+        return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+      return null;
+    }
+
+    // Check Admin Authentication & Load Users
+    async function initUserList() {
+      const client = await getSupabaseInstance();
+      if (!client) {
+        window.location.href = 'admin-login.html';
+        return;
+      }
+
+      const { data: { user } } = await client.auth.getUser();
+      if (!user) {
+        window.location.href = 'admin-login.html';
+        return;
+      }
+
+      const { data: profile } = await client
+        .from('user')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile || profile.role !== 'admin') {
+        alert("Unauthorized access!");
+        window.location.href = 'admin-login.html';
+        return;
+      }
+
+      // Fetch All Users from 'user' table
+      try {
+        const { data: users, error } = await client
+          .from('user')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const container = document.getElementById('user-list-box');
+
+        if (!users || users.length === 0) {
+          container.innerHTML = `<div class="no-data">No users found.</div>`;
+          return;
+        }
+
+        container.innerHTML = '';
+        users.forEach(u => {
+          const isAdmin = u.role === 'admin';
+          container.innerHTML += `
+            <div class="user-card">
+              <div class="user-header-info">
+                <span class="user-name">${u.full_name || 'N/A'}</span>
+                <span class="user-role-badge ${isAdmin ? 'admin' : ''}">${u.role || 'user'}</span>
+              </div>
+              <div class="user-details">
+                <i class="fa-solid fa-envelope" style="width: 18px; color: var(--gold-primary);"></i> Email: <span>${u.email || 'N/A'}</span><br>
+                <i class="fa-solid fa-phone" style="width: 18px; color: var(--gold-primary);"></i> Phone: <span>${u.phone || 'N/A'}</span><br>
+                <i class="fa-solid fa-clock" style="width: 18px; color: var(--gold-primary);"></i> Joined: <span>${new Date(u.created_at).toLocaleString()}</span>
+              </div>
+            </div>
+          `;
+        });
+
+      } catch (err) {
+        console.error("Error loading users:", err);
+        document.getElementById('user-list-box').innerHTML = `<div class="no-data">Failed to load user list.</div>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initUserList);
+  </script>
+</body>
+</html>
