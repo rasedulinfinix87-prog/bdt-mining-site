@@ -22,7 +22,11 @@
             </button>
             <span class="text-xl font-bold text-gray-800">অ্যাডমিন প্যানেল</span>
         </div>
-        <div id="admin-email" class="text-sm text-gray-600 font-medium"></div>
+        <div class="flex items-center space-x-4">
+            <!-- History Button -->
+            <button onclick="openHistoryModal()" class="bg-blue-600 text-white text-xs md:text-sm px-3 py-1.5 rounded-lg hover:bg-blue-700 transition">হিস্ট্রি (সম্পন্ন ট্রানজ্যাকশন)</button>
+            <div id="admin-email" class="text-xs md:text-sm text-gray-600 font-medium hidden sm:block"></div>
+        </div>
     </header>
 
     <!-- Sidebar / Drawer -->
@@ -77,6 +81,36 @@
         </div>
     </main>
 
+    <!-- History Modal Popup -->
+    <div id="history-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-lg font-bold text-gray-800">সকল আপডেট করা ও সম্পন্ন ট্রানজ্যাকশন হিস্ট্রি</h3>
+                <button onclick="closeHistoryModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1">
+                <div id="modal-loading" class="text-center py-4 text-gray-500">লোড হচ্ছে...</div>
+                <div class="overflow-x-auto hidden" id="modal-table-container">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">টাইপ</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">পরিমাণ</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">মেথড / অ্যাকাউন্ট</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">ট্রানজ্যাকশন আইডি</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">স্ট্যাটাস</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="p-4 border-t text-right">
+                <button onclick="closeHistoryModal()" class="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600">বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Supabase Config File Load -->
     <script src="../supabase-config.js"></script>
     <script>
@@ -118,7 +152,6 @@
                     return;
                 }
 
-                // ডিফল্টভাবে ট্রানজ্যাকশন ট্যাব লোড হবে
                 loadTransactions();
 
             }, 500);
@@ -128,7 +161,6 @@
         function switchTab(tabName) {
             sidebar.classList.add('-translate-x-full');
             
-            // একটিভ ক্লাসের স্টাইল পরিবর্তন
             document.querySelectorAll('.nav-link').forEach(el => {
                 el.classList.remove('bg-blue-50', 'text-blue-600');
                 el.classList.add('text-gray-700', 'hover:bg-gray-100');
@@ -145,9 +177,9 @@
             else if (tabName === 'notifications') loadNotifications();
         }
 
-        // ১. ট্রানজ্যাকশন লিস্ট ও স্ট্যাটাস আপডেট
+        // ১. ট্রানজ্যাকশন লিস্ট (শুধুমাত্র pending গুলো দেখাবে)
         async function loadTransactions() {
-            document.getElementById('page-title').innerText = 'ট্রানজ্যাকশন ম্যানেজমেন্ট (ডিপোজিট/উইথড্র)';
+            document.getElementById('page-title').innerText = 'ট্রানজ্যাকশন ম্যানেজমেন্ট (পেন্ডিং রিকোয়েস্ট)';
             const loading = document.getElementById('loading');
             const container = document.getElementById('table-container');
             const thead = document.getElementById('table-head');
@@ -159,6 +191,7 @@
             const { data, error } = await window._supabase
                 .from('transactions')
                 .select('*')
+                .eq('status', 'pending')
                 .order('created_at', { ascending: false });
 
             loading.style.display = 'none';
@@ -175,6 +208,12 @@
                 </tr>
             `;
 
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500">কোনো পেন্ডিং ট্রানজ্যাকশন নেই! পেজটি পরিষ্কার আছে।</td></tr>`;
+                container.classList.remove('hidden');
+                return;
+            }
+
             tbody.innerHTML = '';
             data.forEach(item => {
                 const tr = document.createElement('tr');
@@ -184,14 +223,13 @@
                     <td class="px-4 py-4 text-sm text-gray-500">${item.method || ''} <br><span class="text-xs">${item.account_number || ''}</span></td>
                     <td class="px-4 py-4 text-sm text-gray-500">${item.trx_id || 'N/A'}</td>
                     <td class="px-4 py-4 text-sm">
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${item.status === 'approved' ? 'bg-green-100 text-green-800' : item.status === 'cancel' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                             ${item.status}
                         </span>
                     </td>
                     <td class="px-4 py-4 text-sm space-x-1">
                         <button onclick="updateTxStatus('${item.id}', 'approved')" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600">Approve</button>
                         <button onclick="updateTxStatus('${item.id}', 'cancel')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Cancel</button>
-                        <button onclick="updateTxStatus('${item.id}', 'pending')" class="bg-yellow-500 text-white px-2 py-1 rounded text-xs hover:bg-yellow-600">Pending</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -208,9 +246,55 @@
             if (error) {
                 alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ' + error.message);
             } else {
-                alert('স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে!');
+                // স্ট্যাটাস আপডেট করার সাথে সাথে পেজ থেকে সরে যাবে এবং ফ্রেশ লিস্ট লোড হবে
                 loadTransactions();
             }
+        }
+
+        // হিস্ট্রি মডাল ওপেন ও ক্লোজ করার ফাংশন
+        async function openHistoryModal() {
+            document.getElementById('history-modal').classList.remove('hidden');
+            const modalLoading = document.getElementById('modal-loading');
+            const modalContainer = document.getElementById('modal-table-container');
+            const modalBody = document.getElementById('modal-table-body');
+
+            modalLoading.style.display = 'block';
+            modalContainer.classList.add('hidden');
+
+            const { data, error } = await window._supabase
+                .from('transactions')
+                .select('*')
+                .in('status', ['approved', 'cancel'])
+                .order('updated_at', { ascending: false });
+
+            modalLoading.style.display = 'none';
+            if (error) { alert('হিস্ট্রি লোড করতে সমস্যা হয়েছে'); return; }
+
+            modalBody.innerHTML = '';
+            if (data.length === 0) {
+                modalBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">কোনো সম্পন্ন ট্রানজ্যাকশন নেই।</td></tr>`;
+            } else {
+                data.forEach(item => {
+                    modalBody.innerHTML += `
+                        <tr>
+                            <td class="px-3 py-3 text-xs font-semibold uppercase text-gray-700">${item.type}</td>
+                            <td class="px-3 py-3 text-xs text-gray-900">${item.amount}</td>
+                            <td class="px-3 py-3 text-xs text-gray-500">${item.method || ''} (${item.account_number || ''})</td>
+                            <td class="px-3 py-3 text-xs text-gray-500">${item.trx_id || 'N/A'}</td>
+                            <td class="px-3 py-3 text-xs">
+                                <span class="px-2 py-0.5 font-semibold rounded-full ${item.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                    ${item.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            modalContainer.classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('history-modal').classList.add('hidden');
         }
 
         // ২. ইউজার লিস্ট
