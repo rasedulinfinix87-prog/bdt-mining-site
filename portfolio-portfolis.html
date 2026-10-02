@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,57 +39,54 @@
             min-height: 100vh;
             color: var(--text-main);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            padding: 40px 20px;
+            padding: 20px 15px 10px 15px;
         }
 
         .container {
             max-width: 1100px;
             width: 100%;
+            margin: auto 0;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 25px;
         }
 
         .header h1 {
-            font-size: 2.2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             background: linear-gradient(135deg, #ffffff 0%, #a1a1a1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: var(--text-sub);
-            font-size: 1rem;
+            margin-bottom: 4px;
         }
 
         /* Investment Grid */
         .investment-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
         }
 
-        /* Premium Card Base */
+        /* Premium Card Base (Reduced size by ~30%) */
         .portfolio-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 28px;
+            border-radius: 18px;
+            padding: 18px;
             backdrop-filter: blur(16px);
             position: relative;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
 
         .portfolio-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-5px);
         }
 
         /* Gold Card Specific Glow */
@@ -97,7 +94,7 @@
             border-color: rgba(255, 215, 0, 0.2);
         }
         .card-gold:hover {
-            box-shadow: 0 20px 40px var(--gold-glow), 0 0 20px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 15px 30px var(--gold-glow), 0 0 15px rgba(255, 215, 0, 0.2);
             border-color: rgba(255, 215, 0, 0.5);
         }
 
@@ -106,7 +103,7 @@
             border-color: rgba(0, 242, 254, 0.2);
         }
         .card-crypto:hover {
-            box-shadow: 0 20px 40px var(--crypto-glow), 0 0 20px rgba(0, 242, 254, 0.2);
+            box-shadow: 0 15px 30px var(--crypto-glow), 0 0 15px rgba(0, 242, 254, 0.2);
             border-color: rgba(0, 242, 254, 0.5);
         }
 
@@ -115,17 +112,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .icon-box {
-            width: 54px;
-            height: 54px;
-            border-radius: 16px;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 1.1rem;
         }
 
         .card-gold .icon-box {
@@ -141,9 +138,9 @@
         }
 
         .badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -162,42 +159,42 @@
 
         /* Card Info */
         .card-title-area h2 {
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
         }
 
         .card-title-area p {
             color: var(--text-sub);
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
 
         .amount-area {
-            margin: 20px 0 15px 0;
+            margin: 12px 0 10px 0;
             display: flex;
             align-items: baseline;
-            gap: 12px;
+            gap: 10px;
         }
 
         .amount {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 700;
         }
 
         .growth {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: #10b981;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
 
         /* Graph Canvas / Container */
         .graph-container {
             width: 100%;
-            height: 120px;
-            margin: 15px 0 25px 0;
+            height: 80px;
+            margin: 10px 0 15px 0;
             position: relative;
         }
 
@@ -212,11 +209,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            font-size: 0.95rem;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
             font-weight: 700;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -226,32 +223,39 @@
         .card-gold .card-btn {
             background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
             color: #000;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
+            box-shadow: 0 3px 12px rgba(255, 215, 0, 0.25);
         }
 
         .card-gold .card-btn:hover {
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
             transform: scale(1.02);
         }
 
         .card-crypto .card-btn {
             background: linear-gradient(135deg, var(--crypto-primary), var(--crypto-secondary));
             color: #000;
-            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.25);
+            box-shadow: 0 3px 12px rgba(0, 242, 254, 0.25);
         }
 
         .card-crypto .card-btn:hover {
-            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
             transform: scale(1.02);
+        }
+
+        /* Bottom Nav Container */
+        #bottom-nav-container {
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 10px;
         }
 
         /* Responsive */
         @media (max-width: 600px) {
             body {
-                padding: 20px 12px;
+                padding: 12px 10px 5px 10px;
             }
             .header h1 {
-                font-size: 1.8rem;
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -261,7 +265,6 @@
     <div class="container">
         <div class="header">
             <h1>Investment Portfolio</h1>
-            <p>আপনার পছন্দের ইনভেস্টমেন্ট কার্ড বেছে নিয়ে গ্রাফ ও বিস্তারিত দেখতে ক্লিক করুন</p>
         </div>
 
         <div class="investment-grid">
@@ -270,7 +273,7 @@
             <div class="portfolio-card card-gold">
                 <div class="card-header">
                     <div class="icon-box">
-                        <i class="fa-solid font-awesome fa-coins"></i>
+                        <i class="fa-solid fa-coins"></i>
                     </div>
                     <span class="badge">Low Risk • Safe</span>
                 </div>
@@ -353,5 +356,19 @@
         </div>
     </div>
 
+    <!-- Bottom Nav Container Connected via JavaScript -->
+    <div id="bottom-nav-container"></div>
+
+    <!-- JavaScript to Fetch bottom.html -->
+    <script>
+        fetch('bottom.html?v=' + new Date().getTime())
+            .then(response => {
+                if(response.ok) return response.text();
+            })
+            .then(data => {
+                if(data) document.getElementById('bottom-nav-container').innerHTML = data;
+            })
+            .catch(error => console.log('Bottom navigation not loaded'));
+    </script>
 </body>
 </html>
