@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Investment Portfolio</title>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
@@ -29,6 +31,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -40,15 +43,36 @@
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             align-items: center;
-            padding: 20px 15px 10px 15px;
+            padding-bottom: 90px; /* Space for fixed bottom nav */
+        }
+
+        /* Top Bar */
+        .top-bar {
+            width: 100%;
+            background: rgba(12, 16, 25, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            padding: 18px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .top-bar h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1a1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 600px;
             width: 100%;
-            margin: auto 0;
+            padding: 20px;
         }
 
         .header {
@@ -56,37 +80,33 @@
             margin-bottom: 25px;
         }
 
-        .header h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffffff 0%, #a1a1a1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
+        .header p {
+            color: var(--text-sub);
+            font-size: 0.9rem;
         }
 
         /* Investment Grid */
         .investment-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        /* Premium Card Base (Reduced size by ~30%) */
+        /* Reduced Card Size (approx 30% compact) */
         .portfolio-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 18px;
-            padding: 18px;
+            padding: 18px 20px;
             backdrop-filter: blur(16px);
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
         .portfolio-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
         }
 
         /* Gold Card Specific Glow */
@@ -94,8 +114,8 @@
             border-color: rgba(255, 215, 0, 0.2);
         }
         .card-gold:hover {
-            box-shadow: 0 15px 30px var(--gold-glow), 0 0 15px rgba(255, 215, 0, 0.2);
-            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 15px 30px var(--gold-glow);
+            border-color: rgba(255, 215, 0, 0.4);
         }
 
         /* Crypto Card Specific Glow */
@@ -103,8 +123,8 @@
             border-color: rgba(0, 242, 254, 0.2);
         }
         .card-crypto:hover {
-            box-shadow: 0 15px 30px var(--crypto-glow), 0 0 15px rgba(0, 242, 254, 0.2);
-            border-color: rgba(0, 242, 254, 0.5);
+            box-shadow: 0 15px 30px var(--crypto-glow);
+            border-color: rgba(0, 242, 254, 0.4);
         }
 
         /* Card Header */
@@ -116,8 +136,8 @@
         }
 
         .icon-box {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
             display: flex;
             justify-content: center;
@@ -140,7 +160,7 @@
         .badge {
             padding: 4px 10px;
             border-radius: 15px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -159,14 +179,14 @@
 
         /* Card Info */
         .card-title-area h2 {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             margin-bottom: 3px;
         }
 
         .card-title-area p {
             color: var(--text-sub);
-            font-size: 0.75rem;
+            font-size: 0.78rem;
         }
 
         .amount-area {
@@ -177,12 +197,12 @@
         }
 
         .amount {
-            font-size: 1.4rem;
+            font-size: 1.45rem;
             font-weight: 700;
         }
 
         .growth {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #10b981;
             display: flex;
@@ -190,21 +210,15 @@
             gap: 3px;
         }
 
-        /* Graph Canvas / Container */
+        /* Graph Container */
         .graph-container {
             width: 100%;
-            height: 80px;
+            height: 75px;
             margin: 10px 0 15px 0;
             position: relative;
         }
 
-        .graph-container svg {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
-
-        /* Action Link / Button */
+        /* Action Button */
         .card-btn {
             display: flex;
             justify-content: center;
@@ -212,8 +226,8 @@
             gap: 8px;
             width: 100%;
             padding: 10px;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            border-radius: 12px;
+            font-size: 0.88rem;
             font-weight: 700;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -223,48 +237,43 @@
         .card-gold .card-btn {
             background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
             color: #000;
-            box-shadow: 0 3px 12px rgba(255, 215, 0, 0.25);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
         }
 
         .card-gold .card-btn:hover {
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.35);
         }
 
         .card-crypto .card-btn {
             background: linear-gradient(135deg, var(--crypto-primary), var(--crypto-secondary));
             color: #000;
-            box-shadow: 0 3px 12px rgba(0, 242, 254, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 242, 254, 0.2);
         }
 
         .card-crypto .card-btn:hover {
-            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
-            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.35);
         }
 
-        /* Bottom Nav Container */
+        /* Fixed Bottom Navigation Container */
         #bottom-nav-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            max-width: 1100px;
-            margin-top: 10px;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            body {
-                padding: 12px 10px 5px 10px;
-            }
-            .header h1 {
-                font-size: 1.4rem;
-            }
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
 
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <h1>Investment Portfolio</h1>
+    </div>
+
     <div class="container">
         <div class="header">
-            <h1>Investment Portfolio</h1>
+            <p>Select an investment card to view live charts and details</p>
         </div>
 
         <div class="investment-grid">
@@ -275,7 +284,7 @@
                     <div class="icon-box">
                         <i class="fa-solid fa-coins"></i>
                     </div>
-                    <span class="badge">Low Risk • Safe</span>
+                    <span class="badge">Global</span>
                 </div>
 
                 <div class="card-title-area">
@@ -284,24 +293,13 @@
                 </div>
 
                 <div class="amount-area">
-                    <span class="amount">$12,450.00</span>
+                    <span class="amount">$<span id="gold-price">12,450.00</span></span>
                     <span class="growth"><i class="fa-solid fa-arrow-trend-up"></i> +14.2%</span>
                 </div>
 
-                <!-- Gold Investment Graph -->
+                <!-- Gold Investment 100 Data Points Chart -->
                 <div class="graph-container">
-                    <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-                        <defs>
-                            <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#ffd700" stop-opacity="0.4"/>
-                                <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <!-- Area Fill -->
-                        <path d="M0,80 Q50,40 100,60 T200,30 T300,10 L300,100 L0,100 Z" fill="url(#goldGradient)" />
-                        <!-- Line -->
-                        <path d="M0,80 Q50,40 100,60 T200,30 T300,10" fill="none" stroke="#ffd700" stroke-width="3" stroke-linecap="round" />
-                    </svg>
+                    <canvas id="goldChart"></canvas>
                 </div>
 
                 <!-- Link Button to Gold Investment Page -->
@@ -317,7 +315,7 @@
                     <div class="icon-box">
                         <i class="fa-solid fa-chart-line"></i>
                     </div>
-                    <span class="badge">High Yield • Web3</span>
+                    <span class="badge">Global</span>
                 </div>
 
                 <div class="card-title-area">
@@ -326,24 +324,13 @@
                 </div>
 
                 <div class="amount-area">
-                    <span class="amount">$28,910.50</span>
+                    <span class="amount">$<span id="crypto-price">28,910.50</span></span>
                     <span class="growth"><i class="fa-solid fa-arrow-trend-up"></i> +28.6%</span>
                 </div>
 
-                <!-- Crypto Investment Graph -->
+                <!-- Crypto Investment 100 Data Points Chart -->
                 <div class="graph-container">
-                    <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-                        <defs>
-                            <linearGradient id="cryptoGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.4"/>
-                                <stop offset="100%" stop-color="#00f2fe" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <!-- Area Fill -->
-                        <path d="M0,90 Q40,30 90,70 T210,20 T300,5 L300,100 L0,100 Z" fill="url(#cryptoGradient)" />
-                        <!-- Line -->
-                        <path d="M0,90 Q40,30 90,70 T210,20 T300,5" fill="none" stroke="#00f2fe" stroke-width="3" stroke-linecap="round" />
-                    </svg>
+                    <canvas id="cryptoChart"></canvas>
                 </div>
 
                 <!-- Link Button to Crypto Investment Page -->
@@ -356,11 +343,12 @@
         </div>
     </div>
 
-    <!-- Bottom Nav Container Connected via JavaScript -->
+    <!-- Fixed Bottom Nav Container -->
     <div id="bottom-nav-container"></div>
 
-    <!-- JavaScript to Fetch bottom.html -->
+    <!-- JavaScript for Dynamic 100 Data Points, Live Pricing & Bottom Nav -->
     <script>
+        // Load bottom.html dynamically
         fetch('bottom.html?v=' + new Date().getTime())
             .then(response => {
                 if(response.ok) return response.text();
@@ -368,7 +356,98 @@
             .then(data => {
                 if(data) document.getElementById('bottom-nav-container').innerHTML = data;
             })
-            .catch(error => console.log('Bottom navigation not loaded'));
+            .catch(error => console.log('Bottom nav load error'));
+
+        // Helper function to generate exactly 100 market data points
+        function generateMarketPoints(startVal, volatility) {
+            let points = [startVal];
+            let current = startVal;
+            for (let i = 1; i < 100; i++) {
+                let change = (Math.random() - 0.49) * volatility;
+                current += change;
+                points.push(parseFloat(current.toFixed(2)));
+            }
+            return points;
+        }
+
+        const goldPoints = generateMarketPoints(12450, 4.0);
+        const cryptoPoints = generateMarketPoints(28910, 25.0);
+        const labels100 = Array.from({length: 100}, (_, i) => `Pt ${i + 1}`);
+
+        // Gold Chart Initialization (100 Points)
+        const goldCtx = document.getElementById('goldChart').getContext('2d');
+        const goldGradient = goldCtx.createLinearGradient(0, 0, 0, 75);
+        goldGradient.addColorStop(0, 'rgba(255, 215, 0, 0.35)');
+        goldGradient.addColorStop(1, 'rgba(255, 215, 0, 0.0)');
+
+        const goldChart = new Chart(goldCtx, {
+            type: 'line',
+            data: {
+                labels: labels100,
+                datasets: [{
+                    data: goldPoints,
+                    borderColor: '#ffd700',
+                    borderWidth: 1.5,
+                    fill: true,
+                    backgroundColor: goldGradient,
+                    tension: 0.3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+
+        // Crypto Chart Initialization (100 Points)
+        const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
+        const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
+        cryptoGradient.addColorStop(0, 'rgba(0, 242, 254, 0.35)');
+        cryptoGradient.addColorStop(1, 'rgba(0, 242, 254, 0.0)');
+
+        const cryptoChart = new Chart(cryptoCtx, {
+            type: 'line',
+            data: {
+                labels: labels100,
+                datasets: [{
+                    data: cryptoPoints,
+                    borderColor: '#00f2fe',
+                    borderWidth: 1.5,
+                    fill: true,
+                    backgroundColor: cryptoGradient,
+                    tension: 0.3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+
+        // Real-time market price & chart updates
+        setInterval(() => {
+            let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
+            let newGold = (currentGold + (Math.random() - 0.49) * 2.5).toFixed(2);
+            document.getElementById('gold-price').innerText = Number(newGold).toLocaleString('en-US', {minimumFractionDigits: 2});
+            
+            goldChart.data.datasets[0].data.shift();
+            goldChart.data.datasets[0].data.push(parseFloat(newGold));
+            goldChart.update('none');
+
+            let cryptoPrice = parseFloat(document.getElementById('crypto-price').innerText.replace(',', ''));
+            let newCrypto = (cryptoPrice + (Math.random() - 0.49) * 15.0).toFixed(2);
+            document.getElementById('crypto-price').innerText = Number(newCrypto).toLocaleString('en-US', {minimumFractionDigits: 2});
+
+            cryptoChart.data.datasets[0].data.shift();
+            cryptoChart.data.datasets[0].data.push(parseFloat(newCrypto));
+            cryptoChart.update('none');
+        }, 3000);
     </script>
 </body>
 </html>
