@@ -62,6 +62,67 @@
       color: var(--gold-primary);
     }
 
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--gold-primary);
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 5px;
+      transition: transform 0.2s ease;
+    }
+
+    .menu-toggle-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Top Right Hamburger Dropdown Menu */
+    .hamburger-dropdown {
+      position: absolute;
+      top: 65px;
+      right: 20px;
+      background: var(--bg-dark);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      width: 200px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      display: none;
+      flex-direction: column;
+      z-index: 101;
+      overflow: hidden;
+    }
+
+    .hamburger-dropdown.active {
+      display: flex;
+    }
+
+    .hamburger-dropdown a {
+      padding: 14px 16px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.2s;
+    }
+
+    .hamburger-dropdown a:hover {
+      background: rgba(245, 207, 102, 0.1);
+      color: var(--gold-primary);
+    }
+
+    .hamburger-dropdown a:last-child {
+      border-bottom: none;
+    }
+
     .logout-btn {
       background: rgba(255, 71, 87, 0.1);
       border: 1px solid rgba(255, 71, 87, 0.3);
@@ -188,7 +249,19 @@
     <!-- Top Bar -->
     <div class="top-bar">
       <h2><i class="fa-solid fa-gauge-high"></i> Admin Control</h2>
-      <button class="logout-btn" onclick="adminLogout()">Logout</button>
+      
+      <div class="top-bar-actions">
+        <!-- Hamburger Menu Toggle Button -->
+        <button class="menu-toggle-btn" onclick="toggleMenu()">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+        <button class="logout-btn" onclick="adminLogout()">Logout</button>
+      </div>
+
+      <!-- Right Corner Hamburger Dropdown Menu -->
+      <div class="hamburger-dropdown" id="hamburger-menu">
+        <a href="total-user-list.html"><i class="fa-solid fa-users" style="color: var(--gold-primary);"></i> Total User List</a>
+      </div>
     </div>
 
     <!-- Quick Stats Overview -->
@@ -219,6 +292,21 @@
   <script src="./supabase-config.js"></script>
 
   <script>
+    // Toggle Hamburger Menu
+    function toggleMenu() {
+      const menu = document.getElementById('hamburger-menu');
+      menu.classList.toggle('active');
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('hamburger-menu');
+      const btn = document.querySelector('.menu-toggle-btn');
+      if (menu && !menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('active');
+      }
+    });
+
     async function getSupabaseInstance() {
       let attempts = 0;
       while ((!window._supabase && !window.supabase) && attempts < 20) {
@@ -346,7 +434,7 @@
           return;
         }
 
-        // 2. Update transaction status only (DB trigger will handle balance adjustment safely)
+        // 2. Update transaction status only
         const { error: updateError } = await client
           .from('transactions')
           .update({ status: newStatus, updated_at: new Date() })
