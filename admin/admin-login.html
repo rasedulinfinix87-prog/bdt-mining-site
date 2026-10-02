@@ -185,8 +185,8 @@
 
   <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Supabase Config Script -->
-  <script src="./supabase-config.js"></script>
+  <!-- Supabase Config Script (যদি config ফাইলটি root ফোল্ডারে থাকে তবে "../", আর admin ফোল্ডারে থাকলে "./") -->
+  <script src="../supabase-config.js"></script>
 
   <script>
     async function getSupabaseInstance() {
@@ -243,7 +243,7 @@
         }
 
         // সফলভাবে লগইন হলে অ্যাডমিন ড্যাশবোর্ডে রিডাইরেক্ট হবে
-        window.location.href = 'admin/admin-dashboard.html';
+        window.location.href = 'admin-dashboard.html';
 
       } catch (err) {
         errorAlert.innerText = err.message || "Invalid login credentials!";
