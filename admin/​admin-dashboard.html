@@ -53,7 +53,7 @@
       backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
       border-bottom: 1px solid var(--card-border);
     }
 
@@ -65,7 +65,7 @@
     .top-bar-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       position: relative;
     }
 
@@ -75,8 +75,8 @@
       color: var(--gold-primary);
       font-size: 1.1rem;
       cursor: pointer;
-      width: 35px;
-      height: 35px;
+      width: 38px;
+      height: 38px;
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -88,19 +88,19 @@
       transform: scale(0.9);
     }
 
-    /* Top Right Hamburger Dropdown Menu */
+    /* Top Right Hamburger Dropdown Menu - Position Fixed to avoid overflow clipping */
     .hamburger-dropdown {
       position: absolute;
-      top: 50px;
+      top: 55px;
       right: 0;
-      background: var(--bg-dark);
+      background: #0c261d;
       border: 1px solid var(--card-border);
       border-radius: 12px;
       width: 190px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
       display: none;
       flex-direction: column;
-      z-index: 101;
+      z-index: 2000;
       overflow: hidden;
     }
 
@@ -129,7 +129,7 @@
       background: rgba(255, 71, 87, 0.1);
       border: 1px solid rgba(255, 71, 87, 0.3);
       color: var(--red-color);
-      padding: 7px 14px;
+      padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.85rem;
@@ -191,6 +191,7 @@
     }
 
     .trx-info {
+      main: flex;
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
@@ -254,7 +255,7 @@
       
       <div class="top-bar-actions">
         <!-- Hamburger Menu Toggle Button -->
-        <button class="menu-toggle-btn" onclick="toggleMenu()">
+        <button class="menu-toggle-btn" onclick="toggleMenu(event)">
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
         <button class="logout-btn" onclick="adminLogout()">Logout</button>
@@ -290,12 +291,13 @@
 
   <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Supabase Config Script -->
-  <script src="./supabase-config.js"></script>
+  <!-- Supabase Config Script (যদি config ফাইল মূল ফোল্ডারে থাকে তবে "../supabase-config.js দিন, আর admin ফোল্ডারে থাকলে "./supabase-config.js") -->
+  <script src="../supabase-config.js"></script>
 
   <script>
-    // Toggle Hamburger Menu
-    function toggleMenu() {
+    // Toggle Hamburger Menu safely
+    function toggleMenu(e) {
+      e.stopPropagation();
       const menu = document.getElementById('hamburger-menu');
       menu.classList.toggle('active');
     }
@@ -303,8 +305,7 @@
     // Close menu when clicking outside
     document.addEventListener('click', function(e) {
       const menu = document.getElementById('hamburger-menu');
-      const btn = document.querySelector('.menu-toggle-btn');
-      if (menu && !menu.contains(e.target) && !btn.contains(e.target)) {
+      if (menu) {
         menu.classList.remove('active');
       }
     });
@@ -405,21 +406,19 @@
       }
     }
 
-    // Process Transaction Status Update (Wallet balance handled automatically via DB Trigger)
+    // Process Transaction Status Update
     async function processTrx(trxId, userId, type, amount, newStatus) {
       const client = await getSupabaseInstance();
       if (!client) return;
 
       if (!confirm(`Are you sure you want to mark this transaction as ${newStatus}?`)) return;
 
-      // Disable buttons immediately to prevent double click
       const actionContainer = document.getElementById(`trx-actions-${trxId}`);
       if (actionContainer) {
         actionContainer.querySelectorAll('button').forEach(btn => btn.disabled = true);
       }
 
       try {
-        // 1. Double check current transaction status from database
         const { data: currentTrx, error: fetchErr } = await client
           .from('transactions')
           .select('status')
@@ -427,7 +426,7 @@
           .single();
 
         if (fetchErr || !currentTrx) {
-          throw new Error("Transaction not found.");
+          throw new `Transaction not found.`();
         }
 
         if (currentTrx.status !== 'pending') {
@@ -436,7 +435,6 @@
           return;
         }
 
-        // 2. Update transaction status only
         const { error: updateError } = await client
           .from('transactions')
           .update({ status: newStatus, updated_at: new Date() })
