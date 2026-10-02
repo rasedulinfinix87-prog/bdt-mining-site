@@ -9,13 +9,13 @@
     :root {
       --bg-dark: #061913;
       --topbar-bg: #030d0a;
-      --card-bg: rgba(12, 38, 29, 0.75);
-      --card-border: rgba(245, 207, 102, 0.25);
+      --card-bg: linear-gradient(135deg, rgba(14, 46, 34, 0.85) 0%, rgba(6, 25, 19, 0.95) 100%);
+      --card-border: rgba(255, 215, 0, 0.3);
       --gold-primary: #ffd700;
       --gold-secondary: #b89332;
       --gold-gradient: linear-gradient(135deg, #ffd700 0%, #b89332 100%);
-      --gold-glow: rgba(255, 215, 0, 0.15);
-      --card-gradient: linear-gradient(135deg, rgba(18, 48, 36, 0.85) 0%, rgba(3, 13, 10, 0.95) 100%);
+      --gold-glow: rgba(255, 215, 0, 0.2);
+      --card-gradient: linear-gradient(135deg, rgba(14, 46, 34, 0.85) 0%, rgba(6, 25, 19, 0.95) 100%);
       --text-main: #ffffff;
       --text-muted: #8da499;
       --green-glow: #10b981;
@@ -48,7 +48,7 @@
       min-height: 100vh;
     }
 
-    /* Top Bar - Color Updated */
+    /* Top Bar */
     .top-bar {
       display: flex;
       align-items: center;
@@ -93,23 +93,23 @@
 
     .stat-card {
       background: var(--card-gradient);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.25);
       border-radius: 18px;
       padding: 16px;
       backdrop-filter: blur(12px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
       transition: all 0.3s ease;
     }
 
     .stat-card:hover {
-      border-color: rgba(255, 215, 0, 0.4);
+      border-color: rgba(255, 215, 0, 0.45);
       box-shadow: 0 10px 25px var(--gold-glow);
     }
 
     .stat-card.full-width {
       grid-column: span 2;
-      background: linear-gradient(135deg, rgba(255, 215, 0, 0.12) 0%, rgba(18, 48, 36, 0.9) 100%);
-      border: 1px solid rgba(255, 215, 0, 0.35);
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(14, 46, 34, 0.9) 100%);
+      border: 1px solid rgba(255, 215, 0, 0.4);
     }
 
     .stat-label {
@@ -153,12 +153,12 @@
 
     .plan-card {
       background: var(--card-gradient);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.25);
       border-radius: 20px;
       padding: 20px;
       position: relative;
       backdrop-filter: blur(12px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
     }
 
@@ -173,7 +173,7 @@
       align-items: center;
       margin-bottom: 14px;
       padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .plan-name {
@@ -186,9 +186,9 @@
     }
 
     .badge-active {
-      background: rgba(16, 185, 129, 0.15);
+      background: rgba(16, 185, 129, 0.2);
       color: var(--green-glow);
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(16, 185, 129, 0.4);
       font-size: 0.72rem;
       padding: 4px 10px;
       border-radius: 20px;
@@ -204,10 +204,10 @@
     }
 
     .plan-body-item {
-      background: rgba(3, 13, 10, 0.5);
+      background: rgba(8, 30, 22, 0.6);
       padding: 10px 12px;
       border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 215, 0, 0.08);
     }
 
     .plan-body-item .val {
@@ -219,11 +219,11 @@
 
     /* Progress & Timer */
     .timer-box {
-      background: rgba(3, 13, 10, 0.7);
+      background: rgba(8, 30, 22, 0.75);
       padding: 12px;
       border-radius: 14px;
       text-align: center;
-      border: 1px solid rgba(255, 215, 0, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.2);
     }
 
     .timer-label {
@@ -243,7 +243,7 @@
 
     .progress-container {
       width: 100%;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.1);
       height: 6px;
       border-radius: 10px;
       margin-top: 10px;
@@ -253,9 +253,9 @@
     .progress-bar {
       height: 100%;
       background: var(--gold-gradient);
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
       width: 0%;
-      transition: width 0.4s ease;
+      transition: width 0.1s linear;
     }
 
     .empty-msg {
@@ -267,7 +267,7 @@
 
     /* SKELETON SCREEN ANIMATION STYLES */
     .skeleton-box {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 8px;
       position: relative;
       overflow: hidden;
@@ -283,8 +283,8 @@
       background-image: linear-gradient(
         90deg,
         rgba(255, 255, 255, 0) 0,
-        rgba(255, 215, 0, 0.08) 20%,
-        rgba(255, 255, 255, 0.15) 60%,
+        rgba(255, 215, 0, 0.1) 20%,
+        rgba(255, 255, 255, 0.2) 60%,
         rgba(255, 255, 255, 0)
       );
       animation: shimmer 1.5s infinite;
@@ -310,7 +310,7 @@
 
     .skeleton-card {
       background: var(--card-gradient);
-      border: 1px solid rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.2);
       border-radius: 20px;
       padding: 20px;
     }
@@ -364,10 +364,10 @@
         </div>
       </div>
 
-      <!-- Total Profit Earned -->
+      <!-- Total Profit Earned (Live Micro-Counter) -->
       <div class="stat-card">
         <div class="stat-label">Total Profit</div>
-        <div class="stat-value green" id="total-profit-earned">
+        <div class="stat-value green" id="total-profit-earned" style="font-size: 1.25rem;">
           <div class="skeleton-box skeleton-val" style="width: 60%;"></div>
         </div>
       </div>
@@ -418,6 +418,7 @@
 
   <script>
     let activeIntervals = [];
+    let liveInvestmentsData = [];
 
     async function loadDashboardData() {
       const client = window._supabase || window.supabase;
@@ -483,36 +484,29 @@
       if (error || !investments || investments.length === 0) {
         container.innerHTML = '<div class="empty-msg">No active investment plans found.</div>';
         document.getElementById('total-active-invest').innerText = '$0.00';
-        document.getElementById('total-profit-earned').innerText = '$0.00';
+        document.getElementById('total-profit-earned').innerText = '$0.00000000';
         return;
       }
 
       let totalInvest = 0;
-      let totalAccumulatedProfit = 0;
       container.innerHTML = '';
+      liveInvestmentsData = [];
 
       // আগের টাইমারগুলো ক্লিয়ার করা
       activeIntervals.forEach(clearInterval);
       activeIntervals = [];
 
-      const now = new Date().getTime();
-
       investments.forEach((plan, index) => {
         const investedAmount = parseFloat(plan.amount || 0);
         totalInvest += investedAmount;
 
-        // সময় এবং প্রফিট হিসাব
-        const start = new Date(plan.start_date).getTime();
-        const end = new Date(plan.end_date).getTime();
-        const totalDuration = end - start;
-        const elapsedTime = Math.max(0, Math.min(totalDuration, now - start));
-
-        // মোট কত মুনাফা পাওয়ার কথা (Total Return - Amount)
-        const totalExpectedProfit = parseFloat(plan.total_return || 0) - investedAmount;
-        
-        // বর্তমান সময় পর্যন্ত আনুমানিক অর্জিত প্রফিট
-        const currentProfit = totalDuration > 0 ? (totalExpectedProfit * (elapsedTime / totalDuration)) : 0;
-        totalAccumulatedProfit += currentProfit;
+        liveInvestmentsData.push({
+          planId: index,
+          start: new Date(plan.start_date).getTime(),
+          end: new Date(plan.end_date).getTime(),
+          investedAmount: investedAmount,
+          totalExpectedProfit: parseFloat(plan.total_return || 0) - investedAmount
+        });
 
         const cardHtml = `
           <div class="plan-card">
@@ -531,7 +525,7 @@
               </div>
               <div class="plan-body-item">
                 <div class="stat-label">Est. Profit So Far</div>
-                <div class="val" style="color: var(--green-glow);">$${currentProfit.toFixed(2)}</div>
+                <div class="val" id="plan-profit-${index}" style="color: var(--green-glow); font-size: 0.9rem;">$0.00000000</div>
               </div>
             </div>
 
@@ -545,51 +539,73 @@
           </div>
         `;
         container.insertAdjacentHTML('beforeend', cardHtml);
-
-        // লাইভ টাইমার চালু করা
-        startTimer(plan.start_date, plan.end_date, `timer-${index}`, `progress-${index}`);
       });
 
       // সামারি আপডেট
       document.getElementById('total-active-invest').innerText = '$' + totalInvest.toFixed(2);
-      document.getElementById('total-profit-earned').innerText = '$' + totalAccumulatedProfit.toFixed(2);
-    }
 
-    // লাইভ কাউন্টডাউন টাইমার ও প্রোগ্রেস বার লজিক
-    function startTimer(startDate, endDate, timerId, progressId) {
-      const start = new Date(startDate).getTime();
-      const end = new Date(endDate).getTime();
-      const totalDuration = end - start;
-
-      const interval = setInterval(() => {
+      // গ্লোবাল লাইভ প্রফিট এবং টাইমার লজিক চালু করা (প্রতি ১০০ মিলিসেকেন্ড পরপর অতি সূক্ষ্মভাবে প্রফিট গ্রো করার জন্য)
+      const globalInterval = setInterval(() => {
         const now = new Date().getTime();
-        const distance = end - now;
+        let totalAccumulatedProfit = 0;
 
-        if (distance <= 0) {
-          clearInterval(interval);
-          document.getElementById(timerId).innerText = "COMPLETED";
-          document.getElementById(timerId).style.color = "var(--green-glow)";
-          document.getElementById(progressId).style.width = "100%";
-          return;
+        liveInvestmentsData.forEach(item => {
+          const totalDuration = item.end - item.start;
+          const elapsedTime = Math.max(0, Math.min(totalDuration, now - item.start));
+          
+          // বর্তমান প্ল্যানের প্রফিট
+          const currentPlanProfit = totalDuration > 0 ? (item.totalExpectedProfit * (elapsedTime / totalDuration)) : 0;
+          totalAccumulatedProfit += currentPlanProfit;
+
+          // সিঙ্গেল প্ল্যান প্রফিট আপডেট (৮ ঘরের মিক্রো-ডেসিমেল সহ লাইভ কাউন্টিং)
+          const planProfitEl = document.getElementById(`plan-profit-${item.planId}`);
+          if(planProfitEl) {
+            planProfitEl.innerText = '$' + currentPlanProfit.toFixed(8);
+          }
+
+          // টাইমার ও প্রোগ্রেস বার আপডেট
+          const distance = item.end - now;
+          const timerId = `timer-${item.planId}`;
+          const progressId = `progress-${item.planId}`;
+
+          if (distance <= 0) {
+            const timerEl = document.getElementById(timerId);
+            if(timerEl) {
+              timerEl.innerText = "COMPLETED";
+              timerEl.style.color = "var(--green-glow)";
+            }
+            const progEl = document.getElementById(progressId);
+            if(progEl) {
+              progEl.style.width = "100%";
+            }
+          } else {
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const timerEl = document.getElementById(timerId);
+            if(timerEl) {
+              timerEl.innerText = `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+            }
+
+            const progressPercent = Math.min(100, Math.max(0, (elapsedTime / totalDuration) * 100));
+            const progEl = document.getElementById(progressId);
+            if(progEl) {
+              progEl.style.width = progressPercent + "%";
+            }
+          }
+        });
+
+        // টোটাল প্রফিট কার্ডে লাইভ আপডেট (৮ ঘরের নিখুঁত ডেসিমেল সহ)
+        const totalProfitEl = document.getElementById('total-profit-earned');
+        if(totalProfitEl) {
+          totalProfitEl.innerText = '$' + totalAccumulatedProfit.toFixed(8);
         }
 
-        // দিন, ঘণ্টা, মিনিট, সেকেন্ড ক্যালকুলেশন
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      }, 100);
 
-        document.getElementById(timerId).innerText = 
-          `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
-
-        // প্রোগ্রেস হিসাব (মেয়াদের কতটুকু পার হয়েছে)
-        const elapsedTime = now - start;
-        const progressPercent = Math.min(100, Math.max(0, (elapsedTime / totalDuration) * 100));
-        document.getElementById(progressId).style.width = progressPercent + "%";
-
-      }, 1000);
-
-      activeIntervals.push(interval);
+      activeIntervals.push(globalInterval);
     }
 
     // Bottom Nav লোড করা
