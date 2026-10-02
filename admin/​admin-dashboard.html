@@ -66,16 +66,22 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      position: relative;
     }
 
     .menu-toggle-btn {
-      background: transparent;
-      border: none;
+      background: rgba(245, 207, 102, 0.1);
+      border: 1px solid var(--card-border);
       color: var(--gold-primary);
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       cursor: pointer;
-      padding: 5px;
-      transition: transform 0.2s ease;
+      width: 35px;
+      height: 35px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
     }
 
     .menu-toggle-btn:active {
@@ -85,13 +91,13 @@
     /* Top Right Hamburger Dropdown Menu */
     .hamburger-dropdown {
       position: absolute;
-      top: 65px;
-      right: 20px;
+      top: 50px;
+      right: 0;
       background: var(--bg-dark);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      width: 200px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      width: 190px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
       display: none;
       flex-direction: column;
       z-index: 101;
@@ -119,15 +125,11 @@
       color: var(--gold-primary);
     }
 
-    .hamburger-dropdown a:last-child {
-      border-bottom: none;
-    }
-
     .logout-btn {
       background: rgba(255, 71, 87, 0.1);
       border: 1px solid rgba(255, 71, 87, 0.3);
       color: var(--red-color);
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.85rem;
@@ -256,11 +258,11 @@
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
         <button class="logout-btn" onclick="adminLogout()">Logout</button>
-      </div>
 
-      <!-- Right Corner Hamburger Dropdown Menu -->
-      <div class="hamburger-dropdown" id="hamburger-menu">
-        <a href="total-user-list.html"><i class="fa-solid fa-users" style="color: var(--gold-primary);"></i> Total User List</a>
+        <!-- Right Corner Hamburger Dropdown Menu -->
+        <div class="hamburger-dropdown" id="hamburger-menu">
+          <a href="total-user-list.html"><i class="fa-solid fa-users" style="color: var(--gold-primary);"></i> Total User List</a>
+        </div>
       </div>
     </div>
 
