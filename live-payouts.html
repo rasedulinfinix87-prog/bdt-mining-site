@@ -10,7 +10,7 @@
       --bg-dark: #061913;
       --bg-darker: #030d0a;
       --card-bg: rgba(12, 38, 29, 0.85);
-      --card-border: rgba(245, 207, 102, 0.2);
+      --card-border: rgba(245, 207, 102, 0.3);
       --gold-primary: #f5cf66;
       --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 50%, #f5cf66 100%);
       --green-glow: #2ed573;
@@ -44,13 +44,13 @@
       flex-direction: column;
     }
 
-    /* Top Bar */
+    /* Top Bar - সাইটের মূল ব্যাকগ্রাউন্ড কালার দিয়ে আপডেট করা */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 16px 20px;
-      background: var(--bg-darker);
+      background: var(--bg-dark);
       position: sticky;
       top: 0;
       z-index: 999;
@@ -92,11 +92,12 @@
       }
     }
 
-    /* Total Counter Banner */
+    /* Total Counter Banner - সোনার উজ্জ্বল গ্রাডিয়েন্ট বর্ডার অ্যানিমেশন সহ */
     .counter-card {
       margin: 20px;
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      border: 2px solid transparent;
+      border-image: var(--gold-gradient) 1;
       border-radius: 16px;
       padding: 20px;
       text-align: center;
@@ -110,7 +111,7 @@
       position: absolute;
       top: 0; left: -100%;
       width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(245,207,102,0.05), transparent);
+      background: linear-gradient(90deg, transparent, rgba(245,207,102,0.1), transparent);
       animation: shimmer 3s infinite;
     }
 
@@ -196,15 +197,18 @@
       transition: transform 0.5s ease-out;
     }
 
+    /* Payout Item Card - সোনার উজ্জ্বল গ্রাডিয়েন্ট বর্ডার সহ */
     .payout-item {
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      border: 1px solid;
+      border-image: var(--gold-gradient) 1;
       border-radius: 12px;
       padding: 12px 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       animation: fadeIn 0.4s ease-out;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     @keyframes fadeIn {
@@ -262,7 +266,7 @@
         <a href="admin-dashboard.html" class="back-btn">
           <i class="fa-solid fa-chevron-left"></i>
         </a>
-        <h2>Live AI Payouts</h2>
+        <h2>Live Payouts</h2>
       </div>
     </div>
 
@@ -276,7 +280,7 @@
     <div class="feed-section-header">
       <span>Real-time Feed</span>
       <div class="live-badge">
-        <div class="live-dot"></div> AI Bot Live
+        <div class="live-dot"></div> Live
       </div>
     </div>
 
@@ -289,20 +293,13 @@
   </div>
 
   <script>
-    // নামের ডাটাবেস রেন্ডম নাম জেনারেট করার জন্য
     const firstNames = ["Rashed", "Karim", "Tanvir", "Rahim", "Mehedi", "Sakib", "Imran", "Nayeem", "Farhan", "Al-Amin", "Hasan", "Sumon", "Arif", "Rakibul", "Tanvir"];
     const lastNames = ["Ahmed", "Hossain", "Khan", "Chowdhury", "Talukder", "Sarker", "Mahmud", "Uddin", "Mridha", "Bhuiyan"];
 
-    // আপনার রিকোয়েস্ট অনুযায়ী নির্দিষ্ট পুল (ছোট অ্যামাউন্ট বেশি সম্ভাবনা, বড় অ্যামাউন্ট কম সম্ভাবনা)
     const payoutPool = [
-      // ছোট অ্যামাউন্ট (বেশি ঘন ঘন আসবে)
       11.80, 13.60, 15.40, 63.50, 77.00, 90.50, 133.00, 166.00, 
       11.80, 15.40, 77.00, 63.50, 199.00, 90.50, 13.60, 166.00,
-      
-      // মাঝারি অ্যামাউন্ট
       355.00, 460.00, 199.00, 565.00, 355.00, 460.00,
-      
-      // বড় অ্যামাউন্ট (কম সম্ভাবনা)
       762.50, 902.00, 1025.00, 1287.50
     ];
 
@@ -324,7 +321,6 @@
       return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    // প্রাথমিক কিছু আইটেম দিয়ে লিস্ট তৈরি করা
     function initPayouts() {
       for (let i = 0; i < 8; i++) {
         addPayoutItem(false);
@@ -335,7 +331,6 @@
       const name = getRandomName();
       const amount = getRandomItem(payoutPool);
       
-      // মোট টাকা বাড়ানো
       if(isAnimate) {
         totalAmountVal += amount;
         counterDisplay.innerText = formatCurrency(totalAmountVal);
@@ -349,7 +344,7 @@
             </div>
             <div class="user-details">
               <h4>${name}</h4>
-              <p>Just now via AI Bot</p>
+              <p>Just now via Payout System</p>
             </div>
           </div>
           <div class="payout-amount">+${formatCurrency(amount)}</div>
@@ -358,7 +353,6 @@
 
       if (isAnimate) {
         container.insertAdjacentHTML('afterbegin', itemHTML);
-        // যদি আইটেম ১০টার বেশি হয় তবে নিচের পুরনোটা মুছে ফেলা যাতে পেজ ভারী না হয়
         if (container.children.length > 12) {
           container.removeChild(container.lastElementChild);
         }
@@ -369,7 +363,6 @@
 
     initPayouts();
 
-    // প্রতি ২ থেকে ৩.৫ সেকেন্ড পর পর নতুন পেআউট যোগ হবে এবং স্মুথলি লিস্ট উপরে উঠবে
     setInterval(() => {
       addPayoutItem(true);
     }, 2800);
