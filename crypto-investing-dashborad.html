@@ -191,6 +191,23 @@
       margin-bottom: 4px;
     }
 
+    /* Live Data 100-Point Graph Container */
+    .live-graph-container {
+      width: 100%;
+      height: 40px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .live-graph-container svg {
+      width: 100%;
+      height: 100%;
+    }
+
     .countdown-timer {
       font-family: monospace;
       font-size: 0.95rem;
@@ -204,7 +221,7 @@
       background: rgba(255, 255, 255, 0.1);
       height: 6px;
       border-radius: 10px;
-      margin-top: 10px;
+      margin-top: 8px;
       overflow: hidden;
     }
 
@@ -287,6 +304,8 @@
 
   <script>
     let activeIntervals = [];
+    // ১০০ পয়েন্টের গ্রাফ ডাটা ধারণ করার অবজেক্ট
+    let planGraphPoints = {};
 
     async function loadCryptoDashboard() {
       const client = window._supabase || window.supabase;
@@ -354,6 +373,7 @@
       let totalInvestSum = 0;
       let totalProfitSum = 0;
       container.innerHTML = '';
+      planGraphPoints = {};
 
       // পুরনো টাইমার ক্লিয়ার করা
       activeIntervals.forEach(clearInterval);
@@ -376,6 +396,13 @@
         // বর্তমান সময় অনুযায়ী প্রফিট
         const currentEarnedProfit = totalDuration > 0 ? (expectedProfit * (elapsedTime / totalDuration)) : 0;
         totalProfitSum += currentEarnedProfit;
+
+        // প্রতিটি প্ল্যানের জন্য ১০০ পয়েন্টের একটি ইনিশিয়াল র‍্যান্ডম গ্রাফ ডাটা তৈরি
+        let initialPoints = [];
+        for (let i = 0; i < 100; i++) {
+          initialPoints.push(20 + Math.sin(i * 0.2) * 10 + (Math.random() * 6 - 3));
+        }
+        planGraphPoints[index] = initialPoints;
 
         const cardHtml = `
           <div class="plan-card">
@@ -405,6 +432,21 @@
 
             <div class="timer-box">
               <div class="timer-label">REMAINING TIME</div>
+              
+              <!-- Live Data 100-Point Graph -->
+              <div class="live-graph-container">
+                <svg viewBox="0 0 300 40" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="crypto-grad-${index}" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#2ed573" stop-opacity="0.35"/>
+                      <stop offset="100%" stop-color="#2ed573" stop-opacity="0.0"/>
+                    </linearGradient>
+                  </defs>
+                  <path id="crypto-graph-area-${index}" fill="url(#crypto-grad-${index})" d="" />
+                  <path id="crypto-graph-line-${index}" fill="none" stroke="#2ed573" stroke-width="2" d="" />
+                </svg>
+              </div>
+
               <div class="countdown-timer" id="crypto-timer-${index}">00d 00h 00m 00s</div>
               <div class="progress-container">
                 <div class="progress-bar" id="crypto-progress-${index}"></div>
@@ -414,8 +456,8 @@
         `;
         container.insertAdjacentHTML('beforeend', cardHtml);
 
-        // লাইভ টাইমার রান করা
-        startTimer(plan.start_date, plan.end_date, `crypto-timer-${index}`, `crypto-progress-${index}`);
+        // লাইভ টাইমার ও গ্রাফ আপডেট রান করা
+        startTimer(plan.start_date, plan.end_date, `crypto-timer-${index}`, `crypto-progress-${index}`, index);
       });
 
       // সামারি ড্যাশবোর্ড আপডেট
@@ -423,8 +465,8 @@
       document.getElementById('total-profit-earned').innerText = '$' + totalProfitSum.toFixed(2);
     }
 
-    // টাইম কাউন্টডাউন ও প্রোগ্রেস বার লজিক
-    function startTimer(startDate, endDate, timerId, progressId) {
+    // টাইম কাউন্টডাউন, প্রোগ্রেস বার এবং লাইভ গ্রাফ লজিক
+    function startTimer(startDate, endDate, timerId, progressId, index) {
       const start = new Date(startDate).getTime();
       const end = new Date(endDate).getTime();
       const totalDuration = end - start;
@@ -432,6 +474,42 @@
       const interval = setInterval(() => {
         const now = new Date().getTime();
         const distance = end - now;
+
+        // ১০০ পয়েন্টের গ্রাফ শিফট ও রিয়েল-টাইম আপডেট লজিক
+        let points = planGraphPoints[index];
+        if (points) {
+          points.shift();
+          let lastVal = points[points.length - 1];
+          let newVal = lastVal + (Math.random() * 10 - 5);
+          if (newVal < 5) newVal = 5;
+          if (newVal > 35) newVal = 35;
+          points.push(newVal);
+
+          let svgWidth = 300;
+          let svgHeight = 40;
+          let stepX = svgWidth / (points.length - 1);
+
+          let linePath = "";
+          let areaPath = `M 0 ${svgHeight} `;
+
+          points.forEach((val, pIdx) => {
+            let px = pIdx * stepX;
+            let py = svgHeight - (val / 40) * svgHeight;
+            if (pIdx === 0) {
+              linePath += `M ${px} ${py} `;
+            } else {
+              linePath += `L ${px} ${py} `;
+            }
+            areaPath += `L ${px} ${py} `;
+          });
+
+          areaPath += `L ${svgWidth} ${svgHeight} Z`;
+
+          const lineEl = document.getElementById(`crypto-graph-line-${index}`);
+          const areaEl = document.getElementById(`crypto-graph-area-${index}`);
+          if (lineEl) lineEl.setAttribute('d', linePath);
+          if (areaEl) areaEl.setAttribute('d', areaPath);
+        }
 
         if (distance <= 0) {
           clearInterval(interval);
