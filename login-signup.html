@@ -566,7 +566,7 @@
 
                 // Account Created Successful Popup Animation
                 showPopup('Account created successfully!', 'fa-solid fa-circle-check', () => {
-                    window.location.href = 'home-index.html';
+                    window.location.href = 'index.html';
                 });
 
             } catch (err) {
@@ -610,7 +610,7 @@
                     localStorage.setItem('user_id', authData.user.id);
                     // Login Successful Popup Animation
                     showPopup('Login successful! Welcome back.', 'fa-solid fa-circle-check', () => {
-                        window.location.href = 'home-index.html';
+                        window.location.href = 'index.html';
                     });
                 } else {
                     showPopup('Login failed. Please check your credentials.', 'fa-solid fa-triangle-exclamation');
