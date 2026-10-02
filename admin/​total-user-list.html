@@ -8,13 +8,11 @@
   <style>
     :root {
       --bg-dark: #061913;
-      --topbar-bg: rgba(6, 25, 19, 0.92);
+      --topbar-bg: rgba(6, 25, 19, 0.98);
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.2);
       --gold-primary: #f5cf66;
-      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
       --green-glow: #2ed573;
-      --red-color: #ff4757;
       --text-main: #ffffff;
       --text-muted: #8da499;
     }
@@ -48,30 +46,36 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 20px;
+      padding: 16px 20px;
       background: var(--topbar-bg);
-      backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 999;
       border-bottom: 1px solid var(--card-border);
     }
 
-    .top-bar .title-group {
+    .title-group {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .top-bar .back-btn {
-      color: var(--text-main);
+    .back-btn {
+      color: var(--gold-primary);
       font-size: 1.1rem;
       text-decoration: none;
-      cursor: pointer;
+      background: rgba(245, 207, 102, 0.15);
+      border: 1px solid var(--card-border);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .top-bar h2 {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       color: var(--gold-primary);
     }
 
@@ -91,12 +95,28 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      position: relative;
     }
 
     .user-header-info {
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .user-serial-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .serial-badge {
+      font-size: 0.8rem;
+      background: rgba(245, 207, 102, 0.2);
+      color: var(--gold-primary);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
     }
 
     .user-name {
@@ -160,27 +180,17 @@
   <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Supabase Config Script -->
-  <script src="./supabase-config.js"></script>
+  <script src="../supabase-config.js"></script>
 
   <script>
-    async function getSupabaseInstance() {
+    async function initUserList() {
       let attempts = 0;
-      while ((!window._supabase && !window.supabase) && attempts < 20) {
+      while (!window._supabase && attempts < 20) {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
       }
-      if (window._supabase) return window._supabase;
-      if (window.supabase && typeof window.supabase.createClient === 'function') {
-        const SUPABASE_URL = "https://pckocwvuxeseumynslwv.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBja29jd3Z1eGVzZXVteW5zbHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NDc3OTAsImV4cCI6MjEwNjIyMzc5MH0.0VBGW9lgZDritQa7XDoPncu5bl9M6J5W9eup0KSLXIc";
-        return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      }
-      return null;
-    }
 
-    // Check Admin Authentication & Load Users
-    async function initUserList() {
-      const client = await getSupabaseInstance();
+      const client = window._supabase;
       if (!client) {
         window.location.href = 'admin-login.html';
         return;
@@ -204,7 +214,6 @@
         return;
       }
 
-      // Fetch All Users from 'user' table
       try {
         const { data: users, error } = await client
           .from('user')
@@ -221,12 +230,17 @@
         }
 
         container.innerHTML = '';
-        users.forEach(u => {
+        users.forEach((u, index) => {
           const isAdmin = u.role === 'admin';
+          const serialNo = index + 1; // সিরিয়াল নম্বর
+          
           container.innerHTML += `
             <div class="user-card">
               <div class="user-header-info">
-                <span class="user-name">${u.full_name || 'N/A'}</span>
+                <div class="user-serial-name">
+                  <span class="serial-badge">#${serialNo}</span>
+                  <span class="user-name">${u.full_name || 'N/A'}</span>
+                </div>
                 <span class="user-role-badge ${isAdmin ? 'admin' : ''}">${u.role || 'user'}</span>
               </div>
               <div class="user-details">
