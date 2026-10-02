@@ -241,12 +241,29 @@
       letter-spacing: 1px;
     }
 
+    /* Live Data 100-Point Graph Container */
+    .live-graph-container {
+      width: 100%;
+      height: 45px;
+      margin-top: 8px;
+      margin-bottom: 6px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .live-graph-container svg {
+      width: 100%;
+      height: 100%;
+    }
+
     .progress-container {
       width: 100%;
       background: rgba(255, 255, 255, 0.1);
       height: 6px;
       border-radius: 10px;
-      margin-top: 10px;
+      margin-top: 8px;
       overflow: hidden;
     }
 
@@ -419,6 +436,8 @@
   <script>
     let activeIntervals = [];
     let liveInvestmentsData = [];
+    // ১০০ পয়েন্টের গ্রাফ ডাটা ধারণ করার অবজেক্ট
+    let planGraphPoints = {};
 
     async function loadDashboardData() {
       const client = window._supabase || window.supabase;
@@ -491,11 +510,13 @@
       let totalInvest = 0;
       container.innerHTML = '';
       liveInvestmentsData = [];
+      planGraphPoints = {};
 
       // আগের টাইমারগুলো ক্লিয়ার করা
       activeIntervals.forEach(clearInterval);
       activeIntervals = [];
 
+      investments.keys = {};
       investments.forEach((plan, index) => {
         const investedAmount = parseFloat(plan.amount || 0);
         totalInvest += investedAmount;
@@ -507,6 +528,13 @@
           investedAmount: investedAmount,
           totalExpectedProfit: parseFloat(plan.total_return || 0) - investedAmount
         });
+
+        // প্রতিটি প্ল্যানের জন্য ১০০ পয়েন্টের একটি ইনিশিয়াল র‍্যান্ডম গ্রাফ ডাটা তৈরি (রেঞ্জ ৫ থেকে ৩৫)
+        let initialPoints = [];
+        for (let i = 0; i < 100; i++) {
+          initialPoints.push(20 + Math.sin(i * 0.2) * 10 + (Math.random() * 6 - 3));
+        }
+        planGraphPoints[index] = initialPoints;
 
         const cardHtml = `
           <div class="plan-card">
@@ -531,6 +559,21 @@
 
             <div class="timer-box">
               <div class="timer-label">TIME REMAINING</div>
+              
+              <!-- Live Data 100-Point Graph -->
+              <div class="live-graph-container">
+                <svg viewBox="0 0 300 45" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="grad-${index}" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#10b981" stop-opacity="0.3"/>
+                      <stop offset="100%" stop-color="#10b981" stop-opacity="0.0"/>
+                    </linearGradient>
+                  </defs>
+                  <path id="graph-area-${index}" fill="url(#grad-${index})" d="" />
+                  <path id="graph-line-${index}" fill="none" stroke="#10b981" stroke-width="2" d="" />
+                </svg>
+              </div>
+
               <div class="countdown-timer" id="timer-${index}">00d 00h 00m 00s</div>
               <div class="progress-container">
                 <div class="progress-bar" id="progress-${index}"></div>
@@ -544,7 +587,7 @@
       // সামারি আপডেট
       document.getElementById('total-active-invest').innerText = '$' + totalInvest.toFixed(2);
 
-      // গ্লোবাল লাইভ প্রফিট এবং টাইমার লজিক চালু করা (প্রতি ১০০ মিলিসেকেন্ড পরপর অতি সূক্ষ্মভাবে প্রফিট গ্রো করার জন্য)
+      // গ্লোবাল লাইভ প্রফিট, টাইমার এবং ১০০ পয়েন্টের গ্রাফ লজিক চালু করা (প্রতি ১০০ মিলিসেকেন্ড পরপর)
       const globalInterval = setInterval(() => {
         const now = new Date().getTime();
         let totalAccumulatedProfit = 0;
@@ -561,6 +604,44 @@
           const planProfitEl = document.getElementById(`plan-profit-${item.planId}`);
           if(planProfitEl) {
             planProfitEl.innerText = '$' + currentPlanProfit.toFixed(8);
+          }
+
+          // ১০০ পয়েন্টের গ্রাফ শিফট ও আপডেট লজিক
+          let points = planGraphPoints[item.planId];
+          if (points) {
+            points.shift(); // পুরোনো পয়েন্ট বাদ দেওয়া
+            // নতুন লাইভ পয়েন্ট জেনারেট করা (গত পয়েন্টের কাছাকাছি ওঠানামা করবে)
+            let lastVal = points[points.length - 1];
+            let newVal = lastVal + (Math.random() * 10 - 5);
+            if (newVal < 5) newVal = 5;
+            if (newVal > 40) newVal = 40;
+            points.push(newVal);
+
+            // SVG পাথ (Path) তৈরি করা (Width = 300, Height = 45)
+            let svgWidth = 300;
+            let svgHeight = 45;
+            let stepX = svgWidth / (points.length - 1);
+
+            let linePath = "";
+            let areaPath = `M 0 ${svgHeight} `;
+
+            points.forEach((val, pIdx) => {
+              let px = pIdx * stepX;
+              let py = svgHeight - (val / 45) * svgHeight;
+              if (pIdx === 0) {
+                linePath += `M ${px} ${py} `;
+              } else {
+                linePath += `L ${px} ${py} `;
+              }
+              areaPath += `L ${px} ${py} `;
+            });
+
+            areaPath += `L ${svgWidth} ${svgHeight} Z`;
+
+            const lineEl = document.getElementById(`graph-line-${item.planId}`);
+            const areaEl = document.getElementById(`graph-area-${item.planId}`);
+            if (lineEl) lineEl.setAttribute('d', linePath);
+            if (areaEl) areaEl.setAttribute('d', areaPath);
           }
 
           // টাইমার ও প্রোগ্রেস বার আপডেট
