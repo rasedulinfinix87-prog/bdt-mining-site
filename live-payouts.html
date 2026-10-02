@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Payouts - Goldmine Digital</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #061913;
+      --dark-bg: #030d0a;
+      --card-bg: rgba(12, 38, 29, 0.85);
+      --card-border: rgba(245, 207, 102, 0.2);
+      --gold-primary: #f5cf66;
+      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --green-glow: #2ed573;
+      --text-main: #ffffff;
+      --text-muted: #8da499;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-dark);
+      padding-bottom: 40px;
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: rgba(3, 13, 10, 0.92);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .top-bar h2 {
+      font-size: 1.2rem;
+      color: var(--gold-primary);
+    }
+
+    .back-btn {
+      background: rgba(245, 207, 102, 0.1);
+      border: 1px solid var(--card-border);
+      color: var(--gold-primary);
+      padding: 6px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Total Counter Banner */
+    .total-banner {
+      margin: 20px;
+      background: var(--dark-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .total-banner::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(245, 207, 102, 0.1), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      100% { left: 100%; }
+    }
+
+    .total-banner h3 {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .total-banner .amount {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Ticker Box Container (Showing Max 10 items with smooth scrolling) */
+    .ticker-section {
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    .ticker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--green-glow);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--green-glow);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green-glow);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .viewport-box {
+      height: 420px;
+      overflow: hidden;
+      position: relative;
+      background: var(--dark-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 10px;
+    }
+
+    .scroll-track {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: absolute;
+      width: calc(100% - 20px);
+      transition: transform 0.5s ease-out;
+    }
+
+    .payout-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(245, 207, 102, 0.15);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .user-details h4 {
+      font-size: 0.9rem;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .user-details span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .payout-amount {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--green-glow);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <h2><i class="fa-solid fa-bolt" style="color: var(--gold-primary);"></i> Live Payouts</h2>
+      <a href="admin-dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back</a>
+    </div>
+
+    <!-- Total Counter Banner -->
+    <div class="total-banner">
+      <h3>Total System Payouts</h3>
+      <div class="amount" id="total-payout-counter">$1,482,950</div>
+    </div>
+
+    <!-- Live Ticker Section -->
+    <div class="ticker-section">
+      <div class="ticker-header">
+        <span>Recent AI Bot Transactions</span>
+        <div class="live-indicator">
+          <div class="pulse-dot"></div> Live Stream
+        </div>
+      </div>
+
+      <div class="viewport-box" id="viewportBox">
+        <div class="scroll-track" id="scrollTrack">
+          <!-- Items will be injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Random First Names and Last Names for AI Bot Simulation
+    const firstNames = ["Rahim", "Karim", "Alex", "David", "Sofia", "Tanvir", "Nusrat", "Mehedi", "John", "Sarah", "Michael", "Ayesha", "Imran", "Fatima", "Rashed", "Elena", "Marcus", "Zayed", "Priya", "Lucas"];
+    const lastNames = ["Ahmed", "Hossain", "Smith", "Khan", "Chowdhury", "Islam", "Miller", "Johnson", "Akter", "Uddin", "Silva", "Gomes", "Roy", "Das", "Rahman"];
+    const paymentGateways = ["Bkash", "Nagad", "Crypto USDT", "Binance Pay", "Bank Transfer", "Rocket"];
+
+    // Generate 400 random payout records
+    let payoutList = [];
+    let currentTotal = 1482950.00;
+
+    function generateMockData() {
+      for (let i = 1; i <= 400; i++) {
+        let fName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        let lName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        // Mask name for privacy e.g. R***m A*****n
+        let maskedName = fName.charAt(0) + '***' + fName.slice(-1) + ' ' + lName.charAt(0) + '****';
+        
+        let randomAmount = (Math.random() * (950 - 25) + 25).toFixed(2);
+        let gateway = paymentGateways[Math.floor(Math.random() * paymentGateways.length)];
+        
+        payoutList.push({
+          id: i,
+          name: maskedName,
+          amount: parseFloat(randomAmount),
+          gateway: gateway,
+          time: 'Just now'
+        });
+      }
+    }
+
+    generateMockData();
+
+    const scrollTrack = document.getElementById('scrollTrack');
+    const totalCounter = document.getElementById('total-payout-counter');
+
+    // Render initial 15 items into the track so it can scroll through them seamlessly
+    function renderList() {
+      scrollTrack.innerHTML = '';
+      payoutList.slice(0, 15).forEach((item, index) => {
+        scrollTrack.innerHTML += `
+          <div class="payout-card">
+            <div class="user-info">
+              <div class="user-avatar">${item.name.charAt(0)}</div>
+              <div class="user-details">
+                <h4>${item.name}</h4>
+                <span>Via ${item.gateway} • ${index === 0 ? 'Just now' : index + 'm ago'}</span>
+              </div>
+            </div>
+            <div class="payout-amount">+$${item.amount.toLocaleString()}</div>
+          </div>
+        `;
+      });
+    }
+
+    renderList();
+
+    // Smooth Infinite Scroll Animation & Real-time AI bot updates
+    let cardHeight = 72; // Approximate card height + gap
+    let currentIndex = 0;
+
+    setInterval(() => {
+      currentIndex++;
+      // Shift track upwards smoothly
+      scrollTrack.style.transform = `translateY(-${currentIndex * cardHeight}px)`;
+
+      // When reaching near the end, reset smoothly or append new random items
+      if (currentIndex >= payoutList.length - 12) {
+        currentIndex = 0;
+        // Shuffle or generate fresh batch to keep it infinite
+        generateMockData();
+        renderList();
+      }
+
+      // Simulate live incoming payout increment
+      let addedAmount = Math.floor(Math.random() * 400) + 50;
+      currentTotal += addedAmount;
+      totalCounter.innerText = '$' + currentTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    }, 2500); // Shifts every 2.5 seconds for smooth automated effect
+  </script>
+</body>
+</html>
