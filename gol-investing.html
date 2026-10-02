@@ -91,6 +91,7 @@
       font-size: 1.2rem;
       color: var(--gold-primary);
       margin-bottom: 4px;
+      display: none; /* Select Gold Plan লেখাটি সম্পূর্ণ লুকানো হয়েছে */
     }
 
     .section-header p {
@@ -101,7 +102,7 @@
     /* Duration Selector Switch */
     .duration-selector {
       display: flex;
-      background: rgba(3, 13, 10, 0.8);
+      background: var(--card-gradient);
       padding: 5px;
       border-radius: 14px;
       margin: 15px 20px;
@@ -220,10 +221,10 @@
     }
 
     .detail-item {
-      background: rgba(3, 13, 10, 0.5);
+      background: var(--card-gradient);
       padding: 10px 12px;
       border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .detail-item span {
@@ -533,7 +534,7 @@
     <!-- 5 Investment Cards Container (Initially Hidden) -->
     <div class="plans-container" id="plans-list" style="display: none;">
       
-      <!-- Card 1: 3 Karat Gold -->
+      <!-- Card 1: 3 Karat Gold (Amount: 10) -->
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
@@ -543,7 +544,7 @@
           <span class="badge-karat">Basic</span>
         </div>
 
-        <!-- Live Gold Graph SVG -->
+        <!-- Live Gold Graph SVG with 100 Data points structure -->
         <div class="graph-container">
           <svg viewBox="0 0 300 80" preserveAspectRatio="none">
             <defs>
@@ -552,8 +553,8 @@
                 <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
               </linearGradient>
             </defs>
-            <path d="M0,60 Q50,30 100,45 T200,20 T300,10 L300,80 L0,80 Z" fill="url(#goldGradient1)" />
-            <path d="M0,60 Q50,30 100,45 T200,20 T300,10" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M0,50 C3,48 6,52 9,45 C12,40 15,35 18,42 C21,48 24,55 27,50 C30,45 33,30 36,35 C39,40 42,50 45,48 C48,45 51,35 54,32 C57,28 60,35 63,38 C66,42 69,45 72,40 C75,35 78,25 81,28 C84,32 87,42 90,38 C93,35 96,25 99,22 C102,18 105,25 108,30 C111,35 114,40 117,35 C120,30 123,20 126,22 C129,25 132,35 135,32 C138,28 141,18 144,15 C147,12 150,18 153,22 C156,26 159,30 162,25 C165,20 168,12 171,15 C174,18 177,28 180,24 C183,20 186,12 189,10 C192,8 195,12 198,16 C201,20 204,25 207,20 C210,15 213,8 216,10 C219,12 222,20 225,18 C228,15 231,8 234,6 C237,4 240,8 243,12 C246,16 249,20 252,15 C255,10 258,5 261,8 C264,10 267,16 270,14 C273,12 276,6 279,4 C282,2 285,5 288,8 C291,10 294,12 297,8 L300,5 L300,80 L0,80 Z" fill="url(#goldGradient1)" />
+            <path d="M0,50 C3,48 6,52 9,45 C12,40 15,35 18,42 C21,48 24,55 27,50 C30,45 33,30 36,35 C39,40 42,50 45,48 C48,45 51,35 54,32 C57,28 60,35 63,38 C66,42 69,45 72,40 C75,35 78,25 81,28 C84,32 87,42 90,38 C93,35 96,25 99,22 C102,18 105,25 108,30 C111,35 114,40 117,35 C120,30 123,20 126,22 C129,25 132,35 135,32 C138,28 141,18 144,15 C147,12 150,18 153,22 C156,26 159,30 162,25 C165,20 168,12 171,15 C174,18 177,28 180,24 C183,20 186,12 189,10 C192,8 195,12 198,16 C201,20 204,25 207,20 C210,15 213,8 216,10 C219,12 222,20 225,18 C228,15 231,8 234,6 C237,4 240,8 243,12 C246,16 249,20 252,15 C255,10 258,5 261,8 C264,10 267,16 270,14 C273,12 276,6 279,4 C282,2 285,5 288,8 C291,10 294,12 297,8 L300,5" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" />
           </svg>
         </div>
 
@@ -580,7 +581,7 @@
         </button>
       </div>
 
-      <!-- Card 2: 20 Karat Gold -->
+      <!-- Card 2: 20 Karat Gold (Amount: 20) -->
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
@@ -590,7 +591,7 @@
           <span class="badge-karat">Standard</span>
         </div>
 
-        <!-- Live Gold Graph SVG -->
+        <!-- Live Gold Graph SVG with 100 Data points structure -->
         <div class="graph-container">
           <svg viewBox="0 0 300 80" preserveAspectRatio="none">
             <defs>
@@ -599,15 +600,15 @@
                 <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
               </linearGradient>
             </defs>
-            <path d="M0,65 Q60,25 120,50 T220,15 T300,5 L300,80 L0,80 Z" fill="url(#goldGradient2)" />
-            <path d="M0,65 Q60,25 120,50 T220,15 T300,5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M0,60 C3,58 6,62 9,55 C12,50 15,45 18,52 C21,58 24,65 27,60 C30,55 33,40 36,45 C39,50 42,60 45,58 C48,55 51,45 54,42 C57,38 60,45 63,48 C66,52 69,55 72,50 C75,45 78,35 81,38 C84,42 87,52 90,48 C93,45 96,35 99,32 C102,28 105,35 108,40 C111,45 114,50 117,45 C120,40 123,30 126,32 C129,35 132,45 135,42 C138,38 141,28 144,25 C147,22 150,28 153,32 C156,36 159,40 162,35 C165,30 168,22 171,25 C174,28 177,38 180,34 C183,30 186,22 189,20 C192,18 195,22 198,26 C201,30 204,35 207,30 C210,25 213,18 216,20 C219,22 222,30 225,28 C228,25 231,18 234,16 C237,14 240,18 243,22 C246,26 249,30 252,25 C255,20 258,15 261,18 C264,20 267,26 270,24 C273,22 276,16 279,14 C282,12 285,15 288,18 C291,20 294,22 297,18 L300,15 L300,80 L0,80 Z" fill="url(#goldGradient2)" />
+            <path d="M0,60 C3,58 6,62 9,55 C12,50 15,45 18,52 C21,58 24,65 27,60 C30,55 33,40 36,45 C39,50 42,60 45,58 C48,55 51,45 54,42 C57,38 60,45 63,48 C66,52 69,55 72,50 C75,45 78,35 81,38 C84,42 87,52 90,48 C93,45 96,35 99,32 C102,28 105,35 108,40 C111,45 114,50 117,45 C120,40 123,30 126,32 C129,35 132,45 135,42 C138,38 141,28 144,25 C147,22 150,28 153,32 C156,36 159,40 162,35 C165,30 168,22 171,25 C174,28 177,38 180,34 C183,30 186,22 189,20 C192,18 195,22 198,26 C201,30 204,35 207,30 C210,25 213,18 216,20 C219,22 222,30 225,28 C228,25 231,18 234,16 C237,14 240,18 243,22 C246,26 249,30 252,25 C255,20 258,15 261,18 C264,20 267,26 270,24 C273,22 276,16 279,14 C282,12 285,15 288,18 C291,20 294,22 297,18 L300,15" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" />
           </svg>
         </div>
 
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
-            <strong>$50.00</strong>
+            <strong>$20.00</strong>
           </div>
           <div class="detail-item">
             <span>Daily Profit</span>
@@ -619,15 +620,15 @@
           </div>
           <div class="detail-item">
             <span>Est. Total Return</span>
-            <strong class="total-return">$63.50</strong>
+            <strong class="total-return">$25.40</strong>
           </div>
         </div>
-        <button class="btn-invest" onclick="handleInvest('20 Karat Gold', 50, 1.8)">
+        <button class="btn-invest" onclick="handleInvest('20 Karat Gold', 20, 1.8)">
           Invest Now <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- Card 3: 21 Karat Gold -->
+      <!-- Card 3: 21 Karat Gold (Amount: 30) -->
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
@@ -637,7 +638,7 @@
           <span class="badge-karat">Popular</span>
         </div>
 
-        <!-- Live Gold Graph SVG -->
+        <!-- Live Gold Graph SVG with 100 Data points structure -->
         <div class="graph-container">
           <svg viewBox="0 0 300 80" preserveAspectRatio="none">
             <defs>
@@ -646,15 +647,15 @@
                 <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
               </linearGradient>
             </defs>
-            <path d="M0,70 Q40,40 110,30 T210,25 T300,5 L300,80 L0,80 Z" fill="url(#goldGradient3)" />
-            <path d="M0,70 Q40,40 110,30 T210,25 T300,5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M0,45 C3,42 6,48 9,40 C12,35 15,30 18,38 C21,44 24,50 27,45 C30,40 33,25 36,30 C39,35 42,45 45,42 C48,40 51,30 54,27 C57,23 60,30 63,33 C66,37 69,40 72,35 C75,30 78,20 81,23 C84,27 87,37 90,33 C93,30 96,20 99,17 C102,13 105,20 108,25 C111,30 114,35 117,30 C120,25 123,15 126,17 C129,20 132,30 135,27 C138,23 141,13 144,10 C147,7 150,13 153,17 C156,21 159,25 162,20 C165,15 168,7 171,10 C174,13 177,23 180,19 C183,15 186,7 189,5 C192,3 195,7 198,11 C201,15 204,20 207,15 C210,10 213,3 216,5 C219,7 222,15 225,13 C228,10 231,3 234,1 C237,0 240,3 243,7 C246,11 249,15 252,10 C255,5 258,0 261,3 C264,5 267,11 270,9 C273,7 276,1 279,0 C282,0 285,2 288,5 C291,7 294,9 297,5 L300,3 L300,80 L0,80 Z" fill="url(#goldGradient3)" />
+            <path d="M0,45 C3,42 6,48 9,40 C12,35 15,30 18,38 C21,44 24,50 27,45 C30,40 33,25 36,30 C39,35 42,45 45,42 C48,40 51,30 54,27 C57,23 60,30 63,33 C66,37 69,40 72,35 C75,30 78,20 81,23 C84,27 87,37 90,33 C93,30 96,20 99,17 C102,13 105,20 108,25 C111,30 114,35 117,30 C120,25 123,15 126,17 C129,20 132,30 135,27 C138,23 141,13 144,10 C147,7 150,13 153,17 C156,21 159,25 162,20 C165,15 168,7 171,10 C174,13 177,23 180,19 C183,15 186,7 189,5 C192,3 195,7 198,11 C201,15 204,20 207,15 C210,10 213,3 216,5 C219,7 222,15 225,13 C228,10 231,3 234,1 C237,0 240,3 243,7 C246,11 249,15 252,10 C255,5 258,0 261,3 C264,5 267,11 270,9 C273,7 276,1 279,0 C282,0 285,2 288,5 C291,7 294,9 297,5 L300,3" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" />
           </svg>
         </div>
 
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
-            <strong>$100.00</strong>
+            <strong>$30.00</strong>
           </div>
           <div class="detail-item">
             <span>Daily Profit</span>
@@ -666,15 +667,15 @@
           </div>
           <div class="detail-item">
             <span>Est. Total Return</span>
-            <strong class="total-return">$133.00</strong>
+            <strong class="total-return">$39.90</strong>
           </div>
         </div>
-        <button class="btn-invest" onclick="handleInvest('21 Karat Gold', 100, 2.2)">
+        <button class="btn-invest" onclick="handleInvest('21 Karat Gold', 30, 2.2)">
           Invest Now <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- Card 4: 22 Karat Gold -->
+      <!-- Card 4: 22 Karat Gold (Amount: 50) -->
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
@@ -684,7 +685,7 @@
           <span class="badge-karat">Premium</span>
         </div>
 
-        <!-- Live Gold Graph SVG -->
+        <!-- Live Gold Graph SVG with 100 Data points structure -->
         <div class="graph-container">
           <svg viewBox="0 0 300 80" preserveAspectRatio="none">
             <defs>
@@ -693,15 +694,15 @@
                 <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
               </linearGradient>
             </defs>
-            <path d="M0,55 Q70,15 140,40 T240,10 T300,2 L300,80 L0,80 Z" fill="url(#goldGradient4)" />
-            <path d="M0,55 Q70,15 140,40 T240,10 T300,2" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M0,55 C3,52 6,58 9,50 C12,45 15,40 18,48 C21,54 24,60 27,55 C30,50 33,35 36,40 C39,45 42,55 45,52 C48,50 51,40 54,37 C57,33 60,40 63,43 C66,47 69,50 72,45 C75,40 78,30 81,33 C84,37 87,47 90,43 C93,40 96,30 99,27 C102,23 105,30 108,35 C111,40 114,45 117,40 C120,35 123,25 126,27 C129,30 132,40 135,37 C138,33 141,23 144,20 C147,17 150,23 153,27 C156,31 159,35 162,30 C165,25 168,17 171,20 C174,23 177,33 180,29 C183,25 186,17 189,15 C192,13 195,17 198,21 C201,25 204,30 207,25 C210,20 213,13 216,15 C219,17 222,25 225,23 C228,20 231,13 234,11 C237,10 240,13 243,17 C246,21 249,25 252,20 C255,15 258,10 261,13 C264,15 267,21 270,19 C273,17 276,11 279,10 C282,10 285,12 288,15 C291,17 294,19 297,15 L300,12 L300,80 L0,80 Z" fill="url(#goldGradient4)" />
+            <path d="M0,55 C3,52 6,58 9,50 C12,45 15,40 18,48 C21,54 24,60 27,55 C30,50 33,35 36,40 C39,45 42,55 45,52 C48,50 51,40 54,37 C57,33 60,40 63,43 C66,47 69,50 72,45 C75,40 78,30 81,33 C84,37 87,47 90,43 C93,40 96,30 99,27 C102,23 105,30 108,35 C111,40 114,45 117,40 C120,35 123,25 126,27 C129,30 132,40 135,37 C138,33 141,23 144,20 C147,17 150,23 153,27 C156,31 159,35 162,30 C165,25 168,17 171,20 C174,23 177,33 180,29 C183,25 186,17 189,15 C192,13 195,17 198,21 C201,25 204,30 207,25 C210,20 213,13 216,15 C219,17 222,25 225,23 C228,20 231,13 234,11 C237,10 240,13 243,17 C246,21 249,25 252,20 C255,15 258,10 261,13 C264,15 267,21 270,19 C273,17 276,11 279,10 C282,10 285,12 288,15 C291,17 294,19 297,15 L300,12" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" />
           </svg>
         </div>
 
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
-            <strong>$250.00</strong>
+            <strong>$50.00</strong>
           </div>
           <div class="detail-item">
             <span>Daily Profit</span>
@@ -713,15 +714,15 @@
           </div>
           <div class="detail-item">
             <span>Est. Total Return</span>
-            <strong class="total-return">$355.00</strong>
+            <strong class="total-return">$71.00</strong>
           </div>
         </div>
-        <button class="btn-invest" onclick="handleInvest('22 Karat Gold', 250, 2.8)">
+        <button class="btn-invest" onclick="handleInvest('22 Karat Gold', 50, 2.8)">
           Invest Now <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- Card 5: 23 Karat Gold -->
+      <!-- Card 5: 23 Karat Gold (Amount: 100) -->
       <div class="plan-card">
         <div class="plan-header">
           <div class="plan-title">
@@ -731,7 +732,7 @@
           <span class="badge-karat">VIP Gold</span>
         </div>
 
-        <!-- Live Gold Graph SVG -->
+        <!-- Live Gold Graph SVG with 100 Data points structure -->
         <div class="graph-container">
           <svg viewBox="0 0 300 80" preserveAspectRatio="none">
             <defs>
@@ -740,15 +741,15 @@
                 <stop offset="100%" stop-color="#ffd700" stop-opacity="0.0"/>
               </linearGradient>
             </defs>
-            <path d="M0,75 Q50,20 120,35 T230,8 T300,0 L300,80 L0,80 Z" fill="url(#goldGradient5)" />
-            <path d="M0,75 Q50,20 120,35 T230,8 T300,0" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M0,40 C3,37 6,43 9,35 C12,30 15,25 18,33 C21,39 24,45 27,40 C30,35 33,20 36,25 C39,30 42,40 45,37 C48,35 51,25 54,22 C57,18 60,25 63,28 C66,32 69,35 72,30 C75,25 78,15 81,18 C84,22 87,32 90,28 C93,25 96,15 99,12 C102,8 105,15 108,20 C111,25 114,30 117,25 C120,20 123,10 126,12 C129,15 132,25 135,22 C138,18 141,8 144,5 C147,2 150,8 153,12 C156,16 159,20 162,15 C165,10 168,2 171,5 C174,8 177,18 180,14 C183,10 186,2 189,0 C192,-2 195,2 198,6 C201,10 204,15 207,10 C210,5 213,-2 216,0 C219,2 222,10 225,8 C228,5 231,-2 234,-4 C237,-5 240,-2 243,2 C246,6 249,10 252,5 C255,0 258,-5 261,-2 C264,0 267,6 270,4 C273,2 276,-4 279,-5 C282,-5 285,-3 288,0 C291,2 294,4 297,0 L300,-3 L300,80 L0,80 Z" fill="url(#goldGradient5)" />
+            <path d="M0,40 C3,37 6,43 9,35 C12,30 15,25 18,33 C21,39 24,45 27,40 C30,35 33,20 36,25 C39,30 42,40 45,37 C48,35 51,25 54,22 C57,18 60,25 63,28 C66,32 69,35 72,30 C75,25 78,15 81,18 C84,22 87,32 90,28 C93,25 96,15 99,12 C102,8 105,15 108,20 C111,25 114,30 117,25 C120,20 123,10 126,12 C129,15 132,25 135,22 C138,18 141,8 144,5 C147,2 150,8 153,12 C156,16 159,20 162,15 C165,10 168,2 171,5 C174,8 177,18 180,14 C183,10 186,2 189,0 C192,-2 195,2 198,6 C201,10 204,15 207,10 C210,5 213,-2 216,0 C219,2 222,10 225,8 C228,5 231,-2 234,-4 C237,-5 240,-2 243,2 C246,6 249,10 252,5 C255,0 258,-5 261,-2 C264,0 267,6 270,4 C273,2 276,-4 279,-5 C282,-5 285,-3 288,0 C291,2 294,4 297,0 L300,-3" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" />
           </svg>
         </div>
 
         <div class="plan-details">
           <div class="detail-item">
             <span>Min Investment</span>
-            <strong>$500.00</strong>
+            <strong>$100.00</strong>
           </div>
           <div class="detail-item">
             <span>Daily Profit</span>
@@ -760,10 +761,10 @@
           </div>
           <div class="detail-item">
             <span>Est. Total Return</span>
-            <strong class="total-return">$762.50</strong>
+            <strong class="total-return">$152.50</strong>
           </div>
         </div>
-        <button class="btn-invest" onclick="handleInvest('23 Karat Gold', 500, 3.5)">
+        <button class="btn-invest" onclick="handleInvest('23 Karat Gold', 100, 3.5)">
           Invest Now <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
@@ -801,7 +802,7 @@
       setTimeout(() => {
         document.getElementById('skeleton-loader').style.display = 'none';
         document.getElementById('plans-list').style.display = 'flex';
-      }, 1000); // ১ সেকেন্ড লোডিং অ্যানিমেশন দেখাবে
+      }, 1000); 
     });
 
     // Custom Gold Popup Function
@@ -871,10 +872,10 @@
       const cards = document.querySelectorAll('.plan-card');
       const baseValues = [
         { min: 10, rate: 1.2 },
-        { min: 50, rate: 1.8 },
-        { min: 100, rate: 2.2 },
-        { min: 250, rate: 2.8 },
-        { min: 500, rate: 3.5 }
+        { min: 20, rate: 1.8 },
+        { min: 30, rate: 2.2 },
+        { min: 50, rate: 2.8 },
+        { min: 100, rate: 3.5 }
       ];
 
       cards.forEach((card, index) => {
