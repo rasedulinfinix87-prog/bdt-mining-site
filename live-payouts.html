@@ -8,11 +8,11 @@
   <style>
     :root {
       --bg-dark: #061913;
-      --dark-bg: #030d0a;
+      --bg-darker: #030d0a;
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.2);
       --gold-primary: #f5cf66;
-      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 100%);
+      --gold-gradient: linear-gradient(135deg, #f5cf66 0%, #b89332 50%, #f5cf66 100%);
       --green-glow: #2ed573;
       --text-main: #ffffff;
       --text-muted: #8da499;
@@ -33,7 +33,7 @@
       min-height: 100vh;
     }
 
-    .container {
+    .admin-container {
       width: 100%;
       max-width: 480px;
       background-color: var(--bg-dark);
@@ -49,54 +49,68 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 20px;
-      background: rgba(3, 13, 10, 0.92);
-      backdrop-filter: blur(12px);
+      padding: 16px 20px;
+      background: var(--bg-darker);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 999;
       border-bottom: 1px solid var(--card-border);
     }
 
-    .top-bar h2 {
-      font-size: 1.2rem;
-      color: var(--gold-primary);
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .back-btn {
-      background: rgba(245, 207, 102, 0.1);
-      border: 1px solid var(--card-border);
       color: var(--gold-primary);
-      padding: 6px 12px;
-      border-radius: 8px;
+      font-size: 1.1rem;
       text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
+      background: rgba(245, 207, 102, 0.15);
+      border: 1px solid var(--card-border);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+    }
+
+    .top-bar h2 {
+      font-size: 1.15rem;
+      background: var(--gold-gradient);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 4s linear infinite;
+    }
+
+    @keyframes shine {
+      to {
+        background-position: 200% center;
+      }
     }
 
     /* Total Counter Banner */
-    .total-banner {
+    .counter-card {
       margin: 20px;
-      background: var(--dark-bg);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 20px;
       text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       position: relative;
       overflow: hidden;
     }
 
-    .total-banner::after {
+    .counter-card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(245, 207, 102, 0.1), transparent);
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(245,207,102,0.05), transparent);
       animation: shimmer 3s infinite;
     }
 
@@ -104,7 +118,7 @@
       100% { left: 100%; }
     }
 
-    .total-banner h3 {
+    .counter-card h3 {
       font-size: 0.85rem;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -112,39 +126,40 @@
       margin-bottom: 8px;
     }
 
-    .total-banner .amount {
-      font-size: 1.8rem;
+    .counter-card .total-amount {
+      font-size: 2rem;
       font-weight: 800;
       background: var(--gold-gradient);
+      background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: shine 4s linear infinite;
     }
 
-    /* Ticker Box Container (Showing Max 10 items with smooth scrolling) */
-    .ticker-section {
-      padding: 0 20px;
-      flex: 1;
-    }
-
-    .ticker-header {
+    /* Live Feed Box */
+    .feed-section-header {
+      padding: 0 20px 10px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      color: var(--text-muted);
     }
 
-    .live-indicator {
+    .live-badge {
       display: flex;
       align-items: center;
       gap: 6px;
       color: var(--green-glow);
+      font-size: 0.8rem;
       font-weight: 600;
-      font-size: 0.85rem;
+      background: rgba(46, 213, 115, 0.1);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(46, 213, 115, 0.3);
     }
 
-    .pulse-dot {
+    .live-dot {
       width: 8px;
       height: 8px;
       background-color: var(--green-glow);
@@ -155,56 +170,64 @@
 
     @keyframes pulse {
       0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.3); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px var(--green-glow); }
       100% { transform: scale(0.95); opacity: 0.8; }
     }
 
-    .viewport-box {
+    .payout-scroll-wrapper {
+      margin: 0 20px;
       height: 420px;
       overflow: hidden;
       position: relative;
-      background: var(--dark-bg);
+      background: var(--bg-darker);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 10px;
+      box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);
     }
 
-    .scroll-track {
+    .payout-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      padding: 15px;
       position: absolute;
-      width: calc(100% - 20px);
+      width: 100%;
+      will-change: transform;
       transition: transform 0.5s ease-out;
     }
 
-    .payout-card {
+    .payout-item {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 12px 16px;
+      padding: 12px 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      animation: fadeIn 0.4s ease-out;
     }
 
-    .user-info {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-info-box {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
     .user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(245, 207, 102, 0.15);
+      width: 38px;
+      height: 38px;
+      background: rgba(245, 207, 102, 0.1);
       border: 1px solid var(--card-border);
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--gold-primary);
-      font-weight: 700;
       font-size: 0.9rem;
     }
 
@@ -214,7 +237,7 @@
       margin-bottom: 2px;
     }
 
-    .user-details span {
+    .user-details p {
       font-size: 0.75rem;
       color: var(--text-muted);
     }
@@ -223,120 +246,133 @@
       font-size: 0.95rem;
       font-weight: 700;
       color: var(--green-glow);
+      background: rgba(46, 213, 115, 0.1);
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(46, 213, 115, 0.2);
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="admin-container">
     <!-- Top Bar -->
     <div class="top-bar">
-      <h2><i class="fa-solid fa-bolt" style="color: var(--gold-primary);"></i> Live Payouts</h2>
-      <a href="admin-dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back</a>
+      <div class="title-group">
+        <a href="admin-dashboard.html" class="back-btn">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <h2>Live AI Payouts</h2>
+      </div>
     </div>
 
     <!-- Total Counter Banner -->
-    <div class="total-banner">
-      <h3>Total System Payouts</h3>
-      <div class="amount" id="total-payout-counter">$1,482,950</div>
+    <div class="counter-card">
+      <h3>Total Payouts Distributed</h3>
+      <div class="total-amount" id="total-payout-counter">$14,892.50</div>
     </div>
 
-    <!-- Live Ticker Section -->
-    <div class="ticker-section">
-      <div class="ticker-header">
-        <span>Recent AI Bot Transactions</span>
-        <div class="live-indicator">
-          <div class="pulse-dot"></div> Live Stream
-        </div>
+    <!-- Live Stream Header -->
+    <div class="feed-section-header">
+      <span>Real-time Feed</span>
+      <div class="live-badge">
+        <div class="live-dot"></div> AI Bot Live
       </div>
+    </div>
 
-      <div class="viewport-box" id="viewportBox">
-        <div class="scroll-track" id="scrollTrack">
-          <!-- Items will be injected via JavaScript -->
-        </div>
+    <!-- Payout Scrollable Area -->
+    <div class="payout-scroll-wrapper">
+      <div class="payout-list" id="payout-container">
+        <!-- Dynamic items injected via JS -->
       </div>
     </div>
   </div>
 
   <script>
-    // Random First Names and Last Names for AI Bot Simulation
-    const firstNames = ["Rahim", "Karim", "Alex", "David", "Sofia", "Tanvir", "Nusrat", "Mehedi", "John", "Sarah", "Michael", "Ayesha", "Imran", "Fatima", "Rashed", "Elena", "Marcus", "Zayed", "Priya", "Lucas"];
-    const lastNames = ["Ahmed", "Hossain", "Smith", "Khan", "Chowdhury", "Islam", "Miller", "Johnson", "Akter", "Uddin", "Silva", "Gomes", "Roy", "Das", "Rahman"];
-    const paymentGateways = ["Bkash", "Nagad", "Crypto USDT", "Binance Pay", "Bank Transfer", "Rocket"];
+    // নামের ডাটাবেস রেন্ডম নাম জেনারেট করার জন্য
+    const firstNames = ["Rashed", "Karim", "Tanvir", "Rahim", "Mehedi", "Sakib", "Imran", "Nayeem", "Farhan", "Al-Amin", "Hasan", "Sumon", "Arif", "Rakibul", "Tanvir"];
+    const lastNames = ["Ahmed", "Hossain", "Khan", "Chowdhury", "Talukder", "Sarker", "Mahmud", "Uddin", "Mridha", "Bhuiyan"];
 
-    // Generate 400 random payout records
-    let payoutList = [];
-    let currentTotal = 1482950.00;
+    // আপনার রিকোয়েস্ট অনুযায়ী নির্দিষ্ট পুল (ছোট অ্যামাউন্ট বেশি সম্ভাবনা, বড় অ্যামাউন্ট কম সম্ভাবনা)
+    const payoutPool = [
+      // ছোট অ্যামাউন্ট (বেশি ঘন ঘন আসবে)
+      11.80, 13.60, 15.40, 63.50, 77.00, 90.50, 133.00, 166.00, 
+      11.80, 15.40, 77.00, 63.50, 199.00, 90.50, 13.60, 166.00,
+      
+      // মাঝারি অ্যামাউন্ট
+      355.00, 460.00, 199.00, 565.00, 355.00, 460.00,
+      
+      // বড় অ্যামাউন্ট (কম সম্ভাবনা)
+      762.50, 902.00, 1025.00, 1287.50
+    ];
 
-    function generateMockData() {
-      for (let i = 1; i <= 400; i++) {
-        let fName = firstNames[Math.floor(Math.random() * firstNames.length)];
-        let lName = lastNames[Math.floor(Math.random() * lastNames.length)];
-        // Mask name for privacy e.g. R***m A*****n
-        let maskedName = fName.charAt(0) + '***' + fName.slice(-1) + ' ' + lName.charAt(0) + '****';
-        
-        let randomAmount = (Math.random() * (950 - 25) + 25).toFixed(2);
-        let gateway = paymentGateways[Math.floor(Math.random() * paymentGateways.length)];
-        
-        payoutList.push({
-          id: i,
-          name: maskedName,
-          amount: parseFloat(randomAmount),
-          gateway: gateway,
-          time: 'Just now'
-        });
+    let totalAmountVal = 14892.50;
+    const container = document.getElementById('payout-container');
+    const counterDisplay = document.getElementById('total-payout-counter');
+
+    function getRandomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getRandomName() {
+      const f = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const l = lastNames[Math.floor(Math.random() * lastNames.length)];
+      return `${f} ${l}`;
+    }
+
+    function formatCurrency(amount) {
+      return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // প্রাথমিক কিছু আইটেম দিয়ে লিস্ট তৈরি করা
+    function initPayouts() {
+      for (let i = 0; i < 8; i++) {
+        addPayoutItem(false);
       }
     }
 
-    generateMockData();
+    function addPayoutItem(isAnimate = true) {
+      const name = getRandomName();
+      const amount = getRandomItem(payoutPool);
+      
+      // মোট টাকা বাড়ানো
+      if(isAnimate) {
+        totalAmountVal += amount;
+        counterDisplay.innerText = formatCurrency(totalAmountVal);
+      }
 
-    const scrollTrack = document.getElementById('scrollTrack');
-    const totalCounter = document.getElementById('total-payout-counter');
-
-    // Render initial 15 items into the track so it can scroll through them seamlessly
-    function renderList() {
-      scrollTrack.innerHTML = '';
-      payoutList.slice(0, 15).forEach((item, index) => {
-        scrollTrack.innerHTML += `
-          <div class="payout-card">
-            <div class="user-info">
-              <div class="user-avatar">${item.name.charAt(0)}</div>
-              <div class="user-details">
-                <h4>${item.name}</h4>
-                <span>Via ${item.gateway} • ${index === 0 ? 'Just now' : index + 'm ago'}</span>
-              </div>
+      const itemHTML = `
+        <div class="payout-item">
+          <div class="user-info-box">
+            <div class="user-avatar">
+              <i class="fa-solid fa-user-check"></i>
             </div>
-            <div class="payout-amount">+$${item.amount.toLocaleString()}</div>
+            <div class="user-details">
+              <h4>${name}</h4>
+              <p>Just now via AI Bot</p>
+            </div>
           </div>
-        `;
-      });
+          <div class="payout-amount">+${formatCurrency(amount)}</div>
+        </div>
+      `;
+
+      if (isAnimate) {
+        container.insertAdjacentHTML('afterbegin', itemHTML);
+        // যদি আইটেম ১০টার বেশি হয় তবে নিচের পুরনোটা মুছে ফেলা যাতে পেজ ভারী না হয়
+        if (container.children.length > 12) {
+          container.removeChild(container.lastElementChild);
+        }
+      } else {
+        container.insertAdjacentHTML('beforeend', itemHTML);
+      }
     }
 
-    renderList();
+    initPayouts();
 
-    // Smooth Infinite Scroll Animation & Real-time AI bot updates
-    let cardHeight = 72; // Approximate card height + gap
-    let currentIndex = 0;
-
+    // প্রতি ২ থেকে ৩.৫ সেকেন্ড পর পর নতুন পেআউট যোগ হবে এবং স্মুথলি লিস্ট উপরে উঠবে
     setInterval(() => {
-      currentIndex++;
-      // Shift track upwards smoothly
-      scrollTrack.style.transform = `translateY(-${currentIndex * cardHeight}px)`;
-
-      // When reaching near the end, reset smoothly or append new random items
-      if (currentIndex >= payoutList.length - 12) {
-        currentIndex = 0;
-        // Shuffle or generate fresh batch to keep it infinite
-        generateMockData();
-        renderList();
-      }
-
-      // Simulate live incoming payout increment
-      let addedAmount = Math.floor(Math.random() * 400) + 50;
-      currentTotal += addedAmount;
-      totalCounter.innerText = '$' + currentTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    }, 2500); // Shifts every 2.5 seconds for smooth automated effect
+      addPayoutItem(true);
+    }, 2800);
   </script>
 </body>
 </html>
