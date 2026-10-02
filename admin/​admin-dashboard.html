@@ -315,7 +315,7 @@
       }
     }
 
-    // Process Transaction Approval/Rejection with Safety Lock
+    // Process Transaction Status Update (Wallet balance handled automatically via DB Trigger)
     async function processTrx(trxId, userId, type, amount, newStatus) {
       const client = await getSupabaseInstance();
       if (!client) return;
@@ -329,7 +329,7 @@
       }
 
       try {
-        // 1. Double check current transaction status from database to prevent duplicate processing
+        // 1. Double check current transaction status from database
         const { data: currentTrx, error: fetchErr } = await client
           .from('transactions')
           .select('status')
@@ -346,43 +346,7 @@
           return;
         }
 
-        // 2. If approved and type is deposit, update user wallet balance
-        if (newStatus === 'approved' && type.toLowerCase() === 'deposit') {
-          const { data: wallet } = await client
-            .from('wallets')
-            .select('balance')
-            .eq('user_id', userId)
-            .single();
-
-          if (wallet) {
-            const currentBalance = Number(wallet.balance) || 0;
-            const updatedBalance = currentBalance + Number(amount);
-
-            await client
-              .from('wallets')
-              .update({ balance: updatedBalance, updated_at: new Date() })
-              .eq('user_id', userId);
-          }
-        } 
-        else if (newStatus === 'rejected' && type.toLowerCase() === 'withdraw') {
-          const { data: wallet } = await client
-            .from('wallets')
-            .select('balance')
-            .eq('user_id', userId)
-            .single();
-
-          if (wallet) {
-            const currentBalance = Number(wallet.balance) || 0;
-            const updatedBalance = currentBalance + Number(amount);
-            
-            await client
-              .from('wallets')
-              .update({ balance: updatedBalance, updated_at: new Date() })
-              .eq('user_id', userId);
-          }
-        }
-
-        // 3. Update transaction status
+        // 2. Update transaction status only (DB trigger will handle balance adjustment safely)
         const { error: updateError } = await client
           .from('transactions')
           .update({ status: newStatus, updated_at: new Date() })
@@ -411,4 +375,3 @@
   </script>
 </body>
 </html>
-
