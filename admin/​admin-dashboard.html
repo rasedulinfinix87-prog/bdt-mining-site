@@ -8,7 +8,7 @@
   <style>
     :root {
       --bg-dark: #061913;
-      --topbar-bg: rgba(6, 25, 19, 0.92);
+      --topbar-bg: rgba(6, 25, 19, 0.98);
       --card-bg: rgba(12, 38, 29, 0.85);
       --card-border: rgba(245, 207, 102, 0.2);
       --gold-primary: #f5cf66;
@@ -48,92 +48,84 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 20px;
+      padding: 16px 20px;
       background: var(--topbar-bg);
-      backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
-      z-index: 1000;
+      z-index: 999;
       border-bottom: 1px solid var(--card-border);
     }
 
     .top-bar h2 {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       color: var(--gold-primary);
     }
 
-    .top-bar-actions {
+    .action-group {
       display: flex;
       align-items: center;
       gap: 10px;
-      position: relative;
     }
 
-    .menu-toggle-btn {
-      background: rgba(245, 207, 102, 0.1);
+    .logout-btn {
+      background: rgba(255, 71, 87, 0.15);
+      border: 1px solid rgba(255, 71, 87, 0.4);
+      color: var(--red-color);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Direct Fixed Menu Button Styles */
+    .menu-btn {
+      background: rgba(245, 207, 102, 0.15);
       border: 1px solid var(--card-border);
       color: var(--gold-primary);
-      font-size: 1.1rem;
-      cursor: pointer;
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s ease;
+      cursor: pointer;
+      font-size: 1.1rem;
     }
 
-    .menu-toggle-btn:active {
-      transform: scale(0.9);
-    }
-
-    /* Top Right Hamburger Dropdown Menu - Position Fixed to avoid overflow clipping */
-    .hamburger-dropdown {
+    /* Dropdown Menu */
+    .dropdown-menu {
       position: absolute;
-      top: 55px;
-      right: 0;
-      background: #0c261d;
+      top: 60px;
+      right: 20px;
+      background: #0b241c;
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      width: 190px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+      width: 180px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
       display: none;
       flex-direction: column;
-      z-index: 2000;
-      overflow: hidden;
+      z-index: 1000;
     }
 
-    .hamburger-dropdown.active {
+    .dropdown-menu.show {
       display: flex;
     }
 
-    .hamburger-dropdown a {
-      padding: 14px 16px;
+    .dropdown-menu a {
+      padding: 12px 16px;
       color: var(--text-main);
       text-decoration: none;
       font-size: 0.9rem;
       display: flex;
       align-items: center;
       gap: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      transition: background 0.2s;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
-    .hamburger-dropdown a:hover {
+    .dropdown-menu a:hover {
       background: rgba(245, 207, 102, 0.1);
       color: var(--gold-primary);
-    }
-
-    .logout-btn {
-      background: rgba(255, 71, 87, 0.1);
-      border: 1px solid rgba(255, 71, 87, 0.3);
-      color: var(--red-color);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
     }
 
     /* Stats Grid */
@@ -169,9 +161,6 @@
       padding: 10px 20px;
       font-size: 1.05rem;
       color: var(--text-main);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-top: 10px;
     }
 
@@ -191,7 +180,6 @@
     }
 
     .trx-info {
-      main: flex;
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
@@ -253,18 +241,18 @@
     <div class="top-bar">
       <h2><i class="fa-solid fa-gauge-high"></i> Admin Control</h2>
       
-      <div class="top-bar-actions">
-        <!-- Hamburger Menu Toggle Button -->
-        <button class="menu-toggle-btn" onclick="toggleMenu(event)">
+      <div class="action-group">
+        <!-- 3-Dot Menu Button -->
+        <button class="menu-btn" id="menuToggleBtn">
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
         <button class="logout-btn" onclick="adminLogout()">Logout</button>
-
-        <!-- Right Corner Hamburger Dropdown Menu -->
-        <div class="hamburger-dropdown" id="hamburger-menu">
-          <a href="total-user-list.html"><i class="fa-solid fa-users" style="color: var(--gold-primary);"></i> Total User List</a>
-        </div>
       </div>
+    </div>
+
+    <!-- Dropdown Menu Box -->
+    <div class="dropdown-menu" id="myDropdownMenu">
+      <a href="total-user-list.html"><i class="fa-solid fa-users" style="color: var(--gold-primary);"></i> Total User List</a>
     </div>
 
     <!-- Quick Stats Overview -->
@@ -291,22 +279,23 @@
 
   <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Supabase Config Script (যদি config ফাইল মূল ফোল্ডারে থাকে তবে "../supabase-config.js দিন, আর admin ফোল্ডারে থাকলে "./supabase-config.js") -->
+  <!-- Supabase Config Script -->
   <script src="../supabase-config.js"></script>
 
   <script>
-    // Toggle Hamburger Menu safely
-    function toggleMenu(e) {
-      e.stopPropagation();
-      const menu = document.getElementById('hamburger-menu');
-      menu.classList.toggle('active');
-    }
+    // Pure JavaScript Toggle for Menu
+    const menuBtn = document.getElementById('menuToggleBtn');
+    const dropdownMenu = document.getElementById('myDropdownMenu');
 
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-      const menu = document.getElementById('hamburger-menu');
-      if (menu) {
-        menu.classList.remove('active');
+    menuBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking anywhere outside
+    window.addEventListener('click', function() {
+      if (dropdownMenu.classList.contains('show')) {
+        dropdownMenu.classList.remove('show');
       }
     });
 
@@ -325,7 +314,6 @@
       return null;
     }
 
-    // Check Admin Authorization on Load
     async function checkAdminAuth() {
       const client = await getSupabaseInstance();
       if (!client) {
@@ -351,19 +339,16 @@
         return;
       }
 
-      // Load Dashboard Stats & Data
       loadAdminDashboard(client);
     }
 
     async function loadAdminDashboard(client) {
       try {
-        // 1. Fetch Total Users Count
         const { count: userCount } = await client
           .from('user')
           .select('*', { count: 'exact', head: true });
         document.getElementById('total-users').innerText = userCount || 0;
 
-        // 2. Fetch Pending Transactions
         const { data: pendingTrx, error } = await client
           .from('transactions')
           .select('*')
@@ -406,7 +391,6 @@
       }
     }
 
-    // Process Transaction Status Update
     async function processTrx(trxId, userId, type, amount, newStatus) {
       const client = await getSupabaseInstance();
       if (!client) return;
@@ -426,7 +410,7 @@
           .single();
 
         if (fetchErr || !currentTrx) {
-          throw new `Transaction not found.`();
+          throw new Error("Transaction not found.");
         }
 
         if (currentTrx.status !== 'pending') {
