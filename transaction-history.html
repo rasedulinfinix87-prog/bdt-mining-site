@@ -178,18 +178,23 @@
             justify-content: center;
             font-size: 1.1rem;
             flex-shrink: 0;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .trx-icon img, .trx-icon svg {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
         }
 
         .trx-icon.deposit {
-            background: rgba(46, 213, 115, 0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(46, 213, 115, 0.3);
+            border-color: rgba(46, 213, 115, 0.3);
         }
 
         .trx-icon.withdraw {
-            background: rgba(255, 71, 87, 0.15);
-            color: var(--accent-red);
-            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-color: rgba(255, 71, 87, 0.3);
         }
 
         .trx-details h4 {
@@ -504,6 +509,43 @@
 
         let allTransactions = [];
 
+        // Dynamic Brand Icon Provider Function
+        function getTrxIcon(methodName, type) {
+            const m = (methodName || '').toLowerCase();
+
+            // 1. bKash Icon (bKash original logo SVG)
+            if (m.includes('bkash')) {
+                return `<svg viewBox="0 0 100 100" style="width: 28px; height: 28px;">
+                            <path fill="#e2136e" d="M12 25 l38 10 l-18 25 z"/>
+                            <path fill="#e2136e" d="M50 35 l38 -10 l-20 40 z"/>
+                            <path fill="#e2136e" d="M32 60 l36 0 l-18 28 z"/>
+                        </svg>`;
+            }
+            // 2. USD / USDT / Crypto / Dollar Icon
+            else if (m.includes('usd') || m.includes('usdt') || m.includes('crypto') || m.includes('trc20') || m.includes('binance') || m.includes('dollar')) {
+                return `<i class="fa-solid fa-dollar-sign" style="color: #26a17b; font-size: 1.3rem;"></i>`;
+            }
+            // 3. Bank Transfer Icon
+            else if (m.includes('bank') || m.includes('card') || m.includes('wire')) {
+                return `<i class="fa-solid fa-building-columns" style="color: #f5cf66; font-size: 1.1rem;"></i>`;
+            }
+            // 4. Nagad Icon
+            else if (m.includes('nagad')) {
+                return `<i class="fa-solid fa-wallet" style="color: #f7941d; font-size: 1.1rem;"></i>`;
+            }
+            // 5. Rocket Icon
+            else if (m.includes('rocket')) {
+                return `<i class="fa-solid fa-rocket" style="color: #8c3494; font-size: 1.1rem;"></i>`;
+            }
+            // Default Fallback Arrow Icon
+            else {
+                const isDeposit = (type || '').toLowerCase() === 'deposit';
+                const iconClass = isDeposit ? 'fa-arrow-down-left' : 'fa-arrow-up-right';
+                const color = isDeposit ? 'var(--accent-green)' : 'var(--accent-red)';
+                return `<i class="fa-solid ${iconClass}" style="color: ${color}"></i>`;
+            }
+        }
+
         // Supabase Data Fetch Logic
         async function fetchTransactions() {
             const container = document.getElementById('trx-container');
@@ -563,7 +605,6 @@
             transactions.forEach(item => {
                 const isDeposit = (item.type || '').toLowerCase() === 'deposit';
                 const typeClass = isDeposit ? 'deposit' : 'withdraw';
-                const iconClass = isDeposit ? 'fa-arrow-down-left' : 'fa-arrow-up-right';
                 const sign = isDeposit ? '+' : '-';
                 const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A';
                 
@@ -571,11 +612,14 @@
                 const chargeVal = parseFloat(item.charge || 0).toFixed(2);
                 const netVal = parseFloat(item.net_amount || (amountVal - chargeVal)).toFixed(2);
 
+                // Dynamically fetch icon HTML for bKash, USD, Bank, etc.
+                const iconHtml = getTrxIcon(item.method || item.type, item.type);
+
                 const cardHtml = `
                     <div class="trx-card ${typeClass}" onclick="showDetails('${item.id}')">
                         <div class="trx-left">
                             <div class="trx-icon ${typeClass}">
-                                <i class="fa-solid ${iconClass}"></i>
+                                ${iconHtml}
                             </div>
                             <div class="trx-details">
                                 <h4>${item.type || 'Transaction'} (${item.method || 'N/A'})</h4>
