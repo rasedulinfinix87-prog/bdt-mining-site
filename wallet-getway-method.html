@@ -235,12 +235,30 @@
     .toggle-acc-btn {
       cursor: pointer;
       color: var(--text-muted);
-      transition: color 0.2s;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      transition: color 0.2s ease;
+      padding: 2px;
     }
 
     .toggle-acc-btn:hover {
       color: var(--gold-primary);
+    }
+
+    /* Secret PIN & Card Chip Container */
+    .card-chip-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .secret-pin-label {
+      font-size: 0.65rem;
+      color: var(--gold-primary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-weight: 600;
     }
 
     .card-chip {
@@ -250,11 +268,11 @@
       border-radius: 5px;
       opacity: 0.85;
       box-shadow: 0 2px 8px rgba(245, 207, 102, 0.3);
-      cursor: pointer;
+      position: relative;
       transition: transform 0.2s;
     }
 
-    .card-chip:hover {
+    .card-chip-container:hover .card-chip {
       transform: scale(1.05);
     }
 
@@ -449,6 +467,7 @@
       text-decoration: none;
       font-weight: 500;
       transition: opacity 0.2s;
+      cursor: pointer;
     }
 
     .view-all-link:hover {
@@ -482,42 +501,28 @@
       gap: 12px;
     }
 
-    .trx-icon-box {
-      width: 48px;
-      height: 48px;
+    /* Custom Icon Boxes matching screenshot */
+    .trx-icon {
+      width: 42px;
+      height: 42px;
       border-radius: 12px;
-      background: rgba(12, 38, 29, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.1rem;
       flex-shrink: 0;
-      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+      background: rgba(12, 38, 29, 0.9);
+      border: 1px solid rgba(245, 207, 102, 0.2);
     }
 
-    .method-icon-usd {
-      font-size: 1.2rem;
+    /* Dollar Icon (USD / Crypto) */
+    .trx-icon.icon-dollar {
       color: #2ed573;
-      font-weight: bold;
     }
 
-    .method-icon-bkash {
-      width: 22px;
-      height: 22px;
-      background: #e2136e;
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .method-icon-bkash::after {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background: #0c261d;
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    /* Triangle Icon (Mobile Banking / Local Payment) */
+    .trx-icon.icon-triangle {
+      color: #ff4757;
     }
 
     .trx-details .trx-title {
@@ -596,8 +601,8 @@
       z-index: 1000;
     }
 
-    /* --- Auth & Pin Warning Modal Overlay --- */
-    .auth-modal-overlay {
+    /* --- Modal Overlay Base --- */
+    .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
@@ -613,7 +618,7 @@
       padding: 20px;
     }
 
-    .auth-modal-card {
+    .modal-card {
       background: var(--card-gradient);
       border: 1px solid var(--gold-primary);
       border-radius: 20px;
@@ -622,7 +627,18 @@
       max-width: 380px;
       text-align: center;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(245, 207, 102, 0.2);
-      animation: modalFadeIn 0.3s ease-out;
+    }
+
+    /* Animation for Secret PIN Warning Modal */
+    .pin-modal-shake {
+      animation: modalShake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes modalShake {
+      10%, 90% { transform: translate3d(-1px, 0, 0) scale(1); }
+      20%, 80% { transform: translate3d(2px, 0, 0) scale(1); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0) scale(1.02); }
+      40%, 60% { transform: translate3d(4px, 0, 0) scale(1.02); }
     }
 
     @keyframes modalFadeIn {
@@ -649,15 +665,16 @@
       color: var(--gold-primary);
       font-size: 1.6rem;
       box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
-      animation: pulseGlow 1.5s infinite alternate;
     }
 
-    @keyframes pulseGlow {
-      from { box-shadow: 0 0 10px rgba(245, 207, 102, 0.2); }
-      to { box-shadow: 0 0 25px rgba(245, 207, 102, 0.6); }
+    .warning-icon {
+      background: rgba(255, 71, 87, 0.15);
+      border-color: #ff4757;
+      color: #ff4757;
+      box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
     }
 
-    .auth-modal-text {
+    .modal-text {
       font-size: 0.95rem;
       line-height: 1.6;
       color: var(--text-main);
@@ -665,25 +682,37 @@
       font-weight: 400;
     }
 
-    .btn-get-started {
+    .btn-modal-action {
       display: inline-block;
       width: 100%;
       padding: 14px 20px;
       background: var(--gold-gradient);
       color: #030d0a;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       border-radius: 12px;
       text-decoration: none;
       box-shadow: 0 4px 15px rgba(245, 207, 102, 0.3);
       transition: all 0.3s ease;
-      border: none;
       cursor: pointer;
+      border: none;
     }
 
-    .btn-get-started:hover {
+    .btn-modal-action:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(245, 207, 102, 0.4);
+    }
+
+    .btn-modal-secondary {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    .btn-modal-secondary:hover {
+      color: var(--text-main);
+      border-color: var(--gold-primary);
     }
   </style>
 </head>
@@ -720,8 +749,11 @@
               <span class="skeleton skeleton-acc"></span>
             </div>
           </div>
-          <!-- Clickable Gold Card Chip for Secret PIN Warning -->
-          <div class="card-chip" onclick="showPinWarning()" title="Secret Pin"></div>
+          <!-- Secret PIN and Chip Container -->
+          <div class="card-chip-container" onclick="showPinWarningModal()">
+            <span class="secret-pin-label">Secret PIN</span>
+            <div class="card-chip"></div>
+          </div>
         </div>
 
         <div class="card-bottom">
@@ -760,13 +792,13 @@
     <div class="transactions-section">
       <div class="section-header">
         <h3>Recent Transactions</h3>
-        <a href="transaction-history.html" class="view-all-link">View All</a>
+        <a href="javascript:void(0)" onclick="loadAllTransactions()" class="view-all-link" id="viewAllBtn">View All</a>
       </div>
       <div class="transaction-list" id="transactionContainer">
         <!-- Skeleton Loading Items -->
         <div class="trx-item">
           <div class="trx-left">
-            <div class="trx-icon skeleton" style="width:40px; height:40px; border-radius:10px;"></div>
+            <div class="trx-icon skeleton" style="width:42px; height:42px; border-radius:12px;"></div>
             <div class="trx-details">
               <div class="skeleton skeleton-text" style="width: 100px; height: 14px;"></div>
               <div class="skeleton skeleton-text" style="width: 70px; height: 10px; margin-top:5px;"></div>
@@ -784,30 +816,29 @@
   </div>
 
   <!-- Auth Required Modal -->
-  <div class="auth-modal-overlay" id="authModal">
-    <div class="auth-modal-card">
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card" style="animation: modalFadeIn 0.3s ease-out;">
       <div class="auth-modal-icon">
         <i class="fa-solid fa-user-lock"></i>
       </div>
-      <p class="auth-modal-text">
+      <p class="modal-text">
         Please log in or create a new account to start short-term investing.
       </p>
-      <a href="login-signup.html" class="btn-get-started">Get Started</a>
+      <a href="login-signup.html" class="btn-modal-action">Get Started</a>
     </div>
   </div>
 
-  <!-- Secret PIN Security Warning Modal -->
-  <div class="auth-modal-overlay" id="pinWarningModal">
-    <div class="auth-modal-card">
-      <div class="auth-modal-icon">
+  <!-- Secret PIN Warning Animated Modal -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal-card pin-modal-shake">
+      <div class="auth-modal-icon warning-icon">
         <i class="fa-solid fa-shield-halved"></i>
       </div>
-      <p class="auth-modal-text">
-        For security reasons, your secret PIN is encrypted and cannot be displayed directly.<br><br>
-        If you forgot or do not know your PIN, please contact support for assistance.
+      <p class="modal-text">
+        For security reasons, your Secret PIN is end-to-end encrypted and hidden. If you forgot or don't know your Secret PIN, please contact support.
       </p>
-      <a href="contact.html" class="btn-get-started">Contact Us</a>
-      <button onclick="closePinModal()" style="background:transparent; border:none; color:var(--text-muted); margin-top:12px; cursor:pointer; font-size:0.85rem;">Close</button>
+      <a href="contact.html" class="btn-modal-action">Contact Us</a>
+      <button onclick="closePinModal()" class="btn-modal-action btn-modal-secondary">Close</button>
     </div>
   </div>
 
@@ -821,39 +852,7 @@
   <script>
     let currentUserId = null;
     let rawAccountNumber = "";
-    let isAccountVisible = false;
-
-    // অ্যাকাউন্ট নম্বর হাইড/শো করার ফাংশন
-    function toggleAccountVisibility() {
-      isAccountVisible = !isAccountVisible;
-      renderAccountNumber();
-    }
-
-    function renderAccountNumber() {
-      const accDisplay = document.getElementById('account-number-display');
-      if (!rawAccountNumber) return;
-
-      let displayNum = isAccountVisible 
-        ? rawAccountNumber 
-        : rawAccountNumber.slice(0, 4) + "••••••••" + rawAccountNumber.slice(-2);
-      
-      const eyeIconClass = isAccountVisible ? "fa-eye-slash" : "fa-eye";
-
-      accDisplay.innerHTML = `
-        <i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> 
-        <span>${displayNum}</span>
-        <i class="fa-solid ${eyeIconClass} toggle-acc-btn" onclick="toggleAccountVisibility()"></i>
-      `;
-    }
-
-    // সিক্রেট পিন ওয়ার্নিং পপআপ ফাংশন
-    function showPinWarning() {
-      document.getElementById('pinWarningModal').style.display = 'flex';
-    }
-
-    function closePinModal() {
-      document.getElementById('pinWarningModal').style.display = 'none';
-    }
+    let isAccNumberVisible = false;
 
     // ডট স্পিনিং অ্যানিমেশন সহ নেভিগেশন
     function handleButtonClick(e, targetUrl, btnElement) {
@@ -861,17 +860,48 @@
       btnElement.classList.add('loading');
       setTimeout(() => {
         window.location.href = targetUrl;
-      }, 600);
+      }, 600); // 600ms স্পিনিং দেখিয়ে পেজ ট্রানজিশন হবে
     }
 
     // ১৪ অংকের র্যান্ডম অ্যাকাউন্ট নম্বর জেনারেটর হেলপার
     function generate14DigitAccountNumber() {
-      const prefix = "3089";
+      const prefix = "3089"; // নির্দিষ্ট প্রিফিক্স
       let randomDigits = "";
       for (let i = 0; i < 10; i++) {
         randomDigits += Math.floor(Math.random() * 10);
       }
       return prefix + randomDigits;
+    }
+
+    // অ্যাকাউন্ট নম্বর মাস্ক করা ও আনমাস্ক করা
+    function renderAccountNumberUI() {
+      const accDisplay = document.getElementById('account-number-display');
+      if (!rawAccountNumber) return;
+
+      const masked = "••••••••" + rawAccountNumber.slice(-4);
+      const displayText = isAccNumberVisible ? rawAccountNumber : masked;
+      const eyeIcon = isAccNumberVisible ? 'fa-eye-slash' : 'fa-eye';
+
+      accDisplay.innerHTML = `
+        <i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> 
+        <span>${displayText}</span>
+        <i class="fa-solid ${eyeIcon} toggle-acc-btn" onclick="toggleAccountNumberVisibility()"></i>
+      `;
+    }
+
+    function toggleAccountNumberVisibility() {
+      isAccNumberVisible = !isAccNumberVisible;
+      renderAccountNumberUI();
+    }
+
+    // Secret PIN Warning Modal
+    function showPinWarningModal() {
+      const modal = document.getElementById('pinModal');
+      modal.style.display = 'flex';
+    }
+
+    function closePinModal() {
+      document.getElementById('pinModal').style.display = 'none';
     }
 
     // 'wallets' টেবিল থেকে ব্যালেন্স এবং ১৪ ডিজিটের অ্যাকাউন্ট নম্বর পাওয়ার ফাংশন
@@ -883,10 +913,13 @@
         .single();
 
       const balanceDisplay = document.getElementById('user-balance-display');
+      const accDisplay = document.getElementById('account-number-display');
 
       if (data) {
+        // ব্যালেন্স সেট করা
         balanceDisplay.innerText = '$' + parseFloat(data.balance || 0).toFixed(2);
         
+        // অ্যাকাউন্ট নম্বর থাকলে প্রদর্শন করা, না থাকলে নতুন একটা বানিয়ে সেভ করা
         if (data.account_number) {
           rawAccountNumber = data.account_number;
         } else {
@@ -896,25 +929,29 @@
             .update({ account_number: rawAccountNumber })
             .eq('user_id', userId);
         }
-        renderAccountNumber();
+        renderAccountNumberUI();
       } else {
         balanceDisplay.innerText = '$0.00';
-        rawAccountNumber = "30890000000000";
-        renderAccountNumber();
+        accDisplay.innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>---- ---- ---- --</span>`;
         if (error) console.log("Wallet details fetch error:", error.message);
       }
     }
 
-    // --- ট্রানজাকশন হিস্ট্রি লোড করার ফাংশন ---
-    async function fetchRecentTransactions(client, userId) {
+    // --- ট্রানজাকশন হিস্ট্রি লোড করার ফাংশন (ডিফল্ট ৫টি) ---
+    async function fetchRecentTransactions(client, userId, limit = 5) {
       const container = document.getElementById('transactionContainer');
 
-      const { data, error } = await client
+      let query = client
         .from('transactions')
         .select('*')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(5);
+        .order('created_at', { ascending: false });
+
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error("Error fetching transactions:", error.message);
@@ -934,12 +971,15 @@
         const amountSign = isDeposit ? '+' : '-';
         const amountVal = parseFloat(trx.amount || 0).toFixed(2);
         const statusStr = (trx.status || 'pending').toLowerCase();
-        const methodName = (trx.method || trx.type || '').toLowerCase();
+        const methodStr = (trx.method || trx.type || 'Transaction').toLowerCase();
 
-        // মেথড অনুযায়ী আইকন চয়ন লজিক
-        let iconHtml = `<div class="method-icon-usd">$</div>`;
-        if (methodName.includes('bkash')) {
-          iconHtml = `<div class="method-icon-bkash"></div>`;
+        // আইকন টাইপ লজিক (ছবি অনুযায়ী)
+        let iconHtml = '';
+        if (methodStr.includes('usd') || methodStr.includes('bsc') || methodStr.includes('crypto') || methodStr.includes('usdt')) {
+          iconHtml = `<div class="trx-icon icon-dollar"><i class="fa-solid fa-dollar-sign"></i></div>`;
+        } else {
+          // bKash, Nagad বা অন্যান্য মোবাইল ব্যাংকিং মেথডের জন্য ট্রায়াঙ্গেল আইকন
+          iconHtml = `<div class="trx-icon icon-triangle"><i class="fa-solid fa-play fa-rotate-90"></i></div>`;
         }
 
         // তারিখ ফরম্যাট করা
@@ -953,9 +993,7 @@
         html += `
           <div class="trx-item">
             <div class="trx-left">
-              <div class="trx-icon-box">
-                ${iconHtml}
-              </div>
+              ${iconHtml}
               <div class="trx-details">
                 <div class="trx-title">${trx.method || trx.type || 'Transaction'}</div>
                 <div class="trx-sub">${dateFormatted}</div>
@@ -972,6 +1010,15 @@
       container.innerHTML = html;
     }
 
+    // View All ক্লিক করলে সকল লেনদেন দেখাবে
+    async function loadAllTransactions() {
+      const client = window._supabase || window.supabase;
+      if (client && currentUserId) {
+        await fetchRecentTransactions(client, currentUserId, null);
+        document.getElementById('viewAllBtn').style.display = 'none';
+      }
+    }
+
     // --- নোটিফিকেশন চেক ও ব্লিংকিং লজিক ---
     async function checkNotifications(client, userId) {
       const notifBtn = document.getElementById('notificationBtn');
@@ -979,6 +1026,7 @@
 
       if (!notifBtn || !notifBadge) return;
 
+      // is_red = false মানে আনরিড/অদেখা নোটিফিকেশন
       const { count, error } = await client
         .from('notifications')
         .select('*', { count: 'exact', head: true })
@@ -1002,12 +1050,13 @@
         return;
       }
 
+      // ১. বর্তমান সেশনের অথেন্টিকেটেড ইউজার নেওয়া
       const { data: { user }, error: userError } = await client.auth.getUser();
 
+      // ইউজার লগইন না থাকলে মডাল পপআপ দেখাবে
       if (userError || !user) {
         document.getElementById('user-name-display').innerText = "Guest";
-        rawAccountNumber = "30890000000000";
-        renderAccountNumber();
+        document.getElementById('account-number-display').innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>3089----------</span>`;
         document.getElementById('user-balance-display').innerText = '$0.00';
         document.getElementById('transactionContainer').innerHTML = `<div class="trx-empty">Please log in to view transactions.</div>`;
         document.getElementById('authModal').style.display = 'flex';
@@ -1016,6 +1065,7 @@
 
       currentUserId = user.id;
 
+      // ২. কাস্টম 'user' টেবিল থেকে ইউজারের full_name লোড করা
       const { data: userData } = await client
         .from('user')
         .select('full_name')
@@ -1028,11 +1078,16 @@
         document.getElementById('user-name-display').innerText = user.email ? user.email.split('@')[0] : "User";
       }
 
+      // ৩. প্রাথমিক ব্যালেন্স ও অ্যাকাউন্ট নম্বর ফেচ করা
       await fetchWalletDetails(client, currentUserId);
-      await fetchRecentTransactions(client, currentUserId);
+
+      // ৪. ট্রানজাকশন হিস্ট্রি ফেচ করা (ডিফল্ট ৫টি)
+      await fetchRecentTransactions(client, currentUserId, 5);
+
+      // ৫. আনরিড নোটিফিকেশন চেক করা ও ব্লিংকিং চালু করা
       await checkNotifications(client, currentUserId);
 
-      // Realtime Listener
+      // ৬. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
       client
         .channel('wallet-balance-changes')
         .on(
@@ -1050,13 +1105,14 @@
               }
               if (payload.new.account_number) {
                 rawAccountNumber = payload.new.account_number;
-                renderAccountNumber();
+                renderAccountNumberUI();
               }
             }
           }
         )
         .subscribe();
 
+      // ৭. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
       client
         .channel('notifications-live-changes')
         .on(
@@ -1073,6 +1129,7 @@
         )
         .subscribe();
 
+      // ৮. Realtime Listener: 'transactions' টেবিলে পরিবর্তন বা স্ট্যাটাস পরিবর্তন হলেই লিস্ট ও ব্যালেন্স রিলোড হবে
       client
         .channel('transactions-status-changes')
         .on(
@@ -1084,7 +1141,7 @@
             filter: `user_id=eq.${currentUserId}`
           },
           (payload) => {
-            fetchRecentTransactions(client, currentUserId);
+            fetchRecentTransactions(client, currentUserId, 5);
             if (payload.new && payload.new.status === 'approved') {
               fetchWalletDetails(client, currentUserId);
             }
@@ -1093,6 +1150,7 @@
         .subscribe();
     }
 
+    // bottom.html লোড করা
     fetch('bottom.html')
       .then(res => res.text())
       .then(html => {
@@ -1100,6 +1158,7 @@
       })
       .catch(err => console.log('Error loading bottom.html:', err));
 
+    // পেজ লোড সম্পন্ন হলে ফায়ার করবে
     window.addEventListener('DOMContentLoaded', () => {
       loadWalletData();
     });
