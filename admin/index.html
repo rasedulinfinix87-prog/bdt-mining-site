@@ -35,25 +35,25 @@
             <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">মেনুসমূহ</h2>
             <ul class="space-y-2">
                 <li>
-                    <a href="#" onclick="switchTab('transactions')" class="nav-link block px-4 py-2 rounded-lg bg-blue-50 text-blue-600 font-medium">ট্রানজ্যাকশন (ডিপোজিট/উইথড্র)</a>
+                    <a href="#" onclick="switchTab('transactions', event)" class="nav-link block px-4 py-2 rounded-lg bg-blue-50 text-blue-600 font-medium">ট্রানজ্যাকশন (ডিপোজিট/উইথড্র)</a>
                 </li>
                 <li>
-                    <a href="#" onclick="switchTab('users')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ইউজার লিস্ট</a>
+                    <a href="#" onclick="switchTab('users', event)" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ইউজার লিস্ট</a>
                 </li>
                 <li>
-                    <a href="#" onclick="switchTab('wallets')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ওয়ালেট লিস্ট</a>
+                    <a href="#" onclick="switchTab('wallets', event)" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ওয়ালেট লিস্ট</a>
                 </li>
                 <li>
-                    <a href="#" onclick="switchTab('investments')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ইনভেস্টমেন্টস</a>
+                    <a href="#" onclick="switchTab('investments', event)" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ইনভেস্টমেন্টস</a>
                 </li>
                 <li>
-                    <a href="#" onclick="switchTab('crypto')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ক্রিপ্টো ইনভেস্টমেন্ট</a>
+                    <a href="#" onclick="switchTab('crypto', event)" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">ক্রিপ্টো ইনভেস্টমেন্ট</a>
                 </li>
                 <li>
-                    <a href="#" onclick="switchTab('support')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">সাপোর্ট মেসেজ</a>
+                    <a href="#" onclick="switchTab('support', event)" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">সাপোর্ট মেসেজ</a>
                 </li>
                 <li>
-                    <a href="#" onclick="switchTab('notifications')" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">নোটিফিকেশন</a>
+                    <a href="#" onclick="switchTab('notifications', event)" class="nav-link block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">নোটিফিকেশন</a>
                 </li>
             </ul>
         </div>
@@ -158,16 +158,16 @@
         });
 
         // মেনু পরিবর্তনের ফাংশন
-        function switchTab(tabName) {
+        function switchTab(tabName, evt) {
             sidebar.classList.add('-translate-x-full');
             
             document.querySelectorAll('.nav-link').forEach(el => {
                 el.classList.remove('bg-blue-50', 'text-blue-600');
                 el.classList.add('text-gray-700', 'hover:bg-gray-100');
             });
-            if (event && event.target) {
-                event.target.classList.remove('text-gray-700', 'hover:bg-gray-100');
-                event.target.classList.add('bg-blue-50', 'text-blue-600');
+            if (evt && evt.target) {
+                evt.target.classList.remove('text-gray-700', 'hover:bg-gray-100');
+                evt.target.classList.add('bg-blue-50', 'text-blue-600');
             }
 
             if (tabName === 'transactions') loadTransactions();
@@ -210,7 +210,7 @@
                 </tr>
             `;
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500">কোনো পেন্ডিং ট্রানজ্যাকশন নেই! পেজটি পরিষ্কার আছে।</td></tr>`;
                 container.classList.remove('hidden');
                 return;
@@ -234,8 +234,8 @@
                         </span>
                     </td>
                     <td class="px-4 py-4 text-sm space-x-1">
-                        <button onclick="updateTxStatus('${item.id}', 'approved', this)" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600 disabled:opacity-50">Approve</button>
-                        <button onclick="updateTxStatus('${item.id}', 'cancel', this)" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 disabled:opacity-50">Cancel</button>
+                        <button onclick="updateTxStatus('${item.id}', 'approved', this)" class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 disabled:opacity-50">Approve</button>
+                        <button onclick="updateTxStatus('${item.id}', 'cancel', this)" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 disabled:opacity-50">Cancel</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -243,90 +243,117 @@
             container.classList.remove('hidden');
         }
 
+        // ট্রানজ্যাকশন স্ট্যাটাস আপডেট করার ফাংশন
         async function updateTxStatus(id, newStatus, btnElement) {
-            // ১. বাটনে ক্লিক করার সাথে সাথে বাটন টি ডিসেবল করে ডাবল সাবমিশন ঠেকানো
             if (btnElement) {
                 btnElement.disabled = true;
-                btnElement.innerText = 'অপেক্ষা করুন...';
+                btnElement.innerText = 'প্রসেসিং...';
             }
 
-            // ২. ট্রানজ্যাকশনটি নিয়ে আসা এবং সেটি এখনও pending অবস্থায় আছে কিনা নিশ্চিত করা
-            const { data: txData, error: txError } = await window._supabase
-                .from('transactions')
-                .select('*')
-                .eq('id', id)
-                .single();
+            try {
+                // ১. পেন্ডিং স্ট্যাটাস চেক ও আপডেট
+                const { data: updatedTx, error: updateError } = await window._supabase
+                    .from('transactions')
+                    .update({ status: newStatus, updated_at: new Date().toISOString() })
+                    .eq('id', id)
+                    .eq('status', 'pending')
+                    .select();
 
-            if (txError || !txData) {
-                alert('ট্রানজ্যাকশন ডেটা পাওয়া যায়নি!');
-                if (btnElement) btnElement.disabled = false;
-                return;
-            }
-
-            if (txData.status !== 'pending') {
-                alert('ট্রানজ্যাকশনটি ইতিমধ্যে প্রসেস করা হয়ে গেছে!');
-                loadTransactions();
-                return;
-            }
-
-            // ৩. শুধুমাত্র pending অবস্থায় থাকা ট্রানজ্যাকশনের স্ট্যাটাস আপডেট করা
-            const { data: updatedTx, error: updateError } = await window._supabase
-                .from('transactions')
-                .update({ status: newStatus, updated_at: new Date() })
-                .eq('id', id)
-                .eq('status', 'pending')
-                .select();
-
-            if (updateError || !updatedTx || updatedTx.length === 0) {
-                alert('স্ট্যাটাস আপডেট করা সম্ভব হয়নি বা এটি আগে এপ্রুভ হয়ে গেছে!');
-                loadTransactions();
-                return;
-            }
-
-            // ৪. ডিপোজিট এপ্রুভ হলে সঠিকভাবে ওয়ালেটে ব্যালেন্স আপডেট করা
-            if (newStatus === 'approved' && txData.type === 'deposit') {
-                const userId = txData.user_id;
-
-                // net_amount থাকলে তা নেওয়া হবে, অন্যথায় amount
-                let depositAmount = 0;
-                if (txData.net_amount !== null && txData.net_amount !== undefined && parseFloat(txData.net_amount) > 0) {
-                    depositAmount = parseFloat(txData.net_amount);
-                } else {
-                    depositAmount = parseFloat(txData.amount || 0);
+                if (updateError || !updatedTx || updatedTx.length === 0) {
+                    alert('ট্রানজ্যাকশনটি ইতিমধ্যে আপডেট হয়ে গেছে বা পাওয়া যায়নি!');
+                    loadTransactions();
+                    return;
                 }
 
-                // యూজার ওয়ালেট খোঁজা
-                const { data: walletData, error: walletGetError } = await window._supabase
-                    .from('wallets')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .maybeSingle();
+                const txData = updatedTx[0];
 
-                if (walletData) {
-                    const currentBalance = parseFloat(walletData.balance || 0);
-                    const newBalance = currentBalance + depositAmount;
+                // ২. ডিপোজিট এপ্রুভ হলে ব্যালেন্স বাড়ানো
+                if (newStatus === 'approved' && txData.type === 'deposit') {
+                    const userId = txData.user_id;
 
-                    await window._supabase
+                    let depositAmount = 0;
+                    if (txData.net_amount !== null && txData.net_amount !== undefined && parseFloat(txData.net_amount) > 0) {
+                        depositAmount = parseFloat(txData.net_amount);
+                    } else {
+                        depositAmount = parseFloat(txData.amount || 0);
+                    }
+
+                    // ইউজার ওয়ালেট লোড
+                    const { data: walletData } = await window._supabase
                         .from('wallets')
-                        .update({ balance: newBalance, updated_at: new Date() })
-                        .eq('user_id', userId);
-                } else {
-                    await window._supabase
+                        .select('*')
+                        .eq('user_id', userId)
+                        .maybeSingle();
+
+                    if (walletData) {
+                        const currentBalance = parseFloat(walletData.balance || 0);
+                        const finalBalance = currentBalance + depositAmount;
+
+                        await window._supabase
+                            .from('wallets')
+                            .update({ balance: finalBalance, updated_at: new Date().toISOString() })
+                            .eq('user_id', userId);
+                    } else {
+                        await window._supabase
+                            .from('wallets')
+                            .insert([
+                                {
+                                    user_id: userId,
+                                    balance: depositAmount,
+                                    currency: 'USD',
+                                    is_active: true,
+                                    account_number: txData.account_number || 'N/A'
+                                }
+                            ]);
+                    }
+
+                    // ইউজারকে নোটিফিকেশন দেওয়া
+                    await window._supabase.from('notifications').insert([
+                        {
+                            user_id: userId,
+                            title: 'ডিপোজিট সফল হয়েছে',
+                            message: `আপনার ${depositAmount} USD ডিপোজিট রিকোয়েস্টটি সফলভাবে এপ্রুভ করা হয়েছে।`,
+                            is_red: false
+                        }
+                    ]);
+                } 
+                // ৩. উইথড্র বাতিল (Cancel) হলে টাকা ফেরৎ দেওয়া (যদি আগে টাকা কাটা হয়ে থাকে)
+                else if (newStatus === 'cancel' && txData.type === 'withdraw') {
+                    const userId = txData.user_id;
+                    const refundAmount = parseFloat(txData.amount || 0);
+
+                    const { data: walletData } = await window._supabase
                         .from('wallets')
-                        .insert([
-                            {
-                                user_id: userId,
-                                balance: depositAmount,
-                                currency: 'USD',
-                                is_active: true,
-                                account_number: txData.account_number || 'N/A'
-                            }
-                        ]);
+                        .select('*')
+                        .eq('user_id', userId)
+                        .maybeSingle();
+
+                    if (walletData) {
+                        const currentBalance = parseFloat(walletData.balance || 0);
+                        await window._supabase
+                            .from('wallets')
+                            .update({ balance: currentBalance + refundAmount, updated_at: new Date().toISOString() })
+                            .eq('user_id', userId);
+                    }
+
+                    // ইউজারকে নোটিফিকেশন দেওয়া
+                    await window._supabase.from('notifications').insert([
+                        {
+                            user_id: userId,
+                            title: 'উইথড্র বাতিল করা হয়েছে',
+                            message: `আপনার ${refundAmount} USD উইথড্র রিকোয়েস্টটি বাতিল করা হয়েছে এবং টাকা ওয়ালেটে ফেরত দেওয়া হয়েছে।`,
+                            is_red: false
+                        }
+                    ]);
                 }
-            }
 
-            // সফলভাবে সম্পন্ন হলে পেন্ডিং লিস্ট আপডেট করা
-            loadTransactions();
+                alert('ট্রানজ্যাকশন সফলভাবে আপডেট করা হয়েছে!');
+            } catch (err) {
+                console.error(err);
+                alert('একটি এরর ঘটেছে!');
+            } finally {
+                loadTransactions();
+            }
         }
 
         // হিস্ট্রি মডাল ওপেন ও ক্লোজ করার ফাংশন
@@ -349,7 +376,7 @@
             if (error) { alert('হিস্ট্রি লোড করতে সমস্যা হয়েছে'); return; }
 
             modalBody.innerHTML = '';
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 modalBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">কোনো সম্পন্ন ট্রানজ্যাকশন নেই।</td></tr>`;
             } else {
                 data.forEach(item => {
