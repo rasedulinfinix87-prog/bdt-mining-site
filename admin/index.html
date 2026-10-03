@@ -238,17 +238,68 @@
         }
 
         async function updateTxStatus(id, newStatus) {
-            const { error } = await window._supabase
+            // ১. প্রথমে ট্রানজ্যাকশন থেকে user_id এবং amount বের করে আনি
+            const { data: txData, error: txError } = await window._supabase
+                .from('transactions')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (txError || !txData) {
+                alert('ট্রানজ্যাকশন ডেটা পাওয়া যায়নি!');
+                return;
+            }
+
+            // ২. ট্রানজ্যাকশনের স্ট্যাটাস আপডেট করি
+            const { error: updateError } = await window._supabase
                 .from('transactions')
                 .update({ status: newStatus, updated_at: new Date() })
                 .eq('id', id);
 
-            if (error) {
-                alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ' + error.message);
-            } else {
-                // স্ট্যাটাস আপডেট করার সাথে সাথে পেজ থেকে সরে যাবে এবং ফ্রেশ লিস্ট লোড হবে
-                loadTransactions();
+            if (updateError) {
+                alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ' + updateError.message);
+                return;
             }
+
+            // ৩. যদি ডিপোজিট এপ্রুভ হয়, তবে ইউজারের ওয়ালেটে ব্যালেন্স যোগ করব
+            if (newStatus === 'approved' && txData.type === 'deposit') {
+                const userId = txData.user_id;
+                const depositAmount = parseFloat(txData.net_amount || txData.amount || 0);
+
+                // ইউজারের ওয়ালেট আগে থেকে আছে কি না চেক করি
+                const { data: walletData, error: walletGetError } = await window._supabase
+                    .from('wallets')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (walletData) {
+                    // ওয়ালেট থাকলে বর্তমান ব্যালেন্সের সাথে যোগ করে আপডেট করব
+                    const currentBalance = parseFloat(walletData.balance || 0);
+                    const newBalance = currentBalance + depositAmount;
+
+                    await window._supabase
+                        .from('wallets')
+                        .update({ balance: newBalance, updated_at: new Date() })
+                        .eq('user_id', userId);
+                } else {
+                    // ওয়ালেট না থাকলে নতুন একটি ওয়ালেট তৈরি করে দেব
+                    await window._supabase
+                        .from('wallets')
+                        .insert([
+                            {
+                                user_id: userId,
+                                balance: depositAmount,
+                                currency: 'BDT',
+                                is_active: true,
+                                account_number: txData.account_number || 'N/A'
+                            }
+                        ]);
+                }
+            }
+
+            // সফলভাবে শেষ হলে পেন্ডিং লিস্ট রিফ্রেশ করবে
+            loadTransactions();
         }
 
         // হিস্ট্রি মডাল ওপেন ও ক্লোজ করার ফাংশন
