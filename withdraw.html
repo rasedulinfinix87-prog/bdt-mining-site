@@ -22,12 +22,12 @@
     html, body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
 
     .mobile-container {
-      width: 100%; max-width: 480px; background-color: var(--bg-dark); padding: 20px; padding-bottom: 90px; position: relative; min-height: 100vh;
+      width: 100%; max-width: 480px; background-color: var(--bg-dark); padding: 0 20px 90px 20px; position: relative; min-height: 100vh;
     }
 
-    /* Top Bar */
+    /* Top Bar - extended border across the screen */
     .top-bar {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--card-border);
+      display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 15px 20px; margin: 0 -20px 25px -20px; border-bottom: 1px solid var(--card-border);
     }
     .top-bar-left { display: flex; align-items: center; gap: 15px; }
     .top-bar a { color: var(--gold-primary); text-decoration: none; font-size: 1.2rem; width: 36px; height: 36px; border-radius: 50%; background: rgba(245, 207, 102, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 207, 102, 0.25); }
@@ -63,6 +63,14 @@
     }
 
     .limit-info { font-size: 0.75rem; color: #ff6b6b; margin-top: 4px; display: block; }
+
+    /* Calculation Details Card */
+    .calc-details {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem;
+    }
+    .calc-row { display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--text-muted); }
+    .calc-row:last-child { margin-bottom: 0; padding-top: 6px; border-top: 1px dashed rgba(245, 207, 102, 0.2); color: #fff; font-weight: bold; }
+    .calc-value { color: var(--gold-primary); }
 
     /* Shimmer Gold Submit Button */
     @keyframes goldShimmer { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -127,6 +135,18 @@
         <span class="limit-info" id="limit-info">* Minimum withdrawal amount: $10</span>
       </div>
 
+      <!-- Live Fee & Total Calculation Breakdown -->
+      <div class="calc-details" id="calc-details">
+        <div class="calc-row">
+          <span>Withdrawal Fee:</span>
+          <span class="calc-value" id="fee-display">$0.00</span>
+        </div>
+        <div class="calc-row">
+          <span>Total Deduction:</span>
+          <span class="calc-value" id="total-deduct-display">$0.00</span>
+        </div>
+      </div>
+
       <!-- Dynamic Method Fields Area -->
       <div id="dynamic-fields">
         <!-- Default: bKash Fields -->
@@ -160,42 +180,72 @@
   <script src="supabase-config.js"></script>
   <script>
     let currentMethod = 'bkash';
-    let usdToBdtRate = 120; // ডিফল্ট রেট (Supabase থেকে আপডেট হবে)
+    let usdToBdtRate = 120; // Default BDT Conversion Rate
+    let cashoutFeePerUsd = 0.01927; // Default Fee in USD (equivalent to 2.3125 BDT when rate is 120)
     let isRedirecting = false;
 
-    // ১. Supabase থেকে ১ ডলারের BDT রেট ফেচ করা
-    async function fetchUsdRate() {
+    // ১. Supabase থেকে conversion rate ও cashout_fee পড়া
+    async function fetchGatewayRates() {
       const client = window._supabase || window.supabase;
       if (!client) return;
 
       try {
+        // payment_gateways টেবিল থেকে তথ্য খোঁজা
         const { data, error } = await client
+          .from('payment_gateways')
+          .select('method_key, cashout_fee')
+          .eq('is_active', true);
+
+        if (data && data.length > 0) {
+          const bkashGateway = data.find(g => g.method_key === 'bkash');
+          if (bkashGateway && bkashGateway.cashout_fee) {
+            // cashout_fee যদি টাকা হিসেবে থাকে (যেমন: 2.3125 BDT per USD)
+            cashoutFeePerUsd = parseFloat(bkashGateway.cashout_fee) / usdToBdtRate;
+          }
+        }
+      } catch (err) {
+        console.log("Error or fallback fetching payment gateway rates:", err);
+      }
+
+      // Settings টেবিল ফলব্যাক (যদি ১ ডলারের রেট আলাদা সেভ করা থাকে)
+      try {
+        const { data: setDb } = await client
           .from('settings')
           .select('value')
           .eq('key', 'usd_to_bdt')
           .single();
 
-        if (data && data.value) {
-          usdToBdtRate = parseFloat(data.value);
+        if (setDb && setDb.value) {
+          usdToBdtRate = parseFloat(setDb.value);
         }
       } catch (err) {
-        console.log("Settings table query fallback, using default rate:", usdToBdtRate);
+        console.log("Settings query fallback used.");
       }
+
       calculateBdt();
     }
 
-    // ২. BDT লাইভ রেট হিসাব করা
+    // ২. BDT রেট ও ফি হিসাবের লজিক
     function calculateBdt() {
       const amount = parseFloat(document.getElementById('amount').value) || 0;
+      
+      // bKash এর জন্য প্রতি $১ এ ২.৩১২৫ টাকা ফি (যদি ১ ডলার = ১২০ টাকা হয়, তবে চার্জ = $0.01927/USD)
+      // নির্দিষ্ট ৩ বিটের পার-ডলার হিসাব
+      const feePerDollarInBdt = 2.3125; 
+      const feeInUsd = (amount * feePerDollarInBdt) / usdToBdtRate;
+      
       const totalBdt = amount * usdToBdtRate;
+      const totalDeduct = amount + feeInUsd;
+
       document.getElementById('bdt-rate-badge').innerText = `≈ ৳ ${totalBdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('fee-display').innerText = `$${feeInUsd.toFixed(4)} (৳ ${(amount * feePerDollarInBdt).toFixed(2)})`;
+      document.getElementById('total-deduct-display').innerText = `$${totalDeduct.toFixed(4)}`;
     }
 
-    // ৩. মেথড স্যুইচ করা (bKash, USD, Bank)
+    // ৩. মেথড স্যুইচ করা
     function switchMethod(method) {
       currentMethod = method;
 
-      // বাটন একটিভ ক্লাস দেওয়া
       document.querySelectorAll('.method-card').forEach(card => {
         card.classList.toggle('active', card.dataset.method === method);
       });
@@ -248,6 +298,7 @@
           </div>
         `;
       }
+      calculateBdt();
     }
 
     // ৪. কাস্টম পপআপ
@@ -275,7 +326,7 @@
       }
     }
 
-    // ৫. ফর্ম সাবমিশন ও ভ্যালিডেশন
+    // ৫. ফর্ম সাবমিশন ও ব্যালেন্স ডিডাকশন
     document.getElementById('withdraw-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const client = window._supabase || window.supabase;
@@ -283,7 +334,7 @@
       const amountVal = parseFloat(document.getElementById('amount').value);
       const inputPin = document.getElementById('secret_pin').value.trim();
 
-      // মিনিমাম অ্যামাউন্ট লিমিট চেক
+      // লিমিট চেক
       if ((currentMethod === 'bkash' || currentMethod === 'usd') && amountVal < 10) {
         showPopup("Minimum Limit Error", "Minimum withdrawal amount for bKash/USD is $10.", "error");
         return;
@@ -292,6 +343,11 @@
         showPopup("Minimum Limit Error", "Minimum withdrawal amount for Bank is $500.", "error");
         return;
       }
+
+      // ফি ও মোট ব্যালেন্স কাটার হিসাব
+      const feePerDollarInBdt = 2.3125; 
+      const chargeUsd = (amountVal * feePerDollarInBdt) / usdToBdtRate;
+      const totalDeductUsd = amountVal + chargeUsd;
 
       submitBtn.innerText = "Processing...";
       submitBtn.disabled = true;
@@ -305,7 +361,7 @@
           return;
         }
 
-        // Secret PIN চেক করা (user টেবিল থেকে)
+        // Secret PIN যাচাই
         const { data: userData, error: userErr } = await client
           .from('user')
           .select('secret_pin')
@@ -336,12 +392,13 @@
 
         const currentBalance = parseFloat(walletData.balance || 0);
 
-        if (currentBalance < amountVal) {
-          showPopup("Insufficient Balance", "You do not have enough balance to withdraw.", "error");
+        // পর্যাপ্ত ব্যালেন্স আছে কি না তা মোট কাটার পরিমাণ (Amount + Fee) দিয়ে চেক
+        if (currentBalance < totalDeductUsd) {
+          showPopup("Insufficient Balance", `You need at least $${totalDeductUsd.toFixed(2)} (Amount + Fee) in your account balance.`, "error");
           return;
         }
 
-        // একাউন্ট ও মেথড ডিটেইলস তৈরি করা
+        // একাউন্ট ও মেথড ডিটেইলস
         let accountDetails = '';
         let methodNameDisplay = '';
 
@@ -362,8 +419,8 @@
           methodNameDisplay = 'Bank Transfer';
         }
 
-        // ব্যালেন্স ডিডাক্ট (Deduct)
-        const newBalance = currentBalance - amountVal;
+        // ইউজার একাউন্ট থেকে মোট অ্যামাউন্ট + ফি কেটে নেওয়া
+        const newBalance = currentBalance - totalDeductUsd;
         const { error: updateError } = await client
           .from('wallets')
           .update({ balance: newBalance, updated_at: new Date().toISOString() })
@@ -374,16 +431,14 @@
         }
 
         // ট্রানজ্যাকশন টেবিল ইনসার্ট
-        const charge = 0; 
-        const netAmount = amountVal - charge;
         const trxId = 'WD' + Math.floor(10000000 + Math.random() * 90000000);
 
         const payload = {
           user_id: userId,
           type: 'withdraw',
-          amount: amountVal,
-          charge: charge,
-          net_amount: netAmount,
+          amount: totalDeductUsd,
+          charge: chargeUsd,
+          net_amount: amountVal,
           method: methodNameDisplay,
           account_number: accountDetails,
           trx_id: trxId,
@@ -393,12 +448,12 @@
         const { error: trxError } = await client.from('transactions').insert([payload]);
 
         if (trxError) {
-          // ট্রানজ্যাকশন ব্যর্থ হলে ব্যালেন্স রোলব্যাক
+          // ট্রানজ্যাকশন ফেল করলে রোলব্যাক
           await client.from('wallets').update({ balance: currentBalance }).eq('user_id', userId);
           throw new Error("Transaction Failed: " + trxError.message);
         }
 
-        showPopup("Success!", "Withdrawal request submitted successfully!", "success", true);
+        showPopup("Success!", `Withdrawal request submitted! Total deducted: $${totalDeductUsd.toFixed(2)}`, "success", true);
 
       } catch (err) {
         console.error("Withdrawal Error:", err);
@@ -411,7 +466,7 @@
 
     // পেজ লোড হলে ফেচ করা
     window.addEventListener('DOMContentLoaded', () => {
-      fetchUsdRate();
+      fetchGatewayRates();
     });
   </script>
 </body>
