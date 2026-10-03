@@ -910,7 +910,7 @@
         .from('wallets')
         .select('balance, account_number')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       const balanceDisplay = document.getElementById('user-balance-display');
       const accDisplay = document.getElementById('account-number-display');
@@ -1070,7 +1070,7 @@
         .from('user')
         .select('full_name')
         .eq('id', currentUserId)
-        .single();
+        .maybeSingle();
 
       if (userData && userData.full_name) {
         document.getElementById('user-name-display').innerText = userData.full_name;
@@ -1129,7 +1129,7 @@
         )
         .subscribe();
 
-      // ৮. Realtime Listener: 'transactions' টেবিলে পরিবর্তন বা স্ট্যাটাস পরিবর্তন হলেই লিস্ট ও ব্যালেন্স রিলোড হবে
+      // ৮. Realtime Listener: 'transactions' টেবিলে পরিবর্তন হলে শুধু ট্রানজ্যাকশন লিস্ট রিফ্রেশ করবে
       client
         .channel('transactions-status-changes')
         .on(
@@ -1140,11 +1140,8 @@
             table: 'transactions',
             filter: `user_id=eq.${currentUserId}`
           },
-          (payload) => {
+          () => {
             fetchRecentTransactions(client, currentUserId, 5);
-            if (payload.new && payload.new.status === 'approved') {
-              fetchWalletDetails(client, currentUserId);
-            }
           }
         )
         .subscribe();
