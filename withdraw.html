@@ -22,15 +22,18 @@
     html, body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
 
     .mobile-container {
-      width: 100%; max-width: 480px; background-color: var(--bg-dark); padding: 0 20px 90px 20px; position: relative; min-height: 100vh;
+      width: 100%; max-width: 480px; background-color: var(--bg-dark); padding: 20px; padding-bottom: 90px; position: relative; min-height: 100vh;
     }
 
-    /* Top Bar - extended border across the screen */
+    /* Top Bar Full Width Fix */
     .top-bar {
-      display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 15px 20px; margin: 0 -20px 25px -20px; border-bottom: 1px solid var(--card-border);
+      display: flex; align-items: center; justify-content: space-between; 
+      margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px;
+      margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--card-border);
     }
-    .top-bar-left { display: flex; align-items: center; gap: 15px; }
-    .top-bar a { color: var(--gold-primary); text-decoration: none; font-size: 1.2rem; width: 36px; height: 36px; border-radius: 50%; background: rgba(245, 207, 102, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 207, 102, 0.25); }
+    .top-bar-left { display: flex; align-items: center; gap: 12px; }
+    .top-bar a { color: var(--gold-primary); text-decoration: none; font-size: 1.1rem; width: 36px; height: 36px; border-radius: 50%; background: rgba(245, 207, 102, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 207, 102, 0.25); }
+    .top-bar h2 { font-size: 1.04rem; font-weight: 700; color: #fff; margin: 0; }
 
     .section-title { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 12px; }
 
@@ -63,14 +66,7 @@
     }
 
     .limit-info { font-size: 0.75rem; color: #ff6b6b; margin-top: 4px; display: block; }
-
-    /* Calculation Details Card */
-    .calc-details {
-      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem;
-    }
-    .calc-row { display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--text-muted); }
-    .calc-row:last-child { margin-bottom: 0; padding-top: 6px; border-top: 1px dashed rgba(245, 207, 102, 0.2); color: #fff; font-weight: bold; }
-    .calc-value { color: var(--gold-primary); }
+    .fee-info { font-size: 0.78rem; color: var(--gold-primary); margin-top: 6px; display: block; font-weight: 600; }
 
     /* Shimmer Gold Submit Button */
     @keyframes goldShimmer { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -129,22 +125,11 @@
       <div class="form-group">
         <label>Amount ($)</label>
         <div class="input-wrapper">
-          <input type="number" class="form-control" id="amount" placeholder="Enter Amount" step="any" required min="10" oninput="calculateBdt()">
+          <input type="number" class="form-control" id="amount" placeholder="Enter Amount" step="any" required min="10" oninput="calculateBdtAndFee()">
           <span class="rate-badge" id="bdt-rate-badge">≈ ৳ 0.00</span>
         </div>
         <span class="limit-info" id="limit-info">* Minimum withdrawal amount: $10</span>
-      </div>
-
-      <!-- Live Fee & Total Calculation Breakdown -->
-      <div class="calc-details" id="calc-details">
-        <div class="calc-row">
-          <span>Withdrawal Fee:</span>
-          <span class="calc-value" id="fee-display">$0.00</span>
-        </div>
-        <div class="calc-row">
-          <span>Total Deduction:</span>
-          <span class="calc-value" id="total-deduct-display">$0.00</span>
-        </div>
+        <span class="fee-info" id="fee-info">Fee: $0.00 | Total Deduction: $0.00</span>
       </div>
 
       <!-- Dynamic Method Fields Area -->
@@ -180,72 +165,76 @@
   <script src="supabase-config.js"></script>
   <script>
     let currentMethod = 'bkash';
-    let usdToBdtRate = 120; // Default BDT Conversion Rate
-    let cashoutFeePerUsd = 0.01927; // Default Fee in USD (equivalent to 2.3125 BDT when rate is 120)
+    let usdToBdtRate = 120; // Default Rate
+    let cashoutFeeRate = 2.3125; // Default Fee Percentage (Supabase payment_gateways থেকে আপডেট হবে)
+    let minBkashUsd = 10;
+    let minUsdUsd = 10;
+    let minBankUsd = 500;
     let isRedirecting = false;
 
-    // ১. Supabase থেকে conversion rate ও cashout_fee পড়া
-    async function fetchGatewayRates() {
+    // ১. payment_gateways টেবিল থেকে usd_rate, cashout_fee ও লিমিট ডাটা রিড করা
+    async function fetchGatewayData() {
       const client = window._supabase || window.supabase;
       if (!client) return;
 
       try {
-        // payment_gateways টেবিল থেকে তথ্য খোঁজা
         const { data, error } = await client
           .from('payment_gateways')
-          .select('method_key, cashout_fee')
-          .eq('is_active', true);
+          .select('method_key, usd_rate, cashout_fee, minimum_deposit_usd, is_active');
 
-        if (data && data.length > 0) {
-          const bkashGateway = data.find(g => g.method_key === 'bkash');
-          if (bkashGateway && bkashGateway.cashout_fee) {
-            // cashout_fee যদি টাকা হিসেবে থাকে (যেমন: 2.3125 BDT per USD)
-            cashoutFeePerUsd = parseFloat(bkashGateway.cashout_fee) / usdToBdtRate;
+        if (!error && data && data.length > 0) {
+          // bKash gateway / common data fetch
+          const bkashGateway = data.find(g => g.method_key === 'bkash') || data[0];
+          
+          if (bkashGateway) {
+            if (bkashGateway.usd_rate) usdToBdtRate = parseFloat(bkashGateway.usd_rate);
+            if (bkashGateway.cashout_fee !== null && bkashGateway.cashout_fee !== undefined) {
+              cashoutFeeRate = parseFloat(bkashGateway.cashout_fee);
+            }
+            if (bkashGateway.minimum_deposit_usd) minBkashUsd = parseFloat(bkashGateway.minimum_deposit_usd);
+          }
+
+          const usdGateway = data.find(g => g.method_key === 'usd');
+          if (usdGateway && usdGateway.minimum_deposit_usd) {
+            minUsdUsd = parseFloat(usdGateway.minimum_deposit_usd);
+          }
+
+          const bankGateway = data.find(g => g.method_key === 'bank');
+          if (bankGateway && bankGateway.minimum_deposit_usd) {
+            minBankUsd = parseFloat(bankGateway.minimum_deposit_usd);
           }
         }
       } catch (err) {
-        console.log("Error or fallback fetching payment gateway rates:", err);
+        console.log("Error fetching payment gateways data, using defaults:", err);
       }
-
-      // Settings টেবিল ফলব্যাক (যদি ১ ডলারের রেট আলাদা সেভ করা থাকে)
-      try {
-        const { data: setDb } = await client
-          .from('settings')
-          .select('value')
-          .eq('key', 'usd_to_bdt')
-          .single();
-
-        if (setDb && setDb.value) {
-          usdToBdtRate = parseFloat(setDb.value);
-        }
-      } catch (err) {
-        console.log("Settings query fallback used.");
-      }
-
-      calculateBdt();
+      
+      switchMethod(currentMethod);
+      calculateBdtAndFee();
     }
 
-    // ২. BDT রেট ও ফি হিসাবের লজিক
-    function calculateBdt() {
+    // ২. BDT রেট এবং ফি হিসাব করা
+    function calculateBdtAndFee() {
       const amount = parseFloat(document.getElementById('amount').value) || 0;
       
-      // bKash এর জন্য প্রতি $১ এ ২.৩১২৫ টাকা ফি (যদি ১ ডলার = ১২০ টাকা হয়, তবে চার্জ = $0.01927/USD)
-      // নির্দিষ্ট ৩ বিটের পার-ডলার হিসাব
-      const feePerDollarInBdt = 2.3125; 
-      const feeInUsd = (amount * feePerDollarInBdt) / usdToBdtRate;
-      
+      // ১ ডলারে কত BDT হিসাব
       const totalBdt = amount * usdToBdtRate;
-      const totalDeduct = amount + feeInUsd;
-
       document.getElementById('bdt-rate-badge').innerText = `≈ ৳ ${totalBdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-      document.getElementById('fee-display').innerText = `$${feeInUsd.toFixed(4)} (৳ ${(amount * feePerDollarInBdt).toFixed(2)})`;
-      document.getElementById('total-deduct-display').innerText = `$${totalDeduct.toFixed(4)}`;
+
+      // ফি এবং মোট কাটা ডলার হিসাব
+      const calculatedFee = (amount * cashoutFeeRate) / 100;
+      const totalDeductions = amount + calculatedFee;
+
+      const feeInfoElem = document.getElementById('fee-info');
+      if (feeInfoElem) {
+        feeInfoElem.innerText = `Fee (${cashoutFeeRate}%): $${calculatedFee.toFixed(4)} | Total Deduction: $${totalDeductions.toFixed(4)}`;
+      }
     }
 
-    // ৩. মেথড স্যুইচ করা
+    // ৩. মেথড স্যুইচ করা (bKash, USD, Bank)
     function switchMethod(method) {
       currentMethod = method;
 
+      // বাটন একটিভ ক্লাস দেওয়া
       document.querySelectorAll('.method-card').forEach(card => {
         card.classList.toggle('active', card.dataset.method === method);
       });
@@ -255,8 +244,8 @@
       const limitInfo = document.getElementById('limit-info');
 
       if (method === 'bkash') {
-        amountInput.min = "10";
-        limitInfo.innerText = "* Minimum withdrawal amount: $10";
+        amountInput.min = minBkashUsd.toString();
+        limitInfo.innerText = `* Minimum withdrawal amount: $${minBkashUsd}`;
         fieldsContainer.innerHTML = `
           <div class="form-group">
             <label>bKash Number</label>
@@ -264,8 +253,8 @@
           </div>
         `;
       } else if (method === 'usd') {
-        amountInput.min = "10";
-        limitInfo.innerText = "* Minimum withdrawal amount: $10";
+        amountInput.min = minUsdUsd.toString();
+        limitInfo.innerText = `* Minimum withdrawal amount: $${minUsdUsd}`;
         fieldsContainer.innerHTML = `
           <div class="form-group">
             <label>Your BSC BEP20 Wallet Address</label>
@@ -273,8 +262,8 @@
           </div>
         `;
       } else if (method === 'bank') {
-        amountInput.min = "500";
-        limitInfo.innerText = "* Minimum withdrawal amount: $500 for Bank Transfer";
+        amountInput.min = minBankUsd.toString();
+        limitInfo.innerText = `* Minimum withdrawal amount: $${minBankUsd} for Bank Transfer`;
         fieldsContainer.innerHTML = `
           <div class="form-group">
             <label>Bank Name</label>
@@ -298,7 +287,7 @@
           </div>
         `;
       }
-      calculateBdt();
+      calculateBdtAndFee();
     }
 
     // ৪. কাস্টম পপআপ
@@ -326,7 +315,7 @@
       }
     }
 
-    // ৫. ফর্ম সাবমিশন ও ব্যালেন্স ডিডাকশন
+    // ৫. ফর্ম সাবমিশন ও ভ্যালিডেশন
     document.getElementById('withdraw-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const client = window._supabase || window.supabase;
@@ -334,20 +323,23 @@
       const amountVal = parseFloat(document.getElementById('amount').value);
       const inputPin = document.getElementById('secret_pin').value.trim();
 
-      // লিমিট চেক
-      if ((currentMethod === 'bkash' || currentMethod === 'usd') && amountVal < 10) {
-        showPopup("Minimum Limit Error", "Minimum withdrawal amount for bKash/USD is $10.", "error");
+      // মিনিমাম অ্যামাউন্ট লিমিট চেক
+      if (currentMethod === 'bkash' && amountVal < minBkashUsd) {
+        showPopup("Minimum Limit Error", `Minimum withdrawal amount for bKash is $${minBkashUsd}.`, "error");
         return;
       }
-      if (currentMethod === 'bank' && amountVal < 500) {
-        showPopup("Minimum Limit Error", "Minimum withdrawal amount for Bank is $500.", "error");
+      if (currentMethod === 'usd' && amountVal < minUsdUsd) {
+        showPopup("Minimum Limit Error", `Minimum withdrawal amount for USD is $${minUsdUsd}.`, "error");
+        return;
+      }
+      if (currentMethod === 'bank' && amountVal < minBankUsd) {
+        showPopup("Minimum Limit Error", `Minimum withdrawal amount for Bank is $${minBankUsd}.`, "error");
         return;
       }
 
-      // ফি ও মোট ব্যালেন্স কাটার হিসাব
-      const feePerDollarInBdt = 2.3125; 
-      const chargeUsd = (amountVal * feePerDollarInBdt) / usdToBdtRate;
-      const totalDeductUsd = amountVal + chargeUsd;
+      // চার্জ ও মোট ব্যালেন্স ডিডাকশন হিসাব
+      const calculatedCharge = (amountVal * cashoutFeeRate) / 100;
+      const totalRequiredBalance = amountVal + calculatedCharge;
 
       submitBtn.innerText = "Processing...";
       submitBtn.disabled = true;
@@ -361,7 +353,7 @@
           return;
         }
 
-        // Secret PIN যাচাই
+        // Secret PIN চেক করা (user টেবিল থেকে)
         const { data: userData, error: userErr } = await client
           .from('user')
           .select('secret_pin')
@@ -378,7 +370,7 @@
           return;
         }
 
-        // ওয়ালেট ব্যালেন্স চেক
+        // ওয়ালেট ব্যালেন্স চেক (মোট সার্ভিস ফি সহ)
         const { data: walletData, error: walletError } = await client
           .from('wallets')
           .select('id, balance')
@@ -392,13 +384,12 @@
 
         const currentBalance = parseFloat(walletData.balance || 0);
 
-        // পর্যাপ্ত ব্যালেন্স আছে কি না তা মোট কাটার পরিমাণ (Amount + Fee) দিয়ে চেক
-        if (currentBalance < totalDeductUsd) {
-          showPopup("Insufficient Balance", `You need at least $${totalDeductUsd.toFixed(2)} (Amount + Fee) in your account balance.`, "error");
+        if (currentBalance < totalRequiredBalance) {
+          showPopup("Insufficient Balance", `You need $${totalRequiredBalance.toFixed(2)} (including ${cashoutFeeRate}% fee) to proceed. Your balance is $${currentBalance.toFixed(2)}.`, "error");
           return;
         }
 
-        // একাউন্ট ও মেথড ডিটেইলস
+        // একাউন্ট ও মেথড ডিটেইলস তৈরি করা
         let accountDetails = '';
         let methodNameDisplay = '';
 
@@ -419,8 +410,8 @@
           methodNameDisplay = 'Bank Transfer';
         }
 
-        // ইউজার একাউন্ট থেকে মোট অ্যামাউন্ট + ফি কেটে নেওয়া
-        const newBalance = currentBalance - totalDeductUsd;
+        // ব্যালেন্স ডিডাক্ট (Deducting Amount + Charge)
+        const newBalance = currentBalance - totalRequiredBalance;
         const { error: updateError } = await client
           .from('wallets')
           .update({ balance: newBalance, updated_at: new Date().toISOString() })
@@ -436,8 +427,8 @@
         const payload = {
           user_id: userId,
           type: 'withdraw',
-          amount: totalDeductUsd,
-          charge: chargeUsd,
+          amount: amountVal,
+          charge: calculatedCharge,
           net_amount: amountVal,
           method: methodNameDisplay,
           account_number: accountDetails,
@@ -448,12 +439,12 @@
         const { error: trxError } = await client.from('transactions').insert([payload]);
 
         if (trxError) {
-          // ট্রানজ্যাকশন ফেল করলে রোলব্যাক
+          // ট্রানজ্যাকশন ব্যর্থ হলে ব্যালেন্স রোলব্যাক
           await client.from('wallets').update({ balance: currentBalance }).eq('user_id', userId);
           throw new Error("Transaction Failed: " + trxError.message);
         }
 
-        showPopup("Success!", `Withdrawal request submitted! Total deducted: $${totalDeductUsd.toFixed(2)}`, "success", true);
+        showPopup("Success!", "Withdrawal request submitted successfully!", "success", true);
 
       } catch (err) {
         console.error("Withdrawal Error:", err);
@@ -466,7 +457,7 @@
 
     // পেজ লোড হলে ফেচ করা
     window.addEventListener('DOMContentLoaded', () => {
-      fetchGatewayRates();
+      fetchGatewayData();
     });
   </script>
 </body>
