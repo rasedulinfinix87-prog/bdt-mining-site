@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Goldmine Digital - Mining & Investment</title>
+    <title>Gold Investment Digital - Global Investment Platform</title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -625,7 +625,79 @@
             margin: -2px 0;
         }
 
-        /* --- Footer Section Styles (NiceHash Style Updated) --- */
+        /* Global Investment Card Styles */
+        .global-inv-card {
+            background: linear-gradient(145deg, rgba(12, 38, 29, 0.9), rgba(6, 25, 19, 0.95));
+            border: 1px solid rgba(245, 207, 102, 0.35);
+            border-radius: 18px;
+            padding: 16px;
+            margin-top: 10px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .global-card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .global-diagram-box {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            margin: 12px 0;
+            background: radial-gradient(circle at center, rgba(46, 213, 115, 0.08) 0%, rgba(3, 13, 10, 0.8) 100%);
+            border: 1px solid rgba(46, 213, 115, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-grid-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            background-image: linear-gradient(rgba(245, 207, 102, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 207, 102, 0.5) 1px, transparent 1px);
+            background-size: 15px 15px;
+        }
+
+        .user-counter-box {
+            background: rgba(3, 13, 10, 0.7);
+            border: 1px solid rgba(245, 207, 102, 0.25);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .counter-label {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .counter-value {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--accent-green);
+            letter-spacing: 1px;
+            font-family: 'Outfit', sans-serif;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+        }
+
+        /* --- Footer Section Styles --- */
         .site-footer {
             margin-top: 20px;
             padding: 24px 12px 16px 12px;
@@ -731,37 +803,6 @@
             font-size: 0.75rem;
             font-weight: 700;
             line-height: 1.1;
-        }
-
-        /* Social Icons Row */
-        .social-icons-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 4px;
-        }
-
-        .social-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: rgba(245, 207, 102, 0.12);
-            border: 1px solid rgba(245, 207, 102, 0.25);
-            color: var(--gold-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: background 0.2s, transform 0.2s;
-        }
-
-        .social-icon:active {
-            transform: scale(0.9);
-            background: var(--gold-primary);
-            color: #030d0a;
         }
 
         #bottom-nav-container {
@@ -883,14 +924,14 @@
                 <button class="btn-gold" onclick="window.location.href='login-signup.html'">START INVESTING</button>
             </div>
 
-            <!-- How Gold Investment Works Card (NiceHash Style Diagram & Flow) -->
+            <!-- How Gold Investment Works Card -->
             <div class="how-it-works-card">
                 <div class="how-header">
                     <h3>How Gold Investment Works</h3>
                     <p>Simple 3-step process to grow your assets</p>
                 </div>
 
-                <!-- NiceHash Dynamic Diagram Structure -->
+                <!-- Dynamic Diagram Structure -->
                 <div class="nicehash-diagram">
                     <!-- SVG lines connecting nodes with Animated Moving Flow -->
                     <svg class="nh-svg-lines" viewBox="0 0 300 230">
@@ -911,7 +952,7 @@
                     <!-- Top-Right Node: Plan Buy -->
                     <div class="nh-node node-miner">
                         <div class="nh-node-circle"><i class="fa-solid fa-layer-group"></i></div>
-                        <div class="nh-node-label">Plan Buy<br><span style="font-size: 0.55rem; color: #8da499;">Mining Plan</span></div>
+                        <div class="nh-node-label">Plan Buy<br><span style="font-size: 0.55rem; color: #8da499;">Investment Plan</span></div>
                     </div>
 
                     <!-- Center Hub Node: User Account Hub -->
@@ -950,10 +991,10 @@
                     <!-- Step 2 -->
                     <div class="flow-step">
                         <div class="flow-icon">
-                            <i class="fa-solid fa-coins"></i>
+                            <i class="fa-solid fa-chart-line"></i>
                         </div>
                         <div class="flow-text">
-                            <h4>2. Asset Mining & Trade</h4>
+                            <h4>2. Asset Investment & Trade</h4>
                             <p>Funds backed by real-time gold reserves</p>
                         </div>
                     </div>
@@ -973,25 +1014,62 @@
                 </div>
             </div>
 
-            <!-- --- New Footer Section (NiceHash Style Image Update) --- -->
+            <!-- New Global Investment & Live User Counter Card -->
+            <div class="global-inv-card">
+                <div class="global-card-title">
+                    <i class="fa-solid fa-globe"></i> Global Investment Network
+                </div>
+
+                <!-- Global Network Diagram -->
+                <div class="global-diagram-box">
+                    <div class="map-grid-bg"></div>
+                    <svg width="100%" height="100%" viewBox="0 0 300 120" style="position: absolute; top: 0; left: 0;">
+                        <!-- Animated Nodes & Connecting Diagonals -->
+                        <line x1="30" y1="30" x2="150" y2="60" stroke="rgba(245, 207, 102, 0.4)" stroke-width="1.5" stroke-dasharray="4"/>
+                        <line x1="270" y1="25" x2="150" y2="60" stroke="rgba(46, 213, 115, 0.4)" stroke-width="1.5" stroke-dasharray="4"/>
+                        <line x1="70" y1="95" x2="150" y2="60" stroke="rgba(245, 207, 102, 0.4)" stroke-width="1.5" stroke-dasharray="4"/>
+                        <line x1="240" y1="90" x2="150" y2="60" stroke="rgba(46, 213, 115, 0.4)" stroke-width="1.5" stroke-dasharray="4"/>
+
+                        <!-- Center Global Hub -->
+                        <circle cx="150" cy="60" r="16" fill="rgba(245, 207, 102, 0.2)" stroke="#f5cf66" stroke-width="2"/>
+                        <circle cx="150" cy="60" r="6" fill="#f5cf66"/>
+
+                        <!-- Node Points -->
+                        <circle cx="30" cy="30" r="5" fill="#2ed573"/>
+                        <circle cx="270" cy="25" r="5" fill="#f5cf66"/>
+                        <circle cx="70" cy="95" x2="150" r="4" fill="#f5cf66"/>
+                        <circle cx="240" cy="90" r="5" fill="#2ed573"/>
+                    </svg>
+                    <div style="position: relative; z-index: 2; font-size: 0.68rem; color: #ffffff; background: rgba(3,13,10,0.85); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(245,207,102,0.3);">
+                        <i class="fa-solid fa-shield-halved" style="color: var(--gold-primary); margin-right: 4px;"></i> Secure Worldwide Trade
+                    </div>
+                </div>
+
+                <!-- Total User Logic Counter -->
+                <div class="user-counter-box">
+                    <div class="counter-label">Our Total Investment User</div>
+                    <div class="counter-value" id="user-counter">244,532</div>
+                </div>
+            </div>
+
+            <!-- Footer Section -->
             <footer class="site-footer">
                 <div class="footer-brand">
                     <i class="fa-solid fa-coins"></i>
-                    <span>GOLDMINE DIGITAL</span>
+                    <span>GOLD INVESTMENT DIGITAL</span>
                 </div>
 
                 <p class="footer-description">
-                    Goldmine Digital is the world's leading gold & crypto asset ecosystem. Providing complete digital mining and investment solutions with the goal to accelerate asset growth worldwide.
+                    Gold Investment Digital is the world's leading gold & crypto asset ecosystem. Providing complete digital investment solutions with the goal to accelerate asset growth worldwide.
                 </p>
 
                 <p class="footer-copyright">
-                    © 2014 - 2026 Goldmine Digital AG. All Rights Reserved.
+                    © 2014 - 2026 Gold Investment Digital AG. All Rights Reserved.
                 </p>
 
                 <div class="footer-links">
-                    <a href="#">Privacy Policy</a> | 
-                    <a href="#">Terms & Conditions</a> | 
-                    <a href="#">Contact</a>
+                    <a href="privacy-policy.html">Privacy Policy</a> | 
+                    <a href="contact.html">Contact</a>
                 </div>
 
                 <div>
@@ -1011,20 +1089,6 @@
                                 <strong>App Store</strong>
                             </div>
                         </a>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="footer-section-title">Join our community!</div>
-                    <div class="social-icons-wrapper">
-                        <a href="#" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-x-twitter"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-discord"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-telegram"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-reddit-alien"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-github"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-spotify"></i></a>
                     </div>
                 </div>
             </footer>
@@ -1164,7 +1228,7 @@
             }
         });
 
-        // Real-time market update simulation (Smooth & Lag-free)
+        // Real-time market update simulation
         setInterval(() => {
             let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
             let newGold = (currentGold + (Math.random() - 0.49) * 2.0).toFixed(2);
@@ -1182,6 +1246,32 @@
             cryptoChart.data.datasets[0].data.push(parseFloat(newBtc));
             cryptoChart.update('none');
         }, 3000);
+
+        // --- Persistent Live User Counter Logic ---
+        const initialUserCount = 244532;
+        let storedUserCount = localStorage.getItem('total_investment_user');
+
+        if (!storedUserCount || parseInt(storedUserCount) < initialUserCount) {
+            storedUserCount = initialUserCount;
+            localStorage.setItem('total_investment_user', storedUserCount);
+        } else {
+            storedUserCount = parseInt(storedUserCount);
+        }
+
+        const counterElement = document.getElementById('user-counter');
+        counterElement.innerText = storedUserCount.toLocaleString('en-US');
+
+        // Increment user count every 2 to 3 seconds continuously
+        function incrementUserCounter() {
+            storedUserCount += 1;
+            localStorage.setItem('total_investment_user', storedUserCount);
+            counterElement.innerText = storedUserCount.toLocaleString('en-US');
+
+            const randomDelay = Math.floor(Math.random() * 1000) + 2000; // 2000ms - 3000ms
+            setTimeout(incrementUserCounter, randomDelay);
+        }
+
+        setTimeout(incrementUserCounter, 2500);
     </script>
 </body>
 </html>
