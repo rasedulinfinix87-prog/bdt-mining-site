@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Withdraw - Goldmine Digital</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -19,7 +19,15 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    html, body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+    html, body { 
+      background-color: var(--bg-dark); 
+      color: var(--text-main); 
+      display: flex; 
+      justify-content: center; 
+      min-height: 100vh; 
+      width: 100%;
+      overflow-x: hidden; 
+    }
 
     .mobile-container {
       width: 100%; max-width: 480px; background-color: var(--bg-dark); padding: 20px; padding-bottom: 90px; position: relative; min-height: 100vh;
@@ -56,7 +64,7 @@
     
     .input-wrapper { position: relative; display: flex; align-items: center; }
     .form-control {
-      width: 100%; padding: 14px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--card-border); color: #fff; font-size: 0.98rem; outline: none; transition: all 0.3s ease;
+      width: 100%; padding: 14px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--card-border); color: #fff; font-size: 1rem; outline: none; transition: all 0.3s ease;
     }
     .form-control:focus { border-color: var(--gold-primary); box-shadow: 0 0 10px rgba(245, 207, 102, 0.2); }
 
@@ -166,7 +174,7 @@
   <script>
     let currentMethod = 'bkash';
     let usdToBdtRate = 120; // Default Rate
-    let cashoutFeeRate = 2.3125; // Default Fee Percentage (Supabase payment_gateways থেকে আপডেট হবে)
+    let cashoutFeeRate = 2.3125; // Default Fee Percentage
     let minBkashUsd = 10;
     let minUsdUsd = 10;
     let minBankUsd = 500;
@@ -183,7 +191,6 @@
           .select('method_key, usd_rate, cashout_fee, minimum_deposit_usd, is_active');
 
         if (!error && data && data.length > 0) {
-          // bKash gateway / common data fetch
           const bkashGateway = data.find(g => g.method_key === 'bkash') || data[0];
           
           if (bkashGateway) {
@@ -216,11 +223,9 @@
     function calculateBdtAndFee() {
       const amount = parseFloat(document.getElementById('amount').value) || 0;
       
-      // ১ ডলারে কত BDT হিসাব
       const totalBdt = amount * usdToBdtRate;
       document.getElementById('bdt-rate-badge').innerText = `≈ ৳ ${totalBdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-      // ফি এবং মোট কাটা ডলার হিসাব
       const calculatedFee = (amount * cashoutFeeRate) / 100;
       const totalDeductions = amount + calculatedFee;
 
@@ -234,7 +239,6 @@
     function switchMethod(method) {
       currentMethod = method;
 
-      // বাটন একটিভ ক্লাস দেওয়া
       document.querySelectorAll('.method-card').forEach(card => {
         card.classList.toggle('active', card.dataset.method === method);
       });
@@ -323,7 +327,6 @@
       const amountVal = parseFloat(document.getElementById('amount').value);
       const inputPin = document.getElementById('secret_pin').value.trim();
 
-      // মিনিমাম অ্যামাউন্ট লিমিট চেক
       if (currentMethod === 'bkash' && amountVal < minBkashUsd) {
         showPopup("Minimum Limit Error", `Minimum withdrawal amount for bKash is $${minBkashUsd}.`, "error");
         return;
@@ -337,7 +340,6 @@
         return;
       }
 
-      // চার্জ ও মোট ব্যালেন্স ডিডাকশন হিসাব
       const calculatedCharge = (amountVal * cashoutFeeRate) / 100;
       const totalRequiredBalance = amountVal + calculatedCharge;
 
@@ -353,7 +355,6 @@
           return;
         }
 
-        // Secret PIN চেক করা (user টেবিল থেকে)
         const { data: userData, error: userErr } = await client
           .from('user')
           .select('secret_pin')
@@ -370,7 +371,6 @@
           return;
         }
 
-        // ওয়ালেট ব্যালেন্স চেক (মোট সার্ভিস ফি সহ)
         const { data: walletData, error: walletError } = await client
           .from('wallets')
           .select('id, balance')
@@ -389,7 +389,6 @@
           return;
         }
 
-        // একাউন্ট ও মেথড ডিটেইলস তৈরি করা
         let accountDetails = '';
         let methodNameDisplay = '';
 
@@ -410,7 +409,6 @@
           methodNameDisplay = 'Bank Transfer';
         }
 
-        // ব্যালেন্স ডিডাক্ট (Deducting Amount + Charge)
         const newBalance = currentBalance - totalRequiredBalance;
         const { error: updateError } = await client
           .from('wallets')
@@ -421,7 +419,6 @@
           throw new Error("Balance Update Failed: " + updateError.message);
         }
 
-        // ট্রানজ্যাকশন টেবিল ইনসার্ট
         const trxId = 'WD' + Math.floor(10000000 + Math.random() * 90000000);
 
         const payload = {
@@ -439,7 +436,6 @@
         const { error: trxError } = await client.from('transactions').insert([payload]);
 
         if (trxError) {
-          // ট্রানজ্যাকশন ব্যর্থ হলে ব্যালেন্স রোলব্যাক
           await client.from('wallets').update({ balance: currentBalance }).eq('user_id', userId);
           throw new Error("Transaction Failed: " + trxError.message);
         }
@@ -455,7 +451,6 @@
       }
     });
 
-    // পেজ লোড হলে ফেচ করা
     window.addEventListener('DOMContentLoaded', () => {
       fetchGatewayData();
     });
