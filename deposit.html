@@ -275,7 +275,7 @@
       border: none;
       outline: none;
       color: var(--text-main);
-      font-size: 1rem; /* iOS অটো-জুম প্রতিরোধ করার জন্য ফন্ট সাইজ ১৬ পিক্সেল (১ রেম) করা হলো */
+      font-size: 1rem;
       font-weight: 600;
     }
 
@@ -606,7 +606,6 @@
 
       if (amountVal > 0) {
         if (selectedMethodKey === 'bkash') {
-          // বিকাশ ডিপোজিটের জন্য ফি এবং মোট সেন্ড মানির হিসাব
           const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
           const baseBDT = amountVal * usdRate;
           const feeBDT = (baseBDT * cashoutFeePct) / 100;
@@ -620,12 +619,10 @@
           displayBox.innerHTML = textInfo;
 
         } else if (selectedMethodKey === 'bank') {
-          // ব্যাংকের ক্ষেত্রে ফি নেই, শুধু BDT তে মোট টাকার পরিমাণ
           const totalBDT = (amountVal * usdRate).toFixed(2);
           displayBox.innerHTML = `Amount: $1 = ${usdRate} BDT (Total: ৳${totalBDT})`;
 
         } else {
-          // USDT এর ক্ষেত্রে কোনো ফি নেই, শুধু ডলারের পরিমাণ
           displayBox.innerHTML = `Amount: $${amountVal.toFixed(2)}`;
         }
       } else {
@@ -676,11 +673,14 @@
       }
     }
 
-    // Form Submission with Validation and Fee Calculation
+    // Form Submission with Corrected Net Amount Logic
     document.getElementById('deposit-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const client = window._supabase || window.supabase;
       const submitBtn = document.getElementById('btn-submit');
+
+      // ডাবল সাবমিশন রোধ
+      if (submitBtn.disabled) return;
 
       const amountVal = parseFloat(document.getElementById('amount').value);
       const trxIdInput = document.getElementById('trx_id').value.trim();
@@ -726,16 +726,16 @@
         return;
       }
 
-      // 3. Cashout Fee Calculation Logic (Only for bKash)
+      // 3. Deposit Amount Logic Fix:
+      // ডিপোজিটে ইউজারের আসল জমা ($amountVal) ওয়ালেটে যোগ হতে হবে।
       let chargeAmount = 0;
-      let netAmount = amountVal;
-
       if (selectedMethodKey === 'bkash') {
         const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
         chargeAmount = (amountVal * cashoutFeePct) / 100;
-        netAmount = amountVal - chargeAmount;
       }
 
+      // net_amount সবসময় মূল ডিপোজিট অ্যামাউন্টের সমান রাখা হলো
+      const netAmount = amountVal; 
       const methodName = currentGateway.title || selectedMethodKey.toUpperCase();
 
       // Payload matching transactions table columns
@@ -755,12 +755,11 @@
 
       if (insertError) {
         showPopup('Submission Failed', insertError.message, 'error');
+        submitBtn.innerText = "Confirm & Submit Request";
+        submitBtn.disabled = false;
       } else {
         showPopup('Success!', 'Deposit request submitted successfully!', 'success', true);
       }
-
-      submitBtn.innerText = "Confirm & Submit Request";
-      submitBtn.disabled = false;
     });
 
     // Load bottom navigation bar
