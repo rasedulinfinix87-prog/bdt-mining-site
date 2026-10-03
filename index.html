@@ -461,22 +461,22 @@
             text-align: center;
         }
 
-        /* Node Top-Left: Buyer */
+        /* Node Top-Left: Gold & Crypto Buy */
         .node-buyer { top: 12px; left: 16px; }
         .node-buyer .nh-node-circle { background: #f5cf66; color: #030d0a; border: 2px solid #e5ba41; }
         .node-buyer .nh-node-label { color: #f5cf66; }
 
-        /* Node Top-Right: Miner */
+        /* Node Top-Right: Plan Buy */
         .node-miner { top: 12px; right: 16px; }
         .node-miner .nh-node-circle { background: #2ed573; color: #030d0a; border: 2px solid #26af5f; }
         .node-miner .nh-node-label { color: #2ed573; }
 
-        /* Node Bottom-Left: Any Pool */
+        /* Node Bottom-Left: Profit Payouts */
         .node-pool { bottom: 12px; left: 16px; }
         .node-pool .nh-node-circle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 2px solid rgba(255,255,255,0.3); }
         .node-pool .nh-node-label { color: var(--text-secondary); }
 
-        /* Node Center: Goldmine Hub */
+        /* Node Center: User Account Hub */
         .node-hub {
             top: 50%;
             left: 50%;
@@ -488,12 +488,17 @@
             background: linear-gradient(135deg, #061913, #0c261d);
             color: var(--gold-primary);
             border: 2px solid var(--gold-primary);
-            box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
+            box-shadow: 0 0 15px rgba(245, 207, 102, 0.5);
             font-size: 1.2rem;
+            animation: pulseHub 2s infinite alternate;
+        }
+        @keyframes pulseHub {
+            0% { box-shadow: 0 0 10px rgba(245, 207, 102, 0.3); }
+            100% { box-shadow: 0 0 20px rgba(245, 207, 102, 0.8); }
         }
         .node-hub .nh-node-label { color: #fff; font-size: 0.7rem; }
 
-        /* SVG Connection Lines */
+        /* SVG Connection Lines & Animated Flow */
         .nh-svg-lines {
             position: absolute;
             top: 0;
@@ -501,6 +506,36 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+        }
+
+        .line-inflow-gold {
+            stroke-dasharray: 6, 6;
+            animation: moveFlowGold 1s linear infinite;
+        }
+
+        .line-inflow-plan {
+            stroke-dasharray: 6, 6;
+            animation: moveFlowPlan 1s linear infinite;
+        }
+
+        .line-outflow-payout {
+            stroke-dasharray: 6, 6;
+            animation: moveFlowPayout 1s linear infinite;
+        }
+
+        @keyframes moveFlowGold {
+            from { stroke-dashoffset: 24; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes moveFlowPlan {
+            from { stroke-dashoffset: 24; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes moveFlowPayout {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: 24; }
         }
 
         /* Flow Legend at Bottom Right */
@@ -718,41 +753,44 @@
 
                 <!-- NiceHash Dynamic Diagram Structure -->
                 <div class="nicehash-diagram">
-                    <!-- SVG lines connecting nodes -->
+                    <!-- SVG lines connecting nodes with Animated Moving Flow -->
                     <svg class="nh-svg-lines" viewBox="0 0 300 230">
-                        <line x1="50" y1="45" x2="150" y2="115" stroke="#f5cf66" stroke-width="2" stroke-dasharray="4,4"/>
-                        <line x1="250" y1="45" x2="150" y2="115" stroke="#2ed573" stroke-width="2" stroke-dasharray="4,4"/>
-                        <line x1="150" y1="115" x2="50" y2="185" stroke="#8da499" stroke-width="2" stroke-dasharray="4,4"/>
+                        <!-- Diagonal 1: Gold & Crypto -> User Hub -->
+                        <line class="line-inflow-gold" x1="50" y1="45" x2="150" y2="115" stroke="#f5cf66" stroke-width="2.5"/>
+                        <!-- Diagonal 2: Plan Buy -> User Hub -->
+                        <line class="line-inflow-plan" x1="250" y1="45" x2="150" y2="115" stroke="#2ed573" stroke-width="2.5"/>
+                        <!-- Diagonal 3: User Hub -> Returns/Payouts -->
+                        <line class="line-outflow-payout" x1="150" y1="115" x2="50" y2="185" stroke="#8da499" stroke-width="2"/>
                     </svg>
 
-                    <!-- Buyer Node -->
+                    <!-- Top-Left Node: Gold & Crypto Buy -->
                     <div class="nh-node node-buyer">
-                        <div class="nh-node-circle"><i class="fa-solid fa-user-tie"></i></div>
-                        <div class="nh-node-label">Buyer<br><span style="font-size: 0.55rem; color: #8da499;">Creates Order</span></div>
+                        <div class="nh-node-circle"><i class="fa-solid fa-coins"></i></div>
+                        <div class="nh-node-label">Gold & Crypto<br><span style="font-size: 0.55rem; color: #8da499;">Direct Buy</span></div>
                     </div>
 
-                    <!-- Miner Node -->
+                    <!-- Top-Right Node: Plan Buy -->
                     <div class="nh-node node-miner">
-                        <div class="nh-node-circle"><i class="fa-solid fa-server"></i></div>
-                        <div class="nh-node-label">Miner<br><span style="font-size: 0.55rem; color: #8da499;">Provides Hash</span></div>
-                    </div>
-
-                    <!-- Center Hub Node -->
-                    <div class="nh-node node-hub">
-                        <div class="nh-node-circle"><i class="fa-solid fa-cubes"></i></div>
-                        <div class="nh-node-label">Goldmine<br><span style="font-size: 0.55rem; color: var(--gold-primary);">Hub</span></div>
-                    </div>
-
-                    <!-- Pool Node -->
-                    <div class="nh-node node-pool">
                         <div class="nh-node-circle"><i class="fa-solid fa-layer-group"></i></div>
-                        <div class="nh-node-label">Mining Pool<br><span style="font-size: 0.55rem; color: #8da499;">Payout Reward</span></div>
+                        <div class="nh-node-label">Plan Buy<br><span style="font-size: 0.55rem; color: #8da499;">Mining Plan</span></div>
+                    </div>
+
+                    <!-- Center Hub Node: User Account Hub -->
+                    <div class="nh-node node-hub">
+                        <div class="nh-node-circle"><i class="fa-solid fa-vault"></i></div>
+                        <div class="nh-node-label">User Account<br><span style="font-size: 0.55rem; color: var(--gold-primary);">Asset Hub</span></div>
+                    </div>
+
+                    <!-- Bottom-Left Node: Profit Payouts -->
+                    <div class="nh-node node-pool">
+                        <div class="nh-node-circle"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div class="nh-node-label">Returns<br><span style="font-size: 0.55rem; color: #8da499;">Daily Profit</span></div>
                     </div>
 
                     <!-- Legend -->
                     <div class="nh-legend">
-                        <div class="legend-item"><div class="legend-dot" style="background: #f5cf66;"></div> BTC Flow</div>
-                        <div class="legend-item"><div class="legend-dot" style="background: #2ed573;"></div> Hashrate Flow</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: #f5cf66;"></div> Buy Asset Flow</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: #2ed573;"></div> Plan Buy Flow</div>
                     </div>
                 </div>
 
