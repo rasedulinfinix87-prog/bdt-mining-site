@@ -143,7 +143,6 @@
       color: var(--text-muted);
     }
 
-    /* Active Gateway Card Style with Glowing Animated Gradient Border */
     .gateway-card.active {
       background: var(--card-gradient);
       border-color: var(--gold-primary);
@@ -156,14 +155,13 @@
       text-shadow: 0 0 8px rgba(245, 207, 102, 0.4);
     }
 
-    /* Shiny Gold Shimmer Animation */
     @keyframes goldShimmer {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    /* Admin Info Display Card - Fixed Height & Dimensions */
+    /* Unified Plate UI Layout - Consistent width and auto height for all screens */
     .admin-info-card {
       background: var(--card-gradient);
       border: 1px dashed var(--gold-primary);
@@ -172,9 +170,8 @@
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 8px;
-      min-height: 125px; /* Ensures layout remains completely fixed across tabs */
+      gap: 10px;
+      width: 100%;
       box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6), 0 0 15px rgba(245, 207, 102, 0.1);
       position: relative;
     }
@@ -217,7 +214,7 @@
       font-weight: 700;
       color: var(--gold-primary);
       word-break: break-all;
-      white-space: pre-line; /* Properly renders newlines for bank info */
+      white-space: pre-line;
     }
 
     .admin-instruction {
@@ -226,7 +223,14 @@
       line-height: 1.3;
     }
 
-    /* Form Inputs in Premium Card Styles */
+    .rate-info-text {
+      font-size: 0.8rem;
+      color: var(--gold-primary);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Form Inputs */
     .input-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -432,7 +436,7 @@
         </div>
       </div>
 
-      <!-- Supabase Dynamic Deposit Address Card -->
+      <!-- Supabase Dynamic Deposit Address Card (Plate) -->
       <div class="admin-info-card" id="admin-info-box">
         <div class="admin-info-header">
           <span class="admin-info-title" id="gateway-title-display">Deposit Info</span>
@@ -447,8 +451,9 @@
       <!-- Deposit Form -->
       <form id="deposit-form">
         <div class="input-card">
-          <label for="amount">Deposit Amount ($)</label>
-          <input type="number" id="amount" class="input-field" placeholder="0.00" min="1" step="any" required>
+          <label for="amount" id="amount-label">Deposit Amount ($)</label>
+          <input type="number" id="amount" class="input-field" placeholder="0.00" step="any" oninput="calculateExchangeAndFee()" required>
+          <div class="rate-info-text" id="rate-calc-display"></div>
         </div>
 
         <div class="input-card">
@@ -492,7 +497,7 @@
     let gatewayDataList = {};
     let redirectOnClose = false;
 
-    // Load gateways from Supabase
+    // Load gateways dynamically from Supabase
     async function loadGatewaysFromSupabase() {
       const client = window._supabase || window.supabase;
       if (!client) return;
@@ -507,15 +512,14 @@
           gatewayDataList[item.method_key.toLowerCase()] = item;
         });
       } else {
-        // Fallback default values if database table is empty
+        // Default Fallbacks
         gatewayDataList = {
-          bkash: { title: 'bKash Personal', admin_address: '01712345678', instruction: 'bKash Personal নম্বরটিতে Send Money করুন।' },
-          usdt: { title: 'USDT (TRC20)', admin_address: 'TXy9Z8aK2mLpQ3R4sT5uV6wX7yZ8aK2mLp', instruction: 'কেবলমাত্র TRC20 নেটওয়ার্কে deposit পাঠান।' },
-          bank: { title: 'Bank Transfer', admin_address: 'Bank: City Bank\nAccount: 1234567890\nBranch: Dhaka Main', instruction: 'ব্যাংক ডিপোজিট করার পর Trx ID বা স্লিপ নম্বর দিন।' }
+          bkash: { title: 'bKash Personal', admin_address: '01712345678', instruction: 'bKash Personal নম্বরটিতে Send Money করুন।', usd_rate: 125, cashout_fee: 1.5, min_deposit: 10 },
+          usdt: { title: 'USDT (TRC20)', admin_address: 'TXy9Z8aK2mLpQ3R4sT5uV6wX7yZ8aK2mLp', instruction: 'কেবলমাত্র TRC20 নেটওয়ার্কে deposit পাঠান।', usd_rate: 1, cashout_fee: 0, min_deposit: 10 },
+          bank: { title: 'Bank Transfer', admin_address: 'Bank: City Bank\nAccount: 1234567890\nBranch: Dhaka Main', instruction: 'ব্যাংক ডিপোজিট করার পর Trx ID বা স্লিপ নম্বর দিন।', usd_rate: 125, cashout_fee: 0, min_deposit: 500 }
         };
       }
 
-      // Update UI with current active gateway
       updateGatewayDisplay();
     }
 
@@ -523,7 +527,6 @@
     function selectGateway(methodKey) {
       selectedMethodKey = methodKey;
 
-      // Update card UI active state
       document.querySelectorAll('.gateway-card').forEach(card => {
         if (card.dataset.method === methodKey) {
           card.classList.add('active');
@@ -533,6 +536,7 @@
       });
 
       updateGatewayDisplay();
+      calculateExchangeAndFee();
     }
 
     // Update Admin Address Card & Input Placeholders
@@ -540,21 +544,26 @@
       const currentGateway = gatewayDataList[selectedMethodKey] || {
         title: selectedMethodKey.toUpperCase(),
         admin_address: 'Not available',
-        instruction: 'Contact support for payment details.'
+        instruction: 'Contact support for payment details.',
+        usd_rate: 125,
+        cashout_fee: 0,
+        min_deposit: selectedMethodKey === 'bank' ? 500 : 10
       };
 
       document.getElementById('gateway-title-display').innerText = currentGateway.title || 'Deposit Info';
       
-      // Clean display for admin address (replace literal '\n' string with real line breaks)
       let rawAddress = currentGateway.admin_address || '';
       let formattedAddress = rawAddress.replace(/\\n/g, '\n');
       document.getElementById('admin-address-display').innerText = formattedAddress;
 
       document.getElementById('admin-instruction-display').innerText = currentGateway.instruction || '';
 
-      // Update input labels dynamically based on gateway
       const senderLabel = document.getElementById('sender-label');
       const senderInput = document.getElementById('account_number');
+      const amountInput = document.getElementById('amount');
+
+      const minDepositLimit = currentGateway.min_deposit || (selectedMethodKey === 'bank' ? 500 : 10);
+      amountInput.placeholder = `Minimum $${minDepositLimit}`;
 
       if (selectedMethodKey === 'bkash') {
         senderLabel.innerText = 'Your bKash Number';
@@ -568,7 +577,36 @@
       }
     }
 
-    // Copy Address Button Functionality
+    // Dynamic Exchange Rate & Cashout Fee Calculation
+    function calculateExchangeAndFee() {
+      const amountVal = parseFloat(document.getElementById('amount').value) || 0;
+      const rateDisplay = document.getElementById('rate-calc-display');
+      const currentGateway = gatewayDataList[selectedMethodKey] || {};
+
+      const usdRate = parseFloat(currentGateway.usd_rate) || (selectedMethodKey === 'usdt' ? 1 : 125);
+      const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
+
+      if (amountVal > 0) {
+        let textInfo = '';
+        if (selectedMethodKey === 'bkash' || usdRate > 1) {
+          const totalBDT = (amountVal * usdRate).toFixed(2);
+          textInfo = `Amount: 1$ = ${usdRate} BDT (Total: ৳${totalBDT})`;
+        } else {
+          textInfo = `Amount: $${amountVal.toFixed(2)}`;
+        }
+
+        if (cashoutFeePct > 0) {
+          const feeAmount = ((amountVal * cashoutFeePct) / 100).toFixed(2);
+          textInfo += ` | Cashout Fee (${cashoutFeePct}%): $${feeAmount}`;
+        }
+
+        rateDisplay.innerText = textInfo;
+      } else {
+        rateDisplay.innerText = usdRate > 1 ? `Rate: 1$ = ${usdRate} BDT` : '';
+      }
+    }
+
+    // Copy Address Functionality
     function copyAddress() {
       const address = document.getElementById('admin-address-display').innerText;
       if (address && address !== 'Loading...') {
@@ -607,13 +645,24 @@
       }
     }
 
-    // Handle Form Submit with Unique TrxID Checking
+    // Form Submit Handler with Min Deposit & Fee Logic
     document.getElementById('deposit-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const client = window._supabase || window.supabase;
       const submitBtn = document.getElementById('btn-submit');
 
+      const amountVal = parseFloat(document.getElementById('amount').value);
       const trxIdInput = document.getElementById('trx_id').value.trim();
+      const accountNumber = document.getElementById('account_number').value.trim();
+
+      const currentGateway = gatewayDataList[selectedMethodKey] || {};
+      const minDeposit = parseFloat(currentGateway.min_deposit) || (selectedMethodKey === 'bank' ? 500 : 10);
+
+      // Minimum Deposit Logic Validation
+      if (amountVal < minDeposit) {
+        showPopup('Minimum Deposit Limit', `নূন্যতম ডিপোজিট পরিমাণ $${minDeposit}`, 'error');
+        return;
+      }
 
       if (!trxIdInput) {
         showPopup('Warning', 'Please enter a valid Transaction ID.', 'error');
@@ -632,7 +681,7 @@
         return;
       }
 
-      // 1. Unique TrxID Check in Supabase
+      // Unique TrxID Check
       const { data: existingTrx, error: checkError } = await client
         .from('transactions')
         .select('trx_id')
@@ -646,16 +695,21 @@
         return;
       }
 
-      // 2. Submit Deposit Payload
-      const currentGateway = gatewayDataList[selectedMethodKey];
-      const methodName = currentGateway ? currentGateway.title : selectedMethodKey.toUpperCase();
+      // Calculate Cashout Fee & Net Amount
+      const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
+      const calculatedCharge = (amountVal * cashoutFeePct) / 100;
+      const netAmount = amountVal - calculatedCharge;
+
+      const methodName = currentGateway.title || selectedMethodKey.toUpperCase();
 
       const payload = {
         user_id: user.id,
         type: 'deposit',
-        amount: parseFloat(document.getElementById('amount').value),
+        amount: amountVal,
+        charge: calculatedCharge,
+        net_amount: netAmount,
         method: methodName,
-        account_number: document.getElementById('account_number').value,
+        account_number: accountNumber,
         trx_id: trxIdInput,
         status: 'pending'
       };
@@ -672,7 +726,7 @@
       submitBtn.disabled = false;
     });
 
-    // Load bottom navigation bar if available
+    // Load bottom navigation
     fetch('bottom.html')
       .then(res => res.text())
       .then(html => {
@@ -680,7 +734,6 @@
       })
       .catch(err => console.log('Error loading bottom.html:', err));
 
-    // Page Load Initializer
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(loadGatewaysFromSupabase, 100);
     });
