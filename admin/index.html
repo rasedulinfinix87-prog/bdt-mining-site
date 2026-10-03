@@ -165,8 +165,10 @@
                 el.classList.remove('bg-blue-50', 'text-blue-600');
                 el.classList.add('text-gray-700', 'hover:bg-gray-100');
             });
-            event.target.classList.remove('text-gray-700', 'hover:bg-gray-100');
-            event.target.classList.add('bg-blue-50', 'text-blue-600');
+            if (event && event.target) {
+                event.target.classList.remove('text-gray-700', 'hover:bg-gray-100');
+                event.target.classList.add('bg-blue-50', 'text-blue-600');
+            }
 
             if (tabName === 'transactions') loadTransactions();
             else if (tabName === 'users') loadUsers();
@@ -217,9 +219,10 @@
             tbody.innerHTML = '';
             data.forEach(item => {
                 const tr = document.createElement('tr');
+                const displayAmount = item.net_amount !== null && item.net_amount !== undefined ? item.net_amount : item.amount;
                 tr.innerHTML = `
                     <td class="px-4 py-4 text-sm font-semibold uppercase text-gray-700">${item.type}</td>
-                    <td class="px-4 py-4 text-sm text-gray-900">${item.amount}</td>
+                    <td class="px-4 py-4 text-sm text-gray-900">$${displayAmount}</td>
                     <td class="px-4 py-4 text-sm text-gray-500">${item.method || ''} <br><span class="text-xs">${item.account_number || ''}</span></td>
                     <td class="px-4 py-4 text-sm text-gray-500">${item.trx_id || 'N/A'}</td>
                     <td class="px-4 py-4 text-sm">
@@ -228,8 +231,8 @@
                         </span>
                     </td>
                     <td class="px-4 py-4 text-sm space-x-1">
-                        <button onclick="updateTxStatus('${item.id}', 'approved')" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600">Approve</button>
-                        <button onclick="updateTxStatus('${item.id}', 'cancel')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Cancel</button>
+                        <button onclick="updateTxStatus('${item.id}', 'approved', this)" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600">Approve</button>
+                        <button onclick="updateTxStatus('${item.id}', 'cancel', this)" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Cancel</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -237,8 +240,14 @@
             container.classList.remove('hidden');
         }
 
-        async function updateTxStatus(id, newStatus) {
-            // ১. প্রথমে ট্রানজ্যাকশন থেকে user_id এবং amount বের করে আনি
+        async function updateTxStatus(id, newStatus, btnElement) {
+            // ডাবল ক্লিক ঠেকানোর জন্য বাটন ডিজেবল করা
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.innerText = "Wait...";
+            }
+
+            // ১. প্রথমে ট্রানজ্যাকশন টি pending অবস্থায় আছে কি না চেক ও তথ্য রিড করা
             const { data: txData, error: txError } = await window._supabase
                 .from('transactions')
                 .select('*')
@@ -247,34 +256,50 @@
 
             if (txError || !txData) {
                 alert('ট্রানজ্যাকশন ডেটা পাওয়া যায়নি!');
+                if (btnElement) btnElement.disabled = false;
                 return;
             }
 
-            // ২. ট্রানজ্যাকশনের স্ট্যাটাস আপডেট করি
+            if (txData.status !== 'pending') {
+                alert('এই ট্রানজ্যাকশনটি ইতিমধ্যে আপডেট করা হয়েছে!');
+                loadTransactions();
+                return;
+            }
+
+            // ২. কেবল pending ট্রানজ্যাকশনের স্ট্যাটাস আপডেট করা
             const { error: updateError } = await window._supabase
                 .from('transactions')
                 .update({ status: newStatus, updated_at: new Date() })
-                .eq('id', id);
+                .eq('id', id)
+                .eq('status', 'pending');
 
             if (updateError) {
                 alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ' + updateError.message);
+                if (btnElement) btnElement.disabled = false;
                 return;
             }
 
-            // ৩. যদি ডিপোজিট এপ্রুভ হয়, তবে ইউজারের ওয়ালেটে ব্যালেন্স যোগ করব
+            // ৩. যদি ডিপোজিট এপ্রুভ হয়, তবে ইউজারের ওয়ালেটে সঠিক পরিমাণ ব্যালেন্স যোগ করা
             if (newStatus === 'approved' && txData.type === 'deposit') {
                 const userId = txData.user_id;
-                const depositAmount = parseFloat(txData.net_amount || txData.amount || 0);
+                
+                // net_amount অগ্রাধিকার পাবে, না থাকলে amount
+                let depositAmount = 0;
+                if (txData.net_amount !== null && txData.net_amount !== undefined && parseFloat(txData.net_amount) > 0) {
+                    depositAmount = parseFloat(txData.net_amount);
+                } else {
+                    depositAmount = parseFloat(txData.amount || 0);
+                }
 
-                // ইউজারের ওয়ালেট আগে থেকে আছে কি না চেক করি
+                // ইউজারের ওয়ালেট আগে থেকে আছে কি না চেক করা
                 const { data: walletData, error: walletGetError } = await window._supabase
                     .from('wallets')
                     .select('*')
                     .eq('user_id', userId)
-                    .single();
+                    .maybeSingle();
 
                 if (walletData) {
-                    // ওয়ালেট থাকলে বর্তমান ব্যালেন্সের সাথে যোগ করে আপডেট করব
+                    // ওয়ালেট থাকলে বর্তমান ব্যালেন্সের সাথে একবারই যোগ করে আপডেট করা
                     const currentBalance = parseFloat(walletData.balance || 0);
                     const newBalance = currentBalance + depositAmount;
 
@@ -283,14 +308,14 @@
                         .update({ balance: newBalance, updated_at: new Date() })
                         .eq('user_id', userId);
                 } else {
-                    // ওয়ালেট না থাকলে নতুন একটি ওয়ালেট তৈরি করে দেব
+                    // ওয়ালেট না থাকলে নতুন একটি ওয়ালেট তৈরি করা
                     await window._supabase
                         .from('wallets')
                         .insert([
                             {
                                 user_id: userId,
                                 balance: depositAmount,
-                                currency: 'BDT',
+                                currency: 'USD',
                                 is_active: true,
                                 account_number: txData.account_number || 'N/A'
                             }
@@ -298,7 +323,7 @@
                 }
             }
 
-            // সফলভাবে শেষ হলে পেন্ডিং লিস্ট রিফ্রেশ করবে
+            // সফলভাবে শেষ হলে পেন্ডিং লিস্ট রিফ্রেশ করা
             loadTransactions();
         }
 
@@ -326,10 +351,11 @@
                 modalBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">কোনো সম্পন্ন ট্রানজ্যাকশন নেই।</td></tr>`;
             } else {
                 data.forEach(item => {
+                    const displayAmt = item.net_amount !== null && item.net_amount !== undefined ? item.net_amount : item.amount;
                     modalBody.innerHTML += `
                         <tr>
                             <td class="px-3 py-3 text-xs font-semibold uppercase text-gray-700">${item.type}</td>
-                            <td class="px-3 py-3 text-xs text-gray-900">${item.amount}</td>
+                            <td class="px-3 py-3 text-xs text-gray-900">$${displayAmt}</td>
                             <td class="px-3 py-3 text-xs text-gray-500">${item.method || ''} (${item.account_number || ''})</td>
                             <td class="px-3 py-3 text-xs text-gray-500">${item.trx_id || 'N/A'}</td>
                             <td class="px-3 py-3 text-xs">
@@ -413,8 +439,8 @@
                 tbody.innerHTML += `
                     <tr>
                         <td class="px-4 py-4 text-sm text-gray-900">${w.account_number || 'N/A'}</td>
-                        <td class="px-4 py-4 text-sm font-bold text-gray-900">${w.balance}</td>
-                        <td class="px-4 py-4 text-sm text-gray-500">${w.currency || 'BDT'}</td>
+                        <td class="px-4 py-4 text-sm font-bold text-gray-900">$${w.balance}</td>
+                        <td class="px-4 py-4 text-sm text-gray-500">${w.currency || 'USD'}</td>
                         <td class="px-4 py-4 text-sm text-gray-500">${w.is_active ? 'Active' : 'Inactive'}</td>
                     </tr>
                 `;
