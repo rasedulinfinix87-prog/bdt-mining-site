@@ -219,10 +219,13 @@
             tbody.innerHTML = '';
             data.forEach(item => {
                 const tr = document.createElement('tr');
-                const displayAmount = item.net_amount !== null && item.net_amount !== undefined ? item.net_amount : item.amount;
+                const showAmount = (item.net_amount !== null && item.net_amount !== undefined && parseFloat(item.net_amount) > 0) 
+                    ? item.net_amount 
+                    : item.amount;
+
                 tr.innerHTML = `
                     <td class="px-4 py-4 text-sm font-semibold uppercase text-gray-700">${item.type}</td>
-                    <td class="px-4 py-4 text-sm text-gray-900">$${displayAmount}</td>
+                    <td class="px-4 py-4 text-sm text-gray-900">${showAmount}</td>
                     <td class="px-4 py-4 text-sm text-gray-500">${item.method || ''} <br><span class="text-xs">${item.account_number || ''}</span></td>
                     <td class="px-4 py-4 text-sm text-gray-500">${item.trx_id || 'N/A'}</td>
                     <td class="px-4 py-4 text-sm">
@@ -231,8 +234,8 @@
                         </span>
                     </td>
                     <td class="px-4 py-4 text-sm space-x-1">
-                        <button onclick="updateTxStatus('${item.id}', 'approved', this)" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600">Approve</button>
-                        <button onclick="updateTxStatus('${item.id}', 'cancel', this)" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Cancel</button>
+                        <button onclick="updateTxStatus('${item.id}', 'approved', this)" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600 disabled:opacity-50">Approve</button>
+                        <button onclick="updateTxStatus('${item.id}', 'cancel', this)" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 disabled:opacity-50">Cancel</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -241,13 +244,13 @@
         }
 
         async function updateTxStatus(id, newStatus, btnElement) {
-            // ডাবল ক্লিক ঠেকানোর জন্য বাটন ডিজেবল করা
+            // ১. বাটনে ক্লিক করার সাথে সাথে বাটন টি ডিসেবল করে ডাবল সাবমিশন ঠেকানো
             if (btnElement) {
                 btnElement.disabled = true;
-                btnElement.innerText = "Wait...";
+                btnElement.innerText = 'অপেক্ষা করুন...';
             }
 
-            // ১. প্রথমে ট্রানজ্যাকশন টি pending অবস্থায় আছে কি না চেক ও তথ্য রিড করা
+            // ২. ট্রানজ্যাকশনটি নিয়ে আসা এবং সেটি এখনও pending অবস্থায় আছে কিনা নিশ্চিত করা
             const { data: txData, error: txError } = await window._supabase
                 .from('transactions')
                 .select('*')
@@ -261,29 +264,30 @@
             }
 
             if (txData.status !== 'pending') {
-                alert('এই ট্রানজ্যাকশনটি ইতিমধ্যে আপডেট করা হয়েছে!');
+                alert('ট্রানজ্যাকশনটি ইতিমধ্যে প্রসেস করা হয়ে গেছে!');
                 loadTransactions();
                 return;
             }
 
-            // ২. কেবল pending ট্রানজ্যাকশনের স্ট্যাটাস আপডেট করা
-            const { error: updateError } = await window._supabase
+            // ৩. শুধুমাত্র pending অবস্থায় থাকা ট্রানজ্যাকশনের স্ট্যাটাস আপডেট করা
+            const { data: updatedTx, error: updateError } = await window._supabase
                 .from('transactions')
                 .update({ status: newStatus, updated_at: new Date() })
                 .eq('id', id)
-                .eq('status', 'pending');
+                .eq('status', 'pending')
+                .select();
 
-            if (updateError) {
-                alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ' + updateError.message);
-                if (btnElement) btnElement.disabled = false;
+            if (updateError || !updatedTx || updatedTx.length === 0) {
+                alert('স্ট্যাটাস আপডেট করা সম্ভব হয়নি বা এটি আগে এপ্রুভ হয়ে গেছে!');
+                loadTransactions();
                 return;
             }
 
-            // ৩. যদি ডিপোজিট এপ্রুভ হয়, তবে ইউজারের ওয়ালেটে সঠিক পরিমাণ ব্যালেন্স যোগ করা
+            // ৪. ডিপোজিট এপ্রুভ হলে সঠিকভাবে ওয়ালেটে ব্যালেন্স আপডেট করা
             if (newStatus === 'approved' && txData.type === 'deposit') {
                 const userId = txData.user_id;
-                
-                // net_amount অগ্রাধিকার পাবে, না থাকলে amount
+
+                // net_amount থাকলে তা নেওয়া হবে, অন্যথায় amount
                 let depositAmount = 0;
                 if (txData.net_amount !== null && txData.net_amount !== undefined && parseFloat(txData.net_amount) > 0) {
                     depositAmount = parseFloat(txData.net_amount);
@@ -291,7 +295,7 @@
                     depositAmount = parseFloat(txData.amount || 0);
                 }
 
-                // ইউজারের ওয়ালেট আগে থেকে আছে কি না চেক করা
+                // యూজার ওয়ালেট খোঁজা
                 const { data: walletData, error: walletGetError } = await window._supabase
                     .from('wallets')
                     .select('*')
@@ -299,7 +303,6 @@
                     .maybeSingle();
 
                 if (walletData) {
-                    // ওয়ালেট থাকলে বর্তমান ব্যালেন্সের সাথে একবারই যোগ করে আপডেট করা
                     const currentBalance = parseFloat(walletData.balance || 0);
                     const newBalance = currentBalance + depositAmount;
 
@@ -308,7 +311,6 @@
                         .update({ balance: newBalance, updated_at: new Date() })
                         .eq('user_id', userId);
                 } else {
-                    // ওয়ালেট না থাকলে নতুন একটি ওয়ালেট তৈরি করা
                     await window._supabase
                         .from('wallets')
                         .insert([
@@ -323,7 +325,7 @@
                 }
             }
 
-            // সফলভাবে শেষ হলে পেন্ডিং লিস্ট রিফ্রেশ করা
+            // সফলভাবে সম্পন্ন হলে পেন্ডিং লিস্ট আপডেট করা
             loadTransactions();
         }
 
@@ -351,11 +353,14 @@
                 modalBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">কোনো সম্পন্ন ট্রানজ্যাকশন নেই।</td></tr>`;
             } else {
                 data.forEach(item => {
-                    const displayAmt = item.net_amount !== null && item.net_amount !== undefined ? item.net_amount : item.amount;
+                    const amt = (item.net_amount !== null && item.net_amount !== undefined && parseFloat(item.net_amount) > 0) 
+                        ? item.net_amount 
+                        : item.amount;
+
                     modalBody.innerHTML += `
                         <tr>
                             <td class="px-3 py-3 text-xs font-semibold uppercase text-gray-700">${item.type}</td>
-                            <td class="px-3 py-3 text-xs text-gray-900">$${displayAmt}</td>
+                            <td class="px-3 py-3 text-xs text-gray-900">${amt}</td>
                             <td class="px-3 py-3 text-xs text-gray-500">${item.method || ''} (${item.account_number || ''})</td>
                             <td class="px-3 py-3 text-xs text-gray-500">${item.trx_id || 'N/A'}</td>
                             <td class="px-3 py-3 text-xs">
@@ -439,7 +444,7 @@
                 tbody.innerHTML += `
                     <tr>
                         <td class="px-4 py-4 text-sm text-gray-900">${w.account_number || 'N/A'}</td>
-                        <td class="px-4 py-4 text-sm font-bold text-gray-900">$${w.balance}</td>
+                        <td class="px-4 py-4 text-sm font-bold text-gray-900">${w.balance}</td>
                         <td class="px-4 py-4 text-sm text-gray-500">${w.currency || 'USD'}</td>
                         <td class="px-4 py-4 text-sm text-gray-500">${w.is_active ? 'Active' : 'Inactive'}</td>
                     </tr>
