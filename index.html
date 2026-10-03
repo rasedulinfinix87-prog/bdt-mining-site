@@ -14,7 +14,7 @@
     <style>
         :root {
             --bg-color: #061913;
-            --card-bg: rgba(8, 32, 25, 0.95);
+            --card-bg: linear-gradient(145deg, rgba(12, 38, 29, 0.95), rgba(6, 25, 19, 0.98));
             --text-primary: #ffffff;
             --text-secondary: #8da499;
             --gold-primary: #f5cf66;
@@ -297,7 +297,7 @@
             border-radius: 18px;
             padding: 14px 16px;
             backdrop-filter: blur(12px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
 
         .card-header {
@@ -347,7 +347,7 @@
             padding: 8px 12px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: none;
         }
 
         .crypto-info {
@@ -400,7 +400,7 @@
             padding: 16px;
             margin-top: 6px;
             backdrop-filter: blur(12px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
         .how-header {
@@ -430,7 +430,7 @@
             margin-bottom: 12px;
             border-radius: 12px;
             background: rgba(3, 13, 10, 0.6);
-            border: 1px solid rgba(245, 207, 102, 0.15);
+            border: none;
             overflow: hidden;
         }
 
@@ -462,17 +462,17 @@
 
         /* Node Top-Left: Gold & Crypto Buy */
         .node-buyer { top: 12px; left: 16px; }
-        .node-buyer .nh-node-circle { background: #f5cf66; color: #030d0a; border: 2px solid #e5ba41; }
+        .node-buyer .nh-node-circle { background: #f5cf66; color: #030d0a; border: none; }
         .node-buyer .nh-node-label { color: #f5cf66; }
 
         /* Node Top-Right: Plan Buy */
         .node-miner { top: 12px; right: 16px; }
-        .node-miner .nh-node-circle { background: #2ed573; color: #030d0a; border: 2px solid #26af5f; }
+        .node-miner .nh-node-circle { background: #2ed573; color: #030d0a; border: none; }
         .node-miner .nh-node-label { color: #2ed573; }
 
         /* Node Bottom-Left: Profit Payouts */
         .node-pool { bottom: 12px; left: 16px; }
-        .node-pool .nh-node-circle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 2px solid rgba(255,255,255,0.3); }
+        .node-pool .nh-node-circle { background: rgba(255, 255, 255, 0.1); color: #fff; border: none; }
         .node-pool .nh-node-label { color: var(--text-secondary); }
 
         /* Node Center: User Account Hub */
@@ -486,7 +486,7 @@
             height: 52px;
             background: linear-gradient(135deg, #061913, #0c261d);
             color: var(--gold-primary);
-            border: 2px solid var(--gold-primary);
+            border: none;
             box-shadow: 0 0 15px rgba(245, 207, 102, 0.5);
             font-size: 1.2rem;
             animation: pulseHub 2s infinite alternate;
@@ -543,7 +543,7 @@
             bottom: 8px;
             right: 8px;
             background: rgba(12, 38, 29, 0.9);
-            border: 1px solid rgba(245, 207, 102, 0.2);
+            border: none;
             padding: 4px 8px;
             border-radius: 6px;
             font-size: 0.58rem;
@@ -580,7 +580,7 @@
             gap: 12px;
             width: 100%;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(245, 207, 102, 0.15);
+            border: none;
             padding: 10px 12px;
             border-radius: 12px;
             position: relative;
@@ -591,7 +591,7 @@
             height: 36px;
             border-radius: 10px;
             background: rgba(245, 207, 102, 0.12);
-            border: 1px solid rgba(245, 207, 102, 0.3);
+            border: none;
             color: var(--gold-primary);
             display: flex;
             justify-content: center;
@@ -632,7 +632,7 @@
             padding: 16px;
             margin-top: 10px;
             backdrop-filter: blur(12px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
 
         .global-card-title {
@@ -652,7 +652,7 @@
             height: 120px;
             margin: 12px 0;
             background: radial-gradient(circle at center, rgba(46, 213, 115, 0.08) 0%, rgba(3, 13, 10, 0.8) 100%);
-            border: 1px solid rgba(46, 213, 115, 0.2);
+            border: none;
             border-radius: 12px;
             overflow: hidden;
             display: flex;
@@ -671,7 +671,7 @@
 
         .user-counter-box {
             background: rgba(3, 13, 10, 0.7);
-            border: 1px solid rgba(245, 207, 102, 0.25);
+            border: none;
             border-radius: 12px;
             padding: 10px 14px;
             display: flex;
@@ -983,10 +983,10 @@
                         <!-- Node Points -->
                         <circle cx="30" cy="30" r="5" fill="#2ed573"/>
                         <circle cx="270" cy="25" r="5" fill="#f5cf66"/>
-                        <circle cx="70" cy="95" x2="150" r="4" fill="#f5cf66"/>
+                        <circle cx="70" cy="95" r="4" fill="#f5cf66"/>
                         <circle cx="240" cy="90" r="5" fill="#2ed573"/>
                     </svg>
-                    <div style="position: relative; z-index: 2; font-size: 0.68rem; color: #ffffff; background: rgba(3,13,10,0.85); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(245,207,102,0.3);">
+                    <div style="position: relative; z-index: 2; font-size: 0.68rem; color: #ffffff; background: rgba(3,13,10,0.85); padding: 4px 10px; border-radius: 12px;">
                         <i class="fa-solid fa-shield-halved" style="color: var(--gold-primary); margin-right: 4px;"></i> Secure Worldwide Trade
                     </div>
                 </div>
@@ -1062,16 +1062,6 @@
             }, remainingTime);
         });
 
-        // Start Investing Navigation Logic based on Auth status
-        function handleStartInvesting() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || localStorage.getItem('userToken') !== null;
-            if (isLoggedIn) {
-                window.location.href = 'portfolio-portfolis.html';
-            } else {
-                window.location.href = 'login-signup.html';
-            }
-        }
-
         // Popup Modal Control Functions
         function openPayoutsModal() {
             const modal = document.getElementById('payoutsModal');
@@ -1081,6 +1071,18 @@
         function closePayoutsModal() {
             const modal = document.getElementById('payoutsModal');
             modal.classList.remove('active');
+        }
+
+        // Start Investing Navigation Logic
+        function handleStartInvesting() {
+            // চেক করা হচ্ছে ইউজার লগইন আছে কি না (localStorage/sessionStorage ইত্যাদি থেকে)
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+            if (isLoggedIn) {
+                window.location.href = 'portfolio-portfolis.html';
+            } else {
+                window.location.href = 'login-signup.html';
+            }
         }
 
         fetch('bottom.html?v=' + new Date().getTime())
