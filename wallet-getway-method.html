@@ -408,6 +408,154 @@
       display: flex;
     }
 
+    /* Transaction History Styles */
+    .transactions-section {
+      padding: 0 20px 20px 20px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .section-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .view-all-link {
+      color: var(--gold-primary);
+      font-size: 0.82rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .view-all-link:hover {
+      opacity: 0.8;
+    }
+
+    .transaction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .trx-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .trx-item:hover {
+      border-color: rgba(245, 207, 102, 0.4);
+    }
+
+    .trx-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .trx-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .trx-icon.deposit {
+      background: rgba(46, 213, 115, 0.15);
+      color: #2ed573;
+      border: 1px solid rgba(46, 213, 115, 0.3);
+    }
+
+    .trx-icon.withdraw {
+      background: rgba(255, 71, 87, 0.15);
+      color: #ff4757;
+      border: 1px solid rgba(255, 71, 87, 0.3);
+    }
+
+    .trx-details .trx-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      text-transform: capitalize;
+    }
+
+    .trx-details .trx-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .trx-right {
+      text-align: right;
+    }
+
+    .trx-amount {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .trx-amount.deposit {
+      color: #2ed573;
+    }
+
+    .trx-amount.withdraw {
+      color: #ff4757;
+    }
+
+    .trx-status-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-top: 4px;
+      text-transform: capitalize;
+    }
+
+    .status-approved, .status-completed {
+      background: rgba(46, 213, 115, 0.15);
+      color: #2ed573;
+      border: 1px solid rgba(46, 213, 115, 0.3);
+    }
+
+    .status-pending {
+      background: rgba(245, 207, 102, 0.15);
+      color: var(--gold-primary);
+      border: 1px solid rgba(245, 207, 102, 0.3);
+    }
+
+    .status-rejected, .status-failed {
+      background: rgba(255, 71, 87, 0.15);
+      color: #ff4757;
+      border: 1px solid rgba(255, 71, 87, 0.3);
+    }
+
+    .trx-empty {
+      text-align: center;
+      padding: 25px 15px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      background: var(--card-bg);
+      border: 1px dashed var(--card-border);
+      border-radius: 14px;
+    }
+
     #bottom-nav-container {
       position: fixed;
       bottom: 0;
@@ -567,6 +715,29 @@
       </a>
     </div>
 
+    <!-- Transaction History Section -->
+    <div class="transactions-section">
+      <div class="section-header">
+        <h3>Recent Transactions</h3>
+        <a href="transaction-history.html" class="view-all-link">View All</a>
+      </div>
+      <div class="transaction-list" id="transactionContainer">
+        <!-- Skeleton Loading Items -->
+        <div class="trx-item">
+          <div class="trx-left">
+            <div class="trx-icon skeleton" style="width:40px; height:40px; border-radius:10px;"></div>
+            <div class="trx-details">
+              <div class="skeleton skeleton-text" style="width: 100px; height: 14px;"></div>
+              <div class="skeleton skeleton-text" style="width: 70px; height: 10px; margin-top:5px;"></div>
+            </div>
+          </div>
+          <div class="trx-right">
+            <div class="skeleton skeleton-text" style="width: 60px; height: 14px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Container where bottom.html will be loaded -->
     <div id="bottom-nav-container"></div>
   </div>
@@ -651,6 +822,67 @@
       }
     }
 
+    // --- ট্রানজাকশন হিস্ট্রি লোড করার ফাংশন ---
+    async function fetchRecentTransactions(client, userId) {
+      const container = document.getElementById('transactionContainer');
+
+      const { data, error } = await client
+        .from('transactions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        console.error("Error fetching transactions:", error.message);
+        container.innerHTML = `<div class="trx-empty">Failed to load transactions.</div>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        container.innerHTML = `<div class="trx-empty">No transaction history found.</div>`;
+        return;
+      }
+
+      let html = '';
+      data.forEach(trx => {
+        const isDeposit = (trx.type || '').toLowerCase() === 'deposit';
+        const typeClass = isDeposit ? 'deposit' : 'withdraw';
+        const iconClass = isDeposit ? 'fa-arrow-down-left' : 'fa-arrow-up-right';
+        const amountSign = isDeposit ? '+' : '-';
+        const amountVal = parseFloat(trx.amount || 0).toFixed(2);
+        const statusStr = (trx.status || 'pending').toLowerCase();
+
+        // তারিখ ফরম্যাট করা
+        const dateObj = trx.created_at ? new Date(trx.created_at) : new Date();
+        const dateFormatted = dateObj.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+
+        html += `
+          <div class="trx-item">
+            <div class="trx-left">
+              <div class="trx-icon ${typeClass}">
+                <i class="fa-solid ${iconClass}"></i>
+              </div>
+              <div class="trx-details">
+                <div class="trx-title">${trx.method || trx.type || 'Transaction'}</div>
+                <div class="trx-sub">${dateFormatted}</div>
+              </div>
+            </div>
+            <div class="trx-right">
+              <div class="trx-amount ${typeClass}">${amountSign}$${amountVal}</div>
+              <div class="trx-status-badge status-${statusStr}">${trx.status || 'Pending'}</div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
     // --- নোটিফিকেশন চেক ও ব্লিংকিং লজিক ---
     async function checkNotifications(client, userId) {
       const notifBtn = document.getElementById('notificationBtn');
@@ -690,6 +922,7 @@
         document.getElementById('user-name-display').innerText = "Guest";
         document.getElementById('account-number-display').innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>3089----------</span>`;
         document.getElementById('user-balance-display').innerText = '$0.00';
+        document.getElementById('transactionContainer').innerHTML = `<div class="trx-empty">Please log in to view transactions.</div>`;
         document.getElementById('authModal').style.display = 'flex';
         return;
       }
@@ -712,10 +945,13 @@
       // ৩. প্রাথমিক ব্যালেন্স ও অ্যাকাউন্ট নম্বর ফেচ করা
       await fetchWalletDetails(client, currentUserId);
 
-      // ৪. আনরিড নোটিফিকেশন চেক করা ও ব্লিংকিং চালু করা
+      // ৪. ট্রানজাকশন হিস্ট্রি ফেচ করা
+      await fetchRecentTransactions(client, currentUserId);
+
+      // ৫. আনরিড নোটিফিকেশন চেক করা ও ব্লিংকিং চালু করা
       await checkNotifications(client, currentUserId);
 
-      // ৫. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
+      // ৬. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
       client
         .channel('wallet-balance-changes')
         .on(
@@ -739,7 +975,7 @@
         )
         .subscribe();
 
-      // ৬. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
+      // ৭. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
       client
         .channel('notifications-live-changes')
         .on(
@@ -756,18 +992,19 @@
         )
         .subscribe();
 
-      // ৭. Realtime Listener: 'transactions' টেবিল আপডেট হয়ে status = 'approved' হলেই ব্যালেন্স রিলোড হবে
+      // ৮. Realtime Listener: 'transactions' টেবিলে পরিবর্তন বা স্ট্যাটাস পরিবর্তন হলেই লিস্ট ও ব্যালেন্স রিলোড হবে
       client
         .channel('transactions-status-changes')
         .on(
           'postgres_changes',
           {
-            event: 'UPDATE',
+            event: '*',
             schema: 'public',
             table: 'transactions',
             filter: `user_id=eq.${currentUserId}`
           },
           (payload) => {
+            fetchRecentTransactions(client, currentUserId);
             if (payload.new && payload.new.status === 'approved') {
               fetchWalletDetails(client, currentUserId);
             }
