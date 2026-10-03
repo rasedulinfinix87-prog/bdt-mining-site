@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Deposit - Goldmine Digital</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -32,7 +32,8 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      overflow-x: hidden;
+      width: 100%;
+      overflow-x: hidden; /* ওভারফ্লো বা সাইড-স্ক্রল বন্ধ করার জন্য */
     }
 
     .mobile-container {
@@ -174,7 +175,7 @@
       flex-direction: column;
       justify-content: flex-start;
       gap: 12px;
-      height: auto; /* Dynamic height to fit full content without breaking layout */
+      height: auto;
       width: 100%;
       box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6), 0 0 15px rgba(245, 207, 102, 0.1);
       position: relative;
@@ -274,7 +275,7 @@
       border: none;
       outline: none;
       color: var(--text-main);
-      font-size: 0.95rem;
+      font-size: 1rem; /* iOS অটো-জুম প্রতিরোধ করার জন্য ফন্ট সাইজ ১৬ পিক্সেল (১ রেম) করা হলো */
       font-weight: 600;
     }
 
@@ -409,6 +410,8 @@
     #bottom-nav-container {
       position: fixed;
       bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
       width: 100%;
       max-width: 480px;
       z-index: 1000;
@@ -505,47 +508,30 @@
 
   <script>
     let selectedMethodKey = 'bkash';
-    let gatewayDataList = {
-      bkash: { title: 'bKash Personal', admin_address: '01953823183', instruction: 'This Number Accept Send Money bKash', usd_rate: 125, cashout_fee: 1.5, minimam_deposit_bkash: '10' },
-      usdt: { title: 'USDT NETWORK (BSC BEP20)', admin_address: '0xb9277f748305fbefa740dc230c88ad7875bfcaad', instruction: 'BSC (BEP20)', usd_rate: 1, cashout_fee: 0.5, minimum_deposit_usd: '10' },
-      bank: { title: 'Bank Transfer', admin_address: 'Bank: City Bank\nAccount: 1234567890\nBranch: Dhaka Main', instruction: 'ব্যাংক ডিপোজিট করার পর Trx ID বা স্লিপ নম্বর দিন।', usd_rate: 125, cashout_fee: 0, minimam_deposit_bank: '500' }
-    };
+    let gatewayDataList = {};
     let redirectOnClose = false;
-
-    // Get Supabase Client safely
-    function getSupabaseClient() {
-      if (window._supabase) return window._supabase;
-      if (window.supabaseClient) return window.supabaseClient;
-      if (typeof supabase !== 'undefined' && supabase.createClient && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
-        window._supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-        return window._supabase;
-      }
-      return window.supabase || null;
-    }
 
     // Load gateways from Supabase
     async function loadGatewaysFromSupabase() {
-      const client = getSupabaseClient();
-      if (!client) {
-        updateGatewayDisplay();
-        return;
-      }
+      const client = window._supabase || window.supabase;
+      if (!client) return;
 
-      try {
-        const { data, error } = await client
-          .from('payment_gateways')
-          .select('*');
+      const { data, error } = await client
+        .from('payment_gateways')
+        .select('*')
+        .eq('is_active', true);
 
-        if (!error && data && data.length > 0) {
-          data.forEach(item => {
-            if (item.method_key) {
-              const key = item.method_key.toLowerCase();
-              gatewayDataList[key] = { ...gatewayDataList[key], ...item };
-            }
-          });
-        }
-      } catch (e) {
-        console.warn('Supabase loading error, using fallbacks:', e);
+      if (data && data.length > 0) {
+        data.forEach(item => {
+          gatewayDataList[item.method_key.toLowerCase()] = item;
+        });
+      } else {
+        // Fallback default values
+        gatewayDataList = {
+          bkash: { title: 'bKash Personal', admin_address: '01953823183', instruction: 'This Number Accept Send Money bKash', usd_rate: 125, cashout_fee: 1.5, minimam_deposit_bkash: '10' },
+          usdt: { title: 'USDT NETWORK (BSC BEP20)', admin_address: '0xb9277f748305fbefa740dc230c88ad7875bfcaad', instruction: 'BSC (BEP20)', usd_rate: 1, cashout_fee: 0.5, minimum_deposit_usd: '10' },
+          bank: { title: 'Bank Transfer', admin_address: 'Bank: City Bank\nAccount: 1234567890\nBranch: Dhaka Main', instruction: 'ব্যাংক ডিপোজিট করার পর Trx ID বা স্লিপ নম্বর দিন।', usd_rate: 125, cashout_fee: 0, minimam_deposit_bank: '500' }
+        };
       }
 
       updateGatewayDisplay();
@@ -681,13 +667,8 @@
     // Form Submission with Validation and Fee Calculation
     document.getElementById('deposit-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const client = getSupabaseClient();
+      const client = window._supabase || window.supabase;
       const submitBtn = document.getElementById('btn-submit');
-
-      if (!client) {
-        showPopup('Error', 'Supabase client is not initialized correctly.', 'error');
-        return;
-      }
 
       const amountVal = parseFloat(document.getElementById('amount').value);
       const trxIdInput = document.getElementById('trx_id').value.trim();
@@ -710,60 +691,55 @@
       submitBtn.innerText = "Processing...";
       submitBtn.disabled = true;
 
-      try {
-        const { data: { user }, error: authError } = await client.auth.getUser();
+      const { data: { user } } = await client.auth.getUser();
 
-        if (authError || !user) {
-          showPopup('Authentication Error', 'Please login first!', 'error');
-          submitBtn.innerText = "Confirm & Submit Request";
-          submitBtn.disabled = false;
-          return;
-        }
+      if (!user) {
+        showPopup('Authentication Error', 'Please login first!', 'error');
+        submitBtn.innerText = "Confirm & Submit Request";
+        submitBtn.disabled = false;
+        return;
+      }
 
-        // 2. Unique TrxID Check
-        const { data: existingTrx } = await client
-          .from('transactions')
-          .select('trx_id')
-          .eq('trx_id', trxIdInput)
-          .maybeSingle();
+      // 2. Unique TrxID Check
+      const { data: existingTrx, error: checkError } = await client
+        .from('transactions')
+        .select('trx_id')
+        .eq('trx_id', trxIdInput)
+        .maybeSingle();
 
-        if (existingTrx) {
-          showPopup('Duplicate TrxID', 'এই Transaction ID টি পূর্বে একবার ব্যবহার করা হয়েছে! অনুগ্রহ করে সঠিক Trx ID দিন।', 'error');
-          submitBtn.innerText = "Confirm & Submit Request";
-          submitBtn.disabled = false;
-          return;
-        }
+      if (existingTrx) {
+        showPopup('Duplicate TrxID', 'এই Transaction ID টি পূর্বে একবার ব্যবহার করা হয়েছে! অনুগ্রহ করে সঠিক Trx ID দিন।', 'error');
+        submitBtn.innerText = "Confirm & Submit Request";
+        submitBtn.disabled = false;
+        return;
+      }
 
-        // 3. Cashout Fee Calculation Logic
-        const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
-        const chargeAmount = (amountVal * cashoutFeePct) / 100;
-        const netAmount = amountVal - chargeAmount;
+      // 3. Cashout Fee Calculation Logic
+      const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
+      const chargeAmount = (amountVal * cashoutFeePct) / 100;
+      const netAmount = amountVal - chargeAmount;
 
-        const methodName = currentGateway.title || selectedMethodKey.toUpperCase();
+      const methodName = currentGateway.title || selectedMethodKey.toUpperCase();
 
-        // Payload matching transactions table columns
-        const payload = {
-          user_id: user.id,
-          type: 'deposit',
-          amount: amountVal,
-          charge: chargeAmount,
-          net_amount: netAmount,
-          method: methodName,
-          account_number: accountNumber,
-          trx_id: trxIdInput,
-          status: 'pending'
-        };
+      // Payload matching transactions table columns
+      const payload = {
+        user_id: user.id,
+        type: 'deposit',
+        amount: amountVal,
+        charge: chargeAmount,
+        net_amount: netAmount,
+        method: methodName,
+        account_number: accountNumber,
+        trx_id: trxIdInput,
+        status: 'pending'
+      };
 
-        const { error: insertError } = await client.from('transactions').insert([payload]);
+      const { error: insertError } = await client.from('transactions').insert([payload]);
 
-        if (insertError) {
-          showPopup('Submission Failed', insertError.message, 'error');
-        } else {
-          showPopup('Success!', 'Deposit request submitted successfully!', 'success', true);
-        }
-      } catch (err) {
-        showPopup('Error', 'An unexpected error occurred. Please try again.', 'error');
-        console.error(err);
+      if (insertError) {
+        showPopup('Submission Failed', insertError.message, 'error');
+      } else {
+        showPopup('Success!', 'Deposit request submitted successfully!', 'success', true);
       }
 
       submitBtn.innerText = "Confirm & Submit Request";
@@ -779,7 +755,7 @@
       .catch(err => console.log('Error loading bottom.html:', err));
 
     window.addEventListener('DOMContentLoaded', () => {
-      loadGatewaysFromSupabase();
+      setTimeout(loadGatewaysFromSupabase, 100);
     });
   </script>
 </body>
