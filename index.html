@@ -280,7 +280,7 @@
             flex-direction: column;
             gap: 14px;
             flex: 1;
-            overflow-y: auto; /* Enable smooth scrolling when new card is added */
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -421,6 +421,115 @@
             font-size: 0.7rem;
             color: var(--text-secondary);
             margin-top: 2px;
+        }
+
+        /* --- NiceHash Style Diagram Structure --- */
+        .nicehash-diagram {
+            position: relative;
+            width: 100%;
+            height: 230px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            background: rgba(3, 13, 10, 0.6);
+            border: 1px solid rgba(245, 207, 102, 0.15);
+            overflow: hidden;
+        }
+
+        .nh-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .nh-node-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .nh-node-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        /* Node Top-Left: Buyer */
+        .node-buyer { top: 12px; left: 16px; }
+        .node-buyer .nh-node-circle { background: #f5cf66; color: #030d0a; border: 2px solid #e5ba41; }
+        .node-buyer .nh-node-label { color: #f5cf66; }
+
+        /* Node Top-Right: Miner */
+        .node-miner { top: 12px; right: 16px; }
+        .node-miner .nh-node-circle { background: #2ed573; color: #030d0a; border: 2px solid #26af5f; }
+        .node-miner .nh-node-label { color: #2ed573; }
+
+        /* Node Bottom-Left: Any Pool */
+        .node-pool { bottom: 12px; left: 16px; }
+        .node-pool .nh-node-circle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 2px solid rgba(255,255,255,0.3); }
+        .node-pool .nh-node-label { color: var(--text-secondary); }
+
+        /* Node Center: Goldmine Hub */
+        .node-hub {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .node-hub .nh-node-circle {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #061913, #0c261d);
+            color: var(--gold-primary);
+            border: 2px solid var(--gold-primary);
+            box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
+            font-size: 1.2rem;
+        }
+        .node-hub .nh-node-label { color: #fff; font-size: 0.7rem; }
+
+        /* SVG Connection Lines */
+        .nh-svg-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Flow Legend at Bottom Right */
+        .nh-legend {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(12, 38, 29, 0.9);
+            border: 1px solid rgba(245, 207, 102, 0.2);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.58rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 2;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
         }
 
         .flow-container {
@@ -600,11 +709,51 @@
                 <button class="btn-gold" onclick="window.location.href='login-signup.html'">START INVESTING</button>
             </div>
 
-            <!-- How Gold Investment Works Card (NiceHash Style Flow) -->
+            <!-- How Gold Investment Works Card (NiceHash Style Diagram & Flow) -->
             <div class="how-it-works-card">
                 <div class="how-header">
                     <h3>How Gold Investment Works</h3>
                     <p>Simple 3-step process to grow your assets</p>
+                </div>
+
+                <!-- NiceHash Dynamic Diagram Structure -->
+                <div class="nicehash-diagram">
+                    <!-- SVG lines connecting nodes -->
+                    <svg class="nh-svg-lines" viewBox="0 0 300 230">
+                        <line x1="50" y1="45" x2="150" y2="115" stroke="#f5cf66" stroke-width="2" stroke-dasharray="4,4"/>
+                        <line x1="250" y1="45" x2="150" y2="115" stroke="#2ed573" stroke-width="2" stroke-dasharray="4,4"/>
+                        <line x1="150" y1="115" x2="50" y2="185" stroke="#8da499" stroke-width="2" stroke-dasharray="4,4"/>
+                    </svg>
+
+                    <!-- Buyer Node -->
+                    <div class="nh-node node-buyer">
+                        <div class="nh-node-circle"><i class="fa-solid fa-user-tie"></i></div>
+                        <div class="nh-node-label">Buyer<br><span style="font-size: 0.55rem; color: #8da499;">Creates Order</span></div>
+                    </div>
+
+                    <!-- Miner Node -->
+                    <div class="nh-node node-miner">
+                        <div class="nh-node-circle"><i class="fa-solid fa-server"></i></div>
+                        <div class="nh-node-label">Miner<br><span style="font-size: 0.55rem; color: #8da499;">Provides Hash</span></div>
+                    </div>
+
+                    <!-- Center Hub Node -->
+                    <div class="nh-node node-hub">
+                        <div class="nh-node-circle"><i class="fa-solid fa-cubes"></i></div>
+                        <div class="nh-node-label">Goldmine<br><span style="font-size: 0.55rem; color: var(--gold-primary);">Hub</span></div>
+                    </div>
+
+                    <!-- Pool Node -->
+                    <div class="nh-node node-pool">
+                        <div class="nh-node-circle"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="nh-node-label">Mining Pool<br><span style="font-size: 0.55rem; color: #8da499;">Payout Reward</span></div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="nh-legend">
+                        <div class="legend-item"><div class="legend-dot" style="background: #f5cf66;"></div> BTC Flow</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: #2ed573;"></div> Hashrate Flow</div>
+                    </div>
                 </div>
 
                 <div class="flow-container">
@@ -790,7 +939,7 @@
             
             goldChart.data.datasets[0].data.shift();
             goldChart.data.datasets[0].data.push(parseFloat(newGold));
-            goldChart.update('none'); // 'none' ensures high-performance updates without lag
+            goldChart.update('none');
 
             let btcPrice = parseFloat(document.getElementById('btc-price').innerText.replace(',', ''));
             let newBtc = (btcPrice + (Math.random() - 0.49) * 45).toFixed(2);
