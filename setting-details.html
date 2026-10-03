@@ -79,60 +79,6 @@
       color: var(--text-main);
     }
 
-    .menu-toggle-btn {
-      background: transparent;
-      border: none;
-      color: var(--gold-primary);
-      font-size: 1.4rem;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-
-    .menu-toggle-btn:active {
-      transform: scale(0.9);
-    }
-
-    /* Top Right Hamburger Dropdown Menu */
-    .hamburger-dropdown {
-      position: absolute;
-      top: 65px;
-      right: 20px;
-      background: var(--bg-dark);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      width: 180px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-      display: none;
-      flex-direction: column;
-      z-index: 101;
-      overflow: hidden;
-    }
-
-    .hamburger-dropdown.active {
-      display: flex;
-    }
-
-    .hamburger-dropdown a {
-      padding: 12px 16px;
-      color: var(--text-main);
-      text-decoration: none;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      transition: background 0.2s;
-    }
-
-    .hamburger-dropdown a:hover {
-      background: rgba(245, 207, 102, 0.1);
-      color: var(--gold-primary);
-    }
-
-    .hamburger-dropdown a:last-child {
-      border-bottom: none;
-    }
-
     /* Header Profile Brief */
     .profile-header {
       padding: 24px 20px;
@@ -173,6 +119,20 @@
       font-size: 0.85rem;
       color: var(--text-muted);
       margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eye-btn {
+      cursor: pointer;
+      color: var(--gold-primary);
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .eye-btn:hover {
+      opacity: 0.8;
     }
 
     /* Skeleton Screen Animation */
@@ -421,15 +381,6 @@
         </a>
         <h2>Settings</h2>
       </div>
-      <button class="menu-toggle-btn" onclick="toggleMenu()">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-
-      <!-- Right Corner Hamburger Menu -->
-      <div class="hamburger-dropdown" id="hamburger-menu">
-        <a href="contact.html"><i class="fa-solid fa-headset"></i> Contact Us</a>
-        <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
-      </div>
     </div>
 
     <!-- User Brief Section -->
@@ -486,7 +437,7 @@
           <span><i class="fa-solid fa-gem" style="color: var(--gold-primary); margin-right: 8px;"></i> Active Gold Invest Plans</span>
           <i class="fa-solid fa-chevron-right"></i>
         </button>
-        <button class="btn-plan-choice" onclick="window.location.href='crypto-investing-dasborad.html'">
+        <button class="btn-plan-choice" onclick="window.location.href='crypto-investing-dashborad.html'">
           <span><i class="fa-brands fa-bitcoin" style="color: var(--gold-primary); margin-right: 8px;"></i> Active Crypto Invest Plans</span>
           <i class="fa-solid fa-chevron-right"></i>
         </button>
@@ -518,7 +469,7 @@
     </div>
   </div>
 
-  <!-- Logout Popup Modal (Added for Logout Animation) -->
+  <!-- Logout Popup Modal -->
   <div class="modal-overlay" id="logout-modal">
     <div class="modal-card-custom">
       <i class="fa-solid fa-circle-check" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 12px;"></i>
@@ -535,20 +486,39 @@
   <script src="./supabase-config.js"></script>
 
   <script>
-    // Toggle Hamburger Menu
-    function toggleMenu() {
-      const menu = document.getElementById('hamburger-menu');
-      menu.classList.toggle('active');
+    // Variables for Account Number Masking
+    let fullAccountNumber = "";
+    let isAccountVisible = false;
+
+    // Helper Function to Mask Account Number
+    function maskAccountNumber(accNo) {
+      if (!accNo || accNo === "N/A") return "N/A";
+      const str = String(accNo);
+      if (str.length <= 8) return "****" + str.slice(-4);
+      const start = str.slice(0, 4);
+      const end = str.slice(-4);
+      return `${start}*****${end}`;
     }
 
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-      const menu = document.getElementById('hamburger-menu');
-      const btn = document.querySelector('.menu-toggle-btn');
-      if (menu && !menu.contains(e.target) && !btn.contains(e.target)) {
-        menu.classList.remove('active');
+    // Toggle Account Visibility Function
+    function toggleAccountVisibility() {
+      const accountTextElement = document.getElementById('account-text');
+      const eyeIcon = document.getElementById('account-eye-icon');
+      
+      if (!accountTextElement || !eyeIcon) return;
+
+      isAccountVisible = !isAccountVisible;
+
+      if (isAccountVisible) {
+        accountTextElement.innerText = "Acc: " + fullAccountNumber;
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+      } else {
+        accountTextElement.innerText = "Acc: " + maskAccountNumber(fullAccountNumber);
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
       }
-    });
+    }
 
     // Safe Supabase Instance Retrieval Helper
     async function getSupabaseInstance() {
@@ -619,9 +589,14 @@
           console.error("Data fetching error:", e);
         }
 
-        // Render Registration Name (In Uppercase) & Account Number
+        fullAccountNumber = accountNumber;
+
+        // Render Registration Name & Masked Account Number with Eye Icon
         profileName.innerText = (fullName || "INVESTOR").toUpperCase();
-        profileAccount.innerText = "Acc: " + accountNumber;
+        profileAccount.innerHTML = `
+          <span id="account-text">Acc: ${maskAccountNumber(fullAccountNumber)}</span>
+          <i class="fa-solid fa-eye eye-btn" id="account-eye-icon" onclick="toggleAccountVisibility()"></i>
+        `;
 
         settingsContainer.innerHTML = `
           <a href="account-info.html" class="setting-item">
@@ -729,7 +704,6 @@
       const client = await getSupabaseInstance();
       if (client) {
         await client.auth.signOut();
-        // Show custom popup modal instead of alert
         document.getElementById('logout-modal').classList.add('active');
       }
     }
