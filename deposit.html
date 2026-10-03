@@ -236,7 +236,7 @@
       margin-top: 4px;
       font-weight: 600;
       min-height: 18px;
-      line-height: 1.2;
+      line-height: 1.3;
     }
 
     /* Form Inputs in Premium Card Styles */
@@ -529,7 +529,7 @@
         // Fallback default values
         gatewayDataList = {
           bkash: { title: 'bKash Personal', admin_address: '01953823183', instruction: 'This Number Accept Send Money bKash', usd_rate: 125, cashout_fee: 1.5, minimam_deposit_bkash: '10' },
-          usdt: { title: 'USDT NETWORK (BSC BEP20)', admin_address: '0xb9277f748305fbefa740dc230c88ad7875bfcaad', instruction: 'BSC (BEP20)', usd_rate: 1, cashout_fee: 0.5, minimum_deposit_usd: '10' },
+          usdt: { title: 'USDT NETWORK (BSC BEP20)', admin_address: '0xb9277f748305fbefa740dc230c88ad7875bfcaad', instruction: 'BSC (BEP20)', usd_rate: 1, cashout_fee: 0, minimum_deposit_usd: '10' },
           bank: { title: 'Bank Transfer', admin_address: 'Bank: City Bank\nAccount: 1234567890\nBranch: Dhaka Main', instruction: 'ব্যাংক ডিপোজিট করার পর Trx ID বা স্লিপ নম্বর দিন।', usd_rate: 125, cashout_fee: 0, minimam_deposit_bank: '500' }
         };
       }
@@ -603,25 +603,37 @@
       const currentGateway = gatewayDataList[selectedMethodKey] || {};
 
       const usdRate = parseFloat(currentGateway.usd_rate) || (selectedMethodKey === 'usdt' ? 1 : 125);
-      const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
 
       if (amountVal > 0) {
-        let textInfo = '';
-        if (selectedMethodKey === 'bkash' || usdRate > 1) {
+        if (selectedMethodKey === 'bkash') {
+          // বিকাশ ডিপোজিটের জন্য ফি এবং মোট সেন্ড মানির হিসাব
+          const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
+          const baseBDT = amountVal * usdRate;
+          const feeBDT = (baseBDT * cashoutFeePct) / 100;
+          const totalBDT = baseBDT + feeBDT;
+
+          let textInfo = `Amount: ৳${baseBDT.toFixed(2)}`;
+          if (cashoutFeePct > 0) {
+            textInfo += ` | Fee (${cashoutFeePct}%): ৳${feeBDT.toFixed(2)}`;
+          }
+          textInfo += `<br><span style="color: #2ed573; font-weight: 700;">Total Send Money: ৳${totalBDT.toFixed(2)}</span>`;
+          displayBox.innerHTML = textInfo;
+
+        } else if (selectedMethodKey === 'bank') {
+          // ব্যাংকের ক্ষেত্রে ফি নেই, শুধু BDT তে মোট টাকার পরিমাণ
           const totalBDT = (amountVal * usdRate).toFixed(2);
-          textInfo = `Amount: $1 = ${usdRate} BDT (Total: ৳${totalBDT})`;
+          displayBox.innerHTML = `Amount: $1 = ${usdRate} BDT (Total: ৳${totalBDT})`;
+
         } else {
-          textInfo = `Amount: $${amountVal.toFixed(2)}`;
+          // USDT এর ক্ষেত্রে কোনো ফি নেই, শুধু ডলারের পরিমাণ
+          displayBox.innerHTML = `Amount: $${amountVal.toFixed(2)}`;
         }
-
-        if (cashoutFeePct > 0) {
-          const feeAmount = ((amountVal * cashoutFeePct) / 100).toFixed(2);
-          textInfo += ` | Fee: $${feeAmount}`;
-        }
-
-        displayBox.innerText = textInfo;
       } else {
-        displayBox.innerText = usdRate > 1 ? `Rate: $1 = ${usdRate} BDT` : '';
+        if (selectedMethodKey === 'bkash' || selectedMethodKey === 'bank') {
+          displayBox.innerHTML = `Rate: $1 = ${usdRate} BDT`;
+        } else {
+          displayBox.innerHTML = '';
+        }
       }
     }
 
@@ -714,10 +726,15 @@
         return;
       }
 
-      // 3. Cashout Fee Calculation Logic
-      const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
-      const chargeAmount = (amountVal * cashoutFeePct) / 100;
-      const netAmount = amountVal - chargeAmount;
+      // 3. Cashout Fee Calculation Logic (Only for bKash)
+      let chargeAmount = 0;
+      let netAmount = amountVal;
+
+      if (selectedMethodKey === 'bkash') {
+        const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
+        chargeAmount = (amountVal * cashoutFeePct) / 100;
+        netAmount = amountVal - chargeAmount;
+      }
 
       const methodName = currentGateway.title || selectedMethodKey.toUpperCase();
 
