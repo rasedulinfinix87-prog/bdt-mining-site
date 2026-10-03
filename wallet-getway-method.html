@@ -228,8 +228,19 @@
       margin-top: 6px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       min-height: 1.1rem;
+    }
+
+    .toggle-acc-btn {
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .toggle-acc-btn:hover {
+      color: var(--gold-primary);
     }
 
     .card-chip {
@@ -239,6 +250,12 @@
       border-radius: 5px;
       opacity: 0.85;
       box-shadow: 0 2px 8px rgba(245, 207, 102, 0.3);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .card-chip:hover {
+      transform: scale(1.05);
     }
 
     .card-bottom {
@@ -465,27 +482,42 @@
       gap: 12px;
     }
 
-    .trx-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
+    .trx-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(12, 38, 29, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
       flex-shrink: 0;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
     }
 
-    .trx-icon.deposit {
-      background: rgba(46, 213, 115, 0.15);
+    .method-icon-usd {
+      font-size: 1.2rem;
       color: #2ed573;
-      border: 1px solid rgba(46, 213, 115, 0.3);
+      font-weight: bold;
     }
 
-    .trx-icon.withdraw {
-      background: rgba(255, 71, 87, 0.15);
-      color: #ff4757;
-      border: 1px solid rgba(255, 71, 87, 0.3);
+    .method-icon-bkash {
+      width: 22px;
+      height: 22px;
+      background: #e2136e;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .method-icon-bkash::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #0c261d;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
     }
 
     .trx-details .trx-title {
@@ -564,7 +596,7 @@
       z-index: 1000;
     }
 
-    /* --- Auth Warning Modal Overlay --- */
+    /* --- Auth & Pin Warning Modal Overlay --- */
     .auth-modal-overlay {
       position: fixed;
       top: 0;
@@ -617,10 +649,16 @@
       color: var(--gold-primary);
       font-size: 1.6rem;
       box-shadow: 0 0 15px rgba(245, 207, 102, 0.3);
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 10px rgba(245, 207, 102, 0.2); }
+      to { box-shadow: 0 0 25px rgba(245, 207, 102, 0.6); }
     }
 
     .auth-modal-text {
-      font-size: 1rem;
+      font-size: 0.95rem;
       line-height: 1.6;
       color: var(--text-main);
       margin-bottom: 22px;
@@ -639,6 +677,8 @@
       text-decoration: none;
       box-shadow: 0 4px 15px rgba(245, 207, 102, 0.3);
       transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
     }
 
     .btn-get-started:hover {
@@ -680,7 +720,8 @@
               <span class="skeleton skeleton-acc"></span>
             </div>
           </div>
-          <div class="card-chip"></div>
+          <!-- Clickable Gold Card Chip for Secret PIN Warning -->
+          <div class="card-chip" onclick="showPinWarning()" title="Secret Pin"></div>
         </div>
 
         <div class="card-bottom">
@@ -755,6 +796,21 @@
     </div>
   </div>
 
+  <!-- Secret PIN Security Warning Modal -->
+  <div class="auth-modal-overlay" id="pinWarningModal">
+    <div class="auth-modal-card">
+      <div class="auth-modal-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <p class="auth-modal-text">
+        For security reasons, your secret PIN is encrypted and cannot be displayed directly.<br><br>
+        If you forgot or do not know your PIN, please contact support for assistance.
+      </p>
+      <a href="contact.html" class="btn-get-started">Contact Us</a>
+      <button onclick="closePinModal()" style="background:transparent; border:none; color:var(--text-muted); margin-top:12px; cursor:pointer; font-size:0.85rem;">Close</button>
+    </div>
+  </div>
+
   <!-- 1. Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
@@ -764,6 +820,40 @@
   <!-- 3. Logic Script -->
   <script>
     let currentUserId = null;
+    let rawAccountNumber = "";
+    let isAccountVisible = false;
+
+    // অ্যাকাউন্ট নম্বর হাইড/শো করার ফাংশন
+    function toggleAccountVisibility() {
+      isAccountVisible = !isAccountVisible;
+      renderAccountNumber();
+    }
+
+    function renderAccountNumber() {
+      const accDisplay = document.getElementById('account-number-display');
+      if (!rawAccountNumber) return;
+
+      let displayNum = isAccountVisible 
+        ? rawAccountNumber 
+        : rawAccountNumber.slice(0, 4) + "••••••••" + rawAccountNumber.slice(-2);
+      
+      const eyeIconClass = isAccountVisible ? "fa-eye-slash" : "fa-eye";
+
+      accDisplay.innerHTML = `
+        <i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> 
+        <span>${displayNum}</span>
+        <i class="fa-solid ${eyeIconClass} toggle-acc-btn" onclick="toggleAccountVisibility()"></i>
+      `;
+    }
+
+    // সিক্রেট পিন ওয়ার্নিং পপআপ ফাংশন
+    function showPinWarning() {
+      document.getElementById('pinWarningModal').style.display = 'flex';
+    }
+
+    function closePinModal() {
+      document.getElementById('pinWarningModal').style.display = 'none';
+    }
 
     // ডট স্পিনিং অ্যানিমেশন সহ নেভিগেশন
     function handleButtonClick(e, targetUrl, btnElement) {
@@ -771,12 +861,12 @@
       btnElement.classList.add('loading');
       setTimeout(() => {
         window.location.href = targetUrl;
-      }, 600); // 600ms স্পিনিং দেখিয়ে পেজ ট্রানজিশন হবে
+      }, 600);
     }
 
     // ১৪ অংকের র্যান্ডম অ্যাকাউন্ট নম্বর জেনারেটর হেলপার
     function generate14DigitAccountNumber() {
-      const prefix = "3089"; // নির্দিষ্ট প্রিফিক্স
+      const prefix = "3089";
       let randomDigits = "";
       for (let i = 0; i < 10; i++) {
         randomDigits += Math.floor(Math.random() * 10);
@@ -793,31 +883,24 @@
         .single();
 
       const balanceDisplay = document.getElementById('user-balance-display');
-      const accDisplay = document.getElementById('account-number-display');
 
       if (data) {
-        // ব্যালেন্স সেট করা
         balanceDisplay.innerText = '$' + parseFloat(data.balance || 0).toFixed(2);
         
-        // অ্যাকাউন্ট নম্বর থাকলে প্রদর্শন করা, না থাকলে নতুন একটা বানিয়ে সেভ করা
         if (data.account_number) {
-          accDisplay.innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>${data.account_number}</span>`;
+          rawAccountNumber = data.account_number;
         } else {
-          const newAccNum = generate14DigitAccountNumber();
-          const { error: updateError } = await client
+          rawAccountNumber = generate14DigitAccountNumber();
+          await client
             .from('wallets')
-            .update({ account_number: newAccNum })
+            .update({ account_number: rawAccountNumber })
             .eq('user_id', userId);
-
-          if (!updateError) {
-            accDisplay.innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>${newAccNum}</span>`;
-          } else {
-            accDisplay.innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>${newAccNum}</span>`;
-          }
         }
+        renderAccountNumber();
       } else {
         balanceDisplay.innerText = '$0.00';
-        accDisplay.innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>---- ---- ---- --</span>`;
+        rawAccountNumber = "30890000000000";
+        renderAccountNumber();
         if (error) console.log("Wallet details fetch error:", error.message);
       }
     }
@@ -848,10 +931,16 @@
       data.forEach(trx => {
         const isDeposit = (trx.type || '').toLowerCase() === 'deposit';
         const typeClass = isDeposit ? 'deposit' : 'withdraw';
-        const iconClass = isDeposit ? 'fa-arrow-down-left' : 'fa-arrow-up-right';
         const amountSign = isDeposit ? '+' : '-';
         const amountVal = parseFloat(trx.amount || 0).toFixed(2);
         const statusStr = (trx.status || 'pending').toLowerCase();
+        const methodName = (trx.method || trx.type || '').toLowerCase();
+
+        // মেথড অনুযায়ী আইকন চয়ন লজিক
+        let iconHtml = `<div class="method-icon-usd">$</div>`;
+        if (methodName.includes('bkash')) {
+          iconHtml = `<div class="method-icon-bkash"></div>`;
+        }
 
         // তারিখ ফরম্যাট করা
         const dateObj = trx.created_at ? new Date(trx.created_at) : new Date();
@@ -864,8 +953,8 @@
         html += `
           <div class="trx-item">
             <div class="trx-left">
-              <div class="trx-icon ${typeClass}">
-                <i class="fa-solid ${iconClass}"></i>
+              <div class="trx-icon-box">
+                ${iconHtml}
               </div>
               <div class="trx-details">
                 <div class="trx-title">${trx.method || trx.type || 'Transaction'}</div>
@@ -890,7 +979,6 @@
 
       if (!notifBtn || !notifBadge) return;
 
-      // is_red = false মানে আনরিড/অদেখা নোটিফিকেশন
       const { count, error } = await client
         .from('notifications')
         .select('*', { count: 'exact', head: true })
@@ -914,13 +1002,12 @@
         return;
       }
 
-      // ১. বর্তমান সেশনের অথেন্টিকেটেড ইউজার নেওয়া
       const { data: { user }, error: userError } = await client.auth.getUser();
 
-      // ইউজার লগইন না থাকলে মডাল পপআপ দেখাবে
       if (userError || !user) {
         document.getElementById('user-name-display').innerText = "Guest";
-        document.getElementById('account-number-display').innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>3089----------</span>`;
+        rawAccountNumber = "30890000000000";
+        renderAccountNumber();
         document.getElementById('user-balance-display').innerText = '$0.00';
         document.getElementById('transactionContainer').innerHTML = `<div class="trx-empty">Please log in to view transactions.</div>`;
         document.getElementById('authModal').style.display = 'flex';
@@ -929,7 +1016,6 @@
 
       currentUserId = user.id;
 
-      // ২. কাস্টম 'user' টেবিল থেকে ইউজারের full_name লোড করা
       const { data: userData } = await client
         .from('user')
         .select('full_name')
@@ -942,16 +1028,11 @@
         document.getElementById('user-name-display').innerText = user.email ? user.email.split('@')[0] : "User";
       }
 
-      // ৩. প্রাথমিক ব্যালেন্স ও অ্যাকাউন্ট নম্বর ফেচ করা
       await fetchWalletDetails(client, currentUserId);
-
-      // ৪. ট্রানজাকশন হিস্ট্রি ফেচ করা
       await fetchRecentTransactions(client, currentUserId);
-
-      // ৫. আনরিড নোটিফিকেশন চেক করা ও ব্লিংকিং চালু করা
       await checkNotifications(client, currentUserId);
 
-      // ৬. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
+      // Realtime Listener
       client
         .channel('wallet-balance-changes')
         .on(
@@ -968,14 +1049,14 @@
                 document.getElementById('user-balance-display').innerText = '$' + parseFloat(payload.new.balance).toFixed(2);
               }
               if (payload.new.account_number) {
-                document.getElementById('account-number-display').innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>${payload.new.account_number}</span>`;
+                rawAccountNumber = payload.new.account_number;
+                renderAccountNumber();
               }
             }
           }
         )
         .subscribe();
 
-      // ৭. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
       client
         .channel('notifications-live-changes')
         .on(
@@ -992,7 +1073,6 @@
         )
         .subscribe();
 
-      // ৮. Realtime Listener: 'transactions' টেবিলে পরিবর্তন বা স্ট্যাটাস পরিবর্তন হলেই লিস্ট ও ব্যালেন্স রিলোড হবে
       client
         .channel('transactions-status-changes')
         .on(
@@ -1013,7 +1093,6 @@
         .subscribe();
     }
 
-    // bottom.html লোড করা
     fetch('bottom.html')
       .then(res => res.text())
       .then(html => {
@@ -1021,7 +1100,6 @@
       })
       .catch(err => console.log('Error loading bottom.html:', err));
 
-    // পেজ লোড সম্পন্ন হলে ফায়ার করবে
     window.addEventListener('DOMContentLoaded', () => {
       loadWalletData();
     });
