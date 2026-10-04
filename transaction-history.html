@@ -227,6 +227,13 @@
             color: var(--accent-red);
         }
 
+        .trx-bdt {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-top: 1px;
+            font-weight: 500;
+        }
+
         /* Status Badges */
         .status-badge {
             display: inline-block;
@@ -234,7 +241,7 @@
             font-weight: 600;
             padding: 2px 8px;
             border-radius: 10px;
-            margin-top: 4px;
+            margin-top: 3px;
             text-transform: capitalize;
         }
 
@@ -284,7 +291,7 @@
             background: #08221a;
             border-top: 1px solid var(--gold-primary);
             border-radius: 24px 24px 0 0;
-            padding: 20px 20px 80px 20px; /* বটম বারের উপর যেন ভেসে ওঠে সে জন্য বটম প্যাডিং বাড়ানো হয়েছে */
+            padding: 20px 20px 80px 20px;
             transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
             max-height: 85vh;
@@ -509,6 +516,7 @@
             .catch(error => console.log('Using fallback nav'));
 
         let allTransactions = [];
+        let gatewayRates = {}; // Store usd_rate per gateway
 
         // Account Number Masking Function (e.g. 01636144055 -> 0163*****55)
         function maskAccountNumber(accNo) {
@@ -557,6 +565,45 @@
             }
         }
 
+        // Fetch USD Rate from payment_gateways table
+        async function fetchPaymentGateways() {
+            try {
+                const { data, error } = await window._supabase
+                    .from('payment_gateways')
+                    .select('method_key, title, usd_rate');
+
+                if (!error && data) {
+                    data.forEach(gw => {
+                        const key = (gw.method_key || '').toLowerCase();
+                        const title = (gw.title || '').toLowerCase();
+                        const rate = parseFloat(gw.usd_rate) || 0;
+
+                        if (key) gatewayRates[key] = rate;
+                        if (title) gatewayRates[title] = rate;
+                    });
+                }
+            } catch (e) {
+                console.error("Gateway rates fetch error:", e);
+            }
+        }
+
+        // Get matching rate for a method name
+        function getMethodRate(methodName) {
+            if (!methodName) return 0;
+            const m = methodName.toLowerCase();
+            
+            // Check exact key/title match
+            if (gatewayRates[m]) return gatewayRates[m];
+
+            // Search partial match (e.g., 'bKash Personal' -> matches 'bkash')
+            for (let key in gatewayRates) {
+                if (m.includes(key) || key.includes(m)) {
+                    return gatewayRates[key];
+                }
+            }
+            return 0;
+        }
+
         // Supabase Data Fetch Logic
         async function fetchTransactions() {
             const container = document.getElementById('trx-container');
@@ -568,6 +615,9 @@
             }
 
             try {
+                // Fetch USD rates first
+                await fetchPaymentGateways();
+
                 // Get current user id from localStorage or Session
                 const userId = localStorage.getItem('user_id');
 
@@ -619,9 +669,17 @@
                 const sign = isDeposit ? '+' : '-';
                 const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A';
                 
-                const amountVal = parseFloat(item.amount || 0).toFixed(2);
-                const chargeVal = parseFloat(item.charge || 0).toFixed(2);
-                const netVal = parseFloat(item.net_amount || (amountVal - chargeVal)).toFixed(2);
+                const amountVal = parseFloat(item.amount || 0);
+                const chargeVal = parseFloat(item.charge || 0);
+                const netVal = parseFloat(item.net_amount || (amountVal - chargeVal));
+
+                // BDT Conversion Calculation
+                const rate = getMethodRate(item.method);
+                let bdtHtml = '';
+                if (rate > 0) {
+                    const bdtAmount = (amountVal * rate).toFixed(2);
+                    bdtHtml = `<div class="trx-bdt">৳${bdtAmount} BDT</div>`;
+                }
 
                 // Dynamically fetch icon HTML for bKash, USD, Bank, etc.
                 const iconHtml = getTrxIcon(item.method || item.type, item.type);
@@ -638,7 +696,8 @@
                             </div>
                         </div>
                         <div class="trx-right">
-                            <div class="trx-amount ${typeClass}">${sign}$${amountVal}</div>
+                            <div class="trx-amount ${typeClass}">${sign}$${amountVal.toFixed(2)}</div>
+                            ${bdtHtml}
                             <span class="status-badge ${(item.status || 'pending').toLowerCase()}">${item.status || 'Pending'}</span>
                         </div>
                     </div>
@@ -655,11 +714,25 @@
             const isDeposit = (item.type || '').toLowerCase() === 'deposit';
             const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A';
 
+            const amountVal = parseFloat(item.amount || 0);
+            const chargeVal = parseFloat(item.charge || 0);
+            const netVal = parseFloat(item.net_amount || (amountVal - chargeVal));
+
+            // BDT Rate
+            const rate = getMethodRate(item.method);
+            let amountBdtText = '';
+            let netBdtText = '';
+
+            if (rate > 0) {
+                amountBdtText = ` <span style="font-size:0.75rem; color:var(--text-secondary); font-weight:normal;">(৳${(amountVal * rate).toFixed(2)} BDT)</span>`;
+                netBdtText = ` <span style="font-size:0.75rem; color:var(--text-secondary); font-weight:normal;">(৳${(netVal * rate).toFixed(2)} BDT)</span>`;
+            }
+
             document.getElementById('m-trxid').innerText = item.trx_id || item.id;
             document.getElementById('m-type').innerText = (item.type || '-').toUpperCase();
-            document.getElementById('m-amount').innerText = `$${parseFloat(item.amount || 0).toFixed(2)}`;
-            document.getElementById('m-charge').innerText = `$${parseFloat(item.charge || 0).toFixed(2)}`;
-            document.getElementById('m-net').innerText = `$${parseFloat(item.net_amount || 0).toFixed(2)}`;
+            document.getElementById('m-amount').innerHTML = `$${amountVal.toFixed(2)}${amountBdtText}`;
+            document.getElementById('m-charge').innerText = `$${chargeVal.toFixed(2)}`;
+            document.getElementById('m-net').innerHTML = `$${netVal.toFixed(2)}${netBdtText}`;
             document.getElementById('m-method').innerText = item.method || 'N/A';
             
             // Masking Account Number (e.g. 0163*****55)
