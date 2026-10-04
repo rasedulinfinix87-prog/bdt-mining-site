@@ -23,9 +23,10 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Artonex Trial', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
+    /* Zoom out effect applied via CSS zoom */
     body {
       background-color: var(--bg-dark);
       background-image: 
@@ -35,6 +36,14 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
+      zoom: 90%; /* Adjust percentage as needed for zoom out (e.g., 90%, 80%) */
+    }
+
+    /* Text Style for artonex trial */
+    .artonex-style {
+      font-family: 'Artonex Trial', sans-serif;
+      font-weight: normal;
+      letter-spacing: 0.5px;
     }
 
     .mobile-container {
@@ -379,7 +388,7 @@
         <a href="javascript:history.back()" class="back-btn">
           <i class="fa-solid fa-chevron-left"></i>
         </a>
-        <h2>Settings</h2>
+        <h2 class="artonex-style">Settings</h2>
       </div>
     </div>
 
@@ -389,7 +398,7 @@
         <i class="fa-solid fa-building-columns" id="user-avatar-icon"></i>
       </div>
       <div class="profile-info">
-        <h3 id="user-display-name">
+        <h3 id="user-display-name" class="artonex-style">
           <span class="skeleton skeleton-text-lg"></span>
         </h3>
         <p id="user-display-account">
@@ -429,7 +438,7 @@
   <div class="modal-overlay" id="invest-plans-modal">
     <div class="modal-card-custom">
       <i class="fa-solid fa-chart-line" style="font-size: 2.2rem; color: var(--gold-primary); margin-bottom: 12px;"></i>
-      <h4>Active Investment Plans</h4>
+      <h4 class="artonex-style">Active Investment Plans</h4>
       <p>Select which investment dashboard you want to view</p>
 
       <div class="plan-select-btns">
@@ -451,7 +460,7 @@
   <div class="modal-overlay" id="rating-modal">
     <div class="modal-card-custom">
       <i class="fa-solid fa-award" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 10px;"></i>
-      <h4>Rate Goldmine Digital</h4>
+      <h4 class="artonex-style">Rate Goldmine Digital</h4>
       <p>How was your experience using our investment platform?</p>
       
       <div class="stars-container">
@@ -473,7 +482,7 @@
   <div class="modal-overlay" id="logout-modal">
     <div class="modal-card-custom">
       <i class="fa-solid fa-circle-check" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 12px;"></i>
-      <h4>Logged Out</h4>
+      <h4 class="artonex-style">Logged Out</h4>
       <p>Logged out successfully!</p>
       <button class="btn-modal btn-submit" onclick="confirmLogoutReload()" style="width: 100%;">OK</button>
     </div>
@@ -602,7 +611,7 @@
           <a href="account-info.html" class="setting-item">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-user-gear"></i></div>
-              <span class="setting-title">Account Holder Info</span>
+              <span class="setting-title artonex-style">Account Holder Info</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </a>
@@ -610,7 +619,7 @@
           <div class="setting-item" onclick="openInvestModal()">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-gem"></i></div>
-              <span class="setting-title">Active Invest Plans</span>
+              <span class="setting-title artonex-style">Active Invest Plans</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
@@ -618,7 +627,7 @@
           <a href="transaction-history.html" class="setting-item">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-receipt"></i></div>
-              <span class="setting-title">Transaction History</span>
+              <span class="setting-title artonex-style">Transaction History</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </a>
@@ -626,7 +635,7 @@
           <div class="setting-item" onclick="openRatingModal()">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-star"></i></div>
-              <span class="setting-title">Rating Us</span>
+              <span class="setting-title artonex-style">Rating Us</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
@@ -634,7 +643,7 @@
           <a href="contact.html" class="setting-item">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-headset"></i></div>
-              <span class="setting-title">Contact Us</span>
+              <span class="setting-title artonex-style">Contact Us</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </a>
@@ -642,7 +651,7 @@
           <a href="privacy-policy.html" class="setting-item">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-shield-halved"></i></div>
-              <span class="setting-title">Privacy Policy</span>
+              <span class="setting-title artonex-style">Privacy Policy</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </a>
@@ -650,7 +659,7 @@
           <div class="setting-item logout" onclick="handleLogout()">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
-              <span class="setting-title">Log Out</span>
+              <span class="setting-title artonex-style">Log Out</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
@@ -664,7 +673,7 @@
           <a href="contact.html" class="setting-item">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-headset"></i></div>
-              <span class="setting-title">Contact Us</span>
+              <span class="setting-title artonex-style">Contact Us</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </a>
@@ -672,7 +681,7 @@
           <a href="privacy-policy.html" class="setting-item">
             <div class="setting-left">
               <div class="setting-icon"><i class="fa-solid fa-shield-halved"></i></div>
-              <span class="setting-title">Privacy Policy</span>
+              <span class="setting-title artonex-style">Privacy Policy</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </a>
@@ -682,7 +691,7 @@
               <div class="setting-icon" style="color: var(--green-glow); background: rgba(46, 213, 115, 0.1);">
                 <i class="fa-solid fa-right-to-bracket"></i>
               </div>
-              <span class="setting-title" style="color: var(--green-glow);">Sign In</span>
+              <span class="setting-title artonex-style" style="color: var(--green-glow);">Sign In</span>
             </div>
             <div class="setting-right"><i class="fa-solid fa-chevron-right"></i></div>
           </a>
