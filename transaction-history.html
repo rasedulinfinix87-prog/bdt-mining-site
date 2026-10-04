@@ -284,7 +284,7 @@
             background: #08221a;
             border-top: 1px solid var(--gold-primary);
             border-radius: 24px 24px 0 0;
-            padding: 24px 20px 30px 20px;
+            padding: 20px 20px 80px 20px; /* বটম বারের উপর যেন ভেসে ওঠে সে জন্য বটম প্যাডিং বাড়ানো হয়েছে */
             transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
             max-height: 85vh;
@@ -321,6 +321,7 @@
         .modal-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 0.82rem;
@@ -509,6 +510,16 @@
 
         let allTransactions = [];
 
+        // Account Number Masking Function (e.g. 01636144055 -> 0163*****55)
+        function maskAccountNumber(accNo) {
+            if (!accNo || accNo === 'N/A') return 'N/A';
+            const str = String(accNo).trim();
+            if (str.length >= 7) {
+                return str.substring(0, 4) + '*****' + str.substring(str.length - 2);
+            }
+            return str;
+        }
+
         // Dynamic Brand Icon Provider Function
         function getTrxIcon(methodName, type) {
             const m = (methodName || '').toLowerCase();
@@ -650,7 +661,10 @@
             document.getElementById('m-charge').innerText = `$${parseFloat(item.charge || 0).toFixed(2)}`;
             document.getElementById('m-net').innerText = `$${parseFloat(item.net_amount || 0).toFixed(2)}`;
             document.getElementById('m-method').innerText = item.method || 'N/A';
-            document.getElementById('m-account').innerText = item.account_number || 'N/A';
+            
+            // Masking Account Number (e.g. 0163*****55)
+            document.getElementById('m-account').innerText = maskAccountNumber(item.account_number);
+            
             document.getElementById('m-status').innerText = (item.status || 'pending').toUpperCase();
             document.getElementById('m-date').innerText = formattedDate;
 
