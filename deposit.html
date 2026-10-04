@@ -472,12 +472,12 @@
 
         <div class="input-card">
           <label for="account_number" id="sender-label">Your Sender Number / Wallet</label>
-          <input type="text" id="account_number" class="input-field" placeholder="Enter number or wallet address" required>
+          <input type="text" id="account_number" class="input-field" placeholder="01..." required>
         </div>
 
         <div class="input-card">
           <label for="trx_id">Transaction ID (TrxID)</label>
-          <input type="text" id="trx_id" class="input-field" placeholder="Enter Transaction ID" required>
+          <input type="text" id="trx_id" class="input-field" placeholder="Trx" required>
         </div>
 
         <button type="submit" class="btn-submit" id="btn-submit">
@@ -586,13 +586,13 @@
 
       if (selectedMethodKey === 'bkash') {
         senderLabel.innerText = 'Your bKash Number';
-        senderInput.placeholder = 'Enter bKash number';
+        senderInput.placeholder = '01...';
       } else if (selectedMethodKey === 'usdt') {
         senderLabel.innerText = 'Your USDT Sender Address';
-        senderInput.placeholder = 'Enter wallet address';
+        senderInput.placeholder = 'e.g. T... or 0x... Address';
       } else {
         senderLabel.innerText = 'Sender Account Title / No';
-        senderInput.placeholder = 'Enter account name or number';
+        senderInput.placeholder = 'e.g. Account Name / Number';
       }
     }
 
@@ -673,7 +673,7 @@
       }
     }
 
-    // Form Submission with Corrected Net Amount Logic
+    // Form Submission with Corrected Net Amount Logic & Strict Validations
     document.getElementById('deposit-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const client = window._supabase || window.supabase;
@@ -695,14 +695,27 @@
         return;
       }
 
+      // 2. Mobile Number (Account Number) Validation
+      if (selectedMethodKey === 'bkash') {
+        if (!accountNumber.startsWith('01')) {
+          showPopup('Invalid Mobile Number', 'মোবাইল নম্বরটি অবশ্যই 01 দিয়ে শুরু হতে হবে।', 'error');
+          return;
+        }
+
+        if (accountNumber.length !== 11) {
+          showPopup('Invalid Mobile Number', 'মোবাইল নম্বরটি অবশ্যই ঠিক ১১ ডিজিটের হতে হবে।', 'error');
+          return;
+        }
+      }
+
+      // 3. Transaction ID (TrxID) Validation
       if (!trxIdInput) {
         showPopup('Warning', 'Please enter a valid Transaction ID.', 'error');
         return;
       }
 
-      // bKash এর জন্য Trx ID সর্বনিম্ন ১০ সংখ্যার হতে হবে
       if (selectedMethodKey === 'bkash' && trxIdInput.length < 10) {
-        showPopup('Invalid TrxID', 'bKash Transaction ID অবশ্যই সর্বনিম্ন ১০ অক্ষরের হতে হবে।', 'error');
+        showPopup('Invalid Trx ID', 'bKash Transaction ID অবশ্যই সর্বনিম্ন ১০ অক্ষরের হতে হবে।', 'error');
         return;
       }
 
@@ -718,7 +731,7 @@
         return;
       }
 
-      // 2. Unique TrxID Check
+      // 4. Unique TrxID Check
       const { data: existingTrx, error: checkError } = await client
         .from('transactions')
         .select('trx_id')
@@ -732,7 +745,7 @@
         return;
       }
 
-      // 3. Deposit Amount Logic
+      // 5. Deposit Amount Logic Fix:
       let chargeAmount = 0;
       if (selectedMethodKey === 'bkash') {
         const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
