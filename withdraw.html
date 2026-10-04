@@ -145,14 +145,14 @@
         <!-- Default: bKash Fields -->
         <div class="form-group">
           <label>bKash Number</label>
-          <input type="text" class="form-control" id="bkash_number" placeholder="e.g. 01700000000" required>
+          <input type="text" class="form-control" id="bkash_number" placeholder="01..." required maxlength="11">
         </div>
       </div>
 
       <!-- Secret PIN Input (Common) -->
       <div class="form-group">
         <label>Secret PIN</label>
-        <input type="password" class="form-control" id="secret_pin" placeholder="Enter your secret PIN" required maxlength="10">
+        <input type="password" class="form-control" id="secret_pin" placeholder="Enter 4-digit PIN" required maxlength="4" inputmode="numeric">
       </div>
 
       <button type="submit" class="btn-submit" id="btn-submit">Submit Withdraw Request</button>
@@ -253,7 +253,7 @@
         fieldsContainer.innerHTML = `
           <div class="form-group">
             <label>bKash Number</label>
-            <input type="text" class="form-control" id="bkash_number" placeholder="e.g. 01700000000" required>
+            <input type="text" class="form-control" id="bkash_number" placeholder="01..." required maxlength="11">
           </div>
         `;
       } else if (method === 'usd') {
@@ -327,6 +327,25 @@
       const amountVal = parseFloat(document.getElementById('amount').value);
       const inputPin = document.getElementById('secret_pin').value.trim();
 
+      // bKash মোবাইল নাম্বার ভ্যালিডেশন
+      if (currentMethod === 'bkash') {
+        const bkashNum = document.getElementById('bkash_number').value.trim();
+        if (!bkashNum.startsWith('01')) {
+          showPopup("Invalid Mobile Number", "মোবাইল নম্বরটি অবশ্যই 01 দিয়ে শুরু হতে হবে।", "error");
+          return;
+        }
+        if (bkashNum.length !== 11 || !/^\d+$/.test(bkashNum)) {
+          showPopup("Invalid Mobile Number", "মোবাইল নম্বরটি অবশ্যই ঠিক ১১ ডিজিটের হতে হবে।", "error");
+          return;
+        }
+      }
+
+      // Secret PIN ভ্যালিডেশন (অবশ্যই ৪ ডিজিটের সংখ্যা হতে হবে)
+      if (inputPin.length !== 4 || !/^\d{4}$/.test(inputPin)) {
+        showPopup("Invalid Secret PIN", "Secret PIN অবশ্যই ৪ সংখ্যার (4 digits) হতে হবে।", "error");
+        return;
+      }
+
       if (currentMethod === 'bkash' && amountVal < minBkashUsd) {
         showPopup("Minimum Limit Error", `Minimum withdrawal amount for bKash is $${minBkashUsd}.`, "error");
         return;
@@ -366,7 +385,7 @@
           return;
         }
 
-        if (userData.secret_pin !== inputPin) {
+        if (String(userData.secret_pin) !== inputPin) {
           showPopup("Security Alert", "Incorrect Secret PIN! Please try again.", "error");
           return;
         }
@@ -393,7 +412,7 @@
         let methodNameDisplay = '';
 
         if (currentMethod === 'bkash') {
-          accountDetails = document.getElementById('bkash_number').value;
+          accountDetails = document.getElementById('bkash_number').value.trim();
           methodNameDisplay = 'bKash Personal';
         } else if (currentMethod === 'usd') {
           accountDetails = document.getElementById('bsc_address').value;
