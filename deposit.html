@@ -472,12 +472,12 @@
 
         <div class="input-card">
           <label for="account_number" id="sender-label">Your Sender Number / Wallet</label>
-          <input type="text" id="account_number" class="input-field" placeholder="Enter your number or wallet address" required>
+          <input type="text" id="account_number" class="input-field" placeholder="Enter number or wallet address" required>
         </div>
 
         <div class="input-card">
           <label for="trx_id">Transaction ID (TrxID)</label>
-          <input type="text" id="trx_id" class="input-field" placeholder="Enter transaction reference ID" required>
+          <input type="text" id="trx_id" class="input-field" placeholder="Enter Transaction ID" required>
         </div>
 
         <button type="submit" class="btn-submit" id="btn-submit">
@@ -586,13 +586,13 @@
 
       if (selectedMethodKey === 'bkash') {
         senderLabel.innerText = 'Your bKash Number';
-        senderInput.placeholder = 'e.g. 01700000000';
+        senderInput.placeholder = 'Enter bKash number';
       } else if (selectedMethodKey === 'usdt') {
         senderLabel.innerText = 'Your USDT Sender Address';
-        senderInput.placeholder = 'e.g. T... or 0x... Address';
+        senderInput.placeholder = 'Enter wallet address';
       } else {
         senderLabel.innerText = 'Sender Account Title / No';
-        senderInput.placeholder = 'e.g. Account Name / Number';
+        senderInput.placeholder = 'Enter account name or number';
       }
     }
 
@@ -700,6 +700,12 @@
         return;
       }
 
+      // bKash এর জন্য Trx ID সর্বনিম্ন ১০ সংখ্যার হতে হবে
+      if (selectedMethodKey === 'bkash' && trxIdInput.length < 10) {
+        showPopup('Invalid TrxID', 'bKash Transaction ID অবশ্যই সর্বনিম্ন ১০ অক্ষরের হতে হবে।', 'error');
+        return;
+      }
+
       submitBtn.innerText = "Processing...";
       submitBtn.disabled = true;
 
@@ -726,15 +732,13 @@
         return;
       }
 
-      // 3. Deposit Amount Logic Fix:
-      // ডিপোজিটে ইউজারের আসল জমা ($amountVal) ওয়ালেটে যোগ হতে হবে।
+      // 3. Deposit Amount Logic
       let chargeAmount = 0;
       if (selectedMethodKey === 'bkash') {
         const cashoutFeePct = parseFloat(currentGateway.cashout_fee) || 0;
         chargeAmount = (amountVal * cashoutFeePct) / 100;
       }
 
-      // net_amount সবসময় মূল ডিপোজিট অ্যামাউন্টের সমান রাখা হলো
       const netAmount = amountVal; 
       const methodName = currentGateway.title || selectedMethodKey.toUpperCase();
 
