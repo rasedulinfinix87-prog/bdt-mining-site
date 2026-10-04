@@ -854,6 +854,11 @@
     let rawAccountNumber = "";
     let isAccNumberVisible = false;
 
+    // --- LIVE BALANCE COUNTING VARIABLES ---
+    let baseWalletBalance = 0;
+    let activeInvestmentPlans = [];
+    let liveAnimationInterval = null;
+
     // ডট স্পিনিং অ্যানিমেশন সহ নেভিগেশন
     function handleButtonClick(e, targetUrl, btnElement) {
       e.preventDefault();
@@ -904,6 +909,89 @@
       document.getElementById('pinModal').style.display = 'none';
     }
 
+    // --- LIVE PROFIT CALCULATOR ENGINE ---
+    function startLiveBalanceTicker() {
+      if (liveAnimationInterval) clearInterval(liveAnimationInterval);
+
+      const balanceDisplay = document.getElementById('user-balance-display');
+
+      liveAnimationInterval = setInterval(() => {
+        const now = new Date().getTime();
+        let currentTotalLiveProfit = 0;
+
+        activeInvestmentPlans.forEach(plan => {
+          const startTime = new Date(plan.start_date).getTime();
+          const endTime = plan.end_date ? new Date(plan.end_date).getTime() : Infinity;
+
+          // যদি ইনভেস্টমেন্ট টাইম শুরু হয়ে থাকে
+          if (now > startTime) {
+            // ইনভেস্টমেন্ট টাইম শেষ হয়ে গেলে এন্ড টাইম পর্যন্ত গননা হবে
+            const effectiveTime = Math.min(now, endTime);
+            const elapsedSeconds = (effectiveTime - startTime) / 1000;
+
+            // প্রতি সেকেন্ডের প্রফিট = (Invested Amount * Daily Percent) / 100 / 86400 Seconds
+            const dailyRate = (plan.amount * (plan.daily_profit_percent / 100));
+            const profitPerSecond = dailyRate / 86400;
+
+            currentTotalLiveProfit += (elapsedSeconds * profitPerSecond);
+          }
+        });
+
+        const updatedTotalBalance = baseWalletBalance + currentTotalLiveProfit;
+
+        // যদি অ্যাক্টিভ প্ল্যান থাকে তবে রিয়েল-টাইম কাউন্টিং এর জন্য ৮/৯ দশমিক ডিজিট দেখাবে
+        if (activeInvestmentPlans.length > 0) {
+          balanceDisplay.innerText = '$' + updatedTotalBalance.toFixed(8);
+        } else {
+          balanceDisplay.innerText = '$' + updatedTotalBalance.toFixed(2);
+        }
+      }, 50); // প্রতি ৫০ মিলিসেকেন্ডে লাইভ কাউন্টিং আপডেট হবে
+    }
+
+    // 'investments' এবং 'crypto_investment' টেবিল থেকে অ্যাক্টিভ ইনভেস্টমেন্ট ফেচ করার ফাংশন
+    async function fetchActiveInvestments(client, userId) {
+      activeInvestmentPlans = [];
+
+      // ১. 'investments' টেবিল থেকে অ্যাক্টিভ ডাটা নেওয়া
+      const { data: stdInv } = await client
+        .from('investments')
+        .select('amount, daily_profit_percent, start_date, end_date')
+        .eq('user_id', userId)
+        .eq('status', 'active');
+
+      if (stdInv && stdInv.length > 0) {
+        stdInv.forEach(item => {
+          activeInvestmentPlans.push({
+            amount: parseFloat(item.amount || 0),
+            daily_profit_percent: parseFloat(item.daily_profit_percent || 0),
+            start_date: item.start_date,
+            end_date: item.end_date
+          });
+        });
+      }
+
+      // ২. 'crypto_investment' টেবিল থেকে অ্যাক্টিভ ডাটা নেওয়া
+      const { data: cryptoInv } = await client
+        .from('crypto_investment')
+        .select('invested_amount, daily_profit_percent, start_date, end_date')
+        .eq('user_id', userId)
+        .eq('status', 'active');
+
+      if (cryptoInv && cryptoInv.length > 0) {
+        cryptoInv.forEach(item => {
+          activeInvestmentPlans.push({
+            amount: parseFloat(item.invested_amount || 0),
+            daily_profit_percent: parseFloat(item.daily_profit_percent || 0),
+            start_date: item.start_date,
+            end_date: item.end_date
+          });
+        });
+      }
+
+      // লাইভ কাউন্টিং চালু করা
+      startLiveBalanceTicker();
+    }
+
     // 'wallets' টেবিল থেকে ব্যালেন্স এবং ১৪ ডিজিটের অ্যাকাউন্ট নম্বর পাওয়ার ফাংশন
     async function fetchWalletDetails(client, userId) {
       const { data, error } = await client
@@ -912,12 +1000,11 @@
         .eq('user_id', userId)
         .maybeSingle();
 
-      const balanceDisplay = document.getElementById('user-balance-display');
       const accDisplay = document.getElementById('account-number-display');
 
       if (data) {
-        // ব্যালেন্স সেট করা
-        balanceDisplay.innerText = '$' + parseFloat(data.balance || 0).toFixed(2);
+        // বেইস ব্যালেন্স সেট করা
+        baseWalletBalance = parseFloat(data.balance || 0);
         
         // অ্যাকাউন্ট নম্বর থাকলে প্রদর্শন করা, না থাকলে নতুন একটা বানিয়ে সেভ করা
         if (data.account_number) {
@@ -931,10 +1018,14 @@
         }
         renderAccountNumberUI();
       } else {
-        balanceDisplay.innerText = '$0.00';
+        baseWalletBalance = 0.00;
+        document.getElementById('user-balance-display').innerText = '$0.00';
         accDisplay.innerHTML = `<i class="fa-solid fa-building-columns" style="font-size: 0.75rem;"></i> <span>---- ---- ---- --</span>`;
         if (error) console.log("Wallet details fetch error:", error.message);
       }
+
+      // ইনভেস্টমেন্ট ফেচ করে লাইভ কাউন্ট যুক্ত করা
+      await fetchActiveInvestments(client, userId);
     }
 
     // --- ট্রানজাকশন হিস্ট্রি লোড করার ফাংশন (ডিফল্ট ৫টি) ---
@@ -1078,7 +1169,7 @@
         document.getElementById('user-name-display').innerText = user.email ? user.email.split('@')[0] : "User";
       }
 
-      // ৩. প্রাথমিক ব্যালেন্স ও অ্যাকাউন্ট নম্বর ফেচ করা
+      // ৩. প্রাথমিক ব্যালেন্স, ইনভেস্টমেন্ট ও অ্যাকাউন্ট নম্বর ফেচ করা
       await fetchWalletDetails(client, currentUserId);
 
       // ৪. ট্রানজাকশন হিস্ট্রি ফেচ করা (ডিফল্ট ৫টি)
@@ -1099,10 +1190,8 @@
             filter: `user_id=eq.${currentUserId}`
           },
           (payload) => {
-            if (payload.new) {
-              if (payload.new.balance !== undefined) {
-                document.getElementById('user-balance-display').innerText = '$' + parseFloat(payload.new.balance).toFixed(2);
-              }
+            if (payload.new && payload.new.balance !== undefined) {
+              baseWalletBalance = parseFloat(payload.new.balance || 0);
               if (payload.new.account_number) {
                 rawAccountNumber = payload.new.account_number;
                 renderAccountNumberUI();
@@ -1112,7 +1201,36 @@
         )
         .subscribe();
 
-      // ৭. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
+      // ৭. Realtime Listener: 'investments' বা 'crypto_investment' টেবিলে নতুন ইনভেস্ট শুরু হলে সাথে সাথে আপডেট করা
+      client
+        .channel('investments-live-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'investments',
+            filter: `user_id=eq.${currentUserId}`
+          },
+          () => {
+            fetchActiveInvestments(client, currentUserId);
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'crypto_investment',
+            filter: `user_id=eq.${currentUserId}`
+          },
+          () => {
+            fetchActiveInvestments(client, currentUserId);
+          }
+        )
+        .subscribe();
+
+      // ৮. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
       client
         .channel('notifications-live-changes')
         .on(
@@ -1129,7 +1247,7 @@
         )
         .subscribe();
 
-      // ৮. Realtime Listener: 'transactions' টেবিলে পরিবর্তন হলে শুধু ট্রানজ্যাকশন লিস্ট রিফ্রেশ করবে
+      // ৯. Realtime Listener: 'transactions' টেবিলে পরিবর্তন হলে শুধু ট্রানজ্যাকশন লিস্ট রিফ্রেশ করবে
       client
         .channel('transactions-status-changes')
         .on(
