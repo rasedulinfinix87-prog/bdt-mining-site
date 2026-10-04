@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.85, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Goldmine Digital - Mining & Investment</title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,19 +32,11 @@
         }
 
         body {
-            background-color: #030d0a;
+            background-color: var(--bg-color);
             color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            min-height: -webkit-fill-available;
-            overflow: hidden;
-            zoom: 88%;
-        }
-
-        html {
-            height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Loader Overlay */
@@ -145,20 +137,16 @@
             animation: blinkLive 1s infinite ease-in-out;
         }
 
-        /* Mobile Container */
+        /* Full Width Container */
         .mobile-container {
             width: 100%;
-            max-width: 410px;
-            height: 100vh;
-            height: 100dvh;
+            min-height: 100vh;
             background: var(--bg-color);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden;
             position: relative;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 70px; /* space for bottom nav */
         }
 
         header {
@@ -234,16 +222,11 @@
 
         .modal-content-wrapper {
             width: 100%;
-            max-width: 410px;
             height: 100%;
-            max-height: 100dvh;
             background: #061913;
             position: relative;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            border-left: 1px solid rgba(245, 207, 102, 0.2);
-            border-right: 1px solid rgba(245, 207, 102, 0.2);
         }
 
         .modal-close-bar {
@@ -276,21 +259,11 @@
         }
 
         .content {
-            padding: 10px 16px 20px 16px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 14px;
             flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .content::-webkit-scrollbar {
-            width: 3px;
-        }
-        .content::-webkit-scrollbar-thumb {
-            background: rgba(245, 207, 102, 0.2);
-            border-radius: 4px;
         }
 
         .dashboard-card {
@@ -424,7 +397,7 @@
             margin-top: 2px;
         }
 
-        /* --- NiceHash Style Diagram Structure --- */
+        /* --- Diagram Structure --- */
         .nicehash-diagram {
             position: relative;
             width: 100%;
@@ -462,22 +435,18 @@
             text-align: center;
         }
 
-        /* Node Top-Left: Gold & Crypto Buy */
         .node-buyer { top: 12px; left: 16px; }
         .node-buyer .nh-node-circle { background: #f5cf66; color: #030d0a; border: 2px solid #e5ba41; }
         .node-buyer .nh-node-label { color: #f5cf66; }
 
-        /* Node Top-Right: Plan Buy */
         .node-miner { top: 12px; right: 16px; }
         .node-miner .nh-node-circle { background: #2ed573; color: #030d0a; border: 2px solid #26af5f; }
         .node-miner .nh-node-label { color: #2ed573; }
 
-        /* Node Bottom-Left: Profit Payouts */
         .node-pool { bottom: 12px; left: 16px; }
         .node-pool .nh-node-circle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 2px solid rgba(255,255,255,0.3); }
         .node-pool .nh-node-label { color: var(--text-secondary); }
 
-        /* Node Center: User Account Hub */
         .node-hub {
             top: 50%;
             left: 50%;
@@ -499,7 +468,6 @@
         }
         .node-hub .nh-node-label { color: #fff; font-size: 0.7rem; }
 
-        /* SVG Connection Lines & Animated Flow */
         .nh-svg-lines {
             position: absolute;
             top: 0;
@@ -539,7 +507,6 @@
             to { stroke-dashoffset: 24; }
         }
 
-        /* Flow Legend at Bottom Right */
         .nh-legend {
             position: absolute;
             bottom: 8px;
@@ -627,16 +594,19 @@
         }
 
         #bottom-nav-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            flex-shrink: 0;
+            z-index: 999;
         }
 
         .bottom-nav {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 12px 0 18px 0;
-            background: #061913;
+            padding: 12px 0 14px 0;
+            background: #030d0a;
             border-top: 1px solid rgba(46, 213, 115, 0.25);
             width: 100%;
         }
@@ -662,7 +632,7 @@
 </head>
 <body>
 
-    <!-- Premium Fullscreen Loading Overlay with Dots Animation -->
+    <!-- Loader -->
     <div id="loader-overlay">
         <div class="loader-wrapper">
             <div class="dot-loader"></div>
@@ -675,7 +645,7 @@
         <div class="loader-subtext">Securing Asset Vault...</div>
     </div>
 
-    <!-- Live Payouts Popup Modal -->
+    <!-- Live Payouts Modal -->
     <div class="payouts-modal" id="payoutsModal">
         <div class="modal-content-wrapper">
             <div class="modal-close-bar">
@@ -702,7 +672,7 @@
         <!-- Main Dashboard Content -->
         <div class="content">
             
-            <!-- Box 1: Gold Price & 100 Data Points Trend Graph -->
+            <!-- Box 1 -->
             <div class="dashboard-card">
                 <div class="card-header">
                     <div class="card-title">CURRENT GOLD PRICE</div>
@@ -717,7 +687,7 @@
                 </div>
             </div>
 
-            <!-- Box 2: Crypto Rates & 100 Data Points Trend Graph -->
+            <!-- Box 2 -->
             <div class="dashboard-card">
                 <div class="card-header">
                     <div class="card-title">MARKET RATES (CRYPTO)</div>
@@ -733,7 +703,6 @@
                         <div class="crypto-val">$<span id="btc-price">65,411.58</span></div>
                     </div>
 
-                    <!-- Crypto 100 Points Dynamic Graph Box -->
                     <div class="chart-box" style="height: 75px;">
                         <canvas id="cryptoChart"></canvas>
                     </div>
@@ -745,50 +714,40 @@
                 <button class="btn-gold" onclick="window.location.href='login-signup.html'">START INVESTING</button>
             </div>
 
-            <!-- How Gold Investment Works Card (NiceHash Style Diagram & Flow) -->
+            <!-- How Gold Investment Works Card -->
             <div class="how-it-works-card">
                 <div class="how-header">
                     <h3>How Gold Investment Works</h3>
                     <p>Simple 3-step process to grow your assets</p>
                 </div>
 
-                <!-- NiceHash Dynamic Diagram Structure -->
                 <div class="nicehash-diagram">
-                    <!-- SVG lines connecting nodes with Animated Moving Flow -->
                     <svg class="nh-svg-lines" viewBox="0 0 300 230">
-                        <!-- Diagonal 1: Gold & Crypto -> User Hub -->
                         <line class="line-inflow-gold" x1="50" y1="45" x2="150" y2="115" stroke="#f5cf66" stroke-width="2.5"/>
-                        <!-- Diagonal 2: Plan Buy -> User Hub -->
                         <line class="line-inflow-plan" x1="250" y1="45" x2="150" y2="115" stroke="#2ed573" stroke-width="2.5"/>
-                        <!-- Diagonal 3: User Hub -> Returns/Payouts -->
                         <line class="line-outflow-payout" x1="150" y1="115" x2="50" y2="185" stroke="#8da499" stroke-width="2"/>
                     </svg>
 
-                    <!-- Top-Left Node: Gold & Crypto Buy -->
                     <div class="nh-node node-buyer">
                         <div class="nh-node-circle"><i class="fa-solid fa-coins"></i></div>
                         <div class="nh-node-label">Gold & Crypto<br><span style="font-size: 0.55rem; color: #8da499;">Direct Buy</span></div>
                     </div>
 
-                    <!-- Top-Right Node: Plan Buy -->
                     <div class="nh-node node-miner">
                         <div class="nh-node-circle"><i class="fa-solid fa-layer-group"></i></div>
                         <div class="nh-node-label">Plan Buy<br><span style="font-size: 0.55rem; color: #8da499;">Mining Plan</span></div>
                     </div>
 
-                    <!-- Center Hub Node: User Account Hub -->
                     <div class="nh-node node-hub">
                         <div class="nh-node-circle"><i class="fa-solid fa-vault"></i></div>
                         <div class="nh-node-label">User Account<br><span style="font-size: 0.55rem; color: var(--gold-primary);">Asset Hub</span></div>
                     </div>
 
-                    <!-- Bottom-Left Node: Profit Payouts -->
                     <div class="nh-node node-pool">
                         <div class="nh-node-circle"><i class="fa-solid fa-arrow-trend-up"></i></div>
                         <div class="nh-node-label">Returns<br><span style="font-size: 0.55rem; color: #8da499;">Daily Profit</span></div>
                     </div>
 
-                    <!-- Legend -->
                     <div class="nh-legend">
                         <div class="legend-item"><div class="legend-dot" style="background: #f5cf66;"></div> Buy Asset Flow</div>
                         <div class="legend-item"><div class="legend-dot" style="background: #2ed573;"></div> Plan Buy Flow</div>
@@ -796,11 +755,8 @@
                 </div>
 
                 <div class="flow-container">
-                    <!-- Step 1 -->
                     <div class="flow-step">
-                        <div class="flow-icon">
-                            <i class="fa-solid fa-wallet"></i>
-                        </div>
+                        <div class="flow-icon"><i class="fa-solid fa-wallet"></i></div>
                         <div class="flow-text">
                             <h4>1. Deposit Funds</h4>
                             <p>Choose plan and deposit via USDT or Local Pay</p>
@@ -809,11 +765,8 @@
 
                     <i class="fa-solid fa-chevron-down flow-arrow"></i>
 
-                    <!-- Step 2 -->
                     <div class="flow-step">
-                        <div class="flow-icon">
-                            <i class="fa-solid fa-coins"></i>
-                        </div>
+                        <div class="flow-icon"><i class="fa-solid fa-coins"></i></div>
                         <div class="flow-text">
                             <h4>2. Asset Mining & Trade</h4>
                             <p>Funds backed by real-time gold reserves</p>
@@ -822,11 +775,8 @@
 
                     <i class="fa-solid fa-chevron-down flow-arrow"></i>
 
-                    <!-- Step 3 -->
                     <div class="flow-step">
-                        <div class="flow-icon">
-                            <i class="fa-solid fa-arrow-trend-up"></i>
-                        </div>
+                        <div class="flow-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
                         <div class="flow-text">
                             <h4>3. Daily Returns</h4>
                             <p>Receive daily profits & instant withdrawals</p>
@@ -837,7 +787,7 @@
 
         </div>
 
-        <!-- Dynamic / Fallback Bottom Nav Container -->
+        <!-- Sticky Bottom Nav -->
         <div id="bottom-nav-container">
             <nav class="bottom-nav">
                 <a href="javascript:history.back()" class="nav-item">
@@ -873,32 +823,23 @@
                 const loader = document.getElementById('loader-overlay');
                 if (loader) {
                     loader.classList.add('fade-out');
-                    document.body.style.overflow = 'auto';
                 }
             }, remainingTime);
         });
 
-        // Popup Modal Control Functions
         function openPayoutsModal() {
-            const modal = document.getElementById('payoutsModal');
-            modal.classList.add('active');
+            document.getElementById('payoutsModal').classList.add('active');
         }
 
         function closePayoutsModal() {
-            const modal = document.getElementById('payoutsModal');
-            modal.classList.remove('active');
+            document.getElementById('payoutsModal').classList.remove('active');
         }
 
         fetch('bottom.html?v=' + new Date().getTime())
-            .then(response => {
-                if(response.ok) return response.text();
-            })
-            .then(data => {
-                if(data) document.getElementById('bottom-nav-container').innerHTML = data;
-            })
+            .then(response => { if(response.ok) return response.text(); })
+            .then(data => { if(data) document.getElementById('bottom-nav-container').innerHTML = data; })
             .catch(error => console.log('Using default bottom nav'));
 
-        // Helper function to generate exactly 100 fluctuating market points for smooth performance
         function generateMarketPoints(startVal, volatility) {
             let points = [startVal];
             let current = startVal;
@@ -914,7 +855,7 @@
         const cryptoPoints = generateMarketPoints(64000, 75);
         const labels100 = Array.from({length: 100}, (_, i) => `Pt ${i + 1}`);
 
-        // Gold Chart Implementation
+        // Gold Chart
         const goldCtx = document.getElementById('goldChart').getContext('2d');
         const goldGradient = goldCtx.createLinearGradient(0, 0, 0, 100);
         goldGradient.addColorStop(0, 'rgba(245, 207, 102, 0.4)');
@@ -942,7 +883,7 @@
             }
         });
 
-        // Crypto Chart Implementation
+        // Crypto Chart
         const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
         const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
         cryptoGradient.addColorStop(0, 'rgba(46, 213, 115, 0.35)');
@@ -970,7 +911,7 @@
             }
         });
 
-        // Real-time market update simulation (Smooth & Lag-free)
+        // Realtime simulation
         setInterval(() => {
             let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
             let newGold = (currentGold + (Math.random() - 0.49) * 2.0).toFixed(2);
