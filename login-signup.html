@@ -352,7 +352,7 @@
                         <label>Phone Number</label>
                         <div class="input-box">
                             <i class="fa-solid fa-phone"></i>
-                            <input type="tel" id="signup-phone" placeholder="+8801700000000" required>
+                            <input type="tel" id="signup-phone" placeholder="01700000000" maxlength="11" required>
                         </div>
                     </div>
 
@@ -376,7 +376,7 @@
                         <label>Secret Security PIN (4 Digits)</label>
                         <div class="input-box">
                             <i class="fa-solid fa-shield-halved"></i>
-                            <input type="password" id="signup-pin" maxlength="4" minlength="4" placeholder="1234" required>
+                            <input type="password" id="signup-pin" maxlength="4" minlength="4" placeholder="****" required>
                         </div>
                         <div class="pin-hint"><i class="fa-solid fa-circle-check"></i> Required for Vault Withdrawals & Actions</div>
                     </div>
@@ -436,6 +436,13 @@
 
         let supabaseClient = null;
         let modalCallback = null;
+
+        // Common weak passwords list
+        const commonPasswords = [
+            "12345678", "123456789", "1234567890", "password", "password123",
+            "012345678", "11111111", "00000000", "qwertyuiop", "admin1234",
+            "12344321", "87654321"
+        ];
 
         function getSupabaseClient() {
             if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
@@ -502,9 +509,22 @@
             const confirmPassword = document.getElementById('signup-confirm-password').value;
             const secretPin = document.getElementById('signup-pin').value.trim();
 
-            // Password length validation (Min 8 digits)
+            // Phone Number Validation (Must start with '01' and be exactly 11 digits)
+            const phoneRegex = /^01[3-9]\d{8}$/;
+            if (!phoneRegex.test(phone) || phone.length !== 11) {
+                showPopup('Please enter a valid 11-digit Bangladeshi phone number starting with 01.', 'fa-solid fa-triangle-exclamation');
+                return;
+            }
+
+            // Password length validation (Min 8 characters)
             if (password.length < 8) {
                 showPopup('Password must be at least 8 characters long.', 'fa-solid fa-triangle-exclamation');
+                return;
+            }
+
+            // Common Password Check
+            if (commonPasswords.includes(password.toLowerCase())) {
+                showPopup('This password is too common or easy to guess. Please choose a stronger password.', 'fa-solid fa-triangle-exclamation');
                 return;
             }
 
@@ -515,7 +535,8 @@
             }
 
             // Secret Pin 4 digit validation
-            if (secretPin.length !== 4 || isNaN(secretPin)) {
+            const pinRegex = /^\d{4}$/;
+            if (!pinRegex.test(secretPin)) {
                 showPopup('Secret Security PIN must be exactly 4 digits.', 'fa-solid fa-triangle-exclamation');
                 return;
             }
