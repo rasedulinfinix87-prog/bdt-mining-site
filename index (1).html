@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Goldmine Digital - Mining & Investment</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #061913;
+            --card-bg: rgba(12, 38, 29, 0.85);
+            --card-border: rgba(46, 213, 115, 0.25);
+            --text-primary: #ffffff;
+            --text-secondary: #8da499;
+            --gold-primary: #f5cf66;
+            --gold-gradient: linear-gradient(135deg, #e5ba41 0%, #fbe89d 50%, #b88a1a 100%);
+            --accent-green: #2ed573;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #030d0a;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow: hidden;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        /* Loader Overlay */
+        #loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #030d0a;
+            background-image: radial-gradient(circle at 50% 45%, #061913 0%, #030d0a 85%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        #loader-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-wrapper {
+            position: relative;
+            width: 160px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Dot Loading Animation */
+        .dot-loader {
+            width: 14px;
+            height: 14px;
+            background-color: var(--text-secondary);
+            border-radius: 50%;
+            animation: dotBlink 1.4s infinite ease-in-out both;
+        }
+
+        .dot-loader:nth-child(1) { animation-delay: -0.32s; }
+        .dot-loader:nth-child(2) { animation-delay: -0.16s; }
+        .dot-loader:nth-child(3) { animation-delay: 0s; }
+        .dot-loader:nth-child(4) { animation-delay: 0.16s; }
+        .dot-loader:nth-child(5) { animation-delay: 0.32s; }
+        .dot-loader:nth-child(6) { animation-delay: 0.48s; }
+
+        @keyframes dotBlink {
+            0%, 80%, 100% { 
+                transform: scale(0.6); 
+                background-color: var(--text-secondary);
+                box-shadow: none;
+            }
+            40% { 
+                transform: scale(1.3); 
+                background-color: var(--gold-primary);
+                box-shadow: 0 0 12px var(--gold-primary);
+            }
+        }
+
+        .loader-subtext {
+            font-size: 0.78rem;
+            color: var(--gold-primary);
+            margin-top: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(245, 207, 102, 0.3);
+            animation: pulseSubtext 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseSubtext {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Blinking Live Indicator Animation */
+        @keyframes blinkLive {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .live-indicator i {
+            font-size: 0.4rem;
+            animation: blinkLive 1s infinite ease-in-out;
+        }
+
+        /* Mobile Container */
+        .mobile-container {
+            width: 100%;
+            max-width: 410px;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            position: relative;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        header {
+            padding: 16px 20px 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(245, 207, 102, 0.1);
+        }
+
+        .brand-logo {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(245, 207, 102, 0.3);
+        }
+
+        /* Payouts Header Button & Blinking Dot Styles */
+        .header-payouts-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(46, 213, 115, 0.12);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            padding: 5px 10px;
+            border-radius: 12px;
+            color: var(--accent-green);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .header-payouts-btn:active {
+            transform: scale(0.95);
+        }
+
+        .payouts-blink-dot {
+            width: 7px;
+            height: 7px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: blinkLive 1s infinite ease-in-out;
+        }
+
+        /* Popup Modal Styles for Live Payouts */
+        .payouts-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 13, 10, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .payouts-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content-wrapper {
+            width: 100%;
+            max-width: 410px;
+            height: 100%;
+            max-height: 100dvh;
+            background: #061913;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            border-left: 1px solid rgba(245, 207, 102, 0.2);
+            border-right: 1px solid rgba(245, 207, 102, 0.2);
+        }
+
+        .modal-close-bar {
+            padding: 12px 20px;
+            display: flex;
+            justify-content: flex-end;
+            background: #030d0a;
+            border-bottom: 1px solid rgba(245, 207, 102, 0.2);
+        }
+
+        .modal-close-btn {
+            background: rgba(255, 71, 87, 0.15);
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            color: #ff4757;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .modal-iframe {
+            width: 100%;
+            flex: 1;
+            border: none;
+            background: #061913;
+        }
+
+        .content {
+            padding: 10px 16px 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .content::-webkit-scrollbar-thumb {
+            background: rgba(245, 207, 102, 0.2);
+            border-radius: 4px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 14px 16px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .price-badge {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .badge-green {
+            color: var(--accent-green);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .chart-box {
+            width: 100%;
+            height: 100px;
+            margin-top: 8px;
+        }
+
+        .crypto-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .crypto-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .crypto-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .crypto-info i {
+            color: var(--gold-primary);
+            font-size: 1rem;
+        }
+
+        .crypto-val {
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .cta-wrapper {
+            margin-top: 10px;
+            padding: 0 4px;
+        }
+
+        .btn-gold {
+            width: 100%;
+            padding: 14px;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 25px;
+            color: #030d0a;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(245, 207, 102, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-gold:active {
+            transform: scale(0.98);
+        }
+
+        /* --- How Gold Investment Works Card Styles --- */
+        .how-it-works-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(245, 207, 102, 0.3);
+            border-radius: 18px;
+            padding: 16px;
+            margin-top: 6px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .how-header {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .how-header h3 {
+            font-size: 0.92rem;
+            color: var(--gold-primary);
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .how-header p {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* --- NiceHash Style Diagram Structure --- */
+        .nicehash-diagram {
+            position: relative;
+            width: 100%;
+            height: 230px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            background: rgba(3, 13, 10, 0.6);
+            border: 1px solid rgba(245, 207, 102, 0.15);
+            overflow: hidden;
+        }
+
+        .nh-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .nh-node-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .nh-node-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        /* Node Top-Left: Gold & Crypto Buy */
+        .node-buyer { top: 12px; left: 16px; }
+        .node-buyer .nh-node-circle { background: #f5cf66; color: #030d0a; border: 2px solid #e5ba41; }
+        .node-buyer .nh-node-label { color: #f5cf66; }
+
+        /* Node Top-Right: Plan Buy */
+        .node-miner { top: 12px; right: 16px; }
+        .node-miner .nh-node-circle { background: #2ed573; color: #030d0a; border: 2px solid #26af5f; }
+        .node-miner .nh-node-label { color: #2ed573; }
+
+        /* Node Bottom-Left: Profit Payouts */
+        .node-pool { bottom: 12px; left: 16px; }
+        .node-pool .nh-node-circle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 2px solid rgba(255,255,255,0.3); }
+        .node-pool .nh-node-label { color: var(--text-secondary); }
+
+        /* Node Center: User Account Hub */
+        .node-hub {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .node-hub .nh-node-circle {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #061913, #0c261d);
+            color: var(--gold-primary);
+            border: 2px solid var(--gold-primary);
+            box-shadow: 0 0 15px rgba(245, 207, 102, 0.5);
+            font-size: 1.2rem;
+            animation: pulseHub 2s infinite alternate;
+        }
+        @keyframes pulseHub {
+            0% { box-shadow: 0 0 10px rgba(245, 207, 102, 0.3); }
+            100% { box-shadow: 0 0 20px rgba(245, 207, 102, 0.8); }
+        }
+        .node-hub .nh-node-label { color: #fff; font-size: 0.7rem; }
+
+        /* SVG Connection Lines & Animated Flow */
+        .nh-svg-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .line-inflow-gold {
+            stroke-dasharray: 6, 6;
+            animation: moveFlowGold 1s linear infinite;
+        }
+
+        .line-inflow-plan {
+            stroke-dasharray: 6, 6;
+            animation: moveFlowPlan 1s linear infinite;
+        }
+
+        .line-outflow-payout {
+            stroke-dasharray: 6, 6;
+            animation: moveFlowPayout 1s linear infinite;
+        }
+
+        @keyframes moveFlowGold {
+            from { stroke-dashoffset: 24; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes moveFlowPlan {
+            from { stroke-dashoffset: 24; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes moveFlowPayout {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: 24; }
+        }
+
+        /* Flow Legend at Bottom Right */
+        .nh-legend {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(12, 38, 29, 0.9);
+            border: 1px solid rgba(245, 207, 102, 0.2);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.58rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 2;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(245, 207, 102, 0.15);
+            padding: 10px 12px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .flow-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(245, 207, 102, 0.12);
+            border: 1px solid rgba(245, 207, 102, 0.3);
+            color: var(--gold-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .flow-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flow-text h4 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .flow-text p {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            margin-top: 1px;
+        }
+
+        .flow-arrow {
+            color: var(--gold-primary);
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin: -2px 0;
+        }
+
+        #bottom-nav-container {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0 18px 0;
+            background: #061913;
+            border-top: 1px solid rgba(46, 213, 115, 0.25);
+            width: 100%;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #8da499;
+            font-size: 0.72rem;
+            text-decoration: none;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #f5cf66;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Premium Fullscreen Loading Overlay with Dots Animation -->
+    <div id="loader-overlay">
+        <div class="loader-wrapper">
+            <div class="dot-loader"></div>
+            <div class="dot-loader"></div>
+            <div class="dot-loader"></div>
+            <div class="dot-loader"></div>
+            <div class="dot-loader"></div>
+            <div class="dot-loader"></div>
+        </div>
+        <div class="loader-subtext">Securing Asset Vault...</div>
+    </div>
+
+    <!-- Live Payouts Popup Modal -->
+    <div class="payouts-modal" id="payoutsModal">
+        <div class="modal-content-wrapper">
+            <div class="modal-close-bar">
+                <button class="modal-close-btn" onclick="closePayoutsModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <iframe src="live-payouts.html" class="modal-iframe" id="payoutsIframe"></iframe>
+        </div>
+    </div>
+
+    <div class="mobile-container">
+        <!-- Header -->
+        <header>
+            <div class="brand-logo">
+                SECURING YOUR ASSET VAULT
+            </div>
+            <button class="header-payouts-btn" onclick="openPayoutsModal()">
+                <div class="payouts-blink-dot"></div>
+                <span>PAYOUTS</span>
+            </button>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <div class="content">
+            
+            <!-- Box 1: Gold Price & 100 Data Points Trend Graph -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">CURRENT GOLD PRICE</div>
+                    <span class="live-indicator"><i class="fa-solid fa-circle"></i> LIVE</span>
+                </div>
+                <div class="price-badge">
+                    $<span id="gold-price">2,184.65</span>/oz 
+                    <span class="badge-green">(UP +<span id="gold-change">1.4</span>%)</span>
+                </div>
+                <div class="chart-box">
+                    <canvas id="goldChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Box 2: Crypto Rates & 100 Data Points Trend Graph -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">MARKET RATES (CRYPTO)</div>
+                    <span class="live-indicator"><i class="fa-solid fa-circle"></i> LIVE</span>
+                </div>
+                
+                <div class="crypto-container">
+                    <div class="crypto-row">
+                        <div class="crypto-info">
+                            <i class="fa-brands fa-bitcoin"></i>
+                            <span>BTC / USD</span>
+                        </div>
+                        <div class="crypto-val">$<span id="btc-price">65,411.58</span></div>
+                    </div>
+
+                    <!-- Crypto 100 Points Dynamic Graph Box -->
+                    <div class="chart-box" style="height: 75px;">
+                        <canvas id="cryptoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start Investing Button -->
+            <div class="cta-wrapper">
+                <button class="btn-gold" onclick="window.location.href='login-signup.html'">START INVESTING</button>
+            </div>
+
+            <!-- How Gold Investment Works Card (NiceHash Style Diagram & Flow) -->
+            <div class="how-it-works-card">
+                <div class="how-header">
+                    <h3>How Gold Investment Works</h3>
+                    <p>Simple 3-step process to grow your assets</p>
+                </div>
+
+                <!-- NiceHash Dynamic Diagram Structure -->
+                <div class="nicehash-diagram">
+                    <!-- SVG lines connecting nodes with Animated Moving Flow -->
+                    <svg class="nh-svg-lines" viewBox="0 0 300 230">
+                        <!-- Diagonal 1: Gold & Crypto -> User Hub -->
+                        <line class="line-inflow-gold" x1="50" y1="45" x2="150" y2="115" stroke="#f5cf66" stroke-width="2.5"/>
+                        <!-- Diagonal 2: Plan Buy -> User Hub -->
+                        <line class="line-inflow-plan" x1="250" y1="45" x2="150" y2="115" stroke="#2ed573" stroke-width="2.5"/>
+                        <!-- Diagonal 3: User Hub -> Returns/Payouts -->
+                        <line class="line-outflow-payout" x1="150" y1="115" x2="50" y2="185" stroke="#8da499" stroke-width="2"/>
+                    </svg>
+
+                    <!-- Top-Left Node: Gold & Crypto Buy -->
+                    <div class="nh-node node-buyer">
+                        <div class="nh-node-circle"><i class="fa-solid fa-coins"></i></div>
+                        <div class="nh-node-label">Gold & Crypto<br><span style="font-size: 0.55rem; color: #8da499;">Direct Buy</span></div>
+                    </div>
+
+                    <!-- Top-Right Node: Plan Buy -->
+                    <div class="nh-node node-miner">
+                        <div class="nh-node-circle"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="nh-node-label">Plan Buy<br><span style="font-size: 0.55rem; color: #8da499;">Mining Plan</span></div>
+                    </div>
+
+                    <!-- Center Hub Node: User Account Hub -->
+                    <div class="nh-node node-hub">
+                        <div class="nh-node-circle"><i class="fa-solid fa-vault"></i></div>
+                        <div class="nh-node-label">User Account<br><span style="font-size: 0.55rem; color: var(--gold-primary);">Asset Hub</span></div>
+                    </div>
+
+                    <!-- Bottom-Left Node: Profit Payouts -->
+                    <div class="nh-node node-pool">
+                        <div class="nh-node-circle"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div class="nh-node-label">Returns<br><span style="font-size: 0.55rem; color: #8da499;">Daily Profit</span></div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="nh-legend">
+                        <div class="legend-item"><div class="legend-dot" style="background: #f5cf66;"></div> Buy Asset Flow</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: #2ed573;"></div> Plan Buy Flow</div>
+                    </div>
+                </div>
+
+                <div class="flow-container">
+                    <!-- Step 1 -->
+                    <div class="flow-step">
+                        <div class="flow-icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <div class="flow-text">
+                            <h4>1. Deposit Funds</h4>
+                            <p>Choose plan and deposit via USDT or Local Pay</p>
+                        </div>
+                    </div>
+
+                    <i class="fa-solid fa-chevron-down flow-arrow"></i>
+
+                    <!-- Step 2 -->
+                    <div class="flow-step">
+                        <div class="flow-icon">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                        <div class="flow-text">
+                            <h4>2. Asset Mining & Trade</h4>
+                            <p>Funds backed by real-time gold reserves</p>
+                        </div>
+                    </div>
+
+                    <i class="fa-solid fa-chevron-down flow-arrow"></i>
+
+                    <!-- Step 3 -->
+                    <div class="flow-step">
+                        <div class="flow-icon">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+                        <div class="flow-text">
+                            <h4>3. Daily Returns</h4>
+                            <p>Receive daily profits & instant withdrawals</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Dynamic / Fallback Bottom Nav Container -->
+        <div id="bottom-nav-container">
+            <nav class="bottom-nav">
+                <a href="javascript:history.back()" class="nav-item">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back</span>
+                </a>
+                <a href="portfolio.html" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Portfolio</span>
+                </a>
+                <a href="wallet.html" class="nav-item">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Wallet</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const minAnimationDuration = 2500;
+        const pageStartTime = Date.now();
+
+        window.addEventListener('load', function() {
+            const elapsedTime = Date.now() - pageStartTime;
+            const remainingTime = Math.max(0, minAnimationDuration - elapsedTime);
+
+            setTimeout(function() {
+                const loader = document.getElementById('loader-overlay');
+                if (loader) {
+                    loader.classList.add('fade-out');
+                    document.body.style.overflow = 'auto';
+                }
+            }, remainingTime);
+        });
+
+        // Popup Modal Control Functions
+        function openPayoutsModal() {
+            const modal = document.getElementById('payoutsModal');
+            modal.classList.add('active');
+        }
+
+        function closePayoutsModal() {
+            const modal = document.getElementById('payoutsModal');
+            modal.classList.remove('active');
+        }
+
+        fetch('bottom.html?v=' + new Date().getTime())
+            .then(response => {
+                if(response.ok) return response.text();
+            })
+            .then(data => {
+                if(data) document.getElementById('bottom-nav-container').innerHTML = data;
+            })
+            .catch(error => console.log('Using default bottom nav'));
+
+        // Helper function to generate exactly 100 fluctuating market points for smooth performance
+        function generateMarketPoints(startVal, volatility) {
+            let points = [startVal];
+            let current = startVal;
+            for (let i = 1; i < 100; i++) {
+                let change = (Math.random() - 0.49) * volatility;
+                current += change;
+                points.push(parseFloat(current.toFixed(2)));
+            }
+            return points;
+        }
+
+        const goldPoints = generateMarketPoints(2150, 3.5);
+        const cryptoPoints = generateMarketPoints(64000, 75);
+        const labels100 = Array.from({length: 100}, (_, i) => `Pt ${i + 1}`);
+
+        // Gold Chart Implementation
+        const goldCtx = document.getElementById('goldChart').getContext('2d');
+        const goldGradient = goldCtx.createLinearGradient(0, 0, 0, 100);
+        goldGradient.addColorStop(0, 'rgba(245, 207, 102, 0.4)');
+        goldGradient.addColorStop(1, 'rgba(245, 207, 102, 0.0)');
+
+        const goldChart = new Chart(goldCtx, {
+            type: 'line',
+            data: {
+                labels: labels100,
+                datasets: [{
+                    data: goldPoints,
+                    borderColor: '#f5cf66',
+                    borderWidth: 1.5,
+                    fill: true,
+                    backgroundColor: goldGradient,
+                    tension: 0.3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+
+        // Crypto Chart Implementation
+        const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
+        const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
+        cryptoGradient.addColorStop(0, 'rgba(46, 213, 115, 0.35)');
+        cryptoGradient.addColorStop(1, 'rgba(46, 213, 115, 0.0)');
+
+        const cryptoChart = new Chart(cryptoCtx, {
+            type: 'line',
+            data: {
+                labels: labels100,
+                datasets: [{
+                    data: cryptoPoints,
+                    borderColor: '#2ed573',
+                    borderWidth: 1.5,
+                    fill: true,
+                    backgroundColor: cryptoGradient,
+                    tension: 0.3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+
+        // Real-time market update simulation (Smooth & Lag-free)
+        setInterval(() => {
+            let currentGold = parseFloat(document.getElementById('gold-price').innerText.replace(',', ''));
+            let newGold = (currentGold + (Math.random() - 0.49) * 2.0).toFixed(2);
+            document.getElementById('gold-price').innerText = Number(newGold).toLocaleString('en-US', {minimumFractionDigits: 2});
+            
+            goldChart.data.datasets[0].data.shift();
+            goldChart.data.datasets[0].data.push(parseFloat(newGold));
+            goldChart.update('none');
+
+            let btcPrice = parseFloat(document.getElementById('btc-price').innerText.replace(',', ''));
+            let newBtc = (btcPrice + (Math.random() - 0.49) * 45).toFixed(2);
+            document.getElementById('btc-price').innerText = Number(newBtc).toLocaleString('en-US', {minimumFractionDigits: 2});
+
+            cryptoChart.data.datasets[0].data.shift();
+            cryptoChart.data.datasets[0].data.push(parseFloat(newBtc));
+            cryptoChart.update('none');
+        }, 3000);
+    </script>
+</body>
+</html>
