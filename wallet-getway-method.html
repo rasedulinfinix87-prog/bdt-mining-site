@@ -909,6 +909,69 @@
       document.getElementById('pinModal').style.display = 'none';
     }
 
+    // --- EXPIRED INVESTMENTS PROCESSOR (মেয়াদ শেষ হওয়া প্ল্যানের টাকা ব্যালেন্সে যুক্ত করা) ---
+    async function processExpiredInvestments(client, userId) {
+      try {
+        const nowIso = new Date().toISOString();
+
+        // মেয়াদ শেষ হয়ে যাওয়া অ্যাক্টিভ প্ল্যানগুলো ফেচ করা
+        const { data: expiredPlans, error: fetchErr } = await client
+          .from('investments')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('status', 'active')
+          .lte('end_date', nowIso);
+
+        if (fetchErr || !expiredPlans || expiredPlans.length === 0) return;
+
+        let totalAmountToAdd = 0;
+        const expiredIds = [];
+
+        expiredPlans.forEach(plan => {
+          expiredIds.push(plan.id);
+
+          // যদি total_return দেওয়া থাকে তবে সেটি ব্যবহার করবে, নতুবা পরিমাণ + প্রফিট হিসেব করবে
+          let returnAmt = parseFloat(plan.total_return || 0);
+          if (returnAmt <= 0) {
+            const amount = parseFloat(plan.amount || 0);
+            const dailyPercent = parseFloat(plan.daily_profit_percent || 0);
+            const duration = parseInt(plan.duration_days || 1);
+
+            const totalProfit = (amount * dailyPercent / 100) * duration;
+            returnAmt = amount + totalProfit;
+          }
+
+          totalAmountToAdd += returnAmt;
+        });
+
+        if (totalAmountToAdd > 0 && expiredIds.length > 0) {
+          // ১. ইউজার এর বর্তমান ওয়ালেট ব্যালেন্স নেওয়া
+          const { data: walletData } = await client
+            .from('wallets')
+            .select('balance')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+          const currentBalance = parseFloat(walletData?.balance || 0);
+          const newBalance = currentBalance + totalAmountToAdd;
+
+          // ২. ওয়ালেট ব্যালেন্স আপডেট করা
+          await client
+            .from('wallets')
+            .update({ balance: newBalance })
+            .eq('user_id', userId);
+
+          // ৩. ইনভেস্টমেন্টের স্ট্যাটাস completed করে দেওয়া
+          await client
+            .from('investments')
+            .update({ status: 'completed' })
+            .in('id', expiredIds);
+        }
+      } catch (err) {
+        console.error("Expired investments update error:", err);
+      }
+    }
+
     // --- LIVE PROFIT CALCULATOR ENGINE ---
     function startLiveBalanceTicker() {
       if (liveAnimationInterval) clearInterval(liveAnimationInterval);
@@ -1169,16 +1232,19 @@
         document.getElementById('user-name-display').innerText = user.email ? user.email.split('@')[0] : "User";
       }
 
-      // ৩. প্রাথমিক ব্যালেন্স, ইনভেস্টমেন্ট ও অ্যাকাউন্ট নম্বর ফেচ করা
+      // ৩. এক্সপায়ার্ড ইনভেস্টমেন্ট প্রসেস করে মেইন ব্যালেন্সে জমা করা
+      await processExpiredInvestments(client, currentUserId);
+
+      // ৪. প্রাথমিক ব্যালেন্স, ইনভেস্টমেন্ট ও অ্যাকাউন্ট নম্বর ফেচ করা
       await fetchWalletDetails(client, currentUserId);
 
-      // ৪. ট্রানজাকশন হিস্ট্রি ফেচ করা (ডিফল্ট ৫টি)
+      // ৫. ট্রানজাকশন হিস্ট্রি ফেচ করা (ডিফল্ট ৫টি)
       await fetchRecentTransactions(client, currentUserId, 5);
 
-      // ৫. আনরিড নোটিফিকেশন চেক করা ও ব্লিংকিং চালু করা
+      // ৬. আনরিড নোটিফিকেশন চেক করা ও ব্লিংকিং চালু করা
       await checkNotifications(client, currentUserId);
 
-      // ৬. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
+      // ৭. Realtime Listener: 'wallets' টেবিলে কোনো পরিবর্তন হলেই সাথে সাথে স্ক্রিনে আপডেট হবে
       client
         .channel('wallet-balance-changes')
         .on(
@@ -1201,7 +1267,7 @@
         )
         .subscribe();
 
-      // ৭. Realtime Listener: 'investments' বা 'crypto_investment' টেবিলে নতুন ইনভেস্ট শুরু হলে সাথে সাথে আপডেট করা
+      // ৮. Realtime Listener: 'investments' বা 'crypto_investment' টেবিলে নতুন ইনভেস্ট শুরু হলে সাথে সাথে আপডেট করা
       client
         .channel('investments-live-changes')
         .on(
@@ -1230,7 +1296,7 @@
         )
         .subscribe();
 
-      // ৮. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
+      // ৯. Realtime Listener: 'notifications' টেবিলে নতুন ডাটাস্ বা আপডেট হলে বেল বাটন আপডেট হবে
       client
         .channel('notifications-live-changes')
         .on(
@@ -1247,7 +1313,7 @@
         )
         .subscribe();
 
-      // ৯. Realtime Listener: 'transactions' টেবিলে পরিবর্তন হলে শুধু ট্রানজ্যাকশন লিস্ট রিফ্রেশ করবে
+      // ১০. Realtime Listener: 'transactions' টেবিলে পরিবর্তন হলে শুধু ট্রানজ্যাকশন লিস্ট রিফ্রেশ করবে
       client
         .channel('transactions-status-changes')
         .on(
