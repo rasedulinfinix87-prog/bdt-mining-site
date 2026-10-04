@@ -83,6 +83,26 @@
       letter-spacing: 0.5px;
     }
 
+    .top-bar .history-btn {
+      color: var(--gold-primary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 215, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .top-bar .history-btn:hover {
+      background: rgba(255, 215, 0, 0.2);
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+
     /* Overview Cards Area */
     .overview-section {
       padding: 20px;
@@ -196,6 +216,17 @@
       font-weight: 600;
     }
 
+    .badge-completed {
+      background: rgba(255, 215, 0, 0.15);
+      color: var(--gold-primary);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
     .plan-body {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -282,7 +313,7 @@
       font-size: 0.9rem;
     }
 
-    /* SKELETON SCREEN ANIMATION STYLES */
+    /* Skeleton Loading Styles */
     .skeleton-box {
       background: rgba(255, 255, 255, 0.08);
       border-radius: 8px;
@@ -338,6 +369,123 @@
       margin-top: 10px;
     }
 
+    /* Modal Pop-up Overlay & Container */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 13, 10, 0.85);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .modal-container {
+      background: var(--card-gradient);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 440px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 215, 0, 0.15);
+      overflow: hidden;
+      animation: modalFadeIn 0.3s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(3, 13, 10, 0.5);
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-modal-btn {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .close-modal-btn:hover {
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .history-card {
+      background: rgba(8, 30, 22, 0.7);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .history-card .h-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .history-card .h-name {
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 0.98rem;
+    }
+
+    .history-card .h-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .history-card .h-item {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .history-card .h-item span {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin-top: 2px;
+    }
+
+    .history-card .h-item span.green {
+      color: var(--green-glow);
+    }
+
     #bottom-nav-container {
       position: fixed;
       bottom: 0;
@@ -350,7 +498,7 @@
 <body>
 
   <div class="mobile-container">
-    <!-- Top Bar -->
+    <!-- Top Bar (History Button Added) -->
     <div class="top-bar">
       <div class="title-group">
         <a href="javascript:history.back()" class="back-btn">
@@ -358,7 +506,10 @@
         </a>
         <h2>Investment Dashboard</h2>
       </div>
-      <i class="fa-solid fa-chart-line" style="color: var(--gold-primary); font-size: 1.2rem;"></i>
+      <!-- Modal Trigger Button -->
+      <div class="history-btn" onclick="openHistoryModal()" title="Completed Investment History">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </div>
     </div>
 
     <!-- Stats Overview -->
@@ -393,7 +544,7 @@
     <!-- Active Plans Section -->
     <div class="section-title">
       <span>Active Investment Plans</span>
-      <i class="fa-solid fa-clock-rotate-left"></i>
+      <i class="fa-solid fa-chart-line"></i>
     </div>
 
     <!-- Skeleton Loader List Container -->
@@ -429,6 +580,19 @@
     <div id="bottom-nav-container"></div>
   </div>
 
+  <!-- Complete History Popup Modal -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-receipt"></i> Complete History</h3>
+        <i class="fa-solid fa-xmark close-modal-btn" onclick="closeHistoryModal()"></i>
+      </div>
+      <div class="modal-body" id="history-modal-body">
+        <div class="empty-msg">Loading history...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Supabase & Configuration -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
@@ -436,8 +600,8 @@
   <script>
     let activeIntervals = [];
     let liveInvestmentsData = [];
-    // ১০০ পয়েন্টের গ্রাফ ডাটা ধারণ করার অবজেক্ট
     let planGraphPoints = {};
+    let globalUserId = null;
 
     async function loadDashboardData() {
       const client = window._supabase || window.supabase;
@@ -450,13 +614,13 @@
         return;
       }
 
-      const userId = user.id;
+      globalUserId = user.id;
 
       // ২. 'wallets' টেবিল থেকে মেইন ব্যালেন্স আনা
-      await fetchMainWallet(client, userId);
+      await fetchMainWallet(client, globalUserId);
 
       // ৩. 'investments' টেবিল থেকে একটিভ ইনভেস্টমেন্ট তথ্য আনা
-      await fetchInvestments(client, userId);
+      await fetchInvestments(client, globalUserId);
 
       // Skeleton Loader সরিয়ে আসল ডাটা কন্টেইনার প্রদর্শন করা
       document.getElementById('skeleton-list').style.display = 'none';
@@ -465,7 +629,7 @@
       // ৪. Realtime Listener for Wallets Balance
       client
         .channel('dashboard-wallet-sync')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets', filter: `user_id=eq.${userId}` }, (payload) => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets', filter: `user_id=eq.${globalUserId}` }, (payload) => {
           if (payload.new && payload.new.balance !== undefined) {
             document.getElementById('main-wallet-balance').innerText = '$' + parseFloat(payload.new.balance).toFixed(2);
           }
@@ -516,7 +680,6 @@
       activeIntervals.forEach(clearInterval);
       activeIntervals = [];
 
-      investments.keys = {};
       investments.forEach((plan, index) => {
         const investedAmount = parseFloat(plan.amount || 0);
         totalInvest += investedAmount;
@@ -609,15 +772,13 @@
           // ১০০ পয়েন্টের গ্রাফ শিফট ও আপডেট লজিক
           let points = planGraphPoints[item.planId];
           if (points) {
-            points.shift(); // পুরোনো পয়েন্ট বাদ দেওয়া
-            // নতুন লাইভ পয়েন্ট জেনারেট করা (গত পয়েন্টের কাছাকাছি ওঠানামা করবে)
+            points.shift();
             let lastVal = points[points.length - 1];
             let newVal = lastVal + (Math.random() * 10 - 5);
             if (newVal < 5) newVal = 5;
             if (newVal > 40) newVal = 40;
             points.push(newVal);
 
-            // SVG পাথ (Path) তৈরি করা (Width = 300, Height = 45)
             let svgWidth = 300;
             let svgHeight = 45;
             let stepX = svgWidth / (points.length - 1);
@@ -687,6 +848,70 @@
       }, 100);
 
       activeIntervals.push(globalInterval);
+    }
+
+    // --- Complete History Popup Modal Controls ---
+    async function openHistoryModal() {
+      const modal = document.getElementById('historyModal');
+      modal.style.display = 'flex';
+      
+      const client = window._supabase || window.supabase;
+      const modalBody = document.getElementById('history-modal-body');
+
+      if (!client || !globalUserId) {
+        modalBody.innerHTML = '<div class="empty-msg">User data unavailable.</div>';
+        return;
+      }
+
+      modalBody.innerHTML = '<div class="empty-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading completed history...</div>';
+
+      // ডেটাবেজ থেকে মেয়াদ উত্তীর্ণ / Completed প্ল্যান ফেচ করা
+      const { data: completedInvestments, error } = await client
+        .from('investments')
+        .select('*')
+        .eq('user_id', globalUserId)
+        .eq('status', 'completed')
+        .order('end_date', { ascending: false });
+
+      if (error || !completedInvestments || completedInvestments.length === 0) {
+        modalBody.innerHTML = '<div class="empty-msg">No completed investment history found.</div>';
+        return;
+      }
+
+      let historyHtml = '';
+      completedInvestments.forEach(plan => {
+        const investedAmount = parseFloat(plan.amount || 0);
+        const totalReturn = parseFloat(plan.total_return || 0);
+        const profitEarned = totalReturn > investedAmount ? (totalReturn - investedAmount) : 0;
+        
+        const endDateObj = plan.end_date ? new Date(plan.end_date) : new Date();
+        const formattedDate = endDateObj.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+
+        historyHtml += `
+          <div class="history-card">
+            <div class="h-top">
+              <div class="h-name">${plan.plan_name} (${plan.duration_days} Days)</div>
+              <span class="badge-completed">Completed</span>
+            </div>
+            <div class="h-grid">
+              <div class="h-item">Invested<span>$${investedAmount.toFixed(2)}</span></div>
+              <div class="h-item">Profit Earned<span class="green">+$${profitEarned.toFixed(2)}</span></div>
+              <div class="h-item">Total Returned<span>$${totalReturn.toFixed(2)}</span></div>
+              <div class="h-item">Ended On<span>${formattedDate}</span></div>
+            </div>
+          </div>
+        `;
+      });
+
+      modalBody.innerHTML = historyHtml;
+    }
+
+    function closeHistoryModal() {
+      document.getElementById('historyModal').style.display = 'none';
     }
 
     // Bottom Nav লোড করা
