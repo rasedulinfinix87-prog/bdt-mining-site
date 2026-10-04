@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.85, maximum-scale=1.0">
     <title>Investment Portfolio</title>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,6 +12,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
+        /* Artonex Trial Custom Font Definition */
+        @font-face {
+            font-family: 'Artonex Trial';
+            src: url('fonts/ArtonexTrial-Regular.woff2') format('woff2'),
+                 url('fonts/ArtonexTrial-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
             --bg-color: #061913;
             --dark-bg: #030d0a;
@@ -31,7 +41,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Artonex Trial', 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -45,6 +55,7 @@
             flex-direction: column;
             align-items: center;
             padding-bottom: 90px; /* Space for fixed bottom nav */
+            zoom: 88%; /* Screen Zoom Out effect for desktop/web browsers */
         }
 
         /* Top Bar */
@@ -52,7 +63,7 @@
             width: 100%;
             background: rgba(3, 13, 10, 0.95);
             border-bottom: 1px solid var(--border-color);
-            padding: 18px 20px;
+            padding: 14px 18px;
             text-align: center;
             position: sticky;
             top: 0;
@@ -61,7 +72,7 @@
         }
 
         .top-bar h1 {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 700;
             letter-spacing: 0.5px;
             color: var(--gold-primary);
@@ -69,33 +80,33 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 480px; /* Zoom out effect / Compact width */
             width: 100%;
-            padding: 20px;
+            padding: 15px;
         }
 
         /* Investment Grid */
         .investment-grid {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
-        /* Reduced Card Size (approx 30% compact) */
+        /* Reduced Card Size (Compact Layout) */
         .portfolio-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 18px;
-            padding: 18px 20px;
+            border-radius: 15px;
+            padding: 14px 16px;
             backdrop-filter: blur(16px);
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
 
         .portfolio-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
         }
 
         /* Gold Card Specific Glow */
@@ -103,7 +114,7 @@
             border-color: rgba(245, 207, 102, 0.25);
         }
         .card-gold:hover {
-            box-shadow: 0 15px 30px var(--gold-glow);
+            box-shadow: 0 12px 25px var(--gold-glow);
             border-color: rgba(245, 207, 102, 0.5);
         }
 
@@ -112,7 +123,7 @@
             border-color: rgba(46, 213, 115, 0.25);
         }
         .card-crypto:hover {
-            box-shadow: 0 15px 30px var(--crypto-glow);
+            box-shadow: 0 12px 25px var(--crypto-glow);
             border-color: rgba(46, 213, 115, 0.5);
         }
 
@@ -121,27 +132,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .card-header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .icon-box {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
         }
 
         .card-header-title {
-            font-size: 1.05rem;
+            font-size: 0.9rem;
             font-weight: 700;
             letter-spacing: 0.3px;
         }
@@ -167,9 +178,9 @@
         }
 
         .badge {
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.68rem;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -188,32 +199,32 @@
 
         /* Card Info */
         .card-title-area h2 {
-            font-size: 1.15rem;
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
             color: var(--text-main);
         }
 
         .card-title-area p {
             color: var(--text-sub);
-            font-size: 0.78rem;
+            font-size: 0.72rem;
         }
 
         .amount-area {
-            margin: 12px 0 10px 0;
+            margin: 8px 0 8px 0;
             display: flex;
             align-items: baseline;
-            gap: 10px;
+            gap: 8px;
         }
 
         .amount {
-            font-size: 1.45rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-main);
         }
 
         .growth {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--crypto-primary);
             display: flex;
@@ -224,8 +235,8 @@
         /* Graph Container */
         .graph-container {
             width: 100%;
-            height: 75px;
-            margin: 10px 0 15px 0;
+            height: 60px;
+            margin: 8px 0 12px 0;
             position: relative;
         }
 
@@ -234,11 +245,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             width: 100%;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 0.88rem;
+            padding: 9px;
+            border-radius: 10px;
+            font-size: 0.78rem;
             font-weight: 700;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -389,7 +400,7 @@
 
         // Gold Chart Initialization (100 Points)
         const goldCtx = document.getElementById('goldChart').getContext('2d');
-        const goldGradient = goldCtx.createLinearGradient(0, 0, 0, 75);
+        const goldGradient = goldCtx.createLinearGradient(0, 0, 0, 60);
         goldGradient.addColorStop(0, 'rgba(245, 207, 102, 0.35)');
         goldGradient.addColorStop(1, 'rgba(245, 207, 102, 0.0)');
 
@@ -417,7 +428,7 @@
 
         // Crypto Chart Initialization (100 Points)
         const cryptoCtx = document.getElementById('cryptoChart').getContext('2d');
-        const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 75);
+        const cryptoGradient = cryptoCtx.createLinearGradient(0, 0, 0, 60);
         cryptoGradient.addColorStop(0, 'rgba(46, 213, 115, 0.35)');
         cryptoGradient.addColorStop(1, 'rgba(46, 213, 115, 0.0)');
 
